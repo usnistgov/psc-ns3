@@ -29,22 +29,25 @@
  * employees is not subject to copyright protection within the United States.
  */
 
+#include "mcptt-test-case-config-on-network.h"
+#include "mcptt-test-case.h"
+
+#include "ns3/log.h"
+#include "ns3/mcptt-server-app.h"
+#include "ns3/sip-header.h"
 #include <ns3/callback.h>
 #include <ns3/core-module.h>
 #include <ns3/mcptt-on-network-floor-participant.h>
 
-#include "mcptt-test-case.h"
-#include "mcptt-test-case-config-on-network.h"
-#include "ns3/mcptt-server-app.h"
-#include "ns3/sip-header.h"
-#include "ns3/log.h"
+namespace ns3
+{
 
-namespace ns3 {
+NS_LOG_COMPONENT_DEFINE("McpttTestSuiteCallControlOnNetwork");
 
-NS_LOG_COMPONENT_DEFINE ("McpttTestSuiteCallControlOnNetwork");
-
-namespace psc {
-namespace tests {
+namespace psc
+{
+namespace tests
+{
 
 /**
  * Test case corresponding to TS 36.579-2, Section 6.1.1.1, pre-arranged
@@ -52,285 +55,344 @@ namespace tests {
  */
 class McpttTestCasePreArrangedGroupCO : public McpttTestCase
 {
-public:
-  McpttTestCasePreArrangedGroupCO (const std::string& name = "Floor Release", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
+  public:
+    McpttTestCasePreArrangedGroupCO(
+        const std::string& name = "Floor Release",
+        Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig>());
 
-protected:
-  void Configure() override;
-  void Execute() override;
-  virtual void ServerRxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
-  virtual void ServerTxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
-  virtual void Ue1RxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
-  virtual void Ue1TxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
+  protected:
+    void Configure() override;
+    void Execute() override;
+    virtual void ServerRxCb(Ptr<const Application> app,
+                            uint16_t callId,
+                            Ptr<const Packet> pkt,
+                            const TypeId& headerType);
+    virtual void ServerTxCb(Ptr<const Application> app,
+                            uint16_t callId,
+                            Ptr<const Packet> pkt,
+                            const TypeId& headerType);
+    virtual void Ue1RxCb(Ptr<const Application> app,
+                         uint16_t callId,
+                         Ptr<const Packet> pkt,
+                         const TypeId& headerType);
+    virtual void Ue1TxCb(Ptr<const Application> app,
+                         uint16_t callId,
+                         Ptr<const Packet> pkt,
+                         const TypeId& headerType);
 
-private:
-  struct TestEvent
-  {
-    uint32_t m_step;
-    std::string m_ueToServer;
-    std::string m_message;
-    TestEvent (uint32_t step, std::string ueToServer, std::string message)
-      : m_step (step),
-        m_ueToServer (ueToServer),
-        m_message (message)
-    {}
-    bool operator != (const TestEvent& b) const
+  private:
+    struct TestEvent
     {
-      return (m_step != b.m_step || m_ueToServer != b.m_ueToServer || m_message != b.m_message);
-    }
-  };
-  uint32_t m_step {0};  //!< Step number in test sequence
-  std::list<TestEvent> m_expectedEvents; //!< Expected events
-  std::list<TestEvent> m_observedEvents; //!< Observed events
+        uint32_t m_step;
+        std::string m_ueToServer;
+        std::string m_message;
+
+        TestEvent(uint32_t step, std::string ueToServer, std::string message)
+            : m_step(step),
+              m_ueToServer(ueToServer),
+              m_message(message)
+        {
+        }
+
+        bool operator!=(const TestEvent& b) const
+        {
+            return (m_step != b.m_step || m_ueToServer != b.m_ueToServer ||
+                    m_message != b.m_message);
+        }
+    };
+
+    uint32_t m_step{0};                    //!< Step number in test sequence
+    std::list<TestEvent> m_expectedEvents; //!< Expected events
+    std::list<TestEvent> m_observedEvents; //!< Observed events
 };
 
 class McpttTestSuiteCallControlOnNetwork : public TestSuite
 {
-public:
-  McpttTestSuiteCallControlOnNetwork();
+  public:
+    McpttTestSuiteCallControlOnNetwork();
 };
 
 /***************************************************************
  *  Implementation of the code declared above.
  ***************************************************************/
 
-McpttTestCasePreArrangedGroupCO::McpttTestCasePreArrangedGroupCO (const std::string& name, Ptr<McpttTestCaseConfig>  config)
-  : McpttTestCase (name, config)
-{ }
+McpttTestCasePreArrangedGroupCO::McpttTestCasePreArrangedGroupCO(const std::string& name,
+                                                                 Ptr<McpttTestCaseConfig> config)
+    : McpttTestCase(name, config)
+{
+}
 
 void
 McpttTestCasePreArrangedGroupCO::Configure()
 {
-  McpttHelper clientHelper;
-  clientHelper.SetPttApp ("ns3::psc::McpttPttApp");
-  clientHelper.SetMediaSrc ("ns3::psc::McpttMediaSrc",
-                            "Bytes", UintegerValue (60),
-                            "DataRate", DataRateValue (DataRate ("24kb/s")));
-  clientHelper.SetPusher ("ns3::psc::McpttPusher",
-                          "Automatic", BooleanValue (false));
+    McpttHelper clientHelper;
+    clientHelper.SetPttApp("ns3::psc::McpttPttApp");
+    clientHelper.SetMediaSrc("ns3::psc::McpttMediaSrc",
+                             "Bytes",
+                             UintegerValue(60),
+                             "DataRate",
+                             DataRateValue(DataRate("24kb/s")));
+    clientHelper.SetPusher("ns3::psc::McpttPusher", "Automatic", BooleanValue(false));
 
-  McpttCallHelper callHelper;
-  callHelper.SetArbitrator ("ns3::psc::McpttOnNetworkFloorArbitrator",
-                            "AckRequired", BooleanValue (true),
-                            "AudioCutIn", BooleanValue (false),
-                            "DualFloorSupported", BooleanValue (false),
-                            "TxSsrc", UintegerValue (0),
-                            "QueueingSupported", BooleanValue (true));
-  callHelper.SetTowardsParticipant ("ns3::psc::McpttOnNetworkFloorTowardsParticipant",
-                                    "ReceiveOnly", BooleanValue (false));
-  callHelper.SetParticipant ("ns3::psc::McpttOnNetworkFloorParticipant",
-                             "AckRequired", BooleanValue (true),
-                             "GenMedia", BooleanValue (true));
-  callHelper.SetServerCall ("ns3::psc::McpttServerCall",
-                            "AmbientListening", BooleanValue (false),
-                            "TemporaryGroup", BooleanValue (false));
+    McpttCallHelper callHelper;
+    callHelper.SetArbitrator("ns3::psc::McpttOnNetworkFloorArbitrator",
+                             "AckRequired",
+                             BooleanValue(true),
+                             "AudioCutIn",
+                             BooleanValue(false),
+                             "DualFloorSupported",
+                             BooleanValue(false),
+                             "TxSsrc",
+                             UintegerValue(0),
+                             "QueueingSupported",
+                             BooleanValue(true));
+    callHelper.SetTowardsParticipant("ns3::psc::McpttOnNetworkFloorTowardsParticipant",
+                                     "ReceiveOnly",
+                                     BooleanValue(false));
+    callHelper.SetParticipant("ns3::psc::McpttOnNetworkFloorParticipant",
+                              "AckRequired",
+                              BooleanValue(true),
+                              "GenMedia",
+                              BooleanValue(true));
+    callHelper.SetServerCall("ns3::psc::McpttServerCall",
+                             "AmbientListening",
+                             BooleanValue(false),
+                             "TemporaryGroup",
+                             BooleanValue(false));
 
-  Ptr<McpttTestCaseConfigOnNetwork> config = Create<McpttTestCaseConfigOnNetwork> ();
-  config->SetAppCount (2);
-  config->SetClientHelper (clientHelper);
-  config->SetCallHelper (callHelper);
-  config->SetStop (Seconds (10));
+    Ptr<McpttTestCaseConfigOnNetwork> config = Create<McpttTestCaseConfigOnNetwork>();
+    config->SetAppCount(2);
+    config->SetClientHelper(clientHelper);
+    config->SetCallHelper(callHelper);
+    config->SetStop(Seconds(10));
 
-  SetConfig (config);
+    SetConfig(config);
 
-  McpttTestCase::Configure ();
+    McpttTestCase::Configure();
 
-  Ptr<McpttPttApp> ue1App = GetApp (0);
-  Ptr<McpttPttApp> ue2App = GetApp (1);
-  Ptr<McpttServerApp> serverApp = config->GetServerApp ();
+    Ptr<McpttPttApp> ue1App = GetApp(0);
+    Ptr<McpttPttApp> ue2App = GetApp(1);
+    Ptr<McpttServerApp> serverApp = config->GetServerApp();
 
-  ue1App->TraceConnectWithoutContext ("RxTrace", MakeCallback (&McpttTestCasePreArrangedGroupCO::Ue1RxCb, this));
-  ue1App->TraceConnectWithoutContext ("TxTrace", MakeCallback (&McpttTestCasePreArrangedGroupCO::Ue1TxCb, this));
-  serverApp->TraceConnectWithoutContext ("RxTrace", MakeCallback (&McpttTestCasePreArrangedGroupCO::ServerRxCb, this));
-  serverApp->TraceConnectWithoutContext ("TxTrace", MakeCallback (&McpttTestCasePreArrangedGroupCO::ServerTxCb, this));
+    ue1App->TraceConnectWithoutContext(
+        "RxTrace",
+        MakeCallback(&McpttTestCasePreArrangedGroupCO::Ue1RxCb, this));
+    ue1App->TraceConnectWithoutContext(
+        "TxTrace",
+        MakeCallback(&McpttTestCasePreArrangedGroupCO::Ue1TxCb, this));
+    serverApp->TraceConnectWithoutContext(
+        "RxTrace",
+        MakeCallback(&McpttTestCasePreArrangedGroupCO::ServerRxCb, this));
+    serverApp->TraceConnectWithoutContext(
+        "TxTrace",
+        MakeCallback(&McpttTestCasePreArrangedGroupCO::ServerTxCb, this));
 
-  m_step = 1;  // Advance step counter to first event
-  // Step 1 in Table 6.1.1.1.3.2-1; this action is not logged by the test suite
-  Ptr<McpttPusher> ue1Pusher = ue1App->GetPusher ();
-  ue1Pusher->SchedulePush (Seconds (3.0));
-  // Step 8 in Table 6.1.1.1.3.2-1; this action is not logged by the test suite
-  ue1Pusher->ScheduleRelease (Seconds (4.0));
+    m_step = 1; // Advance step counter to first event
+    // Step 1 in Table 6.1.1.1.3.2-1; this action is not logged by the test suite
+    Ptr<McpttPusher> ue1Pusher = ue1App->GetPusher();
+    ue1Pusher->SchedulePush(Seconds(3.0));
+    // Step 8 in Table 6.1.1.1.3.2-1; this action is not logged by the test suite
+    ue1Pusher->ScheduleRelease(Seconds(4.0));
 }
 
 void
 McpttTestCasePreArrangedGroupCO::Execute()
 {
-  // Configure expected sequence according to TS 36.579-2, Table 6.1.1.1.3.2-1
-  m_expectedEvents.emplace_back(2, "-->", "SIP INVITE");
-  // TODO: Step 3 'SIP 100 Trying' is occurring (in the logs) but this
-  // test suite cannot hook the event until McpttCall::ReceiveSipEvent
-  // is completed (and the TRYING_RECEIVED event is exported)
-  m_expectedEvents.emplace_back(5, "<--", "SIP 200 (OK)");
-  m_expectedEvents.emplace_back(6, "-->", "SIP ACK");
-  m_expectedEvents.emplace_back(9, "-->", "Floor Release");
-  m_expectedEvents.emplace_back(10, "<--", "Floor Ack");
-  m_expectedEvents.emplace_back(11, "<--", "Floor Idle");
-  // TODO:  add events beyond step 11
+    // Configure expected sequence according to TS 36.579-2, Table 6.1.1.1.3.2-1
+    m_expectedEvents.emplace_back(2, "-->", "SIP INVITE");
+    // TODO: Step 3 'SIP 100 Trying' is occurring (in the logs) but this
+    // test suite cannot hook the event until McpttCall::ReceiveSipEvent
+    // is completed (and the TRYING_RECEIVED event is exported)
+    m_expectedEvents.emplace_back(5, "<--", "SIP 200 (OK)");
+    m_expectedEvents.emplace_back(6, "-->", "SIP ACK");
+    m_expectedEvents.emplace_back(9, "-->", "Floor Release");
+    m_expectedEvents.emplace_back(10, "<--", "Floor Ack");
+    m_expectedEvents.emplace_back(11, "<--", "Floor Idle");
+    // TODO:  add events beyond step 11
 
-  Simulator::Stop (Seconds (10));
-  Simulator::Run ();
-  Simulator::Destroy ();
+    Simulator::Stop(Seconds(10));
+    Simulator::Run();
+    Simulator::Destroy();
 
 //#define PRE_ARRANGED_GROUP_C0 1
 #ifdef PRE_ARRANGED_GROUP_C0
-  // Define this to print out the observed events, if needed for debugging
-  // or to generate new expected events.
-  std::cout << "Expected events:" << std::endl;
-  for (auto it = m_expectedEvents.begin (); it != m_expectedEvents.end (); it++)
+    // Define this to print out the observed events, if needed for debugging
+    // or to generate new expected events.
+    std::cout << "Expected events:" << std::endl;
+    for (auto it = m_expectedEvents.begin(); it != m_expectedEvents.end(); it++)
     {
-      std::cout << "  m_expectedEvents.push_back (TestEvent (" << it->m_step << ", " << it->m_ueToServer << ", \"" << it->m_message << "\"));" << std::endl;
+        std::cout << "  m_expectedEvents.push_back (TestEvent (" << it->m_step << ", "
+                  << it->m_ueToServer << ", \"" << it->m_message << "\"));" << std::endl;
     }
-  std::cout << "Observed events: (these are printed out as 'expected' so they can be copied)" << std::endl;
-  for (auto it = m_observedEvents.begin (); it != m_observedEvents.end (); it++)
+    std::cout << "Observed events: (these are printed out as 'expected' so they can be copied)"
+              << std::endl;
+    for (auto it = m_observedEvents.begin(); it != m_observedEvents.end(); it++)
     {
-      std::cout << "  m_expectedEvents.push_back (TestEvent (" << it->m_step << ", " << it->m_ueToServer << ", \"" << it->m_message << "\"));" << std::endl;
+        std::cout << "  m_expectedEvents.push_back (TestEvent (" << it->m_step << ", "
+                  << it->m_ueToServer << ", \"" << it->m_message << "\"));" << std::endl;
     }
 #endif
 
-  NS_TEST_ASSERT_MSG_EQ (m_observedEvents.size (), m_expectedEvents.size (), "Did not observe all expected events");
-  auto it1 = m_observedEvents.begin ();
-  auto it2 = m_expectedEvents.begin ();
-  while (it1 != m_observedEvents.end () && it2 != m_expectedEvents.end ())
+    NS_TEST_ASSERT_MSG_EQ(m_observedEvents.size(),
+                          m_expectedEvents.size(),
+                          "Did not observe all expected events");
+    auto it1 = m_observedEvents.begin();
+    auto it2 = m_expectedEvents.begin();
+    while (it1 != m_observedEvents.end() && it2 != m_expectedEvents.end())
     {
-      if (*it1 != *it2)
+        if (*it1 != *it2)
         {
-          NS_TEST_ASSERT_MSG_EQ (it1->m_step, it2->m_step, "Event steps not equal");
-          NS_TEST_ASSERT_MSG_EQ (it1->m_ueToServer, it2->m_ueToServer, "UE to server direction not equal");
-          NS_TEST_ASSERT_MSG_EQ (it1->m_message, it2->m_message, "Message not equal");
+            NS_TEST_ASSERT_MSG_EQ(it1->m_step, it2->m_step, "Event steps not equal");
+            NS_TEST_ASSERT_MSG_EQ(it1->m_ueToServer,
+                                  it2->m_ueToServer,
+                                  "UE to server direction not equal");
+            NS_TEST_ASSERT_MSG_EQ(it1->m_message, it2->m_message, "Message not equal");
         }
-      it1++;
-      it2++;
+        it1++;
+        it2++;
     }
 }
 
 void
-McpttTestCasePreArrangedGroupCO::Ue1RxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType)
+McpttTestCasePreArrangedGroupCO::Ue1RxCb(Ptr<const Application> app,
+                                         uint16_t callId,
+                                         Ptr<const Packet> pkt,
+                                         const TypeId& headerType)
 {
-  NS_LOG_DEBUG ("UE1 receive message");
-  if (headerType == sip::SipHeader::GetTypeId ())
+    NS_LOG_DEBUG("UE1 receive message");
+    if (headerType == sip::SipHeader::GetTypeId())
     {
-      sip::SipHeader msg;
-      pkt->PeekHeader (msg);
-      sip::SipHeader::SipMessageType messageType = msg.GetMessageType ();
-      uint16_t statusCode = 0;
-      if (messageType == sip::SipHeader::SIP_RESPONSE)
+        sip::SipHeader msg;
+        pkt->PeekHeader(msg);
+        sip::SipHeader::SipMessageType messageType = msg.GetMessageType();
+        uint16_t statusCode = 0;
+        if (messageType == sip::SipHeader::SIP_RESPONSE)
         {
-          statusCode = msg.GetStatusCode ();
-          if (statusCode == 200 && m_step == 2)
+            statusCode = msg.GetStatusCode();
+            if (statusCode == 200 && m_step == 2)
             {
-              NS_LOG_DEBUG ("Step 5 <-- SIP 200 (OK)");
-              // Skip to step 5, since step 3 (Trying) is not observable
-              // in this test, and step 4 is 'Void' in Table 6.1.1.1.3.2-1
-              m_step = 5;
-              m_observedEvents.emplace_back(m_step, "<--", "SIP 200 (OK)");
+                NS_LOG_DEBUG("Step 5 <-- SIP 200 (OK)");
+                // Skip to step 5, since step 3 (Trying) is not observable
+                // in this test, and step 4 is 'Void' in Table 6.1.1.1.3.2-1
+                m_step = 5;
+                m_observedEvents.emplace_back(m_step, "<--", "SIP 200 (OK)");
             }
         }
-      else if (messageType == sip::SipHeader::SIP_REQUEST)
+        else if (messageType == sip::SipHeader::SIP_REQUEST)
         {
-          // Placeholder
-          NS_LOG_DEBUG ("SIP Request not yet expected");
+            // Placeholder
+            NS_LOG_DEBUG("SIP Request not yet expected");
         }
     }
-  else if (headerType == McpttFloorMsgAck::GetTypeId ())
+    else if (headerType == McpttFloorMsgAck::GetTypeId())
     {
-      if (m_step == 9)
+        if (m_step == 9)
         {
-          NS_LOG_DEBUG ("Step 10 <-- Floor Ack");
-          m_observedEvents.emplace_back(10, "<--", "Floor Ack");
-          m_step = 10;
+            NS_LOG_DEBUG("Step 10 <-- Floor Ack");
+            m_observedEvents.emplace_back(10, "<--", "Floor Ack");
+            m_step = 10;
         }
     }
-  else if (headerType == McpttFloorMsgIdle::GetTypeId ())
+    else if (headerType == McpttFloorMsgIdle::GetTypeId())
     {
-      if (m_step == 10)
+        if (m_step == 10)
         {
-          NS_LOG_DEBUG ("Step 11 <-- Floor Idle");
-          m_observedEvents.emplace_back(11, "<--", "Floor Idle");
-          m_step = 11;
+            NS_LOG_DEBUG("Step 11 <-- Floor Idle");
+            m_observedEvents.emplace_back(11, "<--", "Floor Idle");
+            m_step = 11;
         }
     }
 }
 
 void
-McpttTestCasePreArrangedGroupCO::Ue1TxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType)
+McpttTestCasePreArrangedGroupCO::Ue1TxCb(Ptr<const Application> app,
+                                         uint16_t callId,
+                                         Ptr<const Packet> pkt,
+                                         const TypeId& headerType)
 {
-  NS_LOG_DEBUG ("UE1 send message");
-  if (headerType == sip::SipHeader::GetTypeId ())
+    NS_LOG_DEBUG("UE1 send message");
+    if (headerType == sip::SipHeader::GetTypeId())
     {
-      sip::SipHeader msg;
-      pkt->PeekHeader (msg);
-      sip::SipHeader::SipMessageType messageType = msg.GetMessageType ();
-      sip::SipHeader::SipMethod method;
-      if (messageType == sip::SipHeader::SIP_REQUEST)
+        sip::SipHeader msg;
+        pkt->PeekHeader(msg);
+        sip::SipHeader::SipMessageType messageType = msg.GetMessageType();
+        sip::SipHeader::SipMethod method;
+        if (messageType == sip::SipHeader::SIP_REQUEST)
         {
-          method = msg.GetMethod ();
-          if (method == sip::SipHeader::INVITE && m_step == 1)
+            method = msg.GetMethod();
+            if (method == sip::SipHeader::INVITE && m_step == 1)
             {
-              NS_LOG_DEBUG ("Step 2 --> SIP INVITE");
-              m_step++;
-              m_observedEvents.emplace_back(m_step, "-->", "SIP INVITE");
+                NS_LOG_DEBUG("Step 2 --> SIP INVITE");
+                m_step++;
+                m_observedEvents.emplace_back(m_step, "-->", "SIP INVITE");
             }
-          else if (method == sip::SipHeader::ACK && m_step == 5)
+            else if (method == sip::SipHeader::ACK && m_step == 5)
             {
-              NS_LOG_DEBUG ("Step 6 --> SIP ACK");
-              m_step++;
-              m_observedEvents.emplace_back(m_step, "-->", "SIP ACK");
+                NS_LOG_DEBUG("Step 6 --> SIP ACK");
+                m_step++;
+                m_observedEvents.emplace_back(m_step, "-->", "SIP ACK");
             }
         }
-      else if (messageType == sip::SipHeader::SIP_RESPONSE)
+        else if (messageType == sip::SipHeader::SIP_RESPONSE)
         {
-          NS_LOG_DEBUG ("SIP Response not yet expected");
+            NS_LOG_DEBUG("SIP Response not yet expected");
         }
     }
-  else if (headerType == McpttFloorMsgRelease::GetTypeId ())
+    else if (headerType == McpttFloorMsgRelease::GetTypeId())
     {
-      if (m_step == 6)
+        if (m_step == 6)
         {
-          NS_LOG_DEBUG ("Step 9 --> Floor Release");
-          m_observedEvents.emplace_back(9, "-->", "Floor Release");
-          m_step = 9;
+            NS_LOG_DEBUG("Step 9 --> Floor Release");
+            m_observedEvents.emplace_back(9, "-->", "Floor Release");
+            m_step = 9;
         }
     }
 }
 
 void
-McpttTestCasePreArrangedGroupCO::ServerRxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType)
+McpttTestCasePreArrangedGroupCO::ServerRxCb(Ptr<const Application> app,
+                                            uint16_t callId,
+                                            Ptr<const Packet> pkt,
+                                            const TypeId& headerType)
 {
-  NS_LOG_DEBUG ("Server receive message");
-  // Note:  In TS 36.579-2, events are ordered from the perspective of
-  // the UE, testing against a black box EPC, so only log observed events
-  // on the UE, and just print debug log statements here
-  if (headerType == sip::SipHeader::GetTypeId ())
+    NS_LOG_DEBUG("Server receive message");
+    // Note:  In TS 36.579-2, events are ordered from the perspective of
+    // the UE, testing against a black box EPC, so only log observed events
+    // on the UE, and just print debug log statements here
+    if (headerType == sip::SipHeader::GetTypeId())
     {
-      NS_LOG_DEBUG ("Received SIP message on server after step " << m_step);
+        NS_LOG_DEBUG("Received SIP message on server after step " << m_step);
     }
-  else
+    else
     {
-      NS_LOG_DEBUG ("Received MCPTT message on server after step " << m_step);
+        NS_LOG_DEBUG("Received MCPTT message on server after step " << m_step);
     }
 }
 
 void
-McpttTestCasePreArrangedGroupCO::ServerTxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType)
+McpttTestCasePreArrangedGroupCO::ServerTxCb(Ptr<const Application> app,
+                                            uint16_t callId,
+                                            Ptr<const Packet> pkt,
+                                            const TypeId& headerType)
 {
-  NS_LOG_DEBUG ("Server send message");
-  // Note:  In TS 36.579-2, events are ordered from the perspective of
-  // the UE, testing against a black box EPC, so only log observed events
-  // on the UE, and just print debug log statements here
-  if (headerType == sip::SipHeader::GetTypeId ())
+    NS_LOG_DEBUG("Server send message");
+    // Note:  In TS 36.579-2, events are ordered from the perspective of
+    // the UE, testing against a black box EPC, so only log observed events
+    // on the UE, and just print debug log statements here
+    if (headerType == sip::SipHeader::GetTypeId())
     {
-      NS_LOG_DEBUG ("Sent SIP message on server after step " << m_step);
+        NS_LOG_DEBUG("Sent SIP message on server after step " << m_step);
     }
-  else
+    else
     {
-      NS_LOG_DEBUG ("Sent MCPTT message on server after step " << m_step);
+        NS_LOG_DEBUG("Sent MCPTT message on server after step " << m_step);
     }
 }
 
 McpttTestSuiteCallControlOnNetwork::McpttTestSuiteCallControlOnNetwork()
     : TestSuite("mcptt-call-control-on-network", TestSuite::SYSTEM)
 {
-  AddTestCase (new McpttTestCasePreArrangedGroupCO (), TestCase::QUICK);
+    AddTestCase(new McpttTestCasePreArrangedGroupCO(), TestCase::QUICK);
 }
 
 static McpttTestSuiteCallControlOnNetwork suite;

@@ -35,8 +35,9 @@
 
 #include "lte-sl-basic-ue-controller.h"
 
+#include "epc-ue-nas.h"
+
 #include "ns3/abort.h"
-#include "ns3/epc-ue-nas.h"
 #include "ns3/log.h"
 
 namespace ns3

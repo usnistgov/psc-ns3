@@ -36,8 +36,9 @@
 #ifndef LTE_SL_O2O_COMM_PARAMS_H
 #define LTE_SL_O2O_COMM_PARAMS_H
 
+#include "lte-sl-pc5-signalling-header.h"
+
 #include "ns3/timer.h"
-#include <ns3/lte-sl-pc5-signalling-header.h>
 #include <ns3/nstime.h>
 #include <ns3/object.h>
 

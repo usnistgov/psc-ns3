@@ -29,6 +29,8 @@
  * employees is not subject to copyright protection within the United States.
  */
 
+#include "mcptt-channel.h"
+
 #include <ns3/ipv4-address.h>
 #include <ns3/log.h>
 #include <ns3/node.h>
@@ -40,25 +42,23 @@
 #include <ns3/type-id.h>
 #include <ns3/udp-socket-factory.h>
 
-#include "mcptt-channel.h"
+namespace ns3
+{
 
-namespace ns3 {
+namespace psc
+{
 
-namespace psc {
+NS_LOG_COMPONENT_DEFINE("McpttChannel");
 
-NS_LOG_COMPONENT_DEFINE ("McpttChannel");
-
-NS_OBJECT_ENSURE_REGISTERED (McpttChannel);
+NS_OBJECT_ENSURE_REGISTERED(McpttChannel);
 
 TypeId
 McpttChannel::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::psc::McpttChannel")
-    .SetParent<Object> ()
-    .AddConstructor<McpttChannel> ()
-  ;
+    static TypeId tid =
+        TypeId("ns3::psc::McpttChannel").SetParent<Object>().AddConstructor<McpttChannel>();
 
-  return tid;
+    return tid;
 }
 
 McpttChannel::McpttChannel()
@@ -66,229 +66,235 @@ McpttChannel::McpttChannel()
       m_rxPktCb(MakeNullCallback<void, Ptr<Packet>, Address>()),
       m_socket(nullptr)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 McpttChannel::~McpttChannel()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
 McpttChannel::Close()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  Ptr<Socket> socket = GetSocket ();
+    Ptr<Socket> socket = GetSocket();
 
-  socket->Close ();
-  socket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());
+    socket->Close();
+    socket->SetRecvCallback(MakeNullCallback<void, Ptr<Socket>>());
 
-  SetSocket(nullptr);
+    SetSocket(nullptr);
 }
 
 TypeId
 McpttChannel::GetInstanceTypeId() const
 {
-  return McpttChannel::GetTypeId ();
+    return McpttChannel::GetTypeId();
 }
 
 bool
 McpttChannel::IsOpen() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return static_cast<bool>((GetSocket()));
+    return static_cast<bool>((GetSocket()));
 }
 
 int
-McpttChannel::Open (Ptr<Node>  node, uint16_t port, const Address& local, const Address& peer)
+McpttChannel::Open(Ptr<Node> node, uint16_t port, const Address& local, const Address& peer)
 {
-  NS_LOG_FUNCTION (this << node << port << local << peer);
+    NS_LOG_FUNCTION(this << node << port << local << peer);
 
-  int result = -1;
-  std::stringstream ssPeer;
-  std::stringstream ssLocal;
-  Ptr<Socket> socket = Socket::CreateSocket (node, UdpSocketFactory::GetTypeId ());
+    int result = -1;
+    std::stringstream ssPeer;
+    std::stringstream ssLocal;
+    Ptr<Socket> socket = Socket::CreateSocket(node, UdpSocketFactory::GetTypeId());
 
-  if (Ipv4Address::IsMatchingType (local))
+    if (Ipv4Address::IsMatchingType(local))
     {
-      Ipv4Address localIpv4 = Ipv4Address::GetAny ();
-      result = socket->Bind (InetSocketAddress (localIpv4, port));
-      ssLocal << localIpv4;
+        Ipv4Address localIpv4 = Ipv4Address::GetAny();
+        result = socket->Bind(InetSocketAddress(localIpv4, port));
+        ssLocal << localIpv4;
     }
-  else if (Ipv6Address::IsMatchingType (local))
+    else if (Ipv6Address::IsMatchingType(local))
     {
-      Ipv6Address localIpv6 = Ipv6Address::GetAny ();
-      result = socket->Bind (Inet6SocketAddress (localIpv6, port));
-      ssLocal << localIpv6;
+        Ipv6Address localIpv6 = Ipv6Address::GetAny();
+        result = socket->Bind(Inet6SocketAddress(localIpv6, port));
+        ssLocal << localIpv6;
     }
-  else
+    else
     {
-      NS_ABORT_MSG ("Only Ipv4 and Ipv6 address are supported.");
+        NS_ABORT_MSG("Only Ipv4 and Ipv6 address are supported.");
     }
-  if (result != 0)
+    if (result != 0)
     {
-      return result;
+        return result;
     }
 
-  socket->SetAllowBroadcast (true);
-  socket->SetRecvCallback (MakeCallback (&McpttChannel::ReceivePkts, this));
+    socket->SetAllowBroadcast(true);
+    socket->SetRecvCallback(MakeCallback(&McpttChannel::ReceivePkts, this));
 
-  bool success = false;
-  if (Ipv4Address::IsMatchingType (peer))
+    bool success = false;
+    if (Ipv4Address::IsMatchingType(peer))
     {
-      Ipv4Address peerIpv4 = Ipv4Address::ConvertFrom (peer);
-      if (!peerIpv4.IsAny ())
+        Ipv4Address peerIpv4 = Ipv4Address::ConvertFrom(peer);
+        if (!peerIpv4.IsAny())
         {
-          result = socket->Connect (InetSocketAddress (peerIpv4, port));
-          ssPeer << peerIpv4;
-          NS_LOG_DEBUG ("Create socket on " << node->GetId () << " from " << ssLocal.str () << " port " << port << " to " << ssPeer.str () << " port " << port);
-          success = result == 0;
+            result = socket->Connect(InetSocketAddress(peerIpv4, port));
+            ssPeer << peerIpv4;
+            NS_LOG_DEBUG("Create socket on " << node->GetId() << " from " << ssLocal.str()
+                                             << " port " << port << " to " << ssPeer.str()
+                                             << " port " << port);
+            success = result == 0;
         }
-      else
+        else
         {
-          NS_LOG_DEBUG ("Create unconnected socket locally on " << node->GetId () << " address " << ssLocal.str () << " port " << port);
-          success = true;
-        }
-    }
-  else if (Ipv6Address::IsMatchingType (peer))
-    {
-      Ipv6Address peerIpv6 = Ipv6Address::ConvertFrom (peer);
-      if (!peerIpv6.IsAny ())
-        {
-          result = socket->Connect (Inet6SocketAddress (peerIpv6, port));
-          ssPeer << peerIpv6;
-          NS_LOG_DEBUG ("Create socket on " << node->GetId () << " from " << ssLocal.str () << " port " << port << " to " << ssPeer.str () << " port " << port);
-          success = result == 0;
-        }
-      else
-        {
-          NS_LOG_DEBUG ("Create unconnected socket locally on " << node->GetId () << " address " << ssLocal.str () << " port " << port);
-          success = true;
+            NS_LOG_DEBUG("Create unconnected socket locally on "
+                         << node->GetId() << " address " << ssLocal.str() << " port " << port);
+            success = true;
         }
     }
-  else
+    else if (Ipv6Address::IsMatchingType(peer))
     {
-      NS_ABORT_MSG ("Only Ipv4 and Ipv6 address are supported.");
+        Ipv6Address peerIpv6 = Ipv6Address::ConvertFrom(peer);
+        if (!peerIpv6.IsAny())
+        {
+            result = socket->Connect(Inet6SocketAddress(peerIpv6, port));
+            ssPeer << peerIpv6;
+            NS_LOG_DEBUG("Create socket on " << node->GetId() << " from " << ssLocal.str()
+                                             << " port " << port << " to " << ssPeer.str()
+                                             << " port " << port);
+            success = result == 0;
+        }
+        else
+        {
+            NS_LOG_DEBUG("Create unconnected socket locally on "
+                         << node->GetId() << " address " << ssLocal.str() << " port " << port);
+            success = true;
+        }
+    }
+    else
+    {
+        NS_ABORT_MSG("Only Ipv4 and Ipv6 address are supported.");
     }
 
     if (success)
     {
-      SetSocket (socket);
+        SetSocket(socket);
     }
-  else
+    else
     {
-      NS_LOG_DEBUG ("Unable to create socket");
-      socket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> >());
-      socket = nullptr;
+        NS_LOG_DEBUG("Unable to create socket");
+        socket->SetRecvCallback(MakeNullCallback<void, Ptr<Socket>>());
+        socket = nullptr;
     }
 
-  return result;
+    return result;
 }
 
 int
-McpttChannel::Send (Ptr<Packet>  pkt)
+McpttChannel::Send(Ptr<Packet> pkt)
 {
-  NS_LOG_FUNCTION (this << pkt);
+    NS_LOG_FUNCTION(this << pkt);
 
-  Ptr<Socket> subject = GetSocket ();
+    Ptr<Socket> subject = GetSocket();
 
-  int result = subject->Send (pkt);
+    int result = subject->Send(pkt);
 
-  return result;
+    return result;
 }
 
 int
-McpttChannel::SendTo (Ptr<Packet> p, uint32_t flags, const Address &toAddress)
+McpttChannel::SendTo(Ptr<Packet> p, uint32_t flags, const Address& toAddress)
 {
-  NS_LOG_FUNCTION (this << p << flags << toAddress);
-  return GetSocket ()->SendTo (p, flags, toAddress);
+    NS_LOG_FUNCTION(this << p << flags << toAddress);
+    return GetSocket()->SendTo(p, flags, toAddress);
 }
 
 void
 McpttChannel::DoDispose()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  if (IsOpen ())
+    if (IsOpen())
     {
-      Close ();
+        Close();
     }
 
-  Object::DoDispose ();
+    Object::DoDispose();
 }
 
 void
-McpttChannel::ReceivePkt (Ptr<Packet>  pkt, Address from)
+McpttChannel::ReceivePkt(Ptr<Packet> pkt, Address from)
 {
-  NS_LOG_FUNCTION (this << &pkt << from);
+    NS_LOG_FUNCTION(this << &pkt << from);
 
-  if (!m_rxPktCb.IsNull ())
+    if (!m_rxPktCb.IsNull())
     {
-      m_rxPktCb (pkt, from);
+        m_rxPktCb(pkt, from);
     }
 }
 
 void
-McpttChannel::ReceivePkts (Ptr<Socket> socket)
+McpttChannel::ReceivePkts(Ptr<Socket> socket)
 {
-  NS_LOG_FUNCTION (this << &socket);
+    NS_LOG_FUNCTION(this << &socket);
 
-  Address from;
-  Ptr<Packet> pkt;
-  std::stringstream ssAddress;
-  std::stringstream ssPort;
+    Address from;
+    Ptr<Packet> pkt;
+    std::stringstream ssAddress;
+    std::stringstream ssPort;
 
-  while ((pkt = socket->RecvFrom (from)))
+    while ((pkt = socket->RecvFrom(from)))
     {
-      uint32_t pktSize = pkt->GetSize ();
-      if (InetSocketAddress::IsMatchingType (from))
+        uint32_t pktSize = pkt->GetSize();
+        if (InetSocketAddress::IsMatchingType(from))
         {
-          InetSocketAddress address = InetSocketAddress::ConvertFrom (from);
-          ssAddress << address.GetIpv4 ();
-          ssPort << (uint32_t)address.GetPort ();
+            InetSocketAddress address = InetSocketAddress::ConvertFrom(from);
+            ssAddress << address.GetIpv4();
+            ssPort << (uint32_t)address.GetPort();
         }
-      else if (Inet6SocketAddress::IsMatchingType (from))
+        else if (Inet6SocketAddress::IsMatchingType(from))
         {
-          Inet6SocketAddress address6 = Inet6SocketAddress::ConvertFrom (from);
-          ssAddress << address6.GetIpv6 ();
-          ssPort << (uint32_t)address6.GetPort ();
+            Inet6SocketAddress address6 = Inet6SocketAddress::ConvertFrom(from);
+            ssAddress << address6.GetIpv6();
+            ssPort << (uint32_t)address6.GetPort();
         }
-      else
+        else
         {
-          NS_ABORT_MSG ("Only Ipv4 and Ipv6 address are supported.");
+            NS_ABORT_MSG("Only Ipv4 and Ipv6 address are supported.");
         }
 
-      NS_LOG_INFO ("McpttChannel received " << pktSize << " byte packet from " << ssAddress.str () << ":" << ssPort.str () << ".");
-      ReceivePkt (pkt, from);
+        NS_LOG_INFO("McpttChannel received " << pktSize << " byte packet from " << ssAddress.str()
+                                             << ":" << ssPort.str() << ".");
+        ReceivePkt(pkt, from);
     }
 }
 
 Ptr<Socket>
 McpttChannel::GetSocket() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_socket;
+    return m_socket;
 }
 
 void
-McpttChannel::SetSocket (Ptr<Socket>  socket)
+McpttChannel::SetSocket(Ptr<Socket> socket)
 {
-  NS_LOG_FUNCTION (this << &socket);
+    NS_LOG_FUNCTION(this << &socket);
 
-  m_socket = socket;
+    m_socket = socket;
 }
 
 void
-McpttChannel::SetRxPktCb (const Callback<void, Ptr<Packet>, Address>  rxPktCb)
+McpttChannel::SetRxPktCb(const Callback<void, Ptr<Packet>, Address> rxPktCb)
 {
-  NS_LOG_FUNCTION (this << &rxPktCb);
+    NS_LOG_FUNCTION(this << &rxPktCb);
 
-  m_rxPktCb = rxPktCb;
+    m_rxPktCb = rxPktCb;
 }
 
 } // namespace psc
 } // namespace ns3
-

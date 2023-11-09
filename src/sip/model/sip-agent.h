@@ -19,13 +19,16 @@
 #ifndef SIP_AGENT_H
 #define SIP_AGENT_H
 
-#include <ns3/type-id.h>
-#include "sip-header.h"
 #include "sip-element.h"
+#include "sip-header.h"
 
-namespace ns3 {
+#include <ns3/type-id.h>
 
-namespace sip {
+namespace ns3
+{
+
+namespace sip
+{
 
 /**
  * \ingroup sip
@@ -37,24 +40,23 @@ namespace sip {
  */
 class SipAgent : public SipElement
 {
-public:
-  /**
-   * \brief Construct a SIP agent
-   */
-  SipAgent ();
-  /**
-   * \brief Destructor
-   */
-  virtual ~SipAgent ();
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId (void);
+  public:
+    /**
+     * \brief Construct a SIP agent
+     */
+    SipAgent();
+    /**
+     * \brief Destructor
+     */
+    virtual ~SipAgent();
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId(void);
 
-protected:
-  void DoDispose (void);
-
+  protected:
+    void DoDispose(void);
 };
 
 } // namespace sip

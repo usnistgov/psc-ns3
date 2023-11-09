@@ -29,6 +29,7 @@
 #include "phy-tx-stats-calculator.h"
 #include "radio-bearer-stats-calculator.h"
 #include "radio-bearer-stats-connector.h"
+#include "rrc-stats-calculator.h"
 
 #include <ns3/component-carrier-enb.h>
 #include <ns3/config.h>
@@ -44,7 +45,6 @@
 #include <ns3/net-device.h>
 #include <ns3/node-container.h>
 #include <ns3/node.h>
-#include <ns3/rrc-stats-calculator.h>
 #include <ns3/simulator.h>
 
 #include <cfloat>

@@ -25,7 +25,7 @@ The implementation is provided in the following files:
 An example may be found in: ``src/psc/examples/example-intel-http.cc``.
 
 This model represents a configurable HTTP client and
-corresponding HTTP server. The model is based on analysis of logs from ten 
+corresponding HTTP server. The model is based on analysis of logs from ten
 HTTP Squid proxy caches in the 2007 timeframe (HTTP/1.0 and HTTP/1.1 clients).
 The log data included requests from 60,000 clients.
 
@@ -56,10 +56,10 @@ response. The client then parses that response.
 Once all embedded objects have been received, the client will read the
 completed page for an amount of time defined by ``ReadTimeRvs``.
 
-All packets carry an application header, the ``IntelHttpHeader``. This 
-header has 3 fields. First, a ``Type`` field describing whether the packet 
-refers to an HTML object (the main object) or an embedded object. Next, a 
-numeric field (``NumberOfObjects``) with variable meaning, depending on the 
+All packets carry an application header, the ``IntelHttpHeader``. This
+header has 3 fields. First, a ``Type`` field describing whether the packet
+refers to an HTML object (the main object) or an embedded object. Next, a
+numeric field (``NumberOfObjects``) with variable meaning, depending on the
 type of the packet:
 
 * In an HTML Object Request, the field is meaningless.
@@ -72,9 +72,9 @@ type of the packet:
   the embedded object served within the list of embedded objects for the
   last HTML object requested.
 
-Finally, a ``Payload Size`` field, with the size of the Request message 
-(for Requests) or the size of the object served (for Responses). 
-  
+Finally, a ``Payload Size`` field, with the size of the Request message
+(for Requests) or the size of the object served (for Responses).
+
 
 Limitations
 +++++++++++
@@ -160,65 +160,65 @@ IntelHttpClient
 ---------------
 
 * ``Rx``:
-    General trace for receiving an application packet of any kind. If the 
+    General trace for receiving an application packet of any kind. If the
     application packet was fragmented, only one line will be traced when the
     last fragment is received. This trace source is invoked for all application
-    packets received (i.e., all the Responses). This source makes available the 
-    received application packet (with the ``IntelHttpHeader``) and the address 
-    of the node that sent the packet. As the ``IntelHttpHeader`` is included, 
-    trace sinks can make use of the ``RequestType`` and ``NumberOfObjects`` 
+    packets received (i.e., all the Responses). This source makes available the
+    received application packet (with the ``IntelHttpHeader``) and the address
+    of the node that sent the packet. As the ``IntelHttpHeader`` is included,
+    trace sinks can make use of the ``RequestType`` and ``NumberOfObjects``
     fields to match packet entries with the corresponding transmission trace.
 * ``RxMainObject``:
-    Trace for when an application-level packet containing a main object is fully 
-    received. This source is invoked once for each Response with an HTML object 
-    (main object). If the Response message was fragmented, the trace will be 
-    invoked only when the final fragment has been received. This source makes 
+    Trace for when an application-level packet containing a main object is fully
+    received. This source is invoked once for each Response with an HTML object
+    (main object). If the Response message was fragmented, the trace will be
+    invoked only when the final fragment has been received. This source makes
     available the received application packet (with the ``IntelHttpHeader``) and
-    the address of the node that sent the packet. As the ``IntelHttpHeader`` is 
+    the address of the node that sent the packet. As the ``IntelHttpHeader`` is
     included, trace sinks can make use of the ``RequestType`` and
     ``NumberOfObjects`` fields to match packet entries with the corresponding
     transmission trace.
- 
+
 * ``RxEmbeddedObject``:
-    Trace for when an application-level packet containing an embedded object is 
-    fully received. This source is invoked once for each Response for an 
-    embedded object. If the Response message was fragmented, the trace will be 
-    invoked only when the final fragment has been received. This source makes 
+    Trace for when an application-level packet containing an embedded object is
+    fully received. This source is invoked once for each Response for an
+    embedded object. If the Response message was fragmented, the trace will be
+    invoked only when the final fragment has been received. This source makes
     available the received application packet (with the ``IntelHttpHeader``) and
-    the address of the node that sent the packet. As the ``IntelHttpHeader`` is 
+    the address of the node that sent the packet. As the ``IntelHttpHeader`` is
     included, trace sinks can make use of the ``RequestType`` and
-    ``NumberOfObjects`` fields to match packet entries with the corresponding 
+    ``NumberOfObjects`` fields to match packet entries with the corresponding
     transmission trace.
- 
+
 
 * ``Tx``:
-    General trace for sending an application packet of any kind. This trace 
-    source is invoked for all application packets sent (i.e., all the Requests). 
-    This source makes available the application packet sent (with the 
-    ``IntelHttpHeader``). As the ``IntelHttpHeader`` is included, trace sinks 
-    can make use of the ``RequestType`` and ``NumberOfObjects`` fields to 
+    General trace for sending an application packet of any kind. This trace
+    source is invoked for all application packets sent (i.e., all the Requests).
+    This source makes available the application packet sent (with the
+    ``IntelHttpHeader``). As the ``IntelHttpHeader`` is included, trace sinks
+    can make use of the ``RequestType`` and ``NumberOfObjects`` fields to
     match packet entries with the corresponding reception trace.
 
 * ``TxRequestMainObject``:
-    Trace for when an application-level packet containing a Request for 
+    Trace for when an application-level packet containing a Request for
     a main object is sent.
-    This source is invoked once for each Request with an HTML object 
-    (main object). This source makes available the transmitted application 
-    packet (with the ``IntelHttpHeader``). As the ``IntelHttpHeader`` is 
-    included, trace sinks can make use of the ``RequestType`` and 
-    ``NumberOfObjects`` fields to 
+    This source is invoked once for each Request with an HTML object
+    (main object). This source makes available the transmitted application
+    packet (with the ``IntelHttpHeader``). As the ``IntelHttpHeader`` is
+    included, trace sinks can make use of the ``RequestType`` and
+    ``NumberOfObjects`` fields to
     match packet entries with the corresponding reception trace.
- 
-    
+
+
 * ``TxRequestEmbeddedObject``:
     Trace for when an application-level packet containing a Request for an
     embedded object is
     sent. This source is invoked once for each Request with an embedded object.
-    This source makes available the received application packet 
-    (with the ``IntelHttpHeader``). As the ``IntelHttpHeader`` is included, 
+    This source makes available the received application packet
+    (with the ``IntelHttpHeader``). As the ``IntelHttpHeader`` is included,
     trace sinks can make use of the ``RequestType`` and ``NumberOfObjects``
     fields to match packet entries with the corresponding reception trace.
- 
+
 
 * ``CacheHit``:
     Trace called when object on a page was cached and does not need to be
@@ -230,62 +230,62 @@ IntelHttpServer
 ---------------------------------
 
 * ``Rx``:
-    General trace for receiving an application packet of any kind. If the 
+    General trace for receiving an application packet of any kind. If the
     application packet was fragmented, only one line will be traced when the
     last fragment is received. This trace source is invoked for all application
-    packets received (i.e., all the Requests). This source makes available the 
-    received application packet (with the ``IntelHttpHeader``) and the address 
-    of the node that sent the packet. As the ``IntelHttpHeader`` is included, 
-    trace sinks can make use of the ``RequestType`` and ``NumberOfObjects`` 
+    packets received (i.e., all the Requests). This source makes available the
+    received application packet (with the ``IntelHttpHeader``) and the address
+    of the node that sent the packet. As the ``IntelHttpHeader`` is included,
+    trace sinks can make use of the ``RequestType`` and ``NumberOfObjects``
     fields to match packet entries with the corresponding transmission trace.
 * ``RxRequestMainObject``:
-    Trace for when an application-level packet containing a Request for a 
-    main object is fully 
-    received. This source is invoked once for each Request with an HTML object 
-    (main object). If the request message was fragmented, the trace will be 
-    invoked only when the final fragment has been received. This source makes 
+    Trace for when an application-level packet containing a Request for a
+    main object is fully
+    received. This source is invoked once for each Request with an HTML object
+    (main object). If the request message was fragmented, the trace will be
+    invoked only when the final fragment has been received. This source makes
     available the received application packet (with the ``IntelHttpHeader``) and
-    the address of the node that sent the packet. As the ``IntelHttpHeader`` is 
+    the address of the node that sent the packet. As the ``IntelHttpHeader`` is
     included, trace sinks can make use of the ``RequestType`` and
     ``NumberOfObjects`` fields to match packet entries with the corresponding
     transmission trace.
 * ``RxRequestEmbeddedObject``:
     Trace for when an application-level packet containing a Request for an
-    embedded object is 
-    fully received. This source is invoked once for each Request for an 
-    embedded object. If the Request message was fragmented, the trace will be 
-    invoked only when the final fragment has been received. This source makes 
+    embedded object is
+    fully received. This source is invoked once for each Request for an
+    embedded object. If the Request message was fragmented, the trace will be
+    invoked only when the final fragment has been received. This source makes
     available the received application packet (with the ``IntelHttpHeader``) and
-    the address of the node that sent the packet. As the ``IntelHttpHeader`` is 
+    the address of the node that sent the packet. As the ``IntelHttpHeader`` is
     included, trace sinks can make use of the ``RequestType`` and
-    ``NumberOfObjects`` fields to match packet entries with the corresponding 
+    ``NumberOfObjects`` fields to match packet entries with the corresponding
     transmission trace.
 
 * ``Tx``:
-    General trace for sending an application packet of any kind. This trace 
-    source is invoked for all application packets sent (i.e., all the 
-    Responses). 
-    This source makes available the application packet sent (with the 
-    ``IntelHttpHeader``). As the ``IntelHttpHeader`` is included, trace sinks 
-    can make use of the ``RequestType`` and ``NumberOfObjects`` fields to match 
+    General trace for sending an application packet of any kind. This trace
+    source is invoked for all application packets sent (i.e., all the
+    Responses).
+    This source makes available the application packet sent (with the
+    ``IntelHttpHeader``). As the ``IntelHttpHeader`` is included, trace sinks
+    can make use of the ``RequestType`` and ``NumberOfObjects`` fields to match
     packet entries with the corresponding reception trace.
 * ``TxMainObject``:
     Trace for when an application-level packet containing a main object is sent.
-    This source is invoked once for each Response with an HTML object 
-    (main object). This source makes available the transmitted application 
-    packet (with the ``IntelHttpHeader``). As the ``IntelHttpHeader`` is 
-    included, trace sinks can make use of the ``RequestType`` and 
-    ``NumberOfObjects`` fields to match 
+    This source is invoked once for each Response with an HTML object
+    (main object). This source makes available the transmitted application
+    packet (with the ``IntelHttpHeader``). As the ``IntelHttpHeader`` is
+    included, trace sinks can make use of the ``RequestType`` and
+    ``NumberOfObjects`` fields to match
     packet entries with the corresponding reception trace.
- 
+
 * ``TxEmbeddedObject``:
     Trace for when an application-level packet containing an embedded object is
     sent. This source is invoked once for each Response with an embedded object.
-    This source makes available the received application packet 
-    (with the ``IntelHttpHeader``). As the ``IntelHttpHeader`` is included, 
-    trace sinks can make use of the ``RequestType`` and ``NumberOfObjects`` 
+    This source makes available the received application packet
+    (with the ``IntelHttpHeader``). As the ``IntelHttpHeader`` is included,
+    trace sinks can make use of the ``RequestType`` and ``NumberOfObjects``
     fields to match packet entries with the corresponding reception trace.
- 
+
 
 -----
 Tests
@@ -340,47 +340,47 @@ A simple usage example is provided in:
 
 The following attributes are exposed for users to change but are set to
 defaults that match the Intel cache logs, so in practice, most users will
-not change these values: 
+not change these values:
 
 * ``HtmlSizeRvs``, ``HtmlSizeLowBound``, and ``HtmlSizeHighBound``.
-* ``EmbeddedObjectAmountRvs``, ``EmbeddedObjectAmountLowBound``, 
+* ``EmbeddedObjectAmountRvs``, ``EmbeddedObjectAmountLowBound``,
     and ``EmbeddedObjectAmountHighBound``.
-* ``EmbeddedObjectIatRvs``, ``EmbeddedObjectIatLowBound``, 
+* ``EmbeddedObjectIatRvs``, ``EmbeddedObjectIatLowBound``,
     and ``EmbeddedObjectIatHighBound``.
-* ``EmbeddedObjectSizeRvs``, ``EmbeddedObjectSizeLowBound``, 
+* ``EmbeddedObjectSizeRvs``, ``EmbeddedObjectSizeLowBound``,
     and ``EmbeddedObjectSizeHighBound``.
 * ``RequestSizeRvs``.
 * ``ParseTimeRvs``, ``ParseTimeLowBound``, and ``ParseTimeHighBound``.
 * ``ReadTimeRvs``, ``ReadTimeLowBound``, and ``ReadTimeHighBound``.
 
-On the other hand the following attributes are more likely to be changed 
-by users: 
+On the other hand the following attributes are more likely to be changed
+by users:
 
-* ``RemoteAddress``, ``RemotePort``, ``Port``: 
+* ``RemoteAddress``, ``RemotePort``, ``Port``:
     Besides the basic configuration
-    match between client and server regarding the connection address and port, 
+    match between client and server regarding the connection address and port,
     as the server model only supports a single client, when configuring scenarios
-    with multiple clients special attention must be paid to ensure there are 
-    enough servers for all the clients, and that each of them use a unique 
+    with multiple clients special attention must be paid to ensure there are
+    enough servers for all the clients, and that each of them use a unique
     connection string (address and port).
-* ``CacheThreshold``, and ``CacheRvs``: 
-    Intel's whitepaper defines the cache 
-    mechanism but it does not specify the parameters (threshold or 
-    distribution to use). Based on this, the model provides default values for 
-    both parameters (``CacheThreshold`` and ``CacheRvs``) that are functional 
-    (a 16 % cache hit ratio on the client fits a small cache size with diverse 
-    (i.e., multiple different sites) browsing). However, these values may not 
-    fit all use cases (e.g., local caches in corporate environments where 
-    browsing is restricted to intranet pages that share the same structure, 
-    images, etc. can easily reach 90 % hit ratios). 
-* ``SocketBufferSize``: 
+* ``CacheThreshold``, and ``CacheRvs``:
+    Intel's whitepaper defines the cache
+    mechanism but it does not specify the parameters (threshold or
+    distribution to use). Based on this, the model provides default values for
+    both parameters (``CacheThreshold`` and ``CacheRvs``) that are functional
+    (a 16 % cache hit ratio on the client fits a small cache size with diverse
+    (i.e., multiple different sites) browsing). However, these values may not
+    fit all use cases (e.g., local caches in corporate environments where
+    browsing is restricted to intranet pages that share the same structure,
+    images, etc. can easily reach 90 % hit ratios).
+* ``SocketBufferSize``:
     The models configure a socket buffer size set to the
-    maximum size by default (2,147,483,647 Bytes), to avoid the case where the 
-    server generates embedded objects with sizes larger than the available socket 
-    size. The maximum buffer size allows us to avoid dropping these packets and 
-    distorting the distribution configured by the user (or proposed by Intel). 
-    However, depending on the area of study and the interests of the users running 
-    the simulations, this may lead to unrealistic results, so the parameter is 
+    maximum size by default (2,147,483,647 Bytes), to avoid the case where the
+    server generates embedded objects with sizes larger than the available socket
+    size. The maximum buffer size allows us to avoid dropping these packets and
+    distorting the distribution configured by the user (or proposed by Intel).
+    However, depending on the area of study and the interests of the users running
+    the simulations, this may lead to unrealistic results, so the parameter is
     available for configuration as needed (with the caveat that the user will
     need to ensure that the distribution chosen for the Embedded Object sizes
     does not generate values that may overflow the buffer).

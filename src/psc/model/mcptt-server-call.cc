@@ -29,35 +29,38 @@
  * employees is not subject to copyright protection within the United States.
  */
 
-#include <limits>
+#include "mcptt-server-call.h"
+
+#include "mcptt-call-msg.h"
+#include "mcptt-channel.h"
+#include "mcptt-floor-msg.h"
+#include "mcptt-media-msg.h"
+#include "mcptt-on-network-floor-arbitrator.h"
+#include "mcptt-server-app.h"
+#include "mcptt-server-call-machine.h"
+
+#include <ns3/boolean.h>
 #include <ns3/callback.h>
+#include <ns3/fatal-error.h>
 #include <ns3/log.h>
 #include <ns3/object.h>
 #include <ns3/packet.h>
 #include <ns3/pointer.h>
 #include <ns3/ptr.h>
-#include <ns3/type-id.h>
-#include <ns3/fatal-error.h>
-#include <ns3/boolean.h>
 #include <ns3/sip-header.h>
+#include <ns3/type-id.h>
 
-#include "mcptt-call-msg.h"
-#include "mcptt-channel.h"
-#include "mcptt-on-network-floor-arbitrator.h"
-#include "mcptt-floor-msg.h"
-#include "mcptt-media-msg.h"
-#include "mcptt-server-app.h"
+#include <limits>
 
-#include "mcptt-server-call.h"
-#include "mcptt-server-call-machine.h"
+namespace ns3
+{
 
-namespace ns3 {
+NS_LOG_COMPONENT_DEFINE("McpttServerCall");
 
-NS_LOG_COMPONENT_DEFINE ("McpttServerCall");
+namespace psc
+{
 
-namespace psc {
-
-NS_OBJECT_ENSURE_REGISTERED (McpttServerCall);
+NS_OBJECT_ENSURE_REGISTERED(McpttServerCall);
 
 TypeId
 McpttServerCall::GetTypeId()
@@ -95,86 +98,90 @@ McpttServerCall::McpttServerCall()
       m_originator(std::numeric_limits<uint32_t>::max()),
       m_owner(nullptr)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 McpttServerCall::~McpttServerCall()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
-McpttServerCall::SetCallId (uint16_t callId)
+McpttServerCall::SetCallId(uint16_t callId)
 {
-  NS_LOG_DEBUG (this << callId);
-  m_callId = callId;
+    NS_LOG_DEBUG(this << callId);
+    m_callId = callId;
 }
 
 uint16_t
 McpttServerCall::GetCallId() const
 {
-  return m_callId;
+    return m_callId;
 }
 
 bool
 McpttServerCall::IsAmbientListening() const
 {
-  return m_ambientListening;
+    return m_ambientListening;
 }
 
 bool
 McpttServerCall::IsTemporaryGroup() const
 {
-  return m_temporaryGroup;
+    return m_temporaryGroup;
 }
 
 void
-McpttServerCall::ReceiveSipMessage (Ptr<Packet> pkt, const sip::SipHeader& hdr, sip::SipProxy::TransactionState state)
+McpttServerCall::ReceiveSipMessage(Ptr<Packet> pkt,
+                                   const sip::SipHeader& hdr,
+                                   sip::SipProxy::TransactionState state)
 {
-  NS_LOG_FUNCTION (this << pkt << hdr << state);
-  // SIP layer removes SIP header; add it back for tracing
-  Ptr<Packet> pktCopy = pkt->Copy ();
-  pktCopy->AddHeader (hdr);
-  GetOwner ()->TraceMessageReceive (GetCallId (), pktCopy, hdr.GetInstanceTypeId ());
-  GetCallMachine ()->ReceiveCallPacket (pkt, hdr);
+    NS_LOG_FUNCTION(this << pkt << hdr << state);
+    // SIP layer removes SIP header; add it back for tracing
+    Ptr<Packet> pktCopy = pkt->Copy();
+    pktCopy->AddHeader(hdr);
+    GetOwner()->TraceMessageReceive(GetCallId(), pktCopy, hdr.GetInstanceTypeId());
+    GetCallMachine()->ReceiveCallPacket(pkt, hdr);
 }
 
 void
-McpttServerCall::ReceiveSipEvent (const char* event, sip::SipProxy::TransactionState state)
+McpttServerCall::ReceiveSipEvent(const char* event, sip::SipProxy::TransactionState state)
 {
-  NS_LOG_FUNCTION (this << event << state);
-  // Not yet defined
+    NS_LOG_FUNCTION(this << event << state);
+    // Not yet defined
 }
 
 void
-McpttServerCall::SendCallControlPacket (Ptr<Packet> pkt, const Address& toAddr, const sip::SipHeader &hdr)
+McpttServerCall::SendCallControlPacket(Ptr<Packet> pkt,
+                                       const Address& toAddr,
+                                       const sip::SipHeader& hdr)
 {
-  NS_LOG_FUNCTION (this << pkt << toAddr << hdr);
-  if (m_owner->IsRunning ())
+    NS_LOG_FUNCTION(this << pkt << toAddr << hdr);
+    if (m_owner->IsRunning())
     {
-      m_owner->SendCallControlPacket (pkt, toAddr);
-      GetOwner ()->TraceMessageSend (GetCallId (), pkt, hdr.GetInstanceTypeId ());
+        m_owner->SendCallControlPacket(pkt, toAddr);
+        GetOwner()->TraceMessageSend(GetCallId(), pkt, hdr.GetInstanceTypeId());
     }
-  else
+    else
     {
-      NS_LOG_DEBUG ("Not sending message because McpttServerApp is not running");
+        NS_LOG_DEBUG("Not sending message because McpttServerApp is not running");
     }
 }
 
 void
 McpttServerCall::DoDispose()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  if (GetArbitrator ())
+    if (GetArbitrator())
     {
-      GetArbitrator ()->Dispose ();
-      SetArbitrator(nullptr);
+        GetArbitrator()->Dispose();
+        SetArbitrator(nullptr);
     }
-  if (GetCallMachine ())
+    if (GetCallMachine())
     {
-      GetCallMachine ()->Dispose ();
-      SetCallMachine(nullptr);
+        GetCallMachine()->Dispose();
+        SetCallMachine(nullptr);
     }
     SetOwner(nullptr);
 
@@ -184,81 +191,80 @@ McpttServerCall::DoDispose()
 Ptr<McpttServerCallMachine>
 McpttServerCall::GetCallMachine() const
 {
-  return m_callMachine;
+    return m_callMachine;
 }
 
 Ptr<McpttOnNetworkFloorArbitrator>
 McpttServerCall::GetArbitrator() const
 {
-  return m_arbitrator;
+    return m_arbitrator;
 }
 
 Ptr<McpttServerApp>
 McpttServerCall::GetOwner() const
 {
-  return m_owner;
+    return m_owner;
 }
 
 void
-McpttServerCall::SetCallMachine (Ptr<McpttServerCallMachine>  callMachine)
+McpttServerCall::SetCallMachine(Ptr<McpttServerCallMachine> callMachine)
 {
-  NS_LOG_FUNCTION (this << &callMachine);
+    NS_LOG_FUNCTION(this << &callMachine);
 
-  if (callMachine)
+    if (callMachine)
     {
-      callMachine->SetServerCall (this);
+        callMachine->SetServerCall(this);
     }
 
-  m_callMachine = callMachine;
+    m_callMachine = callMachine;
 }
 
 void
-McpttServerCall::SetArbitrator (Ptr<McpttOnNetworkFloorArbitrator>  arbitrator)
+McpttServerCall::SetArbitrator(Ptr<McpttOnNetworkFloorArbitrator> arbitrator)
 {
-  NS_LOG_FUNCTION (this << &arbitrator);
+    NS_LOG_FUNCTION(this << &arbitrator);
 
-  if (arbitrator)
+    if (arbitrator)
     {
-      arbitrator->SetOwner (this);
+        arbitrator->SetOwner(this);
     }
 
-  m_arbitrator = arbitrator;
+    m_arbitrator = arbitrator;
 }
 
 void
-McpttServerCall::SetOwner (Ptr<McpttServerApp> owner)
+McpttServerCall::SetOwner(Ptr<McpttServerApp> owner)
 {
-  NS_LOG_FUNCTION (this << owner);
+    NS_LOG_FUNCTION(this << owner);
 
-  m_owner = owner;
+    m_owner = owner;
 }
 
 void
-McpttServerCall::SetClientUserIds (std::vector<uint32_t> clientUserIds)
+McpttServerCall::SetClientUserIds(std::vector<uint32_t> clientUserIds)
 {
-  NS_LOG_FUNCTION (this);
-  m_clientUserIds = clientUserIds;
+    NS_LOG_FUNCTION(this);
+    m_clientUserIds = clientUserIds;
 }
 
 std::vector<uint32_t>
 McpttServerCall::GetClientUserIds() const
 {
-  return m_clientUserIds;
+    return m_clientUserIds;
 }
 
 void
-McpttServerCall::SetOriginator (uint32_t originator)
+McpttServerCall::SetOriginator(uint32_t originator)
 {
-  NS_LOG_FUNCTION (this << originator);
-  m_originator = originator;
+    NS_LOG_FUNCTION(this << originator);
+    m_originator = originator;
 }
 
 uint32_t
 McpttServerCall::GetOriginator() const
 {
-  return m_originator;
+    return m_originator;
 }
 
 } // namespace psc
 } // namespace ns3
-

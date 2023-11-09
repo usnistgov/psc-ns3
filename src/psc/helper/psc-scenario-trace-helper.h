@@ -36,15 +36,16 @@
 #ifndef PSC_SCENARIO_TRACE_HELPER_H
 #define PSC_SCENARIO_TRACE_HELPER_H
 
-#include "ns3/packet.h"
-#include "ns3/node-container.h"
 #include "ns3/application-container.h"
+#include "ns3/node-container.h"
 #include "ns3/output-stream-wrapper.h"
-
+#include "ns3/packet.h"
 #include "ns3/psc-scenario-definition.h"
 
-namespace ns3 {
-namespace psc {
+namespace ns3
+{
+namespace psc
+{
 
 /**
  * \ingroup pscincident
@@ -55,120 +56,119 @@ namespace psc {
 
 class PscScenarioTraceHelper : public Object
 {
-public:
-  /**
-   * Default constructor
-   */
-  PscScenarioTraceHelper ();
+  public:
+    /**
+     * Default constructor
+     */
+    PscScenarioTraceHelper();
 
-  /**
-   * Constructor for a given scenario
-   * \param scenario The scenario definition
-   */
-  PscScenarioTraceHelper (Ptr<PscScenarioDefinition> scenarioDefinition);
+    /**
+     * Constructor for a given scenario
+     * \param scenario The scenario definition
+     */
+    PscScenarioTraceHelper(Ptr<PscScenarioDefinition> scenarioDefinition);
 
-  /**
-   * Default destructor
-   */
-  ~PscScenarioTraceHelper ();
+    /**
+     * Default destructor
+     */
+    ~PscScenarioTraceHelper();
 
-  /**
-   * Get the TypeId for this class.
-   * \return The object TypeId
-   */
-  static TypeId GetTypeId (void);
+    /**
+     * Get the TypeId for this class.
+     * \return The object TypeId
+     */
+    static TypeId GetTypeId(void);
 
-  /**
-   * Enable all the traces of the PscScenarioDefinition
-   */
-  void EnableScenarioTraces ();
+    /**
+     * Enable all the traces of the PscScenarioDefinition
+     */
+    void EnableScenarioTraces();
 
-  /**
-   * Print the information about areas defined in the incident
-   */
-  void EnableAreasTrace ();
+    /**
+     * Print the information about areas defined in the incident
+     */
+    void EnableAreasTrace();
 
-  /**
-   * Print the information about the structures defined in the incident
-   */
-  void EnableStructuresTrace ();
+    /**
+     * Print the information about the structures defined in the incident
+     */
+    void EnableStructuresTrace();
 
-  /**
-   * Print the information about the nodes defined in the incident
-   */
-  void EnableNodesTrace ();
+    /**
+     * Print the information about the nodes defined in the incident
+     */
+    void EnableNodesTrace();
 
-  /**
-   * Print the information about the events defined in the incident
-   */
-  void EnableEventsTrace ();
+    /**
+     * Print the information about the events defined in the incident
+     */
+    void EnableEventsTrace();
 
-  /**
-   * Print the information about the simulation time.
-   *
-   * \param reportTime The interval at which to report the time.
-   */
-  void EnableTimeTrace (const Time& reportTime);
+    /**
+     * Print the information about the simulation time.
+     *
+     * \param reportTime The interval at which to report the time.
+     */
+    void EnableTimeTrace(const Time& reportTime);
 
-protected:
-  /**
-   * Traces the simulation time.
-   *
-   * \param reportTime The interval at which to report the time.
-   */
-  void TraceTime (const Time& reportTime);
+  protected:
+    /**
+     * Traces the simulation time.
+     *
+     * \param reportTime The interval at which to report the time.
+     */
+    void TraceTime(const Time& reportTime);
 
+  private:
+    /**
+     * The scenario helper
+     * @param outputPrecision
+     */
+    Ptr<PscScenarioDefinition> m_scenarioDefinition;
 
-private:
-  /**
-   * The scenario helper
-   * @param outputPrecision
-   */
-  Ptr<PscScenarioDefinition> m_scenarioDefinition;
+    /**
+     * OutputStreamWrapper for writing the areas' coordinates.
+     */
+    Ptr<OutputStreamWrapper> m_areasOutputStreamWrapper;
+    /**
+     * OutputStreamWrapper for writing the structures' coordinates.
+     */
+    Ptr<OutputStreamWrapper> m_structuresOutputStreamWrapper;
+    /**
+     * OutputStreamWrapper for writing the nodes' information.
+     */
+    Ptr<OutputStreamWrapper> m_nodesOutputStreamWrapper;
+    /**
+     * OutputStreamWrapper for writing the events' information.
+     */
+    Ptr<OutputStreamWrapper> m_eventsOutputStreamWrapper;
+    /**
+     * OutputStreamWrapper for writing the scenario configuration.
+     */
+    Ptr<OutputStreamWrapper> m_configOutputStreamWrapper;
+    /**
+     * OutputStreamWrapper for writing the current second of the simulation.
+     */
+    Ptr<OutputStreamWrapper> m_timeOutputStreamWrapper;
 
-  /**
-  * OutputStreamWrapper for writing the areas' coordinates.
-  */
-  Ptr<OutputStreamWrapper> m_areasOutputStreamWrapper;
-  /**
-   * OutputStreamWrapper for writing the structures' coordinates.
-   */
-  Ptr<OutputStreamWrapper> m_structuresOutputStreamWrapper;
-  /**
-   * OutputStreamWrapper for writing the nodes' information.
-   */
-  Ptr<OutputStreamWrapper> m_nodesOutputStreamWrapper;
-  /**
-   * OutputStreamWrapper for writing the events' information.
-   */
-  Ptr<OutputStreamWrapper> m_eventsOutputStreamWrapper;
-  /**
-   * OutputStreamWrapper for writing the scenario configuration.
-   */
-  Ptr<OutputStreamWrapper> m_configOutputStreamWrapper;
-  /**
-   * OutputStreamWrapper for writing the current second of the simulation.
-   */
-  Ptr<OutputStreamWrapper> m_timeOutputStreamWrapper;
+    /**
+     * Set the precision to use when printing double numbers.
+     *
+     * \param outputPrecision The precision to use
+     */
+    void SetOutputPrecision(uint16_t outputPrecision);
+    /**
+     * Get the precision to use when printing double numbers.
+     *
+     * \return The precision.
+     */
+    uint16_t GetOutputPrecision(void) const;
 
-  /**
-   * Set the precision to use when printing double numbers.
-   *
-   * \param outputPrecision The precision to use
-   */
-  void SetOutputPrecision (uint16_t outputPrecision);
-  /**
-   * Get the precision to use when printing double numbers.
-   *
-   * \return The precision.
-   */
-  uint16_t GetOutputPrecision (void) const;
-
-/**
- * Precision to use when printing decimal numbers. This value includes the digits
- * of the integer part.
- */
-  static uint16_t m_outputPrecision;
+    /**
+     * Precision to use when printing decimal numbers. This value includes the digits
+     * of the integer part.
+     */
+    static uint16_t m_outputPrecision;
 
 }; // PscScenarioTraceHelper
 
@@ -176,4 +176,3 @@ private:
 } // namespace ns3
 
 #endif // PSC_SCENARIO_TRACE_HELPER_H
-

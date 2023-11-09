@@ -1250,7 +1250,9 @@ LteUeRrc::DoRecvSystemInformation(LteRrcSap::SystemInformation msg)
                     {
                         pool = CreateObject<SidelinkRxCommResourcePool>();
                         pool->SetPool(msg.sib18.commConfig.commRxPool.pools[i]);
-                        m_sidelinkConfiguration->rxPools.emplace_back(msg.sib18.commConfig.commRxPool.pools[i], pool);
+                        m_sidelinkConfiguration->rxPools.emplace_back(
+                            msg.sib18.commConfig.commRxPool.pools[i],
+                            pool);
                     }
                     pools.push_back(pool);
                 }
@@ -1313,7 +1315,9 @@ LteUeRrc::DoRecvSystemInformation(LteRrcSap::SystemInformation msg)
                     {
                         pool = CreateObject<SidelinkRxDiscResourcePool>();
                         pool->SetPool(msg.sib19.discConfig.discRxPool.pools[i]);
-                        m_sidelinkConfiguration->monitorPools.emplace_back(msg.sib19.discConfig.discRxPool.pools[i], pool);
+                        m_sidelinkConfiguration->monitorPools.emplace_back(
+                            msg.sib19.discConfig.discRxPool.pools[i],
+                            pool);
                     }
                     pools.push_back(pool);
                 }
@@ -5596,8 +5600,7 @@ LteUeRrc::DoReportUeSdRsrpMeasurements(LteUeCphySapUser::UeSdRsrpMeasurementsPar
     case IDLE_RANDOM_ACCESS:
         NS_LOG_INFO("Considering out of network");
         // Obtain parameters from preconfiguration
-        if (m_sidelinkConfiguration->GetSlPreconfiguration()
-                .preconfigRelay.haveReselectionInfoOoc)
+        if (m_sidelinkConfiguration->GetSlPreconfiguration().preconfigRelay.haveReselectionInfoOoc)
         {
             layer3FilterCoefficient = m_sidelinkConfiguration->GetSlPreconfiguration()
                                           .preconfigRelay.reselectionInfoOoc.filterCoefficient;

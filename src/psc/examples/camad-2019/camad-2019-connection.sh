@@ -44,7 +44,7 @@ trap "kill 0" EXIT #If you kill this process, it will kill all childs too (e.g.,
 #    E.g., using the command:                                                 #
 #       $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:`pwd`/build/lib             #
 # 2. Copy the scenario file (camad-2019-connection.cc) to the 'scratch' folder#
-# 3. Copy this script to the ns3 root folder                                  #  
+# 3. Copy this script to the ns3 root folder                                  #
 #                                                                             #
 # Running the evaluation:                                                     #
 # 1. Set the number of trials/run per set you desire to run by modifying the  #
@@ -74,8 +74,8 @@ slPeriod=40.0 #ms
 
 function RunEvaluation {
   evalNumber=$1
-  
-  simTime="40" #s 
+
+  simTime="40" #s
 
   if [ "$evalNumber" -eq 1 ];then
     ###Eval 1: CAMAD 2019 paper - Impact of Timer T4100 (3 * 16 * 2 = 96 sets)
@@ -104,10 +104,10 @@ function RunEvaluation {
     remoteDCRqMaxArray="0 4" #2 values
     outputDirBase="output_camad-2019-connection_Example"
 
-  else 
+  else
     echo "ERROR! Invalid evaluation number"
     exit
-  fi 
+  fi
 
   echo -e "Starting Evaluation... \n   Output: $outputDirBase"
 
@@ -119,11 +119,11 @@ function RunEvaluation {
   do
     for nRemoteUes in $nRemoteUesArray
     do
-    
+
       for remoteDCRqMax in $remoteDCRqMaxArray
       do
         baseFor_remoteT4100="nRemoteUes-${nRemoteUes}_relayTraffic-${relayTraffic}_relayTrafficOffMean-${relayTrafficOffMean}_remoteDCRqMax-${remoteDCRqMax}"
-        
+
         for metric in $metricArray
         do
           echo -e "remoteT4100\tmean\tCI" > ${outputDirBase}/${baseFor_remoteT4100}_remoteT4100-vs-${metric}_CI.txt
@@ -134,7 +134,7 @@ function RunEvaluation {
           outputDirSet="${outputDirBase}/set_nRemoteUes-${nRemoteUes}_relayTraffic-${relayTraffic}_relayTrafficOffMean-${relayTrafficOffMean}_remoteT4100-${remoteT4100}_remoteDCRqMax-${remoteDCRqMax}"
           mkdir -p $outputDirSet
 
-          parameters="--simTime=${simTime} --nRemoteUes=${nRemoteUes} --relayTraffic=${relayTraffic} --relayTrafficOffMean=${relayTrafficOffMean} --remoteT4100=${remoteT4100} --remoteDCRqMax=${remoteDCRqMax}" 
+          parameters="--simTime=${simTime} --nRemoteUes=${nRemoteUes} --relayTraffic=${relayTraffic} --relayTrafficOffMean=${relayTrafficOffMean} --remoteT4100=${remoteT4100} --remoteDCRqMax=${remoteDCRqMax}"
 
           RunSet $outputDirSet "$parameters" #&
 
@@ -159,7 +159,7 @@ function RunEvaluation {
 
   remoteT4100RealArray=( $remoteT4100Array )
   arrayLenght=${#remoteT4100RealArray[@]}
-  if [ "$arrayLenght" -gt 1 ];then    
+  if [ "$arrayLenght" -gt 1 ];then
     echo "Generating remoteT4100-vs-metrics plot... "
     #Plotting for every remoteDCRqMax: Metric vs T4100, one curve per nRemoteUes
     for relayTrafficOffMean in $relayTrafficOffMeanArray
@@ -174,14 +174,14 @@ function RunEvaluation {
           for nRemoteUes in $nRemoteUesArray
           do
             baseFor_remoteT4100="nRemoteUes-${nRemoteUes}_relayTraffic-${relayTraffic}_relayTrafficOffMean-${relayTrafficOffMean}_remoteDCRqMax-${remoteDCRqMax}"
-            
+
             stringToPlotForDCRqMaxAndMetric=" $stringToPlotForDCRqMaxAndMetric \"${outputDirBase}/${baseFor_remoteT4100}_remoteT4100-vs-${metric}_CI.txt\" using 1:2:3 with yerr ps 2 lc $lc title \"${nRemoteUes} Remote UEs, Ntrx = ${remoteDCRqMax} \", '' using 1:2 with lines lc $lc dt $dt notitle,"
             lc=$(($lc+1))
-          done #for nRemoteUes in $nRemoteUesArray      
+          done #for nRemoteUes in $nRemoteUesArray
           dt=$(($dt+1))
         done #remoteDCRqMax in $remoteDCRqMaxArray
-        
-        echo "reset 
+
+        echo "reset
               set terminal pngcairo nocrop enhanced size 1280,800 font 'Helvetica,16
               set output \"${outputDirBase}/set_relayTraffic-${relayTraffic}_relayTrafficOffMean-${relayTrafficOffMean}_Plot_remoteT4100-vs-${metric}_CI.png\"
               set title \" Parameters: relayTraffic: ${relayTraffic} \"
@@ -190,15 +190,15 @@ function RunEvaluation {
               set yrange [0:]
               set key outside right center
               plot $stringToPlotForDCRqMaxAndMetric " | gnuplot
-                  
+
       done #for metric in $metricArray
     done #for relayTrafficOffMean in $relayTrafficOffMeanArray
-  fi #if [ "$arrayLenght" -gt 1 ];then    
+  fi #if [ "$arrayLenght" -gt 1 ];then
 
 
   relayTrafficOffMeanRealArray=( $relayTrafficOffMeanArray )
   arrayLenght=${#relayTrafficOffMeanRealArray[@]}
-  if [ "$arrayLenght" -gt 1 ];then    
+  if [ "$arrayLenght" -gt 1 ];then
     echo "Generating relayTrafficOffMean-vs-metrics plot... "
     #Ploting for every pair: nRemoteUes-remoteT4100, Metric vs relayTrafficOffMean, one curve per remoteDCRqMax
     # Create One file per tuple {nRemoteUes,remoteT4100,remoteDCRqMax} containing $1=relayTrafficOffMean $2,3=Metric
@@ -209,26 +209,26 @@ function RunEvaluation {
         for remoteDCRqMax in $remoteDCRqMaxArray
         do
           baseFor_relayTrafficOffMean="nRemoteUes-${nRemoteUes}_relayTraffic-${relayTraffic}_remoteT4100-${remoteT4100}_remoteDCRqMax-${remoteDCRqMax}"
-        
+
           for metric in $metricArray
           do
             echo -e "relayTrafficOffMean4100\tmean\tCI" > ${outputDirBase}/${baseFor_relayTrafficOffMean}_relayTrafficOffMean-vs-${metric}_CI.txt
           done #for metric in $metricArray
-          
+
           for relayTrafficOffMean in $relayTrafficOffMeanArray
           do
             outputDirSet="${outputDirBase}/set_nRemoteUes-${nRemoteUes}_relayTraffic-${relayTraffic}_relayTrafficOffMean-${relayTrafficOffMean}_remoteT4100-${remoteT4100}_remoteDCRqMax-${remoteDCRqMax}"
-            
+
             for metric in $metricArray
             do
-              #Access to the value 
+              #Access to the value
               awk -v relayTrafficOffMean=${relayTrafficOffMean} '{if (relayTrafficOffMean == 100) { ULOcupancy=0; } else {ULOcupancy=(1/relayTrafficOffMean)*100} print ULOcupancy"\t"$0; }' $outputDirSet/${metric}_CI.txt >> ${outputDirBase}/${baseFor_relayTrafficOffMean}_relayTrafficOffMean-vs-${metric}_CI.txt
-              
+
             done #for metric in $metricArray
           done #for relayTrafficOffMean in $relayTrafficOffMeanArray
-          
+
         done #for remoteDCRqMax in $remoteDCRqMaxArray
-      done #for remoteT4100 in $remoteT4100Array  
+      done #for remoteT4100 in $remoteT4100Array
     done #for nRemoteUes in $nRemoteUesArray
 
 
@@ -246,10 +246,10 @@ function RunEvaluation {
             baseFor_relayTrafficOffMean="nRemoteUes-${nRemoteUes}_relayTraffic-${relayTraffic}_remoteT4100-${remoteT4100}_remoteDCRqMax-${remoteDCRqMax}"
             stringToPlotForRelayTrafficOffMeanAndMetric=" $stringToPlotForRelayTrafficOffMeanAndMetric \"${outputDirBase}/${baseFor_relayTrafficOffMean}_relayTrafficOffMean-vs-${metric}_CI.txt\" using 1:2:3 with yerr ps 2 lc $lc title \"remoteDCRqMax ${remoteDCRqMax}\", '' using 1:2 with lines lc $lc notitle,"
             lc=$(($lc+1))
-          
+
           done #for nRemoteUes in $nRemoteUesArray
-          #echo "$stringToPlotForRelayTrafficOffMeanAndMetric"        
-          echo "reset 
+          #echo "$stringToPlotForRelayTrafficOffMeanAndMetric"
+          echo "reset
                 set terminal pngcairo nocrop enhanced size 1280,800 font 'Helvetica,16
                 set output \"${outputDirBase}/set_nRemoteUes-${nRemoteUes}_relayTraffic-${relayTraffic}_remoteT4100-${remoteT4100}_Plot_relayTrafficOffMean-vs-${metric}_CI.png\"
                 set title \" Parameters \n nRemoteUes: ${nRemoteUes}, relayTraffic:${relayTraffic}, \n  remoteT4100: ${remoteT4100} ms\"
@@ -259,40 +259,40 @@ function RunEvaluation {
                 set key outside right center
                 plot $stringToPlotForRelayTrafficOffMeanAndMetric " | gnuplot
         done #for metric in $metricArray
-     done #for remoteT4100 in $remoteT4100Array  
+     done #for remoteT4100 in $remoteT4100Array
     done #for nRemoteUes in $nRemoteUesArray
-  fi #if [ "$arrayLenght" -gt 1 ];then    
+  fi #if [ "$arrayLenght" -gt 1 ];then
 
   echo "Done."
 
-} #function RunEvaluation 
+} #function RunEvaluation
 
 function RunSet {
   outputDirSet=$1
   parameters=$2
-  echo -e "Running Set: $outputDirSet" 
+  echo -e "Running Set: $outputDirSet"
   for ((runN=$startRun; runN<=$endRun; runN++))
-  do  
+  do
     outputDir="${outputDirSet}/run${runN}"
     mkdir -p $outputDir
     cd $outputDir
     simParameters="$parameters --RngRun=${runN}"
 
-    echo -e "Running Trial: $outputDir" 
-    echo -e "outputDir: $outputDir \n simParameters: $simParameters" > info.txt 
-    
+    echo -e "Running Trial: $outputDir"
+    echo -e "outputDir: $outputDir \n simParameters: $simParameters" > info.txt
+
     #Run the simulation
     ../../../build/scratch/$scenario $simParameters &
 
     n=$(($runN % $nThreads))
     if [ "$n" -eq 0 ];then
-	     wait
+         wait
     fi
- 
+
     cd ../../.. #ns3/baseDir/SetDir/RunDir   Important!
 
   done # for ((runN=$startRun; runN<=$endRun; runN++))
-} #function RunSet 
+} #function RunSet
 
 
 
@@ -300,45 +300,45 @@ function ProcessSet {
 
   outputDirSet=$1
   nRemoteUes=$2
-   
+
   sep="/set_"
-  setParamsString="${outputDirSet#*$sep}"  
-  echo -e "Processing Set: $outputDirSet nRemoteUes: $nRemoteUes" 
- 
+  setParamsString="${outputDirSet#*$sep}"
+  echo -e "Processing Set: $outputDirSet nRemoteUes: $nRemoteUes"
+
   #Obtain run metrics
   for ((runN=$startRun; runN<=$endRun; runN++))
-  do  
+  do
     outputDir="${outputDirSet}/run${runN}"
 
     cd $outputDir
 
-    echo -e "Processing Trial: $outputDir" 
+    echo -e "Processing Trial: $outputDir"
 
-    #### RUN METRICS ####################################        
-    
+    #### RUN METRICS ####################################
+
     ### Success ratio - considering all Remotes in the sim ###
     awk 'BEGIN {startedCount=0; establishedCount=0;}
-        {if ($4 == "S") {startedCount++;} if ($4 == "E") {establishedCount++;} } 
+        {if ($4 == "S") {startedCount++;} if ($4 == "E") {establishedCount++;} }
         END {if (startedCount > 0) {print establishedCount/startedCount }}' remoteConnectionEventsTrace.txt > allRemotesConnectionSuccessRatio.txt
     ### Average connection time (in terms of SL periods)- considering all Remotes in the sim ###
     awk -v slPeriod=${slPeriod} 'BEGIN {connCount=0; sumTime=0;}
-        {if ($4 == "E") {connCount++; sumTime+=($6*1000.0/slPeriod);} } 
-        END {if (connCount > 0) {print sumTime/connCount }}' remoteConnectionEventsTrace.txt > allRemotesAverageConnectionTime.txt   
-                              
+        {if ($4 == "E") {connCount++; sumTime+=($6*1000.0/slPeriod);} }
+        END {if (connCount > 0) {print sumTime/connCount }}' remoteConnectionEventsTrace.txt > allRemotesAverageConnectionTime.txt
+
     n=$(($runN % $nThreads))
     if [ "$n" -eq 0 ];then
        wait
     fi
-    
+
     cd ../../.. #ns3/baseDir/SetDir/RunDir   Important!
 
   done #  for ((runN=$startRun; runN<=$endRun; runN++))
-  
+
   ######## SET METRICS ###########################
-  metricArray="allRemotesConnectionSuccessRatio allRemotesAverageConnectionTime" 
+  metricArray="allRemotesConnectionSuccessRatio allRemotesAverageConnectionTime"
   for metric in $metricArray
   do
-  
+
     #Gathering all the data
     awk '{print $1;}' ${outputDirSet}/run*/${metric}.txt | sort -n > "${outputDirSet}/${metric}_AllData.txt"
 
@@ -350,26 +350,26 @@ function ProcessSet {
       }
     }END{
       if (count > 0 ){
-        mean=sum/count; 
+        mean=sum/count;
         for (i in values) {
-          delta=values[i]-mean; 
-          sumForStd+=(delta^2); 
+          delta=values[i]-mean;
+          sumForStd+=(delta^2);
         }
-        stdev = sqrt(sumForStd/count); 
+        stdev = sqrt(sumForStd/count);
         ci = 1.96 * (stdev/(sqrt (count)));
         #print mean, stdev;
         print mean"\t"ci;
-      } 
+      }
       else {
         print "nan\tnan";
       }
     }'  "${outputDirSet}/${metric}_AllData.txt" | sort -g > "${outputDirSet}/${metric}_CI.txt"
-    
-    
+
+
   #Cleaning
   rm "${outputDirSet}/${metric}_AllData.txt"
   done #for metric in $metricArray
-} #function ProcessSet 
+} #function ProcessSet
 
 
 

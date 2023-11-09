@@ -29,75 +29,77 @@
  * employees is not subject to copyright protection within the United States.
  */
 
+#include <ns3/core-module.h>
+#include <ns3/mcptt-floor-msg-field.h>
+#include <ns3/mcptt-floor-msg.h>
+#include <ns3/network-module.h>
+
 #include <sstream>
 #include <string>
 
-#include <ns3/core-module.h>
-#include <ns3/network-module.h>
+namespace ns3
+{
 
-#include <ns3/mcptt-floor-msg.h>
-#include <ns3/mcptt-floor-msg-field.h>
+NS_LOG_COMPONENT_DEFINE("McpttFloorControlMsgTest");
 
-namespace ns3 {
-
-NS_LOG_COMPONENT_DEFINE ("McpttFloorControlMsgTest");
-
-namespace psc {
-namespace tests {
+namespace psc
+{
+namespace tests
+{
 
 class FloorMsgRequestTest : public TestCase
 {
-public:
-  FloorMsgRequestTest();
-  void DoRun() override;
+  public:
+    FloorMsgRequestTest();
+    void DoRun() override;
 };
 
 class FloorMsgGrantedTest : public TestCase
 {
-public:
-  FloorMsgGrantedTest();
-  void DoRun() override;
+  public:
+    FloorMsgGrantedTest();
+    void DoRun() override;
 };
 
 class FloorMsgDenyTest : public TestCase
 {
-public:
-  FloorMsgDenyTest();
-  void DoRun() override;
+  public:
+    FloorMsgDenyTest();
+    void DoRun() override;
 };
 
 class FloorMsgReleaseTest : public TestCase
 {
-public:
-  FloorMsgReleaseTest();
-  void DoRun() override;
+  public:
+    FloorMsgReleaseTest();
+    void DoRun() override;
 };
 
 class FloorMsgTakenTest : public TestCase
 {
-public:
-  FloorMsgTakenTest();
-  void DoRun() override;
+  public:
+    FloorMsgTakenTest();
+    void DoRun() override;
 };
 
 class FloorMsgQueuePositionRequestTest : public TestCase
 {
-public:
-  FloorMsgQueuePositionRequestTest();
-  void DoRun() override;
+  public:
+    FloorMsgQueuePositionRequestTest();
+    void DoRun() override;
 };
 
 class FloorMsgQueuePositionInfoTest : public TestCase
 {
-public:
-  FloorMsgQueuePositionInfoTest();
-  void DoRun() override;
+  public:
+    FloorMsgQueuePositionInfoTest();
+    void DoRun() override;
 };
 
 class McpttFloorControlMsgTestSuite : public TestSuite
 {
-public:
-  McpttFloorControlMsgTestSuite();
+  public:
+    McpttFloorControlMsgTestSuite();
 };
 
 /***************************************************************
@@ -108,334 +110,369 @@ static McpttFloorControlMsgTestSuite suite;
 
 FloorMsgRequestTest::FloorMsgRequestTest()
     : TestCase("Floor Request")
-{}
+{
+}
 
 void
 FloorMsgRequestTest::DoRun()
 {
-  McpttFloorMsgFieldIndic indic = McpttFloorMsgFieldIndic ();
-  indic.Indicate (McpttFloorMsgFieldIndic::BROADCAST_CALL);
+    McpttFloorMsgFieldIndic indic = McpttFloorMsgFieldIndic();
+    indic.Indicate(McpttFloorMsgFieldIndic::BROADCAST_CALL);
 
-  McpttFloorMsgFieldPriority priority = McpttFloorMsgFieldPriority ();
-  priority.SetPriority (1);
+    McpttFloorMsgFieldPriority priority = McpttFloorMsgFieldPriority();
+    priority.SetPriority(1);
 
-  McpttFloorMsgFieldTrackInfo trackInfo = McpttFloorMsgFieldTrackInfo ();
-  trackInfo.SetQueueCap (1);
-  trackInfo.AddRef (5);
+    McpttFloorMsgFieldTrackInfo trackInfo = McpttFloorMsgFieldTrackInfo();
+    trackInfo.SetQueueCap(1);
+    trackInfo.AddRef(5);
 
-  McpttFloorMsgFieldUserId id = McpttFloorMsgFieldUserId ();
-  id.SetUserId (9);
+    McpttFloorMsgFieldUserId id = McpttFloorMsgFieldUserId();
+    id.SetUserId(9);
 
-  McpttFloorMsgRequest dstMsg;
-  McpttFloorMsgRequest srcMsg;
+    McpttFloorMsgRequest dstMsg;
+    McpttFloorMsgRequest srcMsg;
 
-  srcMsg.SetIndicator (indic);
-  srcMsg.SetPriority (priority);
-  srcMsg.UpdateTrackInfo (trackInfo);
-  srcMsg.SetUserId (id);
+    srcMsg.SetIndicator(indic);
+    srcMsg.SetPriority(priority);
+    srcMsg.UpdateTrackInfo(trackInfo);
+    srcMsg.SetUserId(id);
 
-  Ptr<Packet> p = Create<Packet> ();
-  p->AddHeader (srcMsg);
-  p->RemoveHeader (dstMsg);
+    Ptr<Packet> p = Create<Packet>();
+    p->AddHeader(srcMsg);
+    p->RemoveHeader(dstMsg);
 
-  std::stringstream dstStr;
-  std::stringstream srcStr;
+    std::stringstream dstStr;
+    std::stringstream srcStr;
 
-  dstMsg.Print (dstStr);
-  srcMsg.Print (srcStr);
+    dstMsg.Print(dstStr);
+    srcMsg.Print(srcStr);
 
-  NS_LOG_LOGIC ("Serialized  : " << srcStr.str ());
-  NS_LOG_LOGIC ("Deserialized: " << dstStr.str ());
+    NS_LOG_LOGIC("Serialized  : " << srcStr.str());
+    NS_LOG_LOGIC("Deserialized: " << dstStr.str());
 
-  NS_TEST_ASSERT_MSG_EQ ((dstStr.str () == srcStr.str ()), true, "The serialized and deserialized messages do not match.");
-  NS_TEST_ASSERT_MSG_EQ ((p->GetSize () == 0), true, "Bytes written/read do not match reported size.");
+    NS_TEST_ASSERT_MSG_EQ((dstStr.str() == srcStr.str()),
+                          true,
+                          "The serialized and deserialized messages do not match.");
+    NS_TEST_ASSERT_MSG_EQ((p->GetSize() == 0),
+                          true,
+                          "Bytes written/read do not match reported size.");
 }
 
 FloorMsgGrantedTest::FloorMsgGrantedTest()
     : TestCase("Floor Granted")
-{}
+{
+}
 
 void
 FloorMsgGrantedTest::DoRun()
 {
-  McpttFloorMsgFieldDuration duration;
-  duration.SetDuration (50);
+    McpttFloorMsgFieldDuration duration;
+    duration.SetDuration(50);
 
-  uint32_t grantedSsrc = 100;
+    uint32_t grantedSsrc = 100;
 
-  McpttFloorMsgFieldIndic indic = McpttFloorMsgFieldIndic ();
-  indic.Indicate (McpttFloorMsgFieldIndic::BROADCAST_CALL);
+    McpttFloorMsgFieldIndic indic = McpttFloorMsgFieldIndic();
+    indic.Indicate(McpttFloorMsgFieldIndic::BROADCAST_CALL);
 
-  McpttFloorMsgFieldPriority priority = McpttFloorMsgFieldPriority ();
-  priority.SetPriority (1);
+    McpttFloorMsgFieldPriority priority = McpttFloorMsgFieldPriority();
+    priority.SetPriority(1);
 
-  McpttFloorMsgFieldTrackInfo trackInfo = McpttFloorMsgFieldTrackInfo ();
-  trackInfo.SetQueueCap (1);
+    McpttFloorMsgFieldTrackInfo trackInfo = McpttFloorMsgFieldTrackInfo();
+    trackInfo.SetQueueCap(1);
 
-  McpttFloorMsgFieldUserId id = McpttFloorMsgFieldUserId ();
-  id.SetUserId (9);
+    McpttFloorMsgFieldUserId id = McpttFloorMsgFieldUserId();
+    id.SetUserId(9);
 
-  McpttFloorMsgFieldQueuePositionInfo queuedInfoField;
-  queuedInfoField.SetPosition (0);
-  queuedInfoField.SetPriority (1);
+    McpttFloorMsgFieldQueuePositionInfo queuedInfoField;
+    queuedInfoField.SetPosition(0);
+    queuedInfoField.SetPriority(1);
 
-  uint32_t queuedSsrc = 3;
+    uint32_t queuedSsrc = 3;
 
-  McpttFloorMsgFieldQueuedUserId queuedId;
-  queuedId.SetUserId (22);
+    McpttFloorMsgFieldQueuedUserId queuedId;
+    queuedId.SetUserId(22);
 
-  McpttQueuedUserInfo queuedInfo (queuedSsrc, queuedId, queuedInfoField);
+    McpttQueuedUserInfo queuedInfo(queuedSsrc, queuedId, queuedInfoField);
 
-  McpttFloorMsgGranted dstMsg;
-  McpttFloorMsgGranted srcMsg;
-  srcMsg.SetDuration (duration);
-  srcMsg.SetGrantedSsrc (grantedSsrc);
-  srcMsg.SetIndicator (indic);
-  srcMsg.SetPriority (priority);
-  srcMsg.UpdateTrackInfo (trackInfo);
-  srcMsg.SetUserId (id);
-  srcMsg.AddUserInfo (queuedInfo);
+    McpttFloorMsgGranted dstMsg;
+    McpttFloorMsgGranted srcMsg;
+    srcMsg.SetDuration(duration);
+    srcMsg.SetGrantedSsrc(grantedSsrc);
+    srcMsg.SetIndicator(indic);
+    srcMsg.SetPriority(priority);
+    srcMsg.UpdateTrackInfo(trackInfo);
+    srcMsg.SetUserId(id);
+    srcMsg.AddUserInfo(queuedInfo);
 
-  Ptr<Packet> p = Create<Packet> ();
-  p->AddHeader (srcMsg);
-  p->RemoveHeader (dstMsg);
+    Ptr<Packet> p = Create<Packet>();
+    p->AddHeader(srcMsg);
+    p->RemoveHeader(dstMsg);
 
-  std::stringstream dstStr;
-  std::stringstream srcStr;
+    std::stringstream dstStr;
+    std::stringstream srcStr;
 
-  dstMsg.Print (dstStr);
-  srcMsg.Print (srcStr);
+    dstMsg.Print(dstStr);
+    srcMsg.Print(srcStr);
 
-  NS_LOG_LOGIC ("Serialized  : " << srcStr.str ());
-  NS_LOG_LOGIC ("Deserialized: " << dstStr.str ());
+    NS_LOG_LOGIC("Serialized  : " << srcStr.str());
+    NS_LOG_LOGIC("Deserialized: " << dstStr.str());
 
-  NS_TEST_ASSERT_MSG_EQ ((dstStr.str () == srcStr.str ()), true, "The serialized and deserialized messages do not match.");
-  NS_TEST_ASSERT_MSG_EQ ((p->GetSize () == 0), true, "Bytes written/read do not match reported size.");
+    NS_TEST_ASSERT_MSG_EQ((dstStr.str() == srcStr.str()),
+                          true,
+                          "The serialized and deserialized messages do not match.");
+    NS_TEST_ASSERT_MSG_EQ((p->GetSize() == 0),
+                          true,
+                          "Bytes written/read do not match reported size.");
 }
 
 FloorMsgDenyTest::FloorMsgDenyTest()
     : TestCase("Floor Deny")
-{}
+{
+}
 
 void
 FloorMsgDenyTest::DoRun()
 {
-  McpttFloorMsgFieldRejectCause rejCause (McpttFloorMsgFieldRejectCause::CAUSE_255);
+    McpttFloorMsgFieldRejectCause rejCause(McpttFloorMsgFieldRejectCause::CAUSE_255);
 
-  McpttFloorMsgFieldUserId id = McpttFloorMsgFieldUserId ();
-  id.SetUserId (9);
+    McpttFloorMsgFieldUserId id = McpttFloorMsgFieldUserId();
+    id.SetUserId(9);
 
-  McpttFloorMsgFieldTrackInfo trackInfo = McpttFloorMsgFieldTrackInfo ();
-  trackInfo.SetQueueCap (1);
-  trackInfo.AddRef (5);
+    McpttFloorMsgFieldTrackInfo trackInfo = McpttFloorMsgFieldTrackInfo();
+    trackInfo.SetQueueCap(1);
+    trackInfo.AddRef(5);
 
-  McpttFloorMsgDeny dstMsg;
-  McpttFloorMsgDeny srcMsg;
-  srcMsg.SetRejCause (rejCause);
-  srcMsg.SetUserId (id);
-  srcMsg.UpdateTrackInfo (trackInfo);
+    McpttFloorMsgDeny dstMsg;
+    McpttFloorMsgDeny srcMsg;
+    srcMsg.SetRejCause(rejCause);
+    srcMsg.SetUserId(id);
+    srcMsg.UpdateTrackInfo(trackInfo);
 
-  Ptr<Packet> p = Create<Packet> ();
-  p->AddHeader (srcMsg);
-  p->RemoveHeader (dstMsg);
+    Ptr<Packet> p = Create<Packet>();
+    p->AddHeader(srcMsg);
+    p->RemoveHeader(dstMsg);
 
-  std::stringstream dstStr;
-  std::stringstream srcStr;
+    std::stringstream dstStr;
+    std::stringstream srcStr;
 
-  dstMsg.Print (dstStr);
-  srcMsg.Print (srcStr);
+    dstMsg.Print(dstStr);
+    srcMsg.Print(srcStr);
 
-  NS_LOG_LOGIC ("Serialized  : " << srcStr.str ());
-  NS_LOG_LOGIC ("Deserialized: " << dstStr.str ());
+    NS_LOG_LOGIC("Serialized  : " << srcStr.str());
+    NS_LOG_LOGIC("Deserialized: " << dstStr.str());
 
-  NS_TEST_ASSERT_MSG_EQ ((dstStr.str () == srcStr.str ()), true, "The serialized and deserialized messages do not match.");
-  NS_TEST_ASSERT_MSG_EQ ((p->GetSize () == 0), true, "Bytes written/read do not match reported size.");
+    NS_TEST_ASSERT_MSG_EQ((dstStr.str() == srcStr.str()),
+                          true,
+                          "The serialized and deserialized messages do not match.");
+    NS_TEST_ASSERT_MSG_EQ((p->GetSize() == 0),
+                          true,
+                          "Bytes written/read do not match reported size.");
 }
 
 FloorMsgReleaseTest::FloorMsgReleaseTest()
     : TestCase("Floor Release")
-{}
+{
+}
 
 void
 FloorMsgReleaseTest::DoRun()
 {
-  McpttFloorMsgFieldUserId id = McpttFloorMsgFieldUserId ();
-  id.SetUserId (9);
+    McpttFloorMsgFieldUserId id = McpttFloorMsgFieldUserId();
+    id.SetUserId(9);
 
-  McpttFloorMsgFieldTrackInfo trackInfo = McpttFloorMsgFieldTrackInfo ();
-  trackInfo.SetQueueCap (0);
-  trackInfo.AddRef (5);
+    McpttFloorMsgFieldTrackInfo trackInfo = McpttFloorMsgFieldTrackInfo();
+    trackInfo.SetQueueCap(0);
+    trackInfo.AddRef(5);
 
-  McpttFloorMsgFieldIndic indic = McpttFloorMsgFieldIndic ();
-  indic.Indicate (McpttFloorMsgFieldIndic::BROADCAST_CALL);
+    McpttFloorMsgFieldIndic indic = McpttFloorMsgFieldIndic();
+    indic.Indicate(McpttFloorMsgFieldIndic::BROADCAST_CALL);
 
-  McpttFloorMsgRelease dstMsg;
-  McpttFloorMsgRelease srcMsg;
-  srcMsg.SetUserId (id);
-  srcMsg.UpdateTrackInfo (trackInfo);
-  srcMsg.SetIndicator (indic);
+    McpttFloorMsgRelease dstMsg;
+    McpttFloorMsgRelease srcMsg;
+    srcMsg.SetUserId(id);
+    srcMsg.UpdateTrackInfo(trackInfo);
+    srcMsg.SetIndicator(indic);
 
-  Ptr<Packet> p = Create<Packet> ();
-  p->AddHeader (srcMsg);
-  p->RemoveHeader (dstMsg);
+    Ptr<Packet> p = Create<Packet>();
+    p->AddHeader(srcMsg);
+    p->RemoveHeader(dstMsg);
 
-  std::stringstream dstStr;
-  std::stringstream srcStr;
+    std::stringstream dstStr;
+    std::stringstream srcStr;
 
-  dstMsg.Print (dstStr);
-  srcMsg.Print (srcStr);
+    dstMsg.Print(dstStr);
+    srcMsg.Print(srcStr);
 
-  NS_LOG_LOGIC ("Serialized  : " << srcStr.str ());
-  NS_LOG_LOGIC ("Deserialized: " << dstStr.str ());
+    NS_LOG_LOGIC("Serialized  : " << srcStr.str());
+    NS_LOG_LOGIC("Deserialized: " << dstStr.str());
 
-  NS_TEST_ASSERT_MSG_EQ ((dstStr.str () == srcStr.str ()), true, "The serialized and deserialized messages do not match.");
-  NS_TEST_ASSERT_MSG_EQ ((p->GetSize () == 0), true, "Bytes written/read do not match reported size.");
+    NS_TEST_ASSERT_MSG_EQ((dstStr.str() == srcStr.str()),
+                          true,
+                          "The serialized and deserialized messages do not match.");
+    NS_TEST_ASSERT_MSG_EQ((p->GetSize() == 0),
+                          true,
+                          "Bytes written/read do not match reported size.");
 }
 
 FloorMsgTakenTest::FloorMsgTakenTest()
     : TestCase("Floor Taken")
-{}
+{
+}
 
 void
 FloorMsgTakenTest::DoRun()
 {
-  McpttFloorMsgFieldIndic indic = McpttFloorMsgFieldIndic ();
-  indic.Indicate (McpttFloorMsgFieldIndic::BROADCAST_CALL);
+    McpttFloorMsgFieldIndic indic = McpttFloorMsgFieldIndic();
+    indic.Indicate(McpttFloorMsgFieldIndic::BROADCAST_CALL);
 
-  McpttFloorMsgFieldGrantedPartyId partyId;
-  partyId.SetPartyId (2);
+    McpttFloorMsgFieldGrantedPartyId partyId;
+    partyId.SetPartyId(2);
 
-  McpttFloorMsgFieldPermToReq permToReq;
-  permToReq.SetPermission (1);
+    McpttFloorMsgFieldPermToReq permToReq;
+    permToReq.SetPermission(1);
 
-  McpttFloorMsgFieldSeqNum seqNum;
-  seqNum.SetSeqNum (2);
+    McpttFloorMsgFieldSeqNum seqNum;
+    seqNum.SetSeqNum(2);
 
-  McpttFloorMsgFieldUserId id = McpttFloorMsgFieldUserId ();
-  id.SetUserId (9);
+    McpttFloorMsgFieldUserId id = McpttFloorMsgFieldUserId();
+    id.SetUserId(9);
 
-  McpttFloorMsgFieldTrackInfo trackInfo = McpttFloorMsgFieldTrackInfo ();
-  trackInfo.SetQueueCap (0);
-  trackInfo.AddRef (5);
+    McpttFloorMsgFieldTrackInfo trackInfo = McpttFloorMsgFieldTrackInfo();
+    trackInfo.SetQueueCap(0);
+    trackInfo.AddRef(5);
 
-  McpttFloorMsgTaken dstMsg;
-  McpttFloorMsgTaken srcMsg;
-  srcMsg.UpdateTrackInfo (trackInfo);
-  srcMsg.SetIndicator (indic);
-  srcMsg.SetPartyId (partyId);
-  srcMsg.SetPermission (permToReq);
-  srcMsg.SetSeqNum (seqNum);
+    McpttFloorMsgTaken dstMsg;
+    McpttFloorMsgTaken srcMsg;
+    srcMsg.UpdateTrackInfo(trackInfo);
+    srcMsg.SetIndicator(indic);
+    srcMsg.SetPartyId(partyId);
+    srcMsg.SetPermission(permToReq);
+    srcMsg.SetSeqNum(seqNum);
 
-  Ptr<Packet> p = Create<Packet> ();
-  p->AddHeader (srcMsg);
-  p->RemoveHeader (dstMsg);
+    Ptr<Packet> p = Create<Packet>();
+    p->AddHeader(srcMsg);
+    p->RemoveHeader(dstMsg);
 
-  std::stringstream dstStr;
-  std::stringstream srcStr;
+    std::stringstream dstStr;
+    std::stringstream srcStr;
 
-  dstMsg.Print (dstStr);
-  srcMsg.Print (srcStr);
+    dstMsg.Print(dstStr);
+    srcMsg.Print(srcStr);
 
-  NS_LOG_LOGIC ("Serialized  : " << srcStr.str ());
-  NS_LOG_LOGIC ("Deserialized: " << dstStr.str ());
+    NS_LOG_LOGIC("Serialized  : " << srcStr.str());
+    NS_LOG_LOGIC("Deserialized: " << dstStr.str());
 
-  NS_TEST_ASSERT_MSG_EQ ((dstStr.str () == srcStr.str ()), true, "The serialized and deserialized messages do not match.");
-  NS_TEST_ASSERT_MSG_EQ ((p->GetSize () == 0), true, "Bytes written/read do not match reported size.");
+    NS_TEST_ASSERT_MSG_EQ((dstStr.str() == srcStr.str()),
+                          true,
+                          "The serialized and deserialized messages do not match.");
+    NS_TEST_ASSERT_MSG_EQ((p->GetSize() == 0),
+                          true,
+                          "Bytes written/read do not match reported size.");
 }
 
 FloorMsgQueuePositionRequestTest::FloorMsgQueuePositionRequestTest()
     : TestCase("Queue Position Request")
-{}
+{
+}
 
 void
 FloorMsgQueuePositionRequestTest::DoRun()
 {
-  McpttFloorMsgFieldUserId id = McpttFloorMsgFieldUserId ();
-  id.SetUserId (9);
+    McpttFloorMsgFieldUserId id = McpttFloorMsgFieldUserId();
+    id.SetUserId(9);
 
-  McpttFloorMsgFieldTrackInfo trackInfo = McpttFloorMsgFieldTrackInfo ();
-  trackInfo.SetQueueCap (0);
-  trackInfo.AddRef (5);
+    McpttFloorMsgFieldTrackInfo trackInfo = McpttFloorMsgFieldTrackInfo();
+    trackInfo.SetQueueCap(0);
+    trackInfo.AddRef(5);
 
-  McpttFloorMsgQueuePositionRequest dstMsg;
-  McpttFloorMsgQueuePositionRequest srcMsg;
-  srcMsg.SetUserId (id);
-  srcMsg.UpdateTrackInfo (trackInfo);
+    McpttFloorMsgQueuePositionRequest dstMsg;
+    McpttFloorMsgQueuePositionRequest srcMsg;
+    srcMsg.SetUserId(id);
+    srcMsg.UpdateTrackInfo(trackInfo);
 
-  Ptr<Packet> p = Create<Packet> ();
-  p->AddHeader (srcMsg);
-  p->RemoveHeader (dstMsg);
+    Ptr<Packet> p = Create<Packet>();
+    p->AddHeader(srcMsg);
+    p->RemoveHeader(dstMsg);
 
-  std::stringstream dstStr;
-  std::stringstream srcStr;
+    std::stringstream dstStr;
+    std::stringstream srcStr;
 
-  dstMsg.Print (dstStr);
-  srcMsg.Print (srcStr);
+    dstMsg.Print(dstStr);
+    srcMsg.Print(srcStr);
 
-  NS_LOG_LOGIC ("Serialized  : " << srcStr.str ());
-  NS_LOG_LOGIC ("Deserialized: " << dstStr.str ());
+    NS_LOG_LOGIC("Serialized  : " << srcStr.str());
+    NS_LOG_LOGIC("Deserialized: " << dstStr.str());
 
-  NS_TEST_ASSERT_MSG_EQ ((dstStr.str () == srcStr.str ()), true, "The serialized and deserialized messages do not match.");
-  NS_TEST_ASSERT_MSG_EQ ((p->GetSize () == 0), true, "Bytes written/read do not match reported size.");
+    NS_TEST_ASSERT_MSG_EQ((dstStr.str() == srcStr.str()),
+                          true,
+                          "The serialized and deserialized messages do not match.");
+    NS_TEST_ASSERT_MSG_EQ((p->GetSize() == 0),
+                          true,
+                          "Bytes written/read do not match reported size.");
 }
 
 FloorMsgQueuePositionInfoTest::FloorMsgQueuePositionInfoTest()
     : TestCase("Queue Info")
-{}
+{
+}
 
 void
 FloorMsgQueuePositionInfoTest::DoRun()
 {
-  McpttFloorMsgFieldUserId id = McpttFloorMsgFieldUserId ();
-  id.SetUserId (9);
+    McpttFloorMsgFieldUserId id = McpttFloorMsgFieldUserId();
+    id.SetUserId(9);
 
-  McpttFloorMsgFieldQueuePositionInfo queuedInfoField;
-  queuedInfoField.SetPosition (0);
-  queuedInfoField.SetPriority (1);
+    McpttFloorMsgFieldQueuePositionInfo queuedInfoField;
+    queuedInfoField.SetPosition(0);
+    queuedInfoField.SetPriority(1);
 
-  uint32_t queuedSsrc = 3;
+    uint32_t queuedSsrc = 3;
 
-  McpttFloorMsgFieldQueuedUserId queuedId;
-  queuedId.SetUserId (22);
+    McpttFloorMsgFieldQueuedUserId queuedId;
+    queuedId.SetUserId(22);
 
-  McpttFloorMsgFieldTrackInfo trackInfo = McpttFloorMsgFieldTrackInfo ();
-  trackInfo.AddRef (5);
+    McpttFloorMsgFieldTrackInfo trackInfo = McpttFloorMsgFieldTrackInfo();
+    trackInfo.AddRef(5);
 
-  McpttFloorMsgQueuePositionInfo dstMsg;
-  McpttFloorMsgQueuePositionInfo srcMsg;
-  srcMsg.SetUserId (id);
-  srcMsg.SetQueuedSsrc (queuedSsrc);
-  srcMsg.SetQueuedUserId (queuedId);
-  srcMsg.SetQueuePositionInfo (queuedInfoField);
-  srcMsg.UpdateTrackInfo (trackInfo);
+    McpttFloorMsgQueuePositionInfo dstMsg;
+    McpttFloorMsgQueuePositionInfo srcMsg;
+    srcMsg.SetUserId(id);
+    srcMsg.SetQueuedSsrc(queuedSsrc);
+    srcMsg.SetQueuedUserId(queuedId);
+    srcMsg.SetQueuePositionInfo(queuedInfoField);
+    srcMsg.UpdateTrackInfo(trackInfo);
 
-  Ptr<Packet> p = Create<Packet> ();
-  p->AddHeader (srcMsg);
-  p->RemoveHeader (dstMsg);
+    Ptr<Packet> p = Create<Packet>();
+    p->AddHeader(srcMsg);
+    p->RemoveHeader(dstMsg);
 
-  std::stringstream dstStr;
-  std::stringstream srcStr;
+    std::stringstream dstStr;
+    std::stringstream srcStr;
 
-  dstMsg.Print (dstStr);
-  srcMsg.Print (srcStr);
+    dstMsg.Print(dstStr);
+    srcMsg.Print(srcStr);
 
-  NS_LOG_LOGIC ("Serialized  : " << srcStr.str ());
-  NS_LOG_LOGIC ("Deserialized: " << dstStr.str ());
+    NS_LOG_LOGIC("Serialized  : " << srcStr.str());
+    NS_LOG_LOGIC("Deserialized: " << dstStr.str());
 
-  NS_TEST_ASSERT_MSG_EQ ((dstStr.str () == srcStr.str ()), true, "The serialized and deserialized messages do not match.");
-  NS_TEST_ASSERT_MSG_EQ ((p->GetSize () == 0), true, "Bytes written/read do not match reported size.");
+    NS_TEST_ASSERT_MSG_EQ((dstStr.str() == srcStr.str()),
+                          true,
+                          "The serialized and deserialized messages do not match.");
+    NS_TEST_ASSERT_MSG_EQ((p->GetSize() == 0),
+                          true,
+                          "Bytes written/read do not match reported size.");
 }
 
 McpttFloorControlMsgTestSuite::McpttFloorControlMsgTestSuite()
     : TestSuite("mcptt-floor-control-messages", TestSuite::UNIT)
 {
-  AddTestCase (new FloorMsgRequestTest (), TestCase::QUICK);
-  AddTestCase (new FloorMsgGrantedTest (), TestCase::QUICK);
-  AddTestCase (new FloorMsgDenyTest (), TestCase::QUICK);
-  AddTestCase (new FloorMsgReleaseTest (), TestCase::QUICK);
-  AddTestCase (new FloorMsgTakenTest (), TestCase::QUICK);
-  AddTestCase (new FloorMsgQueuePositionRequestTest (), TestCase::QUICK);
-  AddTestCase (new FloorMsgQueuePositionInfoTest (), TestCase::QUICK);
+    AddTestCase(new FloorMsgRequestTest(), TestCase::QUICK);
+    AddTestCase(new FloorMsgGrantedTest(), TestCase::QUICK);
+    AddTestCase(new FloorMsgDenyTest(), TestCase::QUICK);
+    AddTestCase(new FloorMsgReleaseTest(), TestCase::QUICK);
+    AddTestCase(new FloorMsgTakenTest(), TestCase::QUICK);
+    AddTestCase(new FloorMsgQueuePositionRequestTest(), TestCase::QUICK);
+    AddTestCase(new FloorMsgQueuePositionInfoTest(), TestCase::QUICK);
 }
 
 } // namespace tests

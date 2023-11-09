@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -27,15 +27,16 @@
  * software is not intended to be used in any situation where a failure could
  * cause risk of injury or damage to property. The software developed by NIST
  * employees is not subject to copyright protection within the United States.
- * 
+ *
  * Author: Evan Black <evan.black@nist.gov>
  */
 
-#include <iostream>
 #include <ns3/core-module.h>
 #include <ns3/energy-module.h>
 #include <ns3/mobility-module.h>
 #include <ns3/psc-module.h>
+
+#include <iostream>
 
 // Sample Scenario showing the setup of the UavMobilityEnergyModel
 // and manual movement of a Node (here representing
@@ -48,166 +49,167 @@
 using namespace ns3;
 using namespace psc;
 
-NS_LOG_COMPONENT_DEFINE ("UavEnergyMobility");
-
+NS_LOG_COMPONENT_DEFINE("UavEnergyMobility");
 
 void
-RemainingEnergy (double oldValue, double remainingEnergy)
+RemainingEnergy(double oldValue, double remainingEnergy)
 {
-  std::cout << Simulator::Now ().GetSeconds ()
-            << "s Current remaining energy = " << remainingEnergy << "J\n";
+    std::cout << Simulator::Now().GetSeconds() << "s Current remaining energy = " << remainingEnergy
+              << "J\n";
 }
 
 // This Callback is unused with the default configuration of this example
 // and is intended to demonstrate how Callback(s) are connected, and an
 // expected implementation of the EnergyDepleted Callback
 void
-EnergyDepleted (Ptr<ConstantVelocityMobilityModel> mobilityModel, Ptr<const UavMobilityEnergyModel> energyModel)
+EnergyDepleted(Ptr<ConstantVelocityMobilityModel> mobilityModel,
+               Ptr<const UavMobilityEnergyModel> energyModel)
 {
-  std::cout << Simulator::Now ().GetSeconds () << "s ENERGY DEPLETED\n";
-  auto currentPosition = mobilityModel->GetPosition ();
-  // Drop the UAV to the ground at its current position
-  mobilityModel->SetPosition ({currentPosition.x, currentPosition.y, 0});
-  Simulator::Stop ();
+    std::cout << Simulator::Now().GetSeconds() << "s ENERGY DEPLETED\n";
+    auto currentPosition = mobilityModel->GetPosition();
+    // Drop the UAV to the ground at its current position
+    mobilityModel->SetPosition({currentPosition.x, currentPosition.y, 0});
+    Simulator::Stop();
 }
 
-const Vector MOVE_X_VELOCITY (1, 0, 0);
-const Vector STOPPED_VELOCITY (0, 0, 0);
-const Vector ASCEND_VELOCITY (0, 0, 1);
-const Vector DESCEND_VELOCITY (0, 0, -1);
+const Vector MOVE_X_VELOCITY(1, 0, 0);
+const Vector STOPPED_VELOCITY(0, 0, 0);
+const Vector ASCEND_VELOCITY(0, 0, 1);
+const Vector DESCEND_VELOCITY(0, 0, -1);
 const double INITIAL_ENERGY = 10000;
 
 void
-helperApiExample ()
+helperApiExample()
 {
-  std::cout << "Using Helper\n";
-  UavMobilityEnergyModelHelper helper;
+    std::cout << "Using Helper\n";
+    UavMobilityEnergyModelHelper helper;
 
-  helper.SetMobilityModel("ns3::ConstantVelocityMobilityModel");
-  helper.SetEnergySource("ns3::BasicEnergySource",
-                         "BasicEnergySourceInitialEnergyJ",
-                         DoubleValue (INITIAL_ENERGY));
+    helper.SetMobilityModel("ns3::ConstantVelocityMobilityModel");
+    helper.SetEnergySource("ns3::BasicEnergySource",
+                           "BasicEnergySourceInitialEnergyJ",
+                           DoubleValue(INITIAL_ENERGY));
 
-  Ptr<Node> node = CreateObject<Node> ();
-  DeviceEnergyModelContainer model = helper.Install (node);
+    Ptr<Node> node = CreateObject<Node>();
+    DeviceEnergyModelContainer model = helper.Install(node);
 
-  Ptr<ConstantVelocityMobilityModel> mobilityModel =
-    node->GetObject<ConstantVelocityMobilityModel> ();
+    Ptr<ConstantVelocityMobilityModel> mobilityModel =
+        node->GetObject<ConstantVelocityMobilityModel>();
 
-  Ptr<BasicEnergySource> source = node->GetObject<BasicEnergySource> ();
-  source->TraceConnectWithoutContext ("RemainingEnergy",
-                                      MakeCallback (&RemainingEnergy));
+    Ptr<BasicEnergySource> source = node->GetObject<BasicEnergySource>();
+    source->TraceConnectWithoutContext("RemainingEnergy", MakeCallback(&RemainingEnergy));
 
-  model.Get(0)->TraceConnectWithoutContext ("EnergyDepleted",
-                                           MakeBoundCallback (&EnergyDepleted,
-                                                              mobilityModel));
+    model.Get(0)->TraceConnectWithoutContext("EnergyDepleted",
+                                             MakeBoundCallback(&EnergyDepleted, mobilityModel));
 
-  Simulator::Schedule (Seconds (2),
+    Simulator::Schedule(Seconds(2),
                         &ConstantVelocityMobilityModel::SetVelocity,
-                        mobilityModel, MOVE_X_VELOCITY);
+                        mobilityModel,
+                        MOVE_X_VELOCITY);
 
-  Simulator::Schedule (Seconds (5),
+    Simulator::Schedule(Seconds(5),
                         &ConstantVelocityMobilityModel::SetVelocity,
-                        mobilityModel, STOPPED_VELOCITY);
+                        mobilityModel,
+                        STOPPED_VELOCITY);
 
-  Simulator::Schedule (Seconds (6),
+    Simulator::Schedule(Seconds(6),
                         &ConstantVelocityMobilityModel::SetVelocity,
-                        mobilityModel, ASCEND_VELOCITY);
+                        mobilityModel,
+                        ASCEND_VELOCITY);
 
-  Simulator::Schedule (Seconds (8),
+    Simulator::Schedule(Seconds(8),
                         &ConstantVelocityMobilityModel::SetVelocity,
-                        mobilityModel, DESCEND_VELOCITY);
+                        mobilityModel,
+                        DESCEND_VELOCITY);
 
-  Simulator::Schedule (Seconds (10),
-                       &ConstantVelocityMobilityModel::SetVelocity,
-                       mobilityModel, STOPPED_VELOCITY);
+    Simulator::Schedule(Seconds(10),
+                        &ConstantVelocityMobilityModel::SetVelocity,
+                        mobilityModel,
+                        STOPPED_VELOCITY);
 
-  Simulator::Stop (Seconds (11));
-  Simulator::Run ();
+    Simulator::Stop(Seconds(11));
+    Simulator::Run();
 
-  // Explicitly disconnect the trace to resolve a valgrind warning
-  // not necessary in your own scenarios
-  model.Get(0)->TraceDisconnectWithoutContext ("EnergyDepleted",
-                                               MakeBoundCallback (&EnergyDepleted,
-                                                                  mobilityModel));
+    // Explicitly disconnect the trace to resolve a valgrind warning
+    // not necessary in your own scenarios
+    model.Get(0)->TraceDisconnectWithoutContext("EnergyDepleted",
+                                                MakeBoundCallback(&EnergyDepleted, mobilityModel));
 
-  Simulator::Destroy ();
+    Simulator::Destroy();
 }
 
 void
-noHelperApiExample ()
+noHelperApiExample()
 {
-  std::cout << "Not Using Helper\n";
-  MobilityHelper mobility;
-  mobility.SetMobilityModel ("ns3::ConstantVelocityMobilityModel");
+    std::cout << "Not Using Helper\n";
+    MobilityHelper mobility;
+    mobility.SetMobilityModel("ns3::ConstantVelocityMobilityModel");
 
-  Ptr<Node> node = CreateObject<Node> ();
+    Ptr<Node> node = CreateObject<Node>();
 
-  mobility.Install (node);
-  Ptr<ConstantVelocityMobilityModel> mobilityModel =
-    node->GetObject<ConstantVelocityMobilityModel> ();
+    mobility.Install(node);
+    Ptr<ConstantVelocityMobilityModel> mobilityModel =
+        node->GetObject<ConstantVelocityMobilityModel>();
 
-  Ptr<BasicEnergySource> energySource = CreateObject<BasicEnergySource> ();
-  energySource->SetNode (node);
-  node->AggregateObject (energySource);
-  energySource->SetInitialEnergy (INITIAL_ENERGY);
-  energySource->TraceConnectWithoutContext ("RemainingEnergy",
-                                            MakeCallback (&RemainingEnergy));
+    Ptr<BasicEnergySource> energySource = CreateObject<BasicEnergySource>();
+    energySource->SetNode(node);
+    node->AggregateObject(energySource);
+    energySource->SetInitialEnergy(INITIAL_ENERGY);
+    energySource->TraceConnectWithoutContext("RemainingEnergy", MakeCallback(&RemainingEnergy));
 
-  Ptr<UavMobilityEnergyModel> model = CreateObject<UavMobilityEnergyModel> ();
-  model->Init (node, energySource);
-  node->AggregateObject (model);
-  
+    Ptr<UavMobilityEnergyModel> model = CreateObject<UavMobilityEnergyModel>();
+    model->Init(node, energySource);
+    node->AggregateObject(model);
 
-  model->TraceConnectWithoutContext ("EnergyDepleted",
-                                    MakeBoundCallback (&EnergyDepleted, 
-                                                       mobilityModel));
+    model->TraceConnectWithoutContext("EnergyDepleted",
+                                      MakeBoundCallback(&EnergyDepleted, mobilityModel));
 
-  Simulator::Schedule (Seconds (2),
+    Simulator::Schedule(Seconds(2),
                         &ConstantVelocityMobilityModel::SetVelocity,
-                        mobilityModel, MOVE_X_VELOCITY);
+                        mobilityModel,
+                        MOVE_X_VELOCITY);
 
-  Simulator::Schedule (Seconds (5),
+    Simulator::Schedule(Seconds(5),
                         &ConstantVelocityMobilityModel::SetVelocity,
-                        mobilityModel, STOPPED_VELOCITY);
+                        mobilityModel,
+                        STOPPED_VELOCITY);
 
-  Simulator::Schedule (Seconds (6),
+    Simulator::Schedule(Seconds(6),
                         &ConstantVelocityMobilityModel::SetVelocity,
-                        mobilityModel, ASCEND_VELOCITY);
+                        mobilityModel,
+                        ASCEND_VELOCITY);
 
-  Simulator::Schedule (Seconds (8),
+    Simulator::Schedule(Seconds(8),
                         &ConstantVelocityMobilityModel::SetVelocity,
-                        mobilityModel, DESCEND_VELOCITY);
+                        mobilityModel,
+                        DESCEND_VELOCITY);
 
-  Simulator::Schedule (Seconds (10),
-                       &ConstantVelocityMobilityModel::SetVelocity,
-                       mobilityModel, STOPPED_VELOCITY);
+    Simulator::Schedule(Seconds(10),
+                        &ConstantVelocityMobilityModel::SetVelocity,
+                        mobilityModel,
+                        STOPPED_VELOCITY);
 
-  Simulator::Stop (Seconds (11));
-  Simulator::Run ();
+    Simulator::Stop(Seconds(11));
+    Simulator::Run();
 
-  // Explicitly disconnect the trace to resolve a valgrind warning
-  // not necessary in your own scenarios
-  model->TraceDisconnectWithoutContext ("EnergyDepleted",
-                                        MakeBoundCallback (&EnergyDepleted,
-                                                            mobilityModel));
-  Simulator::Destroy ();
+    // Explicitly disconnect the trace to resolve a valgrind warning
+    // not necessary in your own scenarios
+    model->TraceDisconnectWithoutContext("EnergyDepleted",
+                                         MakeBoundCallback(&EnergyDepleted, mobilityModel));
+    Simulator::Destroy();
 }
 
 int
-main (int argc, char *argv[])
+main(int argc, char* argv[])
 {
-  bool useHelperApi = false;
+    bool useHelperApi = false;
 
-  CommandLine cmd;
-  cmd.AddValue ("useHelperApi", "Run the example using the helper API",
-                useHelperApi);
-  
-  cmd.Parse (argc,argv);
+    CommandLine cmd;
+    cmd.AddValue("useHelperApi", "Run the example using the helper API", useHelperApi);
 
-  if (useHelperApi)
-    helperApiExample ();
-  else
-    noHelperApiExample ();
+    cmd.Parse(argc, argv);
 
+    if (useHelperApi)
+        helperApiExample();
+    else
+        noHelperApiExample();
 }

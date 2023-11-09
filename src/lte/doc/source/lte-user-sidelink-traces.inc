@@ -8,31 +8,31 @@ Sidelink simulation output
 Similarly, for the Sidelink the LTE model currently supports the output to file
 of PHY, MAC and RRC level KPIs. You can enable them in the following way::
 
-        Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
+    Ptr<LteHelper> lteHelper = CreateObject<LteHelper>();
 
-        // configure all the simulation scenario here...
+    // configure all the simulation scenario here...
 
-        //Transmission traces
-        lteHelper->EnableSlPscchMacTraces ();
-        lteHelper->EnableSlPsschMacTraces ();
-        lteHelper->EnableSlPsdchMacTraces ();
+    // Transmission traces
+    lteHelper->EnableSlPscchMacTraces();
+    lteHelper->EnableSlPsschMacTraces();
+    lteHelper->EnableSlPsdchMacTraces();
 
-        //Reception traces
-        lteHelper->EnableSlRxPhyTraces ();
-        lteHelper->EnableSlPscchRxPhyTraces ();
-        lteHelper->EnableDiscoveryMonitoringRrcTraces ();
+    // Reception traces
+    lteHelper->EnableSlRxPhyTraces();
+    lteHelper->EnableSlPscchRxPhyTraces();
+    lteHelper->EnableDiscoveryMonitoringRrcTraces();
 
-        Simulator::Run ();
+    Simulator::Run();
 
 A helper method exists to enable all six traces above in one statement::
 
-        Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
+        Ptr<LteHelper> lteHelper = CreateObject<LteHelper>();
 
         // configure all the simulation scenario here...
 
-        lteHelper->EnableSidelinkTraces ();
+        lteHelper->EnableSidelinkTraces();
 
-        Simulator::Run ();
+        Simulator::Run();
 
 The Sidelink PSCCH and PSSCH MAC level KPIs are gathered at UE MAC and are
 written into two files, first one for PSCCH and the second for PSSCH.

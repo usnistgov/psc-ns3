@@ -36,7 +36,8 @@
 #ifndef LTE_SL_UE_NET_DEVICE_H
 #define LTE_SL_UE_NET_DEVICE_H
 
-#include "ns3/lte-net-device.h"
+#include "lte-net-device.h"
+
 #include "ns3/traced-callback.h"
 
 namespace ns3

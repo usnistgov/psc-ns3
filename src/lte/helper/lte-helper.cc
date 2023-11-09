@@ -29,6 +29,7 @@
 #include "phy-rx-stats-calculator.h"
 #include "phy-stats-calculator.h"
 #include "phy-tx-stats-calculator.h"
+#include "rrc-stats-calculator.h"
 
 #include <ns3/abort.h>
 #include <ns3/buildings-propagation-loss-model.h>
@@ -69,7 +70,6 @@
 #include <ns3/object-map.h>
 #include <ns3/pointer.h>
 #include <ns3/propagation-loss-model.h>
-#include <ns3/rrc-stats-calculator.h>
 #include <ns3/string.h>
 #include <ns3/trace-fading-loss-model.h>
 
@@ -1343,7 +1343,8 @@ LteHelper::ActivateSidelinkBearer(Ptr<NetDevice> ueDevice, Ptr<LteSlTft> tft)
 {
     NS_LOG_FUNCTION(this);
 
-    NS_ASSERT_MSG(m_epcHelper != nullptr, "sidelink bearers cannot be set up when the EPC is not used");
+    NS_ASSERT_MSG(m_epcHelper != nullptr,
+                  "sidelink bearers cannot be set up when the EPC is not used");
 
     m_epcHelper->ActivateSidelinkBearer(ueDevice, tft);
 }
@@ -1363,7 +1364,8 @@ LteHelper::DeactivateSidelinkBearer(Ptr<NetDevice> ueDevice, Ptr<LteSlTft> tft)
 {
     NS_LOG_FUNCTION(this);
 
-    NS_ASSERT_MSG(m_epcHelper != nullptr, "sidelink bearers cannot be set up when the EPC is not used");
+    NS_ASSERT_MSG(m_epcHelper != nullptr,
+                  "sidelink bearers cannot be set up when the EPC is not used");
 
     m_epcHelper->DeactivateSidelinkBearer(ueDevice, tft);
 }

@@ -29,6 +29,10 @@
  * employees is not subject to copyright protection within the United States.
  */
 
+#include "mcptt-pusher-orchestrator-contention.h"
+
+#include "mcptt-pusher.h"
+
 #include <ns3/log.h>
 #include <ns3/pointer.h>
 #include <ns3/ptr.h>
@@ -36,17 +40,15 @@
 #include <ns3/string.h>
 #include <ns3/type-id.h>
 
-#include "mcptt-pusher.h"
+namespace ns3
+{
 
-#include "mcptt-pusher-orchestrator-contention.h"
+NS_LOG_COMPONENT_DEFINE("McpttPusherOrchestratorContention");
 
-namespace ns3 {
+namespace psc
+{
 
-NS_LOG_COMPONENT_DEFINE ("McpttPusherOrchestratorContention");
-
-namespace psc {
-
-NS_OBJECT_ENSURE_REGISTERED (McpttPusherOrchestratorContention);
+NS_OBJECT_ENSURE_REGISTERED(McpttPusherOrchestratorContention);
 
 TypeId
 McpttPusherOrchestratorContention::GetTypeId()
@@ -76,117 +78,117 @@ McpttPusherOrchestratorContention::McpttPusherOrchestratorContention()
       m_nextEvent(EventId()),
       m_rv(CreateObject<UniformRandomVariable>())
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 McpttPusherOrchestratorContention::~McpttPusherOrchestratorContention()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
-McpttPusherOrchestratorContention::AddPusher (Ptr<McpttPusher> pusher)
+McpttPusherOrchestratorContention::AddPusher(Ptr<McpttPusher> pusher)
 {
-  NS_LOG_FUNCTION (this << pusher);
+    NS_LOG_FUNCTION(this << pusher);
 
-  m_orchestrator->AddPusher (pusher);
+    m_orchestrator->AddPusher(pusher);
 }
 
 int64_t
-McpttPusherOrchestratorContention::AssignStreams (int64_t stream)
+McpttPusherOrchestratorContention::AssignStreams(int64_t stream)
 {
-  NS_LOG_FUNCTION (this << stream);
+    NS_LOG_FUNCTION(this << stream);
 
-  int64_t streams = m_orchestrator->AssignStreams (stream);
-  streams++;
-  m_rv->SetStream (stream + streams);
+    int64_t streams = m_orchestrator->AssignStreams(stream);
+    streams++;
+    m_rv->SetStream(stream + streams);
 
-  return streams;
+    return streams;
 }
 
 std::vector<Ptr<McpttPusher>>
 McpttPusherOrchestratorContention::GetPushers() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_orchestrator->GetPushers ();
+    return m_orchestrator->GetPushers();
 }
 
 std::vector<Ptr<McpttPusher>>
 McpttPusherOrchestratorContention::GetActivePushers() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  std::vector<Ptr<McpttPusher> > activePushers = m_orchestrator->GetActivePushers ();
+    std::vector<Ptr<McpttPusher>> activePushers = m_orchestrator->GetActivePushers();
 
-  if (m_activePusher)
+    if (m_activePusher)
     {
-      activePushers.push_back (m_activePusher);
+        activePushers.push_back(m_activePusher);
     }
 
-  return activePushers;
+    return activePushers;
 }
 
 Time
 McpttPusherOrchestratorContention::NextPttIat()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_orchestrator->NextPttIat ();
+    return m_orchestrator->NextPttIat();
 }
 
 Time
 McpttPusherOrchestratorContention::NextPttDuration()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_orchestrator->NextPttDuration ();
+    return m_orchestrator->NextPttDuration();
 }
 
 void
 McpttPusherOrchestratorContention::Start()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  NS_ABORT_MSG_IF (!m_orchestrator, "No underlying orchestrator.");
+    NS_ABORT_MSG_IF(!m_orchestrator, "No underlying orchestrator.");
 
-  m_orchestrator->Start ();
+    m_orchestrator->Start();
 }
 
 void
 McpttPusherOrchestratorContention::Stop()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  m_nextEvent.Cancel ();
+    m_nextEvent.Cancel();
 
-  DeactivatePusher ();
+    DeactivatePusher();
 
-  m_orchestrator->Stop ();
+    m_orchestrator->Stop();
 }
 
 void
-McpttPusherOrchestratorContention::ActivatePusher (Ptr<McpttPusher> pusher)
+McpttPusherOrchestratorContention::ActivatePusher(Ptr<McpttPusher> pusher)
 {
-  NS_LOG_FUNCTION (this << pusher);
+    NS_LOG_FUNCTION(this << pusher);
 
-  if (m_activePusher)
+    if (m_activePusher)
     {
-      DeactivatePusher ();
+        DeactivatePusher();
     }
 
-  m_activePusher = pusher;
-  m_activePusher->Push ();
+    m_activePusher = pusher;
+    m_activePusher->Push();
 }
 
 void
 McpttPusherOrchestratorContention::DeactivatePusher()
 {
-  if (m_activePusher)
+    if (m_activePusher)
     {
-      if (m_activePusher->IsPushing ())
+        if (m_activePusher->IsPushing())
         {
-          m_activePusher->Release ();
+            m_activePusher->Release();
         }
         m_activePusher = nullptr;
     }
@@ -195,107 +197,114 @@ McpttPusherOrchestratorContention::DeactivatePusher()
 void
 McpttPusherOrchestratorContention::DoDispose()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  m_nextEvent.Cancel ();
-  m_nextPusher = nullptr;
-  m_orchestrator = nullptr;
-  m_rv = nullptr;
+    m_nextEvent.Cancel();
+    m_nextPusher = nullptr;
+    m_orchestrator = nullptr;
+    m_rv = nullptr;
 
-  DeactivatePusher ();
+    DeactivatePusher();
 }
 
 void
 McpttPusherOrchestratorContention::PttPush()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  if (m_nextPusher)
+    if (m_nextPusher)
     {
-      ActivatePusher (m_nextPusher);
-      m_nextPusher = nullptr;
+        ActivatePusher(m_nextPusher);
+        m_nextPusher = nullptr;
     }
 
-  Time pttDuration = NextPttDuration ();
+    Time pttDuration = NextPttDuration();
 
-  m_nextEvent = Simulator::Schedule (pttDuration, &McpttPusherOrchestratorContention::PttRelease, this);
+    m_nextEvent =
+        Simulator::Schedule(pttDuration, &McpttPusherOrchestratorContention::PttRelease, this);
 
-  TracePttDuration (m_activePusher ? m_activePusher->GetPttApp ()->GetUserId () : 0, pttDuration);
+    TracePttDuration(m_activePusher ? m_activePusher->GetPttApp()->GetUserId() : 0, pttDuration);
 }
 
 void
 McpttPusherOrchestratorContention::PttRelease()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  DeactivatePusher ();
+    DeactivatePusher();
 }
 
 void
-McpttPusherOrchestratorContention::PttDurationTraceCallback (uint32_t userId, Time pttDuration)
+McpttPusherOrchestratorContention::PttDurationTraceCallback(uint32_t userId, Time pttDuration)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  if (m_rv->GetValue (0.0, 1.0) < m_cp)
+    if (m_rv->GetValue(0.0, 1.0) < m_cp)
     {
-      std::vector<Ptr<McpttPusher> > contenders;
-      std::vector<Ptr<McpttPusher> > pushers = GetPushers ();
-      std::vector<Ptr<McpttPusher> > activePushers = GetActivePushers ();
+        std::vector<Ptr<McpttPusher>> contenders;
+        std::vector<Ptr<McpttPusher>> pushers = GetPushers();
+        std::vector<Ptr<McpttPusher>> activePushers = GetActivePushers();
 
-      for (auto pit = pushers.begin(); pit != pushers.end(); pit++)
-      {
-          bool found = false;
-          for (auto apit = activePushers.begin(); apit != activePushers.end(); apit++)
-          {
-              if (*pit == *apit)
+        for (auto pit = pushers.begin(); pit != pushers.end(); pit++)
+        {
+            bool found = false;
+            for (auto apit = activePushers.begin(); apit != activePushers.end(); apit++)
+            {
+                if (*pit == *apit)
                 {
-                  found = true;
+                    found = true;
                 }
             }
 
-          if (!found)
+            if (!found)
             {
-              contenders.push_back (*pit);
+                contenders.push_back(*pit);
             }
         }
 
         if (!contenders.empty())
         {
-          uint32_t rv = m_rv->GetInteger (0, contenders.size () - 1);
-          m_nextPusher = contenders[rv];
+            uint32_t rv = m_rv->GetInteger(0, contenders.size() - 1);
+            m_nextPusher = contenders[rv];
         }
 
-      double rv = m_rv->GetValue (0.0, pttDuration.GetSeconds ());
-      Time pttIat = Seconds (rv);
-      m_nextEvent = Simulator::Schedule (pttIat, &McpttPusherOrchestratorContention::PttPush, this);
-      TracePttIat (m_nextPusher ? m_nextPusher->GetPttApp ()->GetUserId () : 0, pttIat);
+        double rv = m_rv->GetValue(0.0, pttDuration.GetSeconds());
+        Time pttIat = Seconds(rv);
+        m_nextEvent =
+            Simulator::Schedule(pttIat, &McpttPusherOrchestratorContention::PttPush, this);
+        TracePttIat(m_nextPusher ? m_nextPusher->GetPttApp()->GetUserId() : 0, pttIat);
     }
 }
 
 Ptr<McpttPusherOrchestratorInterface>
 McpttPusherOrchestratorContention::GetOrchestrator() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_orchestrator;
+    return m_orchestrator;
 }
 
 void
-McpttPusherOrchestratorContention::SetOrchestrator (Ptr<McpttPusherOrchestratorInterface> orchestrator)
+McpttPusherOrchestratorContention::SetOrchestrator(
+    Ptr<McpttPusherOrchestratorInterface> orchestrator)
 {
-  NS_LOG_FUNCTION (this << orchestrator);
+    NS_LOG_FUNCTION(this << orchestrator);
 
-  if (m_orchestrator)
+    if (m_orchestrator)
     {
-      orchestrator->TraceDisconnectWithoutContext ("PttDurationTrace", MakeCallback (&McpttPusherOrchestratorContention::PttDurationTraceCallback, this));
+        orchestrator->TraceDisconnectWithoutContext(
+            "PttDurationTrace",
+            MakeCallback(&McpttPusherOrchestratorContention::PttDurationTraceCallback, this));
     }
 
-  if (orchestrator)
+    if (orchestrator)
     {
-      orchestrator->TraceConnectWithoutContext ("PttDurationTrace", MakeCallback (&McpttPusherOrchestratorContention::PttDurationTraceCallback, this));
+        orchestrator->TraceConnectWithoutContext(
+            "PttDurationTrace",
+            MakeCallback(&McpttPusherOrchestratorContention::PttDurationTraceCallback, this));
     }
 
-  m_orchestrator = orchestrator;
+    m_orchestrator = orchestrator;
 }
 
 } // namespace psc

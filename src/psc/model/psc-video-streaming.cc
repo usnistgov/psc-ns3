@@ -30,179 +30,187 @@
  * employees is not subject to copyright protection within the United States.
  */
 
-#include <ns3/simulator.h>
-#include <ns3/log.h>
-#include <ns3/socket.h>
-#include <ns3/packet.h>
-#include <ns3/uinteger.h>
-#include <ns3/double.h>
-#include <ns3/boolean.h>
-#include <ns3/udp-socket-factory.h>
-#include <ns3/seq-ts-size-header.h>
 #include "psc-video-streaming.h"
+
 #include "psc-video-streaming-distributions.h"
+
+#include <ns3/boolean.h>
+#include <ns3/double.h>
+#include <ns3/log.h>
+#include <ns3/packet.h>
+#include <ns3/seq-ts-size-header.h>
+#include <ns3/simulator.h>
+#include <ns3/socket.h>
+#include <ns3/udp-socket-factory.h>
+#include <ns3/uinteger.h>
 
 #include <fstream>
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("PscVideoStreaming");
+NS_LOG_COMPONENT_DEFINE("PscVideoStreaming");
 
-namespace psc {
+namespace psc
+{
 
-NS_OBJECT_ENSURE_REGISTERED (PscVideoStreaming);
+NS_OBJECT_ENSURE_REGISTERED(PscVideoStreaming);
 
 TypeId
 PscVideoStreaming::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::psc::PscVideoStreaming")
-    .SetParent <Application> ()
-    .AddConstructor <PscVideoStreaming> ()
-    .AddAttribute ("Distribution",
-                   "Video Streaming Model data distribution",
-                   StringValue ("1080p-bright"),
-                   MakeStringAccessor (&PscVideoStreaming::SetDistributionName,
-                                       &PscVideoStreaming::GetDistributionName),
-                   MakeStringChecker ())
-    .AddAttribute ("ReceiverAddress",
-                   "The receiver Address",
-                   AddressValue (),
-                   MakeAddressAccessor (&PscVideoStreaming::m_receiverAddress),
-                   MakeAddressChecker ())
-    .AddAttribute ("ReceiverPort",
-                   "The receiver port",
-                   UintegerValue (5554),
-                   MakeUintegerAccessor (&PscVideoStreaming::m_receiverPort),
-                   MakeUintegerChecker<uint16_t> ())
-    .AddAttribute ("BoostLengthPacketCount",
-                   "Length of boost time, in packets",
-                   UintegerValue (0),
-                   MakeUintegerAccessor (&PscVideoStreaming::m_boostPacketCount),
-                   MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("BoostPercentile",
-                   "CDF percentile from which size and interval values are generated during boost time",
-                   DoubleValue (0),
-                   MakeDoubleAccessor (&PscVideoStreaming::m_boostPercentile),
-                   MakeDoubleChecker<double> (0, 100))
-    .AddAttribute ("MaxUdpPayloadSize",
-                   "Maximum size of the generated UDP payloads",
-                   UintegerValue (1500),
-                   MakeUintegerAccessor (&PscVideoStreaming::m_maxUdpPayloadSize),
-                   MakeUintegerChecker<uint16_t> (12, 65500))
-    .AddTraceSource ("Tx",
-                     "Trace with packets transmitted",
-                     MakeTraceSourceAccessor (&PscVideoStreaming::m_txTrace),
-                     "ns3::psc::PscVideoStreaming::TxTracedCallback")
-  ;
+    static TypeId tid =
+        TypeId("ns3::psc::PscVideoStreaming")
+            .SetParent<Application>()
+            .AddConstructor<PscVideoStreaming>()
+            .AddAttribute("Distribution",
+                          "Video Streaming Model data distribution",
+                          StringValue("1080p-bright"),
+                          MakeStringAccessor(&PscVideoStreaming::SetDistributionName,
+                                             &PscVideoStreaming::GetDistributionName),
+                          MakeStringChecker())
+            .AddAttribute("ReceiverAddress",
+                          "The receiver Address",
+                          AddressValue(),
+                          MakeAddressAccessor(&PscVideoStreaming::m_receiverAddress),
+                          MakeAddressChecker())
+            .AddAttribute("ReceiverPort",
+                          "The receiver port",
+                          UintegerValue(5554),
+                          MakeUintegerAccessor(&PscVideoStreaming::m_receiverPort),
+                          MakeUintegerChecker<uint16_t>())
+            .AddAttribute("BoostLengthPacketCount",
+                          "Length of boost time, in packets",
+                          UintegerValue(0),
+                          MakeUintegerAccessor(&PscVideoStreaming::m_boostPacketCount),
+                          MakeUintegerChecker<uint32_t>())
+            .AddAttribute("BoostPercentile",
+                          "CDF percentile from which size and interval values are generated during "
+                          "boost time",
+                          DoubleValue(0),
+                          MakeDoubleAccessor(&PscVideoStreaming::m_boostPercentile),
+                          MakeDoubleChecker<double>(0, 100))
+            .AddAttribute("MaxUdpPayloadSize",
+                          "Maximum size of the generated UDP payloads",
+                          UintegerValue(1500),
+                          MakeUintegerAccessor(&PscVideoStreaming::m_maxUdpPayloadSize),
+                          MakeUintegerChecker<uint16_t>(12, 65500))
+            .AddTraceSource("Tx",
+                            "Trace with packets transmitted",
+                            MakeTraceSourceAccessor(&PscVideoStreaming::m_txTrace),
+                            "ns3::psc::PscVideoStreaming::TxTracedCallback");
 
-  return tid;
+    return tid;
 }
 
-PscVideoStreaming::PscVideoStreaming ()
+PscVideoStreaming::PscVideoStreaming()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  m_socket = nullptr;
+    m_socket = nullptr;
 }
 
-PscVideoStreaming::~PscVideoStreaming ()
+PscVideoStreaming::~PscVideoStreaming()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
-PscVideoStreaming::SetReceiver (Address recvAddress, uint16_t recvPort)
+PscVideoStreaming::SetReceiver(Address recvAddress, uint16_t recvPort)
 {
-  NS_LOG_FUNCTION (this << recvAddress << recvPort);
-  m_receiverAddress = recvAddress;
-  m_receiverPort = recvPort;
+    NS_LOG_FUNCTION(this << recvAddress << recvPort);
+    m_receiverAddress = recvAddress;
+    m_receiverPort = recvPort;
 }
 
 void
 PscVideoStreaming::DoDispose()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  m_socket = nullptr;
-  Application::DoDispose ();
+    m_socket = nullptr;
+    Application::DoDispose();
 }
 
 void
-PscVideoStreaming::ReadCustomDistribution (std::string sizeCdfFilePath, std::string intervalCdfFilePath)
+PscVideoStreaming::ReadCustomDistribution(std::string sizeCdfFilePath,
+                                          std::string intervalCdfFilePath)
 {
-  NS_LOG_FUNCTION (this << sizeCdfFilePath << intervalCdfFilePath);
+    NS_LOG_FUNCTION(this << sizeCdfFilePath << intervalCdfFilePath);
 
-  // Clear the distribution maps
-  m_sizeDistribution.clear ();
-  m_intervalDistribution.clear ();
+    // Clear the distribution maps
+    m_sizeDistribution.clear();
+    m_intervalDistribution.clear();
 
+    double increment;
+    double currProb;
+    uint32_t readSize;
+    double readInterval;
 
-  double increment;
-  double currProb;
-  uint32_t readSize;
-  double readInterval;
+    // Read the file with the distribution for the size
+    std::ifstream finSize(sizeCdfFilePath.c_str());
+    NS_ABORT_MSG_IF(!finSize.is_open(), "Cannot open file " + sizeCdfFilePath);
 
-  // Read the file with the distribution for the size
-  std::ifstream finSize (sizeCdfFilePath.c_str ());
-  NS_ABORT_MSG_IF (!finSize.is_open (), "Cannot open file " + sizeCdfFilePath);
-
-  finSize >> increment;
-  currProb = 0;
-  while (finSize.good () && finSize >> readSize)
+    finSize >> increment;
+    currProb = 0;
+    while (finSize.good() && finSize >> readSize)
     {
-      if (currProb > 1)
+        if (currProb > 1)
         {
-          currProb = 1;
+            currProb = 1;
         }
-      m_sizeDistribution [currProb] = readSize;
-      currProb += increment;
+        m_sizeDistribution[currProb] = readSize;
+        currProb += increment;
     }
-  m_sizeDistribution [1] = readSize;
+    m_sizeDistribution[1] = readSize;
 
-  // Read the file with the distribution for the interval
-  std::ifstream finInterval (intervalCdfFilePath.c_str ());
-  NS_ABORT_MSG_IF (!finInterval.is_open (), "Cannot open file " + intervalCdfFilePath);
+    // Read the file with the distribution for the interval
+    std::ifstream finInterval(intervalCdfFilePath.c_str());
+    NS_ABORT_MSG_IF(!finInterval.is_open(), "Cannot open file " + intervalCdfFilePath);
 
-  finInterval >> increment;
-  currProb = 0;
-  while (finInterval.good () && finInterval >> readInterval)
+    finInterval >> increment;
+    currProb = 0;
+    while (finInterval.good() && finInterval >> readInterval)
     {
-      if (currProb > 1)
+        if (currProb > 1)
         {
-          currProb = 1;
+            currProb = 1;
         }
-      m_intervalDistribution [currProb] = readInterval;
-      currProb += increment;
+        m_intervalDistribution[currProb] = readInterval;
+        currProb += increment;
     }
-  m_intervalDistribution [1] = readInterval;
+    m_intervalDistribution[1] = readInterval;
 }
 
 void
 PscVideoStreaming::LoadCdfs()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  double boostPctSize = (1 - m_boostPercentile / 100);
+    double boostPctSize = (1 - m_boostPercentile / 100);
 
-  m_sizeErv = CreateObjectWithAttributes<EmpiricalRandomVariable> ("Interpolate", BooleanValue (true));
-  m_intervalErv = CreateObjectWithAttributes<EmpiricalRandomVariable> ("Interpolate", BooleanValue (true));
-  m_sizeErvBoost = CreateObjectWithAttributes<EmpiricalRandomVariable> ("Interpolate", BooleanValue (true));
-  m_intervalErvBoost = CreateObjectWithAttributes<EmpiricalRandomVariable> ("Interpolate", BooleanValue (true));
+    m_sizeErv =
+        CreateObjectWithAttributes<EmpiricalRandomVariable>("Interpolate", BooleanValue(true));
+    m_intervalErv =
+        CreateObjectWithAttributes<EmpiricalRandomVariable>("Interpolate", BooleanValue(true));
+    m_sizeErvBoost =
+        CreateObjectWithAttributes<EmpiricalRandomVariable>("Interpolate", BooleanValue(true));
+    m_intervalErvBoost =
+        CreateObjectWithAttributes<EmpiricalRandomVariable>("Interpolate", BooleanValue(true));
 
+    // Size
+    double oldProb = 0;
+    uint32_t oldSize = 0;
+    bool boostCdfStarted = false;
 
-  // Size
-  double oldProb = 0;
-  uint32_t oldSize = 0;
-  bool boostCdfStarted = false;
-
-  for (auto it = m_sizeDistribution.begin (); it != m_sizeDistribution.end (); it++)
+    for (auto it = m_sizeDistribution.begin(); it != m_sizeDistribution.end(); it++)
     {
-      m_sizeErv->CDF (it->second, it->first);
+        m_sizeErv->CDF(it->second, it->first);
 
-      // Check if we are in the probability range of the boost
-      if (it->first >= (m_boostPercentile / 100))
+        // Check if we are in the probability range of the boost
+        if (it->first >= (m_boostPercentile / 100))
         {
-          if (!boostCdfStarted)
+            if (!boostCdfStarted)
             {
                 auto interpolatedVal = static_cast<uint32_t>(
                     oldSize + (((m_boostPercentile / 100) - oldProb) / (it->first - oldProb)) *
@@ -210,163 +218,166 @@ PscVideoStreaming::LoadCdfs()
                 m_sizeErvBoost->CDF(interpolatedVal, 0);
                 boostCdfStarted = true;
             }
-          m_sizeErvBoost->CDF (it->second, (it->first - (m_boostPercentile / 100)) / boostPctSize);
+            m_sizeErvBoost->CDF(it->second, (it->first - (m_boostPercentile / 100)) / boostPctSize);
         }
-      oldProb = it->first;
-      oldSize = it->second;
+        oldProb = it->first;
+        oldSize = it->second;
     }
-  m_sizeErv->CDF (oldSize, 1);
-  m_sizeErvBoost->CDF (oldSize, 1);
+    m_sizeErv->CDF(oldSize, 1);
+    m_sizeErvBoost->CDF(oldSize, 1);
 
+    // Interval
+    double oldInterval = 0;
+    bool boostCdfFinished = false;
 
-  // Interval
-  double oldInterval = 0;
-  bool boostCdfFinished = false;
-
-  for (auto it = m_intervalDistribution.begin (); it != m_intervalDistribution.end (); it++)
+    for (auto it = m_intervalDistribution.begin(); it != m_intervalDistribution.end(); it++)
     {
-      m_intervalErv->CDF (it->second, it->first);
+        m_intervalErv->CDF(it->second, it->first);
 
-      // Check if we are in the probability range of the boost
-      if (it->first < boostPctSize)
+        // Check if we are in the probability range of the boost
+        if (it->first < boostPctSize)
         {
-          m_intervalErvBoost->CDF (it->second, it->first / boostPctSize);
+            m_intervalErvBoost->CDF(it->second, it->first / boostPctSize);
         }
-      else
+        else
         {
-          if (!boostCdfFinished)
+            if (!boostCdfFinished)
             {
-              m_intervalErvBoost->CDF (it->second, 1);
-              boostCdfFinished = true;
+                m_intervalErvBoost->CDF(it->second, 1);
+                boostCdfFinished = true;
             }
         }
-      oldInterval = it->second;
+        oldInterval = it->second;
     }
 
-  m_intervalErv->CDF (oldInterval, 1);
+    m_intervalErv->CDF(oldInterval, 1);
 }
 
 void
 PscVideoStreaming::StartApplication()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  LoadCdfs ();
+    LoadCdfs();
 
-  m_sequenceNumber = 0;
-  m_boostPacketsLeft = m_boostPacketCount;
+    m_sequenceNumber = 0;
+    m_boostPacketsLeft = m_boostPacketCount;
 
-  if (m_socket == nullptr)
+    if (m_socket == nullptr)
     {
-      m_socket = Socket::CreateSocket (GetNode (), UdpSocketFactory::GetTypeId ());
-      if (Ipv4Address::IsMatchingType (m_receiverAddress))
+        m_socket = Socket::CreateSocket(GetNode(), UdpSocketFactory::GetTypeId());
+        if (Ipv4Address::IsMatchingType(m_receiverAddress))
         {
-          m_socket->Bind ();
-          m_socket->Connect (InetSocketAddress (Ipv4Address::ConvertFrom (m_receiverAddress), m_receiverPort));
+            m_socket->Bind();
+            m_socket->Connect(
+                InetSocketAddress(Ipv4Address::ConvertFrom(m_receiverAddress), m_receiverPort));
         }
-      else if (Ipv6Address::IsMatchingType (m_receiverAddress))
+        else if (Ipv6Address::IsMatchingType(m_receiverAddress))
         {
-          m_socket->Bind6 ();
-          m_socket->Connect (Inet6SocketAddress (Ipv6Address::ConvertFrom (m_receiverAddress), m_receiverPort));
+            m_socket->Bind6();
+            m_socket->Connect(
+                Inet6SocketAddress(Ipv6Address::ConvertFrom(m_receiverAddress), m_receiverPort));
         }
-      else
+        else
         {
-          NS_ABORT_MSG ("Invalid receiver address type");
+            NS_ABORT_MSG("Invalid receiver address type");
         }
     }
 
-  m_socket->SetRecvCallback (MakeNullCallback <void, Ptr <Socket> > ());
+    m_socket->SetRecvCallback(MakeNullCallback<void, Ptr<Socket>>());
 
-  Send ();
+    Send();
 }
 
 void
 PscVideoStreaming::StopApplication()
 {
-  NS_LOG_FUNCTION (this);
-  m_socket->Close ();
-  m_socket = nullptr;
+    NS_LOG_FUNCTION(this);
+    m_socket->Close();
+    m_socket = nullptr;
 }
 
 void
 PscVideoStreaming::Send()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  if (Simulator::Now () < m_stopTime && m_socket)
+    if (Simulator::Now() < m_stopTime && m_socket)
     {
-      uint32_t pending = m_boostPacketsLeft > 0 ? m_sizeErvBoost->GetInteger () : m_sizeErv->GetInteger ();
-      Ptr<Packet> p;
+        uint32_t pending =
+            m_boostPacketsLeft > 0 ? m_sizeErvBoost->GetInteger() : m_sizeErv->GetInteger();
+        Ptr<Packet> p;
 
-      while (pending > 0)
+        while (pending > 0)
         {
-          SeqTsSizeHeader stsh;
-          if (pending <= stsh.GetSerializedSize ())
+            SeqTsSizeHeader stsh;
+            if (pending <= stsh.GetSerializedSize())
             {
-              p = Create <Packet> (0); //minimum packet size will be header size
+                p = Create<Packet>(0); // minimum packet size will be header size
             }
-          else if (pending < m_maxUdpPayloadSize)
+            else if (pending < m_maxUdpPayloadSize)
             {
-              p = Create <Packet> (pending - stsh.GetSerializedSize ());
+                p = Create<Packet>(pending - stsh.GetSerializedSize());
             }
-          else
+            else
             {
-              p = Create <Packet> (m_maxUdpPayloadSize - stsh.GetSerializedSize ());
+                p = Create<Packet>(m_maxUdpPayloadSize - stsh.GetSerializedSize());
             }
 
-          stsh.SetSeq (++m_sequenceNumber);
-          stsh.SetSize (p->GetSize ());
-          p->AddHeader (stsh);
+            stsh.SetSeq(++m_sequenceNumber);
+            stsh.SetSize(p->GetSize());
+            p->AddHeader(stsh);
 
-          m_socket->Send (p);
-          m_txTrace (p);
-          NS_LOG_DEBUG ("Sending packet with size " << p->GetSize () << " Bytes");
+            m_socket->Send(p);
+            m_txTrace(p);
+            NS_LOG_DEBUG("Sending packet with size " << p->GetSize() << " Bytes");
 
-          if (pending > p->GetSize ())
+            if (pending > p->GetSize())
             {
-              pending -= p->GetSize ();
+                pending -= p->GetSize();
             }
-          else
+            else
             {
-              pending = 0;
+                pending = 0;
             }
         }
 
-      Time interval;
-      if (m_boostPacketsLeft > 0)
+        Time interval;
+        if (m_boostPacketsLeft > 0)
         {
-          interval = Time::FromDouble (m_intervalErvBoost->GetValue (), Time::MS);
-          m_boostPacketsLeft--;
+            interval = Time::FromDouble(m_intervalErvBoost->GetValue(), Time::MS);
+            m_boostPacketsLeft--;
         }
-      else
+        else
         {
-          interval = Time::FromDouble (m_intervalErv->GetValue (), Time::MS);
+            interval = Time::FromDouble(m_intervalErv->GetValue(), Time::MS);
         }
 
-      if (Simulator::Now () + interval < m_stopTime)
+        if (Simulator::Now() + interval < m_stopTime)
         {
-          Simulator::Schedule (interval, &PscVideoStreaming::Send, this);
+            Simulator::Schedule(interval, &PscVideoStreaming::Send, this);
         }
     }
 }
 
 void
-PscVideoStreaming::SetDistributionName (std::string distributionName)
+PscVideoStreaming::SetDistributionName(std::string distributionName)
 {
-  NS_LOG_FUNCTION (this << distributionName);
+    NS_LOG_FUNCTION(this << distributionName);
 
-  m_distributionName = distributionName;
+    m_distributionName = distributionName;
 
-  m_sizeDistribution = PscVideoStreamingDistributions::GetSizeDistribution (m_distributionName);
-  m_intervalDistribution = PscVideoStreamingDistributions::GetIntervalDistribution (m_distributionName);
+    m_sizeDistribution = PscVideoStreamingDistributions::GetSizeDistribution(m_distributionName);
+    m_intervalDistribution =
+        PscVideoStreamingDistributions::GetIntervalDistribution(m_distributionName);
 }
 
 std::string
 PscVideoStreaming::GetDistributionName() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_distributionName;
+    return m_distributionName;
 }
 
 } // namespace psc

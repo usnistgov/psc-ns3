@@ -29,10 +29,7 @@
  * employees is not subject to copyright protection within the United States.
  */
 
-#include <ns3/log.h>
-#include <ns3/object.h>
-#include <ns3/ptr.h>
-#include <ns3/type-id.h>
+#include "mcptt-emerg-alert-machine.h"
 
 #include "mcptt-call-machine-grp-basic.h"
 #include "mcptt-call-msg.h"
@@ -40,137 +37,141 @@
 #include "mcptt-ptt-app.h"
 #include "mcptt-timer.h"
 
-#include "mcptt-emerg-alert-machine.h"
+#include <ns3/log.h>
+#include <ns3/object.h>
+#include <ns3/ptr.h>
+#include <ns3/type-id.h>
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("McpttEmergAlertMachine");
+NS_LOG_COMPONENT_DEFINE("McpttEmergAlertMachine");
 
-namespace psc {
+namespace psc
+{
 
 /** McpttEmergAlertMachine - begin **/
-NS_OBJECT_ENSURE_REGISTERED (McpttEmergAlertMachine);
+NS_OBJECT_ENSURE_REGISTERED(McpttEmergAlertMachine);
 
 TypeId
 McpttEmergAlertMachine::GetTypeId()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+    NS_LOG_FUNCTION_NOARGS();
 
-  static TypeId tid = TypeId ("ns3::psc::McpttEmergAlertMachine")
-    .SetParent<Object> ()
-  ;
+    static TypeId tid = TypeId("ns3::psc::McpttEmergAlertMachine").SetParent<Object>();
 
-  return tid;
+    return tid;
 }
 
 McpttEmergAlertMachine::McpttEmergAlertMachine()
     : Object()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 McpttEmergAlertMachine::~McpttEmergAlertMachine()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 TypeId
 McpttEmergAlertMachine::GetInstanceTypeId() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return McpttEmergAlertMachine::GetTypeId ();
+    return McpttEmergAlertMachine::GetTypeId();
 }
+
 /** McpttEmergAlertMachine - end **/
 
 /** McpttCallMachineNull - begin **/
-NS_OBJECT_ENSURE_REGISTERED (McpttEmergAlertMachineNull);
+NS_OBJECT_ENSURE_REGISTERED(McpttEmergAlertMachineNull);
 
 TypeId
 McpttEmergAlertMachineNull::GetTypeId()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+    NS_LOG_FUNCTION_NOARGS();
 
-  static TypeId tid = TypeId ("ns3::psc::McpttEmergAlertMachineNull")
-    .SetParent<McpttEmergAlertMachine> ()
-    .AddConstructor<McpttEmergAlertMachineNull> ()
-  ;
+    static TypeId tid = TypeId("ns3::psc::McpttEmergAlertMachineNull")
+                            .SetParent<McpttEmergAlertMachine>()
+                            .AddConstructor<McpttEmergAlertMachineNull>();
 
-  return tid;
+    return tid;
 }
 
 McpttEmergAlertMachineNull::McpttEmergAlertMachineNull()
     : McpttEmergAlertMachine()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 McpttEmergAlertMachineNull::~McpttEmergAlertMachineNull()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
 McpttEmergAlertMachineNull::CancelEmergAlert()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 TypeId
 McpttEmergAlertMachineNull::GetInstanceTypeId() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return McpttEmergAlertMachineNull::GetTypeId ();
+    return McpttEmergAlertMachineNull::GetTypeId();
 }
 
 bool
 McpttEmergAlertMachineNull::IsInEmergState() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return false;
+    return false;
 }
 
 bool
 McpttEmergAlertMachineNull::IsStarted() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return true;
+    return true;
 }
 
 void
-McpttEmergAlertMachineNull::ReceiveGrpCallEmergAlert (const McpttCallMsgGrpEmergAlert& msg)
+McpttEmergAlertMachineNull::ReceiveGrpCallEmergAlert(const McpttCallMsgGrpEmergAlert& msg)
 {
-  NS_LOG_FUNCTION (this << msg);
+    NS_LOG_FUNCTION(this << msg);
 }
 
 void
-McpttEmergAlertMachineNull::ReceiveGrpCallEmergAlertCancel (const McpttCallMsgGrpEmergAlertCancel& msg)
+McpttEmergAlertMachineNull::ReceiveGrpCallEmergAlertCancel(
+    const McpttCallMsgGrpEmergAlertCancel& msg)
 {
-  NS_LOG_FUNCTION (this << msg);
+    NS_LOG_FUNCTION(this << msg);
 }
 
 void
 McpttEmergAlertMachineNull::SendEmergAlert()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
 McpttEmergAlertMachineNull::Start()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
 McpttEmergAlertMachineNull::Stop()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
+
 /** McpttCallMachineNull - end **/
 
 } // namespace psc
 } // namespace ns3
-

@@ -82,11 +82,11 @@ class NoBackhaulEpcHelper : public EpcHelper
     void ActivateSidelinkBearer(Ptr<NetDevice> ueDevice, Ptr<LteSlTft> tft) override;
     void DeactivateSidelinkBearer(Ptr<NetDevice> ueDevice, Ptr<LteSlTft> tft) override;
     void RemoteUeContextConnected(uint64_t relayImsi,
-                                          uint64_t ueImsi,
-                                          uint8_t ipv6Prefix[8]) override;
+                                  uint64_t ueImsi,
+                                  uint8_t ipv6Prefix[8]) override;
     void RemoteUeContextDisconnected(uint64_t relayImsi,
-                                             uint64_t ueImsi,
-                                             uint8_t ipv6Prefix[8]) override;
+                                     uint64_t ueImsi,
+                                     uint8_t ipv6Prefix[8]) override;
     Ptr<Node> GetSgwNode() const override;
     Ptr<Node> GetPgwNode() const override;
     Ipv4InterfaceContainer AssignUeIpv4Address(NetDeviceContainer ueDevices) override;

@@ -29,73 +29,82 @@
  * employees is not subject to copyright protection within the United States.
  */
 
-#include <string>
+#include "mcptt-server-helper.h"
 
-#include <ns3/names.h>
 #include <ns3/mcptt-call.h>
 #include <ns3/mcptt-on-network-floor-arbitrator.h>
 #include <ns3/mcptt-on-network-floor-dual-control.h>
 #include <ns3/mcptt-on-network-floor-participant.h>
-#include <ns3/mcptt-server-app.h>
 #include <ns3/mcptt-on-network-floor-towards-participant.h>
 #include <ns3/mcptt-ptt-app.h>
+#include <ns3/mcptt-server-app.h>
+#include <ns3/names.h>
 
-#include "mcptt-server-helper.h"
+#include <string>
 
-namespace ns3 {
-namespace psc {
+namespace ns3
+{
+namespace psc
+{
 
 McpttServerHelper::McpttServerHelper()
 {
-  m_serverFactory.SetTypeId (McpttServerApp::GetTypeId ());
+    m_serverFactory.SetTypeId(McpttServerApp::GetTypeId());
 }
 
-McpttServerHelper::~McpttServerHelper ()
-{ }
-
-Ptr<McpttServerApp>
-McpttServerHelper::Install (Ptr<Node> node)
+McpttServerHelper::~McpttServerHelper()
 {
-  return (InstallPriv (node));
 }
 
 Ptr<McpttServerApp>
-McpttServerHelper::Install (const std::string& nodeName)
+McpttServerHelper::Install(Ptr<Node> node)
 {
-  Ptr<Node> node = Names::Find<Node> (nodeName);
+    return (InstallPriv(node));
+}
 
-  return (InstallPriv (node));
+Ptr<McpttServerApp>
+McpttServerHelper::Install(const std::string& nodeName)
+{
+    Ptr<Node> node = Names::Find<Node>(nodeName);
+
+    return (InstallPriv(node));
 }
 
 void
-McpttServerHelper::SetServerAttributes (
-  std::string n0, const AttributeValue& v0,
-  std::string n1, const AttributeValue& v1,
-  std::string n2, const AttributeValue& v2,
-  std::string n3, const AttributeValue& v3,
-  std::string n4, const AttributeValue& v4,
-  std::string n5, const AttributeValue& v5,
-  std::string n6, const AttributeValue& v6,
-  std::string n7, const AttributeValue& v7)
+McpttServerHelper::SetServerAttributes(std::string n0,
+                                       const AttributeValue& v0,
+                                       std::string n1,
+                                       const AttributeValue& v1,
+                                       std::string n2,
+                                       const AttributeValue& v2,
+                                       std::string n3,
+                                       const AttributeValue& v3,
+                                       std::string n4,
+                                       const AttributeValue& v4,
+                                       std::string n5,
+                                       const AttributeValue& v5,
+                                       std::string n6,
+                                       const AttributeValue& v6,
+                                       std::string n7,
+                                       const AttributeValue& v7)
 {
-  m_serverFactory.Set (n0, v0);
-  m_serverFactory.Set (n1, v1);
-  m_serverFactory.Set (n2, v2);
-  m_serverFactory.Set (n3, v3);
-  m_serverFactory.Set (n4, v4);
-  m_serverFactory.Set (n5, v5);
-  m_serverFactory.Set (n6, v6);
-  m_serverFactory.Set (n7, v7);
+    m_serverFactory.Set(n0, v0);
+    m_serverFactory.Set(n1, v1);
+    m_serverFactory.Set(n2, v2);
+    m_serverFactory.Set(n3, v3);
+    m_serverFactory.Set(n4, v4);
+    m_serverFactory.Set(n5, v5);
+    m_serverFactory.Set(n6, v6);
+    m_serverFactory.Set(n7, v7);
 }
 
 Ptr<McpttServerApp>
-McpttServerHelper::InstallPriv (Ptr<Node> node)
+McpttServerHelper::InstallPriv(Ptr<Node> node)
 {
-  Ptr<McpttServerApp> app = m_serverFactory.Create<McpttServerApp> ();
-  node->AddApplication (app);
-  return app;
+    Ptr<McpttServerApp> app = m_serverFactory.Create<McpttServerApp>();
+    node->AddApplication(app);
+    return app;
 }
 
 } // namespace psc
 } // namespace ns3
-

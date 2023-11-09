@@ -29,7 +29,9 @@
  * employees is not subject to copyright protection within the United States.
  */
 
-#include <list>
+#include "mcptt-floor-queue.h"
+
+#include "mcptt-queued-user-info.h"
 
 #include <ns3/log.h>
 #include <ns3/object.h>
@@ -37,242 +39,242 @@
 #include <ns3/type-id.h>
 #include <ns3/uinteger.h>
 
-#include "mcptt-floor-queue.h"
-#include "mcptt-queued-user-info.h"
+#include <list>
 
-namespace ns3 {
+namespace ns3
+{
 
-namespace psc {
+namespace psc
+{
 
-NS_LOG_COMPONENT_DEFINE ("McpttFloorQueue");
+NS_LOG_COMPONENT_DEFINE("McpttFloorQueue");
 
-NS_OBJECT_ENSURE_REGISTERED (McpttFloorQueue);
+NS_OBJECT_ENSURE_REGISTERED(McpttFloorQueue);
 
 TypeId
 McpttFloorQueue::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::psc::McpttFloorQueue")
-    .SetParent<Object> ()
-    .AddConstructor<McpttFloorQueue> ()
-    .AddAttribute ("Capacity", "The maximum number of users that can be queued.",
-                   UintegerValue (0),
-                   MakeUintegerAccessor (&McpttFloorQueue::m_capacity),
-                   MakeUintegerChecker<uint16_t> ())
-  ;
+    static TypeId tid = TypeId("ns3::psc::McpttFloorQueue")
+                            .SetParent<Object>()
+                            .AddConstructor<McpttFloorQueue>()
+                            .AddAttribute("Capacity",
+                                          "The maximum number of users that can be queued.",
+                                          UintegerValue(0),
+                                          MakeUintegerAccessor(&McpttFloorQueue::m_capacity),
+                                          MakeUintegerChecker<uint16_t>());
 
-  return tid;
+    return tid;
 }
 
-McpttFloorQueue::McpttFloorQueue (uint16_t capacity)
-  : Object (),
-    m_users (std::list<McpttQueuedUserInfo> ())
+McpttFloorQueue::McpttFloorQueue(uint16_t capacity)
+    : Object(),
+      m_users(std::list<McpttQueuedUserInfo>())
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-McpttFloorQueue::McpttFloorQueue (const std::list<McpttQueuedUserInfo>& users, uint16_t capacity)
-  : Object (),
-    m_capacity (capacity),
-    m_users (users)
+McpttFloorQueue::McpttFloorQueue(const std::list<McpttQueuedUserInfo>& users, uint16_t capacity)
+    : Object(),
+      m_capacity(capacity),
+      m_users(users)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 McpttFloorQueue::~McpttFloorQueue()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
 McpttFloorQueue::Clear()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  m_users.clear ();
+    m_users.clear();
 }
 
 bool
-McpttFloorQueue::Contains (uint32_t userId) const
+McpttFloorQueue::Contains(uint32_t userId) const
 {
-  uint16_t position = Find (userId);
+    uint16_t position = Find(userId);
 
-  bool contained = (position > 0);
+    bool contained = (position > 0);
 
-  return contained;
+    return contained;
 }
 
 McpttQueuedUserInfo
 McpttFloorQueue::Dequeue()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  McpttQueuedUserInfo user = Peek ();
+    McpttQueuedUserInfo user = Peek();
 
-  McpttFloorMsgFieldQueuePositionInfo queueInfo = user.GetInfo ();
-  queueInfo.SetPosition (0);
-  user.SetInfo (queueInfo);
+    McpttFloorMsgFieldQueuePositionInfo queueInfo = user.GetInfo();
+    queueInfo.SetPosition(0);
+    user.SetInfo(queueInfo);
 
-  m_users.pop_front ();
+    m_users.pop_front();
 
-  return user;
+    return user;
 }
 
 void
-McpttFloorQueue::Enqueue (McpttQueuedUserInfo& user)
+McpttFloorQueue::Enqueue(McpttQueuedUserInfo& user)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  uint16_t position = 1;
-  auto it = m_users.begin();
-  while (it != m_users.end () && user.GetInfo ().GetPriority () <= it->GetInfo ().GetPriority ())
+    uint16_t position = 1;
+    auto it = m_users.begin();
+    while (it != m_users.end() && user.GetInfo().GetPriority() <= it->GetInfo().GetPriority())
     {
-      it++;
+        it++;
     }
-  McpttFloorMsgFieldQueuePositionInfo queuedInfo = user.GetInfo ();
-  queuedInfo.SetPosition (position);
-  user.SetInfo (queuedInfo);
-  m_users.insert (it, user);
+    McpttFloorMsgFieldQueuePositionInfo queuedInfo = user.GetInfo();
+    queuedInfo.SetPosition(position);
+    user.SetInfo(queuedInfo);
+    m_users.insert(it, user);
 }
 
 uint16_t
-McpttFloorQueue::Find (uint32_t userId) const
+McpttFloorQueue::Find(uint32_t userId) const
 {
-  NS_LOG_FUNCTION (this << userId);
+    NS_LOG_FUNCTION(this << userId);
 
-  uint16_t position = 0;
-  McpttQueuedUserInfo temp;
+    uint16_t position = 0;
+    McpttQueuedUserInfo temp;
 
-  View (userId, temp, position);
+    View(userId, temp, position);
 
-  return position;
+    return position;
 }
 
 uint16_t
 McpttFloorQueue::GetCount() const
 {
-  uint16_t count = m_users.size ();
+    uint16_t count = m_users.size();
 
-  return count;
+    return count;
 }
 
 TypeId
 McpttFloorQueue::GetInstanceTypeId() const
 {
-  return McpttFloorQueue::GetTypeId ();
+    return McpttFloorQueue::GetTypeId();
 }
 
 bool
 McpttFloorQueue::IsAtCapacity() const
 {
-  uint16_t count = GetCount ();
+    uint16_t count = GetCount();
 
-  bool isAtCapacity = (count >= m_capacity);
+    bool isAtCapacity = (count >= m_capacity);
 
-  return isAtCapacity;
+    return isAtCapacity;
 }
 
 bool
 McpttFloorQueue::IsEnabled() const
 {
-  bool isEnabled = (m_capacity > 0);
+    bool isEnabled = (m_capacity > 0);
 
-  return isEnabled;
+    return isEnabled;
 }
 
 bool
 McpttFloorQueue::HasNext() const
 {
-  uint16_t count = GetCount ();
+    uint16_t count = GetCount();
 
-  bool hasNext = (count > 0);
+    bool hasNext = (count > 0);
 
-  return hasNext;
+    return hasNext;
 }
 
 McpttQueuedUserInfo
 McpttFloorQueue::Peek() const
 {
-  McpttQueuedUserInfo next = m_users.front ();
+    McpttQueuedUserInfo next = m_users.front();
 
-  McpttFloorMsgFieldQueuePositionInfo queueInfo = next.GetInfo ();
-  queueInfo.SetPosition (1);
-  next.SetInfo (queueInfo);
+    McpttFloorMsgFieldQueuePositionInfo queueInfo = next.GetInfo();
+    queueInfo.SetPosition(1);
+    next.SetInfo(queueInfo);
 
-  return next;
+    return next;
 }
 
 bool
-McpttFloorQueue::Pull (uint32_t userId)
+McpttFloorQueue::Pull(uint32_t userId)
 {
-  NS_LOG_FUNCTION (this << userId);
+    NS_LOG_FUNCTION(this << userId);
 
-  for (auto it = m_users.begin(); it != m_users.end(); it++)
-  {
-      McpttFloorMsgFieldUserId idField = it->GetUserId ();
-      uint32_t tempUserId = idField.GetUserId ();
+    for (auto it = m_users.begin(); it != m_users.end(); it++)
+    {
+        McpttFloorMsgFieldUserId idField = it->GetUserId();
+        uint32_t tempUserId = idField.GetUserId();
 
-      if (tempUserId == userId)
+        if (tempUserId == userId)
         {
-          m_users.erase (it);
-          return true;
+            m_users.erase(it);
+            return true;
         }
     }
 
-  return false;
+    return false;
 }
 
 void
-McpttFloorQueue::UpdateUsers (const std::list<McpttQueuedUserInfo>& users)
+McpttFloorQueue::UpdateUsers(const std::list<McpttQueuedUserInfo>& users)
 {
-  NS_LOG_FUNCTION (this << &users);
-  m_users = users;
+    NS_LOG_FUNCTION(this << &users);
+    m_users = users;
 }
 
 bool
-McpttFloorQueue::View (uint32_t userId, McpttQueuedUserInfo& info, uint16_t& position) const
+McpttFloorQueue::View(uint32_t userId, McpttQueuedUserInfo& info, uint16_t& position) const
 {
-  NS_LOG_FUNCTION (this << userId);
+    NS_LOG_FUNCTION(this << userId);
 
-  position = 0;
-  uint16_t count = 1;
-  for (auto it = m_users.begin(); it != m_users.end() && position == 0; it++)
-  {
-      McpttFloorMsgFieldUserId idField = it->GetUserId ();
-      uint32_t tempUserId = idField.GetUserId ();
+    position = 0;
+    uint16_t count = 1;
+    for (auto it = m_users.begin(); it != m_users.end() && position == 0; it++)
+    {
+        McpttFloorMsgFieldUserId idField = it->GetUserId();
+        uint32_t tempUserId = idField.GetUserId();
 
-      if (tempUserId == userId)
+        if (tempUserId == userId)
         {
-          position = count;
-          info = *it;
+            position = count;
+            info = *it;
 
-          McpttFloorMsgFieldQueuePositionInfo queueInfo = info.GetInfo ();
-          queueInfo.SetPosition (position);
-          info.SetInfo (queueInfo);
+            McpttFloorMsgFieldQueuePositionInfo queueInfo = info.GetInfo();
+            queueInfo.SetPosition(position);
+            info.SetInfo(queueInfo);
         }
 
-      count++;
+        count++;
     }
 
-  bool found = (position > 0);
+    bool found = (position > 0);
 
-  return found;
+    return found;
 }
 
 std::list<McpttQueuedUserInfo>
 McpttFloorQueue::ViewUsers() const
 {
-  return m_users;
+    return m_users;
 }
 
 void
 McpttFloorQueue::DoDispose()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  m_capacity = 0;
-  m_users.clear ();
+    m_capacity = 0;
+    m_users.clear();
 }
 
 } // namespace psc
 } // namespace ns3
-

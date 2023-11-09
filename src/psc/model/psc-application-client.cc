@@ -33,318 +33,328 @@
  * subject to copyright protection within the United States.
  */
 
-#include "ns3/string.h"
-#include "ns3/log.h"
-#include "ns3/packet.h"
-#include "ns3/uinteger.h"
-#include "ns3/double.h"
-#include "ns3/socket.h"
-#include <ns3/pointer.h>
-#include "ns3/simulator.h"
-
 #include "psc-application-client.h"
 
-namespace ns3 {
+#include "ns3/double.h"
+#include "ns3/log.h"
+#include "ns3/packet.h"
+#include "ns3/simulator.h"
+#include "ns3/socket.h"
+#include "ns3/string.h"
+#include "ns3/uinteger.h"
+#include <ns3/pointer.h>
 
-NS_LOG_COMPONENT_DEFINE ("PscApplicationClient");
+namespace ns3
+{
 
-namespace psc {
+NS_LOG_COMPONENT_DEFINE("PscApplicationClient");
 
-NS_OBJECT_ENSURE_REGISTERED (PscApplicationClient);
+namespace psc
+{
+
+NS_OBJECT_ENSURE_REGISTERED(PscApplicationClient);
 
 TypeId
 PscApplicationClient::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::psc::PscApplicationClient")
-    .SetParent<PscApplication> ()
-    .AddConstructor<PscApplicationClient> ()
-    .AddAttribute ("PacketSize",
-                   "The packet size for this application",
-                   UintegerValue (100),
-                   MakeUintegerAccessor (&PscApplicationClient::m_packetSize),
-                   MakeUintegerChecker<uint32_t> (1))
-    .AddAttribute ("RemoteAddress",
-                   "The server Address",
-                   AddressValue (),
-                   MakeAddressAccessor (&PscApplicationClient::m_peerAddress),
-                   MakeAddressChecker ())
-    .AddAttribute ("RemotePort",
-                   "The server port",
-                   UintegerValue (100),
-                   MakeUintegerAccessor (&PscApplicationClient::m_peerPort),
-                   MakeUintegerChecker<uint16_t> ())
-    .AddAttribute ("PacketsPerSession",
-                   "Stream that generates the number of packets per session",
-                   StringValue ("ns3::UniformRandomVariable[Min=0|Max=0]"),
-                   MakePointerAccessor (&PscApplicationClient::m_packetsPerSessionRandomVariable),
-                   MakePointerChecker<RandomVariableStream> ())
-    .AddAttribute ("PacketInterval",
-                   "Stream that generates time between packets",
-                   StringValue ("ns3::UniformRandomVariable[Min=10000|Max=10000]"),
-                   MakePointerAccessor (&PscApplicationClient::m_packetIntervalRandomVariable),
-                   MakePointerChecker<RandomVariableStream> ())
-    .AddAttribute ("SessionInterval",
-                   "Stream that generates the interval between sessions",
-                   StringValue ("ns3::UniformRandomVariable[Min=0|Max=0]"),
-                   MakePointerAccessor (&PscApplicationClient::m_sessionIntervalRandomVariable),
-                   MakePointerChecker<RandomVariableStream> ())
-  ;
-  return tid;
+    static TypeId tid =
+        TypeId("ns3::psc::PscApplicationClient")
+            .SetParent<PscApplication>()
+            .AddConstructor<PscApplicationClient>()
+            .AddAttribute("PacketSize",
+                          "The packet size for this application",
+                          UintegerValue(100),
+                          MakeUintegerAccessor(&PscApplicationClient::m_packetSize),
+                          MakeUintegerChecker<uint32_t>(1))
+            .AddAttribute("RemoteAddress",
+                          "The server Address",
+                          AddressValue(),
+                          MakeAddressAccessor(&PscApplicationClient::m_peerAddress),
+                          MakeAddressChecker())
+            .AddAttribute("RemotePort",
+                          "The server port",
+                          UintegerValue(100),
+                          MakeUintegerAccessor(&PscApplicationClient::m_peerPort),
+                          MakeUintegerChecker<uint16_t>())
+            .AddAttribute(
+                "PacketsPerSession",
+                "Stream that generates the number of packets per session",
+                StringValue("ns3::UniformRandomVariable[Min=0|Max=0]"),
+                MakePointerAccessor(&PscApplicationClient::m_packetsPerSessionRandomVariable),
+                MakePointerChecker<RandomVariableStream>())
+            .AddAttribute(
+                "PacketInterval",
+                "Stream that generates time between packets",
+                StringValue("ns3::UniformRandomVariable[Min=10000|Max=10000]"),
+                MakePointerAccessor(&PscApplicationClient::m_packetIntervalRandomVariable),
+                MakePointerChecker<RandomVariableStream>())
+            .AddAttribute(
+                "SessionInterval",
+                "Stream that generates the interval between sessions",
+                StringValue("ns3::UniformRandomVariable[Min=0|Max=0]"),
+                MakePointerAccessor(&PscApplicationClient::m_sessionIntervalRandomVariable),
+                MakePointerChecker<RandomVariableStream>());
+    return tid;
 }
 
-PscApplicationClient::PscApplicationClient ()
+PscApplicationClient::PscApplicationClient()
 {
-  NS_LOG_FUNCTION (this);
-  m_socket = nullptr;
-  m_sendEvent = EventId ();
-  m_packetsLeftThisSession = 0;
-  m_txBuffer = Create<Packet> ();
+    NS_LOG_FUNCTION(this);
+    m_socket = nullptr;
+    m_sendEvent = EventId();
+    m_packetsLeftThisSession = 0;
+    m_txBuffer = Create<Packet>();
 }
 
-PscApplicationClient::~PscApplicationClient ()
+PscApplicationClient::~PscApplicationClient()
 {
-  NS_LOG_FUNCTION (this);
-}
-
-void
-PscApplicationClient::SetRemote (Address ip, uint16_t port)
-{
-  NS_LOG_FUNCTION (this << ip << port);
-  m_peerAddress = ip;
-  m_peerPort = port;
+    NS_LOG_FUNCTION(this);
 }
 
 void
-PscApplicationClient::SetPacketsPerSession (Ptr<RandomVariableStream> pktsPerSession)
+PscApplicationClient::SetRemote(Address ip, uint16_t port)
 {
-  NS_LOG_FUNCTION (this << pktsPerSession);
-  m_packetsPerSessionRandomVariable = pktsPerSession;
+    NS_LOG_FUNCTION(this << ip << port);
+    m_peerAddress = ip;
+    m_peerPort = port;
 }
 
 void
-PscApplicationClient::SetPacketInterval (Ptr<RandomVariableStream> pktInterval)
+PscApplicationClient::SetPacketsPerSession(Ptr<RandomVariableStream> pktsPerSession)
 {
-  NS_LOG_FUNCTION (this << pktInterval);
-  m_packetIntervalRandomVariable = pktInterval;
+    NS_LOG_FUNCTION(this << pktsPerSession);
+    m_packetsPerSessionRandomVariable = pktsPerSession;
 }
 
 void
-PscApplicationClient::SetSessionInterval (Ptr<RandomVariableStream> sessiontInterval)
+PscApplicationClient::SetPacketInterval(Ptr<RandomVariableStream> pktInterval)
 {
-  NS_LOG_FUNCTION (this << sessiontInterval);
-  m_sessionIntervalRandomVariable = sessiontInterval;
+    NS_LOG_FUNCTION(this << pktInterval);
+    m_packetIntervalRandomVariable = pktInterval;
+}
+
+void
+PscApplicationClient::SetSessionInterval(Ptr<RandomVariableStream> sessiontInterval)
+{
+    NS_LOG_FUNCTION(this << sessiontInterval);
+    m_sessionIntervalRandomVariable = sessiontInterval;
 }
 
 void
 PscApplicationClient::DoDispose()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  m_packetsPerSessionRandomVariable = nullptr;
-  m_packetIntervalRandomVariable = nullptr;
-  m_sessionIntervalRandomVariable = nullptr;
-  m_rxBuffer = nullptr;
-  m_txBuffer = nullptr;
-  m_socket = nullptr;
-  PscApplication::DoDispose ();
-  m_packetsLeftThisSession = -1;
+    m_packetsPerSessionRandomVariable = nullptr;
+    m_packetIntervalRandomVariable = nullptr;
+    m_sessionIntervalRandomVariable = nullptr;
+    m_rxBuffer = nullptr;
+    m_txBuffer = nullptr;
+    m_socket = nullptr;
+    PscApplication::DoDispose();
+    m_packetsLeftThisSession = -1;
 }
 
 void
 PscApplicationClient::StartApplication()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  if (!m_socket)
+    if (!m_socket)
     {
-      m_socket = ns3::Socket::CreateSocket (GetNode (), m_socketTid);
-      m_socket->SetSendCallback (MakeCallback (&PscApplicationClient::TrySend, this));
-      if (Ipv4Address::IsMatchingType (m_peerAddress))
+        m_socket = ns3::Socket::CreateSocket(GetNode(), m_socketTid);
+        m_socket->SetSendCallback(MakeCallback(&PscApplicationClient::TrySend, this));
+        if (Ipv4Address::IsMatchingType(m_peerAddress))
         {
-          m_socket->Bind ();
-          m_socket->Connect (InetSocketAddress (Ipv4Address::ConvertFrom (m_peerAddress), m_peerPort));
+            m_socket->Bind();
+            m_socket->Connect(
+                InetSocketAddress(Ipv4Address::ConvertFrom(m_peerAddress), m_peerPort));
         }
-      else if (Ipv6Address::IsMatchingType (m_peerAddress))
+        else if (Ipv6Address::IsMatchingType(m_peerAddress))
         {
-          m_socket->Bind ();
-          m_socket->Connect (Inet6SocketAddress (Ipv6Address::ConvertFrom (m_peerAddress), m_peerPort));
+            m_socket->Bind();
+            m_socket->Connect(
+                Inet6SocketAddress(Ipv6Address::ConvertFrom(m_peerAddress), m_peerPort));
         }
-      else
+        else
         {
-          NS_ABORT_MSG ("Invalid address type");
+            NS_ABORT_MSG("Invalid address type");
         }
     }
-  m_socket->SetRecvCallback (MakeCallback (&PscApplicationClient::HandleRead, this));
+    m_socket->SetRecvCallback(MakeCallback(&PscApplicationClient::HandleRead, this));
 
-  // Potential for infinite loop! Be careful defining the RandomStreamVariable!
-  while (m_packetsLeftThisSession <= 0)
+    // Potential for infinite loop! Be careful defining the RandomStreamVariable!
+    while (m_packetsLeftThisSession <= 0)
     {
-      m_packetsLeftThisSession = m_packetsPerSessionRandomVariable->GetInteger ();
+        m_packetsLeftThisSession = m_packetsPerSessionRandomVariable->GetInteger();
     }
 
-  m_startStopTimeTrace (m_appName, m_startTime, (m_stopTime - Seconds (2)));
+    m_startStopTimeTrace(m_appName, m_startTime, (m_stopTime - Seconds(2)));
 
-  ScheduleTransmit (Seconds (0));
+    ScheduleTransmit(Seconds(0));
 }
 
 void
 PscApplicationClient::StopNow()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  m_stopEvent.Cancel ();
-  m_stopTime = Simulator::Now ();
-  StopApplication ();
+    m_stopEvent.Cancel();
+    m_stopTime = Simulator::Now();
+    StopApplication();
 
-  m_startStopTimeTrace (m_appName, m_startTime, m_stopTime);
+    m_startStopTimeTrace(m_appName, m_startTime, m_stopTime);
 }
 
 void
 PscApplicationClient::StopApplication()
 {
-  NS_LOG_FUNCTION (this);
-  Simulator::Cancel (m_sendEvent);
+    NS_LOG_FUNCTION(this);
+    Simulator::Cancel(m_sendEvent);
 
-  if (m_socket)
+    if (m_socket)
     {
-      m_socket->SetRecvCallback (MakeNullCallback<void, Ptr<ns3::Socket> > ());
-      m_socket->SetSendCallback (MakeNullCallback<void, Ptr<ns3::Socket>, uint32_t> ());
-      m_socket->Close ();
-      m_socket = nullptr;
+        m_socket->SetRecvCallback(MakeNullCallback<void, Ptr<ns3::Socket>>());
+        m_socket->SetSendCallback(MakeNullCallback<void, Ptr<ns3::Socket>, uint32_t>());
+        m_socket->Close();
+        m_socket = nullptr;
     }
 }
 
 void
-PscApplicationClient::ScheduleTransmit (Time t)
+PscApplicationClient::ScheduleTransmit(Time t)
 {
-  NS_LOG_FUNCTION (this << t);
-  m_sendEvent = Simulator::Schedule (t, &PscApplicationClient::Send, this);
+    NS_LOG_FUNCTION(this << t);
+    m_sendEvent = Simulator::Schedule(t, &PscApplicationClient::Send, this);
 }
 
 void
 PscApplicationClient::Send()
 {
-  NS_LOG_FUNCTION (this);
-  NS_ASSERT (m_sendEvent.IsExpired ());
+    NS_LOG_FUNCTION(this);
+    NS_ASSERT(m_sendEvent.IsExpired());
 
-  SeqTsSizeHeader stsh;
-  stsh.SetSeq (PscSequenceNumber::GetSequenceNumber ());
-  stsh.SetSize (m_packetSize);
+    SeqTsSizeHeader stsh;
+    stsh.SetSeq(PscSequenceNumber::GetSequenceNumber());
+    stsh.SetSize(m_packetSize);
 
-  Ptr<Packet> pkt = Create<Packet> (m_packetSize);
-  pkt->AddHeader (stsh);
+    Ptr<Packet> pkt = Create<Packet>(m_packetSize);
+    pkt->AddHeader(stsh);
 
-  m_txBuffer->AddAtEnd (pkt);
+    m_txBuffer->AddAtEnd(pkt);
 
-  m_txTrace (m_appName, stsh);
+    m_txTrace(m_appName, stsh);
 
-  TrySend (m_socket, m_socket->GetTxAvailable ());
+    TrySend(m_socket, m_socket->GetTxAvailable());
 
-  // 2 seconds grace period
-  if (Simulator::Now () <= (m_stopTime - Seconds (2)) )
+    // 2 seconds grace period
+    if (Simulator::Now() <= (m_stopTime - Seconds(2)))
     {
-      Time txDelay = Seconds (0);
+        Time txDelay = Seconds(0);
 
-      --m_packetsLeftThisSession;
+        --m_packetsLeftThisSession;
 
-      if (m_packetsLeftThisSession == 0)
+        if (m_packetsLeftThisSession == 0)
         {
-          // Potential for infinite loop! Be careful defining the RandomStreamVariable!
-          while (m_packetsLeftThisSession <= 0)
+            // Potential for infinite loop! Be careful defining the RandomStreamVariable!
+            while (m_packetsLeftThisSession <= 0)
             {
-              m_packetsLeftThisSession = m_packetsPerSessionRandomVariable->GetInteger ();
+                m_packetsLeftThisSession = m_packetsPerSessionRandomVariable->GetInteger();
             }
 
-          txDelay = Seconds (m_sessionIntervalRandomVariable->GetValue ());
+            txDelay = Seconds(m_sessionIntervalRandomVariable->GetValue());
         }
 
-      if (txDelay == Seconds (0))
+        if (txDelay == Seconds(0))
         {
-          txDelay = Seconds (m_packetIntervalRandomVariable->GetValue ());
+            txDelay = Seconds(m_packetIntervalRandomVariable->GetValue());
         }
 
-      ScheduleTransmit (txDelay);
+        ScheduleTransmit(txDelay);
     }
-  // else time is over. Stop transmitting, but the application will still be alive for the grace period to receive packets in transit
+    // else time is over. Stop transmitting, but the application will still be alive for the grace
+    // period to receive packets in transit
 }
 
 void
-PscApplicationClient::HandleRead (Ptr<ns3::Socket> socket)
+PscApplicationClient::HandleRead(Ptr<ns3::Socket> socket)
 {
-  NS_LOG_FUNCTION (this << socket);
+    NS_LOG_FUNCTION(this << socket);
 
-  SeqTsSizeHeader stsh;
-  Ptr<ns3::Packet> p;
-  Address from;
-  while ( (p = socket->RecvFrom (from)) )
+    SeqTsSizeHeader stsh;
+    Ptr<ns3::Packet> p;
+    Address from;
+    while ((p = socket->RecvFrom(from)))
     {
-      if (Simulator::Now () > m_stopTime)
+        if (Simulator::Now() > m_stopTime)
         {
-          break;
+            break;
         }
-      // We may have several packets in this segment, so let's remove them sequentially
-      Ptr<ns3::Packet> tmpPacket = p->Copy ();
-      while (tmpPacket)
+        // We may have several packets in this segment, so let's remove them sequentially
+        Ptr<ns3::Packet> tmpPacket = p->Copy();
+        while (tmpPacket)
         {
-          if (m_rxBuffer)
+            if (m_rxBuffer)
             {
-              m_rxBuffer->AddAtEnd (tmpPacket);
+                m_rxBuffer->AddAtEnd(tmpPacket);
             }
-          else
+            else
             {
-              m_rxBuffer = tmpPacket;
+                m_rxBuffer = tmpPacket;
             }
 
-          if (m_rxBuffer->GetSize () >= stsh.GetSerializedSize ())
+            if (m_rxBuffer->GetSize() >= stsh.GetSerializedSize())
             {
-              // We have the full header. Now check if we also have the data
-              SeqTsSizeHeader nbh;
-              m_rxBuffer->PeekHeader (nbh);
-              if (m_rxBuffer->GetSize () >= nbh.GetSize () + stsh.GetSerializedSize ())
+                // We have the full header. Now check if we also have the data
+                SeqTsSizeHeader nbh;
+                m_rxBuffer->PeekHeader(nbh);
+                if (m_rxBuffer->GetSize() >= nbh.GetSize() + stsh.GetSerializedSize())
                 {
-                  // We have the full packet. Let's process it
-                  m_rxTrace (m_appName, nbh);
+                    // We have the full packet. Let's process it
+                    m_rxTrace(m_appName, nbh);
 
-                  // Get how many bytes we need to remove from the packet we just got
-                  // bytesUsed = receivedPacketSize - (TotalSize - PayloadSize - HeaderSize)
-                  uint32_t bytesToRemove = tmpPacket->GetSize () - (m_rxBuffer->GetSize () - nbh.GetSize () - stsh.GetSerializedSize ());
-                  m_rxBuffer->RemoveAllPacketTags ();
-                  m_rxBuffer->RemoveAllByteTags ();
-                  m_rxBuffer = nullptr;
+                    // Get how many bytes we need to remove from the packet we just got
+                    // bytesUsed = receivedPacketSize - (TotalSize - PayloadSize - HeaderSize)
+                    uint32_t bytesToRemove =
+                        tmpPacket->GetSize() -
+                        (m_rxBuffer->GetSize() - nbh.GetSize() - stsh.GetSerializedSize());
+                    m_rxBuffer->RemoveAllPacketTags();
+                    m_rxBuffer->RemoveAllByteTags();
+                    m_rxBuffer = nullptr;
 
-                  // Now let's see if there is anything else in the segment
-                  tmpPacket->RemoveAtStart (bytesToRemove);
-                  if (tmpPacket->GetSize () == 0)
+                    // Now let's see if there is anything else in the segment
+                    tmpPacket->RemoveAtStart(bytesToRemove);
+                    if (tmpPacket->GetSize() == 0)
                     {
                         tmpPacket = nullptr;
                     }
                 }
-              else
+                else
                 {
-                  // We don't have the full packet. Let's wait.
-                  tmpPacket = nullptr;
+                    // We don't have the full packet. Let's wait.
+                    tmpPacket = nullptr;
                 }
             }
-          else
+            else
             {
-              // We still need to keep receiving data (we don't have the full header).
-              tmpPacket = nullptr;
+                // We still need to keep receiving data (we don't have the full header).
+                tmpPacket = nullptr;
             }
         }
     }
 }
 
 void
-PscApplicationClient::TrySend (Ptr<Socket> socket, uint32_t txSpace)
+PscApplicationClient::TrySend(Ptr<Socket> socket, uint32_t txSpace)
 {
-  uint32_t txPending = m_txBuffer->GetSize ();
+    uint32_t txPending = m_txBuffer->GetSize();
 
-  if (txSpace > 0 && txPending > 0)
+    if (txSpace > 0 && txPending > 0)
     {
-      uint32_t length = txPending < txSpace ? txPending : txSpace;
-      Ptr<Packet> fragment = m_txBuffer->CreateFragment (0, length);
-      uint32_t sent = socket->Send (fragment);
-      m_txBuffer->RemoveAtStart (sent);
+        uint32_t length = txPending < txSpace ? txPending : txSpace;
+        Ptr<Packet> fragment = m_txBuffer->CreateFragment(0, length);
+        uint32_t sent = socket->Send(fragment);
+        m_txBuffer->RemoveAtStart(sent);
     }
 }
 

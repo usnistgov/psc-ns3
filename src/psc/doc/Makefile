@@ -30,8 +30,8 @@ RESCALE = ../../../utils/rescale-pdf.sh
 
 %.eps : %.dia; $(DIA) -t eps $< -e $@
 %.png : %.dia; $(DIA) -t png $< -e $@
-%.png : %.seqdiag; $(SEQDIAG) -Tpng --no-transparency -o $@ $< 
-%.png : %.dot; $(DOT) -Tpng -o$@ $< 
+%.png : %.seqdiag; $(SEQDIAG) -Tpng --no-transparency -o $@ $<
+%.png : %.dot; $(DOT) -Tpng -o$@ $<
 %.png : %.eps; $(CONVERT) $< $@
 %.pdf : %.seqdiag
 	$(SEQDIAG) -Tpdf -o $@ $<
@@ -53,7 +53,7 @@ BUILDDIR      = build
 # Internal variables.
 PAPEROPT_a4     = -D latex_paper_size=a4
 PAPEROPT_letter = -D latex_paper_size=letter
-ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) $(SOURCE) 
+ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) $(SOURCE)
 
 .PHONY: help clean html dirhtml singlehtml pickle json htmlhelp qthelp devhelp epub latex latexpdf text man changes linkcheck doctest
 
@@ -88,7 +88,7 @@ frag: pickle
 	pushd $(BUILDDIR)/frag && ../../pickle-to-xml.py ../pickle/index.fpickle  > navigation.xml && popd
 	cp -r $(BUILDDIR)/pickle/_images $(BUILDDIR)/frag
 
-html:  $(IMAGES) 
+html:  $(IMAGES)
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."

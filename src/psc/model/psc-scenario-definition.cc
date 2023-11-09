@@ -33,190 +33,192 @@
  * subject to copyright protection within the United States.
  */
 
-#include "ns3/log.h"
-#include "ns3/abort.h"
-
 #include "psc-scenario-definition.h"
 
-namespace ns3 {
+#include "ns3/abort.h"
+#include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("PscScenarioDefinition");
-
-namespace psc {
-
-NS_OBJECT_ENSURE_REGISTERED (PscScenarioDefinition);
-
-PscScenarioDefinition::PscScenarioDefinition ()
-  : m_name ("undefined")
+namespace ns3
 {
-  NS_LOG_FUNCTION (this);
 
+NS_LOG_COMPONENT_DEFINE("PscScenarioDefinition");
+
+namespace psc
+{
+
+NS_OBJECT_ENSURE_REGISTERED(PscScenarioDefinition);
+
+PscScenarioDefinition::PscScenarioDefinition()
+    : m_name("undefined")
+{
+    NS_LOG_FUNCTION(this);
 }
 
-PscScenarioDefinition::~PscScenarioDefinition ()
+PscScenarioDefinition::~PscScenarioDefinition()
 {
-  NS_LOG_FUNCTION (this);
-  m_areas.clear ();
-  m_structures.clear ();
-  m_nodeGroups.clear ();
-  m_keyEvents.clear ();
-  m_applications.clear ();
-
+    NS_LOG_FUNCTION(this);
+    m_areas.clear();
+    m_structures.clear();
+    m_nodeGroups.clear();
+    m_keyEvents.clear();
+    m_applications.clear();
 }
 
 TypeId
 PscScenarioDefinition::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::psc::PscScenarioDefinition")
-    .SetParent<Object> ()
-    .AddConstructor<PscScenarioDefinition> ()
-  ;
+    static TypeId tid = TypeId("ns3::psc::PscScenarioDefinition")
+                            .SetParent<Object>()
+                            .AddConstructor<PscScenarioDefinition>();
 
-  return tid;
+    return tid;
 }
 
 void
-PscScenarioDefinition::SetName (std::string name)
+PscScenarioDefinition::SetName(std::string name)
 {
-  NS_LOG_FUNCTION (this << name);
-  m_name = name;
+    NS_LOG_FUNCTION(this << name);
+    m_name = name;
 }
 
 std::string
-PscScenarioDefinition::GetName () const
+PscScenarioDefinition::GetName() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_name;
+    NS_LOG_FUNCTION(this);
+    return m_name;
 }
 
 void
-PscScenarioDefinition::AddArea (AreaId id, AreaInfo area)
+PscScenarioDefinition::AddArea(AreaId id, AreaInfo area)
 {
-  NS_LOG_FUNCTION (this << id);
-  NS_ASSERT_MSG (m_areas.find (id) == m_areas.end (), "Area " << id << " already defined");
-  m_areas.insert (std::pair<AreaId, AreaInfo> (id, area));
+    NS_LOG_FUNCTION(this << id);
+    NS_ASSERT_MSG(m_areas.find(id) == m_areas.end(), "Area " << id << " already defined");
+    m_areas.insert(std::pair<AreaId, AreaInfo>(id, area));
 }
 
 PscScenarioDefinition::AreaInfo
-PscScenarioDefinition::GetArea (AreaId id) const
+PscScenarioDefinition::GetArea(AreaId id) const
 {
-  NS_LOG_FUNCTION (this << id);
+    NS_LOG_FUNCTION(this << id);
 
-  auto it = m_areas.find (id);
-  NS_ASSERT_MSG (it != m_areas.end (), "Area " << id << " not found in scenario");
-  return it->second;
+    auto it = m_areas.find(id);
+    NS_ASSERT_MSG(it != m_areas.end(), "Area " << id << " not found in scenario");
+    return it->second;
 }
 
 std::map<PscScenarioDefinition::AreaId, PscScenarioDefinition::AreaInfo>
-PscScenarioDefinition::GetAreas () const
+PscScenarioDefinition::GetAreas() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_areas;
+    return m_areas;
 }
 
 void
-PscScenarioDefinition::AddStructure (StructureId id, StructureInfo buildings)
+PscScenarioDefinition::AddStructure(StructureId id, StructureInfo buildings)
 {
-  NS_LOG_FUNCTION (this << id);
-  NS_ASSERT_MSG (m_structures.find (id) == m_structures.end (), "Structure " << id << " already defined");
-  m_structures.insert (std::pair<StructureId, StructureInfo> (id, buildings));
+    NS_LOG_FUNCTION(this << id);
+    NS_ASSERT_MSG(m_structures.find(id) == m_structures.end(),
+                  "Structure " << id << " already defined");
+    m_structures.insert(std::pair<StructureId, StructureInfo>(id, buildings));
 }
 
 PscScenarioDefinition::StructureInfo
-PscScenarioDefinition::GetStructure (StructureId id) const
+PscScenarioDefinition::GetStructure(StructureId id) const
 {
-  NS_LOG_FUNCTION (this << id);
+    NS_LOG_FUNCTION(this << id);
 
-  auto it = m_structures.find (id);
-  NS_ASSERT_MSG (it != m_structures.end (), "Structure " << id << " not found in scenario");
-  return it->second;
+    auto it = m_structures.find(id);
+    NS_ASSERT_MSG(it != m_structures.end(), "Structure " << id << " not found in scenario");
+    return it->second;
 }
 
 std::map<PscScenarioDefinition::StructureId, PscScenarioDefinition::StructureInfo>
-PscScenarioDefinition::GetStructures () const
+PscScenarioDefinition::GetStructures() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_structures;
+    return m_structures;
 }
 
 void
-PscScenarioDefinition::AddNodes (GroupId id, NodeGroupInfo nodes)
+PscScenarioDefinition::AddNodes(GroupId id, NodeGroupInfo nodes)
 {
-  NS_LOG_FUNCTION (this << id);
-  NS_ASSERT_MSG (m_nodeGroups.find (id) == m_nodeGroups.end (), "Group " << id << " already defined");
-  m_nodeGroups.insert (std::pair<GroupId, NodeGroupInfo> (id, nodes));
+    NS_LOG_FUNCTION(this << id);
+    NS_ASSERT_MSG(m_nodeGroups.find(id) == m_nodeGroups.end(),
+                  "Group " << id << " already defined");
+    m_nodeGroups.insert(std::pair<GroupId, NodeGroupInfo>(id, nodes));
 }
 
 PscScenarioDefinition::NodeGroupInfo
-PscScenarioDefinition::GetNodesForGroup (GroupId id) const
+PscScenarioDefinition::GetNodesForGroup(GroupId id) const
 {
-  NS_LOG_FUNCTION (this << id);
+    NS_LOG_FUNCTION(this << id);
 
-  auto it = m_nodeGroups.find (id);
-  NS_ASSERT_MSG (it != m_nodeGroups.end (), "Group " << id << " not found in scenario");
-  return it->second;
+    auto it = m_nodeGroups.find(id);
+    NS_ASSERT_MSG(it != m_nodeGroups.end(), "Group " << id << " not found in scenario");
+    return it->second;
 }
 
 std::map<PscScenarioDefinition::GroupId, PscScenarioDefinition::NodeGroupInfo>
-PscScenarioDefinition::GetNodes () const
+PscScenarioDefinition::GetNodes() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_nodeGroups;
+    return m_nodeGroups;
 }
 
 void
-PscScenarioDefinition::AddKeyEvent (KeyEventId id, KeyEventInfo event)
+PscScenarioDefinition::AddKeyEvent(KeyEventId id, KeyEventInfo event)
 {
-  NS_LOG_FUNCTION (this << id);
-  NS_ASSERT_MSG (m_keyEvents.find (id) == m_keyEvents.end (), "Event " << id << " already defined");
-  m_keyEvents.insert (std::pair<KeyEventId, KeyEventInfo> (id, event));
+    NS_LOG_FUNCTION(this << id);
+    NS_ASSERT_MSG(m_keyEvents.find(id) == m_keyEvents.end(), "Event " << id << " already defined");
+    m_keyEvents.insert(std::pair<KeyEventId, KeyEventInfo>(id, event));
 }
 
 PscScenarioDefinition::KeyEventInfo
-PscScenarioDefinition::GetKeyEventTime (KeyEventId id) const
+PscScenarioDefinition::GetKeyEventTime(KeyEventId id) const
 {
-  NS_LOG_FUNCTION (this << id);
+    NS_LOG_FUNCTION(this << id);
 
-  auto it = m_keyEvents.find (id);
-  NS_ASSERT_MSG (it != m_keyEvents.end (), "Event " << id << " not found in scenario");
-  return it->second;
+    auto it = m_keyEvents.find(id);
+    NS_ASSERT_MSG(it != m_keyEvents.end(), "Event " << id << " not found in scenario");
+    return it->second;
 }
 
 std::map<PscScenarioDefinition::KeyEventId, PscScenarioDefinition::KeyEventInfo>
-PscScenarioDefinition::GetKeyEvents () const
+PscScenarioDefinition::GetKeyEvents() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_keyEvents;
+    return m_keyEvents;
 }
 
 void
-PscScenarioDefinition::AddApplication (ApplicationId id, ApplicationInfo application)
+PscScenarioDefinition::AddApplication(ApplicationId id, ApplicationInfo application)
 {
-  NS_LOG_FUNCTION (this << id);
-  NS_ASSERT_MSG (m_applications.find (id) == m_applications.end (), "Application " << id << " already defined");
-  m_applications.insert (std::pair<ApplicationId, ApplicationInfo> (id, application));
+    NS_LOG_FUNCTION(this << id);
+    NS_ASSERT_MSG(m_applications.find(id) == m_applications.end(),
+                  "Application " << id << " already defined");
+    m_applications.insert(std::pair<ApplicationId, ApplicationInfo>(id, application));
 }
 
 PscScenarioDefinition::ApplicationInfo
-PscScenarioDefinition::GetApplication (ApplicationId id) const
+PscScenarioDefinition::GetApplication(ApplicationId id) const
 {
-  NS_LOG_FUNCTION (this << id);
+    NS_LOG_FUNCTION(this << id);
 
-  auto it = m_applications.find (id);
-  NS_ASSERT_MSG (it != m_applications.end (), "Application " << id << " not found in scenario");
-  return it->second;
+    auto it = m_applications.find(id);
+    NS_ASSERT_MSG(it != m_applications.end(), "Application " << id << " not found in scenario");
+    return it->second;
 }
 
 std::map<PscScenarioDefinition::ApplicationId, PscScenarioDefinition::ApplicationInfo>
-PscScenarioDefinition::GetApplications () const
+PscScenarioDefinition::GetApplications() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_applications;
+    return m_applications;
 }
 
 } // namespace psc

@@ -35,7 +35,7 @@
 
 #ifndef LTE_NIST_ERROR_MODEL_H
 #define LTE_NIST_ERROR_MODEL_H
-#include <ns3/lte-harq-phy.h>
+#include "lte-harq-phy.h"
 
 #include <stdint.h>
 

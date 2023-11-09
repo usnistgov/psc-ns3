@@ -40,9 +40,11 @@
 #include <ns3/socket.h>
 #include <ns3/type-id.h>
 
-namespace ns3 {
+namespace ns3
+{
 
-namespace psc {
+namespace psc
+{
 
 /**
  * \ingroup mcptt
@@ -53,103 +55,103 @@ namespace psc {
  */
 class McpttChannel : public Object
 {
-public:
-  /**
-   * Gets the type ID of the McpttChannel class.
-   * \returns The type ID.
-   */
-  static TypeId GetTypeId (void);
-  /**
-   * Creates an instance of the McpttChannel class.
-   */
-  McpttChannel (void);
-  /**
-   * \brief The destructor of the McpttChannel class.
-   */
-  virtual ~McpttChannel (void);
-  /**
-   * Closes the channel.
-   */
-  virtual void Close (void);
-  /**
-   * Gets the type ID of this McpttChannel instance.
-   * \returns The type ID.
-   */
-  virtual TypeId GetInstanceTypeId (void) const;
-  /**
-   * Indicates if the channel is open.
-   * \returns True, if the channel is open.
-   */
-  virtual bool IsOpen (void) const;
-  /**
-   * Opens the channel.
-   * \param node The node in which the socket will reside.
-   * \param port The port number.
-   * \param local The local address.
-   * \param peer The peer address.
-   * \returns 0 on success; otherwise the error number.
-   */
-  virtual int Open (Ptr<Node>  node, uint16_t port, const Address& local, const Address& peer);
-  /**
-   * Sends a packet.
-   * \param pkt The packet to send.
-   * \returns The number of bytes accepted for transmission if no error occurs, and -1 otherwise.
-   */
-  virtual int Send (Ptr<Packet>  pkt);
-  /**
-   * \brief Send data to a specified peer.
-   *
-   * \param p packet to send
-   * \param flags Socket control flags
-   * \param toAddress IP Address of remote host
-   * \returns -1 in case of error or the number of bytes copied in the
-   *          internal buffer and accepted for transmission.
-   */
-  virtual int SendTo (Ptr<Packet> p, uint32_t flags, const Address &toAddress);
+  public:
+    /**
+     * Gets the type ID of the McpttChannel class.
+     * \returns The type ID.
+     */
+    static TypeId GetTypeId(void);
+    /**
+     * Creates an instance of the McpttChannel class.
+     */
+    McpttChannel(void);
+    /**
+     * \brief The destructor of the McpttChannel class.
+     */
+    virtual ~McpttChannel(void);
+    /**
+     * Closes the channel.
+     */
+    virtual void Close(void);
+    /**
+     * Gets the type ID of this McpttChannel instance.
+     * \returns The type ID.
+     */
+    virtual TypeId GetInstanceTypeId(void) const;
+    /**
+     * Indicates if the channel is open.
+     * \returns True, if the channel is open.
+     */
+    virtual bool IsOpen(void) const;
+    /**
+     * Opens the channel.
+     * \param node The node in which the socket will reside.
+     * \param port The port number.
+     * \param local The local address.
+     * \param peer The peer address.
+     * \returns 0 on success; otherwise the error number.
+     */
+    virtual int Open(Ptr<Node> node, uint16_t port, const Address& local, const Address& peer);
+    /**
+     * Sends a packet.
+     * \param pkt The packet to send.
+     * \returns The number of bytes accepted for transmission if no error occurs, and -1 otherwise.
+     */
+    virtual int Send(Ptr<Packet> pkt);
+    /**
+     * \brief Send data to a specified peer.
+     *
+     * \param p packet to send
+     * \param flags Socket control flags
+     * \param toAddress IP Address of remote host
+     * \returns -1 in case of error or the number of bytes copied in the
+     *          internal buffer and accepted for transmission.
+     */
+    virtual int SendTo(Ptr<Packet> p, uint32_t flags, const Address& toAddress);
 
-protected:
-  /**
-   * Disposes of this McpttChannel instance.
-   */
-  virtual void DoDispose (void);
-  /**
-   * The function used to receive a single packet.
-   * \param pkt The packet that was received.
-   * \param from The source address of the packet.
-   */
-  virtual void ReceivePkt (Ptr<Packet>  pkt, Address from);
-  /**
-   * The sink for when packets are received.
-   * \param socket The socket from which to receive packets.
-   */
-  virtual void ReceivePkts (Ptr<Socket> socket);
+  protected:
+    /**
+     * Disposes of this McpttChannel instance.
+     */
+    virtual void DoDispose(void);
+    /**
+     * The function used to receive a single packet.
+     * \param pkt The packet that was received.
+     * \param from The source address of the packet.
+     */
+    virtual void ReceivePkt(Ptr<Packet> pkt, Address from);
+    /**
+     * The sink for when packets are received.
+     * \param socket The socket from which to receive packets.
+     */
+    virtual void ReceivePkts(Ptr<Socket> socket);
 
-private:
-  Callback<void, Ptr<Packet>, Address > m_rxPktCb; //!< The sink used for receiving received packets.
-  Ptr<Socket> m_socket; //!< The underlying socket of the channel.
+  private:
+    Callback<void, Ptr<Packet>, Address>
+        m_rxPktCb;        //!< The sink used for receiving received packets.
+    Ptr<Socket> m_socket; //!< The underlying socket of the channel.
 
-protected:
-  /**
-   * Sets the underlying socket of the channel.
-   * \param socket The underlying socket.
-   */
-  virtual void SetSocket (Ptr<Socket>  socket);
+  protected:
+    /**
+     * Sets the underlying socket of the channel.
+     * \param socket The underlying socket.
+     */
+    virtual void SetSocket(Ptr<Socket> socket);
 
-public:
-  /**
-   * Gets the underlying socket of the channel.
-   * \returns The underlying socket.
-   */
-  virtual Ptr<Socket> GetSocket (void) const;
-  /**
-   * Sets the sink used for receiving received packets.
-   * \param rxPktCb The callback.
-   */
-  virtual void SetRxPktCb (const Callback<void, Ptr<Packet>, Address>  rxPktCb);
+  public:
+    /**
+     * Gets the underlying socket of the channel.
+     * \returns The underlying socket.
+     */
+    virtual Ptr<Socket> GetSocket(void) const;
+    /**
+     * Sets the sink used for receiving received packets.
+     * \param rxPktCb The callback.
+     */
+    virtual void SetRxPktCb(const Callback<void, Ptr<Packet>, Address> rxPktCb);
 };
 
 } // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_CHANNEL_H */
-

@@ -29,162 +29,162 @@
  * employees is not subject to copyright protection within the United States.
  */
 
-#include <ns3/log.h>
-
 #include "mcptt-floor-participant.h"
 
-namespace ns3 {
+#include <ns3/log.h>
 
-NS_LOG_COMPONENT_DEFINE ("McpttFloorParticipant");
+namespace ns3
+{
 
-namespace psc {
+NS_LOG_COMPONENT_DEFINE("McpttFloorParticipant");
+
+namespace psc
+{
 
 /** McpttFloorParticipant - begin **/
-NS_OBJECT_ENSURE_REGISTERED (McpttFloorParticipant);
+NS_OBJECT_ENSURE_REGISTERED(McpttFloorParticipant);
 
 TypeId
 McpttFloorParticipant::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::psc::McpttFloorParticipant")
-    .SetParent<Object> ()
-  ;
+    static TypeId tid = TypeId("ns3::psc::McpttFloorParticipant").SetParent<Object>();
 
-  return tid;
+    return tid;
 }
 
 McpttFloorParticipant::McpttFloorParticipant()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 McpttFloorParticipant::~McpttFloorParticipant()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 TypeId
 McpttFloorParticipant::GetInstanceTypeId() const
 {
-  return McpttFloorParticipant::GetTypeId ();
+    return McpttFloorParticipant::GetTypeId();
 }
+
 /** McpttFloorParticipant - end **/
 
 /** McpttFloorParticipantNull - begin **/
-NS_OBJECT_ENSURE_REGISTERED (McpttFloorParticipantNull);
+NS_OBJECT_ENSURE_REGISTERED(McpttFloorParticipantNull);
 
 TypeId
 McpttFloorParticipantNull::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::psc::McpttFloorParticipantNull")
-    .SetParent<Object> ()
-    .AddConstructor<McpttFloorParticipantNull> ()
-  ;
+    static TypeId tid = TypeId("ns3::psc::McpttFloorParticipantNull")
+                            .SetParent<Object>()
+                            .AddConstructor<McpttFloorParticipantNull>();
 
-  return tid;
+    return tid;
 }
 
 McpttFloorParticipantNull::McpttFloorParticipantNull()
     : McpttFloorParticipant()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 McpttFloorParticipantNull::~McpttFloorParticipantNull()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
 McpttFloorParticipantNull::AcceptGrant()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 TypeId
 McpttFloorParticipantNull::GetInstanceTypeId() const
 {
-  return McpttFloorParticipantNull::GetTypeId ();
+    return McpttFloorParticipantNull::GetTypeId();
 }
 
 bool
 McpttFloorParticipantNull::HasFloor() const
 {
-  return false;
+    return false;
 }
 
 bool
 McpttFloorParticipantNull::IsStarted() const
 {
-  return true;
+    return true;
 }
 
 void
-McpttFloorParticipantNull::MediaReady (McpttMediaMsg& msg)
+McpttFloorParticipantNull::MediaReady(McpttMediaMsg& msg)
 {
-  NS_LOG_FUNCTION (this << msg);
+    NS_LOG_FUNCTION(this << msg);
 }
 
 void
 McpttFloorParticipantNull::ReleaseRequest()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
 McpttFloorParticipantNull::SendFloorQueuePositionRequest()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
-McpttFloorParticipantNull::SetFloorGrantedCb (const Callback<void>  floorGrantedCb)
+McpttFloorParticipantNull::SetFloorGrantedCb(const Callback<void> floorGrantedCb)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
-McpttFloorParticipantNull::SetOriginator (const bool& originator)
+McpttFloorParticipantNull::SetOriginator(const bool& originator)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
-McpttFloorParticipantNull::SetCall (Ptr<McpttCall> call)
+McpttFloorParticipantNull::SetCall(Ptr<McpttCall> call)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
-McpttFloorParticipantNull::SetPriority (uint8_t priority)
+McpttFloorParticipantNull::SetPriority(uint8_t priority)
 {
-  NS_LOG_FUNCTION (this << +priority);
+    NS_LOG_FUNCTION(this << +priority);
 }
 
 void
 McpttFloorParticipantNull::Start()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
 McpttFloorParticipantNull::Stop()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
 McpttFloorParticipantNull::PttPush()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
 McpttFloorParticipantNull::PttRelease()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
+
 /** McpttFloorParticipantNull - end **/
 
 } // namespace psc
 } // namespace ns3
-

@@ -29,116 +29,122 @@
  * employees is not subject to copyright protection within the United States.
  */
 
+#include "mcptt-msg-dropper.h"
+
 #include <ns3/mcptt-msg.h>
 #include <ns3/type-id.h>
 
-#include "mcptt-msg-dropper.h"
-
-namespace ns3 {
-namespace psc {
-namespace tests {
+namespace ns3
+{
+namespace psc
+{
+namespace tests
+{
 
 McpttMsgDropper::McpttMsgDropper()
-{ }
+{
+}
 
 McpttMsgDropper::~McpttMsgDropper()
-{ }
+{
+}
 
 McpttMsgDropperImpl::McpttMsgDropperImpl()
     : McpttMsgDropper(),
       m_limit(0),
       m_msgTypeId(TypeId()),
       m_received(0)
-{ }
+{
+}
 
-McpttMsgDropperImpl::McpttMsgDropperImpl (const uint32_t& limit, const TypeId& msgTypeId)
-  : McpttMsgDropper (),
-    m_limit (limit),
-    m_msgTypeId (msgTypeId),
-    m_received (0)
-{ }
+McpttMsgDropperImpl::McpttMsgDropperImpl(const uint32_t& limit, const TypeId& msgTypeId)
+    : McpttMsgDropper(),
+      m_limit(limit),
+      m_msgTypeId(msgTypeId),
+      m_received(0)
+{
+}
 
 McpttMsgDropperImpl::~McpttMsgDropperImpl()
 {
-  SetLimit (0);
-  SetMsgTypeId (TypeId ());
-  SetReceived (0);
+    SetLimit(0);
+    SetMsgTypeId(TypeId());
+    SetReceived(0);
 }
 
 bool
-McpttMsgDropperImpl::ShouldDropMsg (const McpttMsg& msg)
+McpttMsgDropperImpl::ShouldDropMsg(const McpttMsg& msg)
 {
-  bool dropMsg = false;
-  TypeId msgTypeId = GetMsgTypeId ();
+    bool dropMsg = false;
+    TypeId msgTypeId = GetMsgTypeId();
 
-  if (msg.IsA (msgTypeId))
+    if (msg.IsA(msgTypeId))
     {
-      IncrementReceived ();
+        IncrementReceived();
 
-      dropMsg = !IsLimitReached ();
+        dropMsg = !IsLimitReached();
     }
 
-  return dropMsg;
+    return dropMsg;
 }
 
 void
-McpttMsgDropperImpl::IncrementReceived (const uint32_t& amount)
+McpttMsgDropperImpl::IncrementReceived(const uint32_t& amount)
 {
-  uint32_t received = GetReceived ();
+    uint32_t received = GetReceived();
 
-  received += amount;
+    received += amount;
 
-  SetReceived (received);
+    SetReceived(received);
 }
 
 bool
 McpttMsgDropperImpl::IsLimitReached() const
 {
-  uint32_t limit = GetLimit ();
-  uint32_t received = GetReceived ();
+    uint32_t limit = GetLimit();
+    uint32_t received = GetReceived();
 
-  bool limitReached = (received >= limit);
+    bool limitReached = (received >= limit);
 
-  return limitReached;
+    return limitReached;
 }
 
 uint32_t
 McpttMsgDropperImpl::GetLimit() const
 {
-  return m_limit;
+    return m_limit;
 }
 
 TypeId
 McpttMsgDropperImpl::GetMsgTypeId() const
 {
-  return m_msgTypeId;
+    return m_msgTypeId;
 }
 
 uint32_t
 McpttMsgDropperImpl::GetReceived() const
 {
-  return m_received;
+    return m_received;
 }
 
 void
-McpttMsgDropperImpl::SetLimit (const uint32_t& limit)
+McpttMsgDropperImpl::SetLimit(const uint32_t& limit)
 {
-  m_limit = limit;
+    m_limit = limit;
 }
 
 void
-McpttMsgDropperImpl::SetMsgTypeId (const TypeId& msgTypeId)
+McpttMsgDropperImpl::SetMsgTypeId(const TypeId& msgTypeId)
 {
-  m_msgTypeId = msgTypeId;
+    m_msgTypeId = msgTypeId;
 }
 
 void
-McpttMsgDropperImpl::SetReceived (const uint32_t& received)
+McpttMsgDropperImpl::SetReceived(const uint32_t& received)
 {
-  m_received = received;
+    m_received = received;
 }
 
 } // namespace tests
 } // namespace psc
 } // namespace ns3
-

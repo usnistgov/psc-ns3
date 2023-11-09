@@ -560,7 +560,7 @@ main(int argc, char* argv[])
     // Lte3gppHexGridEnbTopologyHelper wrap-around method to attach UEs to the eNBs
 
     //*** Important for LTE scenarios: use downlink pathoss model to calculate pathloss for
-    //attaching UEs to the eNBs ***
+    // attaching UEs to the eNBs ***
 
     Ptr<Object> downlinkPathlossModel = lteHelper->GetDownlinkPathlossModel();
     Ptr<PropagationLossModel> lossModel = downlinkPathlossModel->GetObject<PropagationLossModel>();

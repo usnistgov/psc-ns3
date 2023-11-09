@@ -33,17 +33,19 @@
  * subject to copyright protection within the United States.
  */
 
-#include "ns3/pointer.h"
-#include "ns3/node.h"
 #include "ns3/net-device-container.h"
-#include "ns3/psc-scenario-definition.h"
+#include "ns3/node.h"
 #include "ns3/object.h"
+#include "ns3/pointer.h"
+#include "ns3/psc-scenario-definition.h"
 
 #ifndef SCHOOLSHOOTING_NETWORK_TECHNOLOGY_HELPER_H
 #define SCHOOLSHOOTING_NETWORK_TECHNOLOGY_HELPER_H
 
-namespace ns3 {
-namespace psc {
+namespace ns3
+{
+namespace psc
+{
 
 /**
  * \ingroup pscincident
@@ -53,47 +55,48 @@ namespace psc {
  */
 class SchoolShootingNetworkTechnologyHelper : public Object
 {
-public:
-  /**
-   * Gets the type ID.
-   * \returns The type ID.
-   */
-  static TypeId GetTypeId (void);
-  /**
-   * Default destructor.
-   */
-  ~SchoolShootingNetworkTechnologyHelper ();
-  /**
-   * Get public safety application server
-   * \return The public safety application server
-   */
-  virtual Ptr<Node> GetPsServer (void) = 0;
-  /**
-   * Get school application server
-   * \return The school application server
-   */
-  virtual Ptr<Node> GetSchoolServer (void) = 0;
-  /**
-   * Get city application server
-   * \return The city application server
-   */
-  virtual Ptr<Node> GetCityServer (void) = 0;
-  /**
-   * Get public application server
-   * \return The public application server
-   */
-  virtual Ptr<Node> GetPublicServer (void) = 0;
-  /**
-   * Gets the NetDevices belonging to the given group
-   * \param id The ID of the group
-   * \return The NetDevice container
-   */
-  virtual NetDeviceContainer GetNetDevicesForGroup (PscScenarioDefinition::GroupId id) = 0;
-protected:
-  /**
-   * Default constructor.
-   */
-  SchoolShootingNetworkTechnologyHelper ();
+  public:
+    /**
+     * Gets the type ID.
+     * \returns The type ID.
+     */
+    static TypeId GetTypeId(void);
+    /**
+     * Default destructor.
+     */
+    ~SchoolShootingNetworkTechnologyHelper();
+    /**
+     * Get public safety application server
+     * \return The public safety application server
+     */
+    virtual Ptr<Node> GetPsServer(void) = 0;
+    /**
+     * Get school application server
+     * \return The school application server
+     */
+    virtual Ptr<Node> GetSchoolServer(void) = 0;
+    /**
+     * Get city application server
+     * \return The city application server
+     */
+    virtual Ptr<Node> GetCityServer(void) = 0;
+    /**
+     * Get public application server
+     * \return The public application server
+     */
+    virtual Ptr<Node> GetPublicServer(void) = 0;
+    /**
+     * Gets the NetDevices belonging to the given group
+     * \param id The ID of the group
+     * \return The NetDevice container
+     */
+    virtual NetDeviceContainer GetNetDevicesForGroup(PscScenarioDefinition::GroupId id) = 0;
+
+  protected:
+    /**
+     * Default constructor.
+     */
+    SchoolShootingNetworkTechnologyHelper();
 };
 
 } // namespace psc

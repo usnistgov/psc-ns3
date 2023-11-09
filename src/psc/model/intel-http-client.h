@@ -33,6 +33,8 @@
 #ifndef INTEL_HTTP_CLIENT_H
 #define INTEL_HTTP_CLIENT_H
 
+#include "intel-http-header.h"
+
 #include <ns3/address.h>
 #include <ns3/application.h>
 #include <ns3/event-id.h>
@@ -43,10 +45,10 @@
 #include <ns3/traced-callback.h>
 #include <ns3/type-id.h>
 
-#include "intel-http-header.h"
-
-namespace ns3 {
-namespace psc {
+namespace ns3
+{
+namespace psc
+{
 /**
  * \ingroup psc
  * \brief HTTP client based off of the Intel HTTP model
@@ -58,196 +60,196 @@ namespace psc {
  */
 class IntelHttpClient : public Application
 {
-public:
-  /**
-   * Signature for a callback triggered when an object on a page was
-   * cached or not
-   *
-   * \param currentObject The sequence number of the object for
-   * for the cache event
-   */
-  typedef void (*CacheCallback) (uint16_t currentObject);
+  public:
+    /**
+     * Signature for a callback triggered when an object on a page was
+     * cached or not
+     *
+     * \param currentObject The sequence number of the object for
+     * for the cache event
+     */
+    typedef void (*CacheCallback)(uint16_t currentObject);
 
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId (void);
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId(void);
 
-  /**
-   * Default constructor.
-   */
-  IntelHttpClient ();
+    /**
+     * Default constructor.
+     */
+    IntelHttpClient();
 
-  /**
-   * Default destructor.
-   */
-  ~IntelHttpClient () override;
+    /**
+     * Default destructor.
+     */
+    ~IntelHttpClient() override;
 
-  /**
-   * Setter for the address of the server for this client.
-   *
-   * \param ip The address at which the server will be listening.
-   * \param port The port at which the server will be listening.
-   */
-  void SetRemote (Address ip, uint16_t port);
+    /**
+     * Setter for the address of the server for this client.
+     *
+     * \param ip The address at which the server will be listening.
+     * \param port The port at which the server will be listening.
+     */
+    void SetRemote(Address ip, uint16_t port);
 
-protected:
-  /**
-   * Trace called right before a Request of any type is transmitted.
-   */
-  TracedCallback<Ptr<const Packet> > m_txTrace;
+  protected:
+    /**
+     * Trace called right before a Request of any type is transmitted.
+     */
+    TracedCallback<Ptr<const Packet>> m_txTrace;
 
-  /**
-   * Trace called before a Request for a main object is transmitted.
-   */
-  TracedCallback<Ptr<const Packet> > m_txRequestMainObjectTrace;
+    /**
+     * Trace called before a Request for a main object is transmitted.
+     */
+    TracedCallback<Ptr<const Packet>> m_txRequestMainObjectTrace;
 
-  /**
-   * Trace called before a Request for an embedded object is transmitted.
-   */
-  TracedCallback<Ptr<const Packet> > m_txRequestEmbeddedObjectTrace;
+    /**
+     * Trace called before a Request for an embedded object is transmitted.
+     */
+    TracedCallback<Ptr<const Packet>> m_txRequestEmbeddedObjectTrace;
 
-  /**
-   * Trace called after a Response of any type is received.
-   */
-  TracedCallback<Ptr<const Packet>, const Address &> m_rxTrace;
+    /**
+     * Trace called after a Response of any type is received.
+     */
+    TracedCallback<Ptr<const Packet>, const Address&> m_rxTrace;
 
-  /**
-   * Trace called after a Response containing a main object is received
-   */
-  TracedCallback<Ptr<const Packet>, const Address &> m_rxMainObjectTrace;
+    /**
+     * Trace called after a Response containing a main object is received
+     */
+    TracedCallback<Ptr<const Packet>, const Address&> m_rxMainObjectTrace;
 
-  /**
-   * Trace called after a Response containing an embedded object is received
-   */
-  TracedCallback<Ptr<const Packet>, const Address &> m_rxEmbeddedObjectTrace;
+    /**
+     * Trace called after a Response containing an embedded object is received
+     */
+    TracedCallback<Ptr<const Packet>, const Address&> m_rxEmbeddedObjectTrace;
 
-  /**
-   * Trace called when an object was cached
-   */
-  TracedCallback<uint16_t> m_cacheHit;
+    /**
+     * Trace called when an object was cached
+     */
+    TracedCallback<uint16_t> m_cacheHit;
 
-  /**
-   * Trace called when an object was not cached
-   */
-  TracedCallback<uint16_t> m_cacheMiss;
+    /**
+     * Trace called when an object was not cached
+     */
+    TracedCallback<uint16_t> m_cacheMiss;
 
-  /**
-   * Method to orderly clean up the instance before destroying it.
-   */
-  void DoDispose (void) override;
+    /**
+     * Method to orderly clean up the instance before destroying it.
+     */
+    void DoDispose(void) override;
 
-private:
-  /**
-   * Method that starts the operation of this application.
-   */
-  void StartApplication (void) override;
-  /**
-   * Method that stops the operation of this application.
-   */
-  void StopApplication (void) override;
+  private:
+    /**
+     * Method that starts the operation of this application.
+     */
+    void StartApplication(void) override;
+    /**
+     * Method that stops the operation of this application.
+     */
+    void StopApplication(void) override;
 
-  /**
-   * Method that actually sends a request for an HTML page to the server.
-   */
-  void SendRequestPage (void);
+    /**
+     * Method that actually sends a request for an HTML page to the server.
+     */
+    void SendRequestPage(void);
 
-  /**
-   * Method that processes a received packet.
-   *
-   * \param socket Socket that received the packet.
-   */
-  void HandleRead (Ptr<Socket> socket);
+    /**
+     * Method that processes a received packet.
+     *
+     * \param socket Socket that received the packet.
+     */
+    void HandleRead(Ptr<Socket> socket);
 
-  /**
-   * Process a received application packet
-   *
-   * \param from The address the packet was sent from
-   * \param recvHttpHeader The received HTTP header
-   */
-  void ProcessRecvPkt (const Address &from, const IntelHttpHeader &recvHttpHeader);
+    /**
+     * Process a received application packet
+     *
+     * \param from The address the packet was sent from
+     * \param recvHttpHeader The received HTTP header
+     */
+    void ProcessRecvPkt(const Address& from, const IntelHttpHeader& recvHttpHeader);
 
-  /**
-   * Address at which to send the packets to.
-   */
-  Address m_peerAddress;
-  /**
-   * Port at which to send the packets to.
-   */
-  uint16_t m_peerPort;
-  /**
-   * Event ID for tracking the sending of packets.
-   */
-  EventId m_sendEvent;
-  /**
-   * Event ID for tracking the processing time for parsing packets.
-   */
-  EventId m_parseEvent;
-  /**
-   * Socket to send and receive data.
-   */
-  Ptr<Socket> m_socket;
+    /**
+     * Address at which to send the packets to.
+     */
+    Address m_peerAddress;
+    /**
+     * Port at which to send the packets to.
+     */
+    uint16_t m_peerPort;
+    /**
+     * Event ID for tracking the sending of packets.
+     */
+    EventId m_sendEvent;
+    /**
+     * Event ID for tracking the processing time for parsing packets.
+     */
+    EventId m_parseEvent;
+    /**
+     * Socket to send and receive data.
+     */
+    Ptr<Socket> m_socket;
 
-  /**
-   * Packet where we "accumulate" the bytes that we receive in
-   * TCP segments until we have a full packet
-   */
-  Ptr<Packet> m_partialPacket;
+    /**
+     * Packet where we "accumulate" the bytes that we receive in
+     * TCP segments until we have a full packet
+     */
+    Ptr<Packet> m_partialPacket;
 
-  /**
-   * Threshold to decide if an embedded object is cached or not
-   */
-  double m_cacheThreshold;
+    /**
+     * Threshold to decide if an embedded object is cached or not
+     */
+    double m_cacheThreshold;
 
-  /**
-   * Number of embedded objects in a page left to download
-   */
-  uint16_t m_objectsLeft;
+    /**
+     * Number of embedded objects in a page left to download
+     */
+    uint16_t m_objectsLeft;
 
-  /**
-   * Low bound for the parse time, in seconds
-   */
-  double m_parseTimeLowBound;
+    /**
+     * Low bound for the parse time, in seconds
+     */
+    double m_parseTimeLowBound;
 
-  /**
-   * High bound for the parse time, in seconds
-   */
-  double m_parseTimeHighBound;
+    /**
+     * High bound for the parse time, in seconds
+     */
+    double m_parseTimeHighBound;
 
-  /**
-   * Low bound for the reading time, in seconds
-   */
-  double m_readTimeLowBound;
+    /**
+     * Low bound for the reading time, in seconds
+     */
+    double m_readTimeLowBound;
 
-  /**
-   * High bound for the reading time, in seconds
-   */
-  double m_readTimeHighBound;
+    /**
+     * High bound for the reading time, in seconds
+     */
+    double m_readTimeHighBound;
 
-  /**
-   * Size of the send and receive socket buffers
-   */
-  uint32_t m_socketBufferSize;
+    /**
+     * Size of the send and receive socket buffers
+     */
+    uint32_t m_socketBufferSize;
 
-  /**
-   * Random variable stream to generate the size of the requests
-   */
-  Ptr<RandomVariableStream> m_requestSizeRvs;
-  /**
-   * Random variable stream to generate the time spent in parsing
-   */
-  Ptr<RandomVariableStream> m_parseTimeRvs;
-  /**
-   * Random variable stream to decide if an embedded object is cached or not
-   */
-  Ptr<RandomVariableStream> m_cacheRvs;
-  /**
-   * Random variable stream to generate the time spent reading
-   */
-  Ptr<RandomVariableStream> m_readTimeRvs;
+    /**
+     * Random variable stream to generate the size of the requests
+     */
+    Ptr<RandomVariableStream> m_requestSizeRvs;
+    /**
+     * Random variable stream to generate the time spent in parsing
+     */
+    Ptr<RandomVariableStream> m_parseTimeRvs;
+    /**
+     * Random variable stream to decide if an embedded object is cached or not
+     */
+    Ptr<RandomVariableStream> m_cacheRvs;
+    /**
+     * Random variable stream to generate the time spent reading
+     */
+    Ptr<RandomVariableStream> m_readTimeRvs;
 
-}; //class NistIncidentAppHttpClient
+}; // class NistIncidentAppHttpClient
 
 } // namespace psc
 } // namespace ns3

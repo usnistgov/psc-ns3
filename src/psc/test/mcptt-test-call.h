@@ -32,13 +32,17 @@
 #ifndef MCPTT_TEST_CALL_H
 #define MCPTT_TEST_CALL_H
 
-#include <ns3/mcptt-call.h>
-#include <ns3/sip-header.h>
 #include "mcptt-msg-dropper.h"
 
-namespace ns3 {
-namespace psc {
-namespace tests {
+#include <ns3/mcptt-call.h>
+#include <ns3/sip-header.h>
+
+namespace ns3
+{
+namespace psc
+{
+namespace tests
+{
 
 /**
  * \ingroup mcptt
@@ -48,54 +52,54 @@ namespace tests {
  */
 class McpttTestCall : public McpttCall
 {
-public:
-  /**
-   * Gets the type ID of the McpttTestCall class.
-   * \returns The type ID.
-   */
-  static TypeId GetTypeId (void);
-  /**
-   * Creates an instance of the McpttTestCall class.
-   * \param callType network type for call
-   */
-  McpttTestCall (McpttCall::NetworkCallType callType);
-  /**
-   * The destructor of the McpttTestCall class.
-   */
-  virtual ~McpttTestCall (void);
-  /**
-   * Receives a call message.
-   * \param pkt The packet (serialized with SIP header)
-   * \param hdr A reference to the SIP header that has been serialized
-   */
-  virtual void Receive (Ptr<Packet> pkt, const sip::SipHeader& hdr);
-  /**
-   * Receives a call message.
-   * \param msg The message that was received.
-   */
-  virtual void Receive (const McpttCallMsg& msg);
-  /**
-   * Receives a floor message.
-   * \param msg The message that was received.
-   */
-  virtual void Receive (const McpttFloorMsg& msg);
-  /**
-   * Receive a media message.
-   * \param msg The message that was received.
-   */
-  virtual void Receive (const McpttMediaMsg& msg);
-  /**
-   * Add a message dropper
-   * \param dropper The message dropper to add.
-   */
-  virtual void AddDropper (Ptr<McpttMsgDropper>  dropper);
+  public:
+    /**
+     * Gets the type ID of the McpttTestCall class.
+     * \returns The type ID.
+     */
+    static TypeId GetTypeId(void);
+    /**
+     * Creates an instance of the McpttTestCall class.
+     * \param callType network type for call
+     */
+    McpttTestCall(McpttCall::NetworkCallType callType);
+    /**
+     * The destructor of the McpttTestCall class.
+     */
+    virtual ~McpttTestCall(void);
+    /**
+     * Receives a call message.
+     * \param pkt The packet (serialized with SIP header)
+     * \param hdr A reference to the SIP header that has been serialized
+     */
+    virtual void Receive(Ptr<Packet> pkt, const sip::SipHeader& hdr);
+    /**
+     * Receives a call message.
+     * \param msg The message that was received.
+     */
+    virtual void Receive(const McpttCallMsg& msg);
+    /**
+     * Receives a floor message.
+     * \param msg The message that was received.
+     */
+    virtual void Receive(const McpttFloorMsg& msg);
+    /**
+     * Receive a media message.
+     * \param msg The message that was received.
+     */
+    virtual void Receive(const McpttMediaMsg& msg);
+    /**
+     * Add a message dropper
+     * \param dropper The message dropper to add.
+     */
+    virtual void AddDropper(Ptr<McpttMsgDropper> dropper);
 
-protected:
-  void DoDispose (void);
+  protected:
+    void DoDispose(void);
 
-private:
-  bool ShouldDrop (const McpttMsg& msg);
-  std::vector<Ptr<McpttMsgDropper> > m_droppers;
+  private:
+    bool ShouldDrop(const McpttMsg& msg);
+    std::vector<Ptr<McpttMsgDropper>> m_droppers;
 };
 
 } // namespace tests
@@ -103,4 +107,3 @@ private:
 } // namespace ns3
 
 #endif /* MCPTT_TEST_CALL_H */
-

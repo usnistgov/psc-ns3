@@ -128,7 +128,6 @@ class FfMacCschedSapProvider
         } m_enable64Qam; ///< enable64Qam
 
         std::vector<VendorSpecificListElement_s> m_vendorSpecificList; ///< vendor specific list
-
     };
 
     /**

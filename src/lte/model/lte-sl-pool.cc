@@ -1064,9 +1064,9 @@ SidelinkCommResourcePool::GenerateGoldSequence()
     // This function computes the entire pseudo-random sequence as defined in TS36.211, Section 7.2.
     uint32_t maxMpn = 102400; // 10239 * 10 + 10;     //max sequence length, derived from
                               // TS36.211, 5.3.4, where fhop(i) is defined, and i = SF number.
-    uint32_t Nc = 1600;                          // derived from TS36.211 7.2
-    auto* x1 = new uint8_t[Nc + maxMpn + 31];    // derived from TS36.211 7.2
-    auto* x2 = new uint8_t[Nc + maxMpn + 31];    // derived from TS36.211 7.2
+    uint32_t Nc = 1600;       // derived from TS36.211 7.2
+    auto* x1 = new uint8_t[Nc + maxMpn + 31]; // derived from TS36.211 7.2
+    auto* x2 = new uint8_t[Nc + maxMpn + 31]; // derived from TS36.211 7.2
 
     // initialize x1
     x1[0] = 1;

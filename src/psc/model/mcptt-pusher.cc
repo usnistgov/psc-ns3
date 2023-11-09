@@ -29,6 +29,10 @@
  * employees is not subject to copyright protection within the United States.
  */
 
+#include "mcptt-pusher.h"
+
+#include "mcptt-ptt-app.h"
+
 #include <ns3/boolean.h>
 #include <ns3/double.h>
 #include <ns3/log.h>
@@ -41,95 +45,98 @@
 #include <ns3/type-id.h>
 #include <ns3/uinteger.h>
 
-#include "mcptt-ptt-app.h"
-#include "mcptt-pusher.h"
+namespace ns3
+{
 
-namespace ns3 {
+NS_LOG_COMPONENT_DEFINE("McpttPusher");
 
-NS_LOG_COMPONENT_DEFINE ("McpttPusher");
+namespace psc
+{
 
-namespace psc {
-
-NS_OBJECT_ENSURE_REGISTERED (McpttPusher);
+NS_OBJECT_ENSURE_REGISTERED(McpttPusher);
 
 TypeId
 McpttPusher::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::psc::McpttPusher")
-    .SetParent<Object> ()
-    .AddConstructor<McpttPusher>()
-    .AddAttribute ("Automatic", "Indicates if pushes/releases should occur automatically.",
-                   BooleanValue (true),
-                   MakeBooleanAccessor (&McpttPusher::m_automatic),
-                   MakeBooleanChecker ())
-    .AddAttribute ("PttInterarrivalTimeVariable", "The variable used for automatic pushes.",
-                   StringValue ("ns3::NormalRandomVariable[Mean=5.0|Variance=2.0]"),
-                   MakePointerAccessor (&McpttPusher::m_pttIatVariable),
-                   MakePointerChecker<RandomVariableStream> ())
-    .AddAttribute ("PttDurationVariable", "The variable used for automatic releases.",
-                   StringValue ("ns3::NormalRandomVariable[Mean=5.0|Variance=2.0]"),
-                   MakePointerAccessor (&McpttPusher::m_pttDurationVariable),
-                   MakePointerChecker<RandomVariableStream> ())
-    .AddTraceSource ("PushingState", "Trace state changes of 'pushing' state",
-                     MakeTraceSourceAccessor (&McpttPusher::m_pushing),
-                     "ns3::TracedValueCallback::Boolean")
-    .AddTraceSource ("PttInterarrivalTimeTrace",
-                     "The trace for capturing PTT interarrival times.",
-                     MakeTraceSourceAccessor (&McpttPusher::m_pttIatTrace),
-                     "ns3::Time::TracedCallback")
-    .AddTraceSource ("PttDurationTrace",
-                     "The trace for capturing PTT durations.",
-                     MakeTraceSourceAccessor (&McpttPusher::m_pttDurationTrace),
-                     "ns3::Time::TracedCallback")
-  ;
+    static TypeId tid =
+        TypeId("ns3::psc::McpttPusher")
+            .SetParent<Object>()
+            .AddConstructor<McpttPusher>()
+            .AddAttribute("Automatic",
+                          "Indicates if pushes/releases should occur automatically.",
+                          BooleanValue(true),
+                          MakeBooleanAccessor(&McpttPusher::m_automatic),
+                          MakeBooleanChecker())
+            .AddAttribute("PttInterarrivalTimeVariable",
+                          "The variable used for automatic pushes.",
+                          StringValue("ns3::NormalRandomVariable[Mean=5.0|Variance=2.0]"),
+                          MakePointerAccessor(&McpttPusher::m_pttIatVariable),
+                          MakePointerChecker<RandomVariableStream>())
+            .AddAttribute("PttDurationVariable",
+                          "The variable used for automatic releases.",
+                          StringValue("ns3::NormalRandomVariable[Mean=5.0|Variance=2.0]"),
+                          MakePointerAccessor(&McpttPusher::m_pttDurationVariable),
+                          MakePointerChecker<RandomVariableStream>())
+            .AddTraceSource("PushingState",
+                            "Trace state changes of 'pushing' state",
+                            MakeTraceSourceAccessor(&McpttPusher::m_pushing),
+                            "ns3::TracedValueCallback::Boolean")
+            .AddTraceSource("PttInterarrivalTimeTrace",
+                            "The trace for capturing PTT interarrival times.",
+                            MakeTraceSourceAccessor(&McpttPusher::m_pttIatTrace),
+                            "ns3::Time::TracedCallback")
+            .AddTraceSource("PttDurationTrace",
+                            "The trace for capturing PTT durations.",
+                            MakeTraceSourceAccessor(&McpttPusher::m_pttDurationTrace),
+                            "ns3::Time::TracedCallback");
 
-  return tid;
+    return tid;
 }
 
 McpttPusher::McpttPusher()
     : m_pttApp(nullptr),
       m_pushing(false)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 McpttPusher::~McpttPusher()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
 McpttPusher::CancelEvents()
 {
-  NS_LOG_FUNCTION (this);
-  m_pushEvent.Cancel ();
-  m_releaseEvent.Cancel ();
+    NS_LOG_FUNCTION(this);
+    m_pushEvent.Cancel();
+    m_releaseEvent.Cancel();
 }
 
 void
 McpttPusher::Push()
 {
-  NS_LOG_FUNCTION (this);
-  NS_ABORT_MSG_UNLESS (m_pttApp, "There is no PTT app.");
-  NS_LOG_LOGIC ("Pusher about to push PTT button.");
-  SetPushing (true);
-  m_pttApp->TakePushNotification ();
-  if (m_automatic)
-  {
-      ScheduleRelease ();
+    NS_LOG_FUNCTION(this);
+    NS_ABORT_MSG_UNLESS(m_pttApp, "There is no PTT app.");
+    NS_LOG_LOGIC("Pusher about to push PTT button.");
+    SetPushing(true);
+    m_pttApp->TakePushNotification();
+    if (m_automatic)
+    {
+        ScheduleRelease();
     }
 }
 
 void
 McpttPusher::NotifyPushed()
 {
-  NS_LOG_FUNCTION (this);
-  if (!IsPushing ())
+    NS_LOG_FUNCTION(this);
+    if (!IsPushing())
     {
-      SetPushing (true);
-      if (m_automatic)
-      {
-          ScheduleRelease ();
+        SetPushing(true);
+        if (m_automatic)
+        {
+            ScheduleRelease();
         }
     }
 }
@@ -137,27 +144,27 @@ McpttPusher::NotifyPushed()
 void
 McpttPusher::Release()
 {
-  NS_LOG_FUNCTION (this);
-  NS_ABORT_MSG_UNLESS (m_pttApp, "There is no PTT app.");
-  NS_LOG_LOGIC ("Pusher about to release PTT button.");
-  SetPushing (false);
-  m_pttApp->TakeReleaseNotification ();
-  if (m_automatic)
-  {
-      SchedulePush ();
+    NS_LOG_FUNCTION(this);
+    NS_ABORT_MSG_UNLESS(m_pttApp, "There is no PTT app.");
+    NS_LOG_LOGIC("Pusher about to release PTT button.");
+    SetPushing(false);
+    m_pttApp->TakeReleaseNotification();
+    if (m_automatic)
+    {
+        SchedulePush();
     }
 }
 
 void
 McpttPusher::NotifyReleased()
 {
-  NS_LOG_FUNCTION (this);
-  if (IsPushing ())
+    NS_LOG_FUNCTION(this);
+    if (IsPushing())
     {
-      SetPushing (false);
-      if (m_automatic)
-      {
-          SchedulePush ();
+        SetPushing(false);
+        if (m_automatic)
+        {
+            SchedulePush();
         }
     }
 }
@@ -165,163 +172,163 @@ McpttPusher::NotifyReleased()
 bool
 McpttPusher::SchedulePush()
 {
-  NS_LOG_FUNCTION (this);
-  double rv = m_pttIatVariable->GetValue ();
-  if (rv < 0)
+    NS_LOG_FUNCTION(this);
+    double rv = m_pttIatVariable->GetValue();
+    if (rv < 0)
     {
-      rv = 0;
+        rv = 0;
     }
-  Time offInterval = Seconds (rv);
-  return SchedulePush (offInterval);
+    Time offInterval = Seconds(rv);
+    return SchedulePush(offInterval);
 }
 
 bool
-McpttPusher::SchedulePush (const Time& delay)
+McpttPusher::SchedulePush(const Time& delay)
 {
-  NS_LOG_FUNCTION (this << delay);
-  if (!m_pushEvent.IsRunning ())
+    NS_LOG_FUNCTION(this << delay);
+    if (!m_pushEvent.IsRunning())
     {
-      NS_LOG_LOGIC ("Pusher scheduling to push button in " << delay.GetSeconds () << "s.");
-      m_pushEvent = Simulator::Schedule (delay, &McpttPusher::Push, this);
-      m_pttIatTrace (GetPttApp ()->GetUserId (), delay);
-      return true;
+        NS_LOG_LOGIC("Pusher scheduling to push button in " << delay.GetSeconds() << "s.");
+        m_pushEvent = Simulator::Schedule(delay, &McpttPusher::Push, this);
+        m_pttIatTrace(GetPttApp()->GetUserId(), delay);
+        return true;
     }
-  else
+    else
     {
-      NS_LOG_LOGIC ("Suppressing new push event (already running)");
-      return false;
+        NS_LOG_LOGIC("Suppressing new push event (already running)");
+        return false;
     }
 }
 
 bool
 McpttPusher::CancelPush()
 {
-  NS_LOG_FUNCTION (this);
-  if (!m_pushEvent.IsRunning ())
+    NS_LOG_FUNCTION(this);
+    if (!m_pushEvent.IsRunning())
     {
-      NS_LOG_LOGIC ("No push event to cancel");
-      return false;
+        NS_LOG_LOGIC("No push event to cancel");
+        return false;
     }
-  else
+    else
     {
-      NS_LOG_LOGIC ("Cancelling scheduled push event");
-      m_pushEvent.Cancel ();
-      return true;
+        NS_LOG_LOGIC("Cancelling scheduled push event");
+        m_pushEvent.Cancel();
+        return true;
     }
 }
 
 bool
 McpttPusher::ScheduleRelease()
 {
-  NS_LOG_FUNCTION (this);
-  double rv = m_pttDurationVariable->GetValue ();
-  if (rv < 0)
+    NS_LOG_FUNCTION(this);
+    double rv = m_pttDurationVariable->GetValue();
+    if (rv < 0)
     {
-      rv = 0;
+        rv = 0;
     }
-  Time onInterval = Seconds (rv);
-  return ScheduleRelease (onInterval);
+    Time onInterval = Seconds(rv);
+    return ScheduleRelease(onInterval);
 }
 
 bool
-McpttPusher::ScheduleRelease (const Time& delay)
+McpttPusher::ScheduleRelease(const Time& delay)
 {
-  NS_LOG_FUNCTION (this << delay);
-  if (!m_releaseEvent.IsRunning ())
+    NS_LOG_FUNCTION(this << delay);
+    if (!m_releaseEvent.IsRunning())
     {
-      NS_LOG_LOGIC ("Pusher scheduling to release button in " << delay.GetSeconds () << "s.");
-      m_releaseEvent = Simulator::Schedule (delay, &McpttPusher::Release, this);
-      m_pttDurationTrace (GetPttApp ()->GetUserId (), delay);
-      return true;
+        NS_LOG_LOGIC("Pusher scheduling to release button in " << delay.GetSeconds() << "s.");
+        m_releaseEvent = Simulator::Schedule(delay, &McpttPusher::Release, this);
+        m_pttDurationTrace(GetPttApp()->GetUserId(), delay);
+        return true;
     }
-  else
+    else
     {
-      NS_LOG_LOGIC ("Suppressing new release event (already running)");
-      return false;
+        NS_LOG_LOGIC("Suppressing new release event (already running)");
+        return false;
     }
 }
 
 bool
 McpttPusher::CancelRelease()
 {
-  NS_LOG_FUNCTION (this);
-  if (!m_releaseEvent.IsRunning ())
+    NS_LOG_FUNCTION(this);
+    if (!m_releaseEvent.IsRunning())
     {
-      NS_LOG_LOGIC ("No release event to cancel");
-      return false;
+        NS_LOG_LOGIC("No release event to cancel");
+        return false;
     }
-  else
+    else
     {
-      NS_LOG_LOGIC ("Cancelling scheduled release event");
-      m_releaseEvent.Cancel ();
-      return true;
+        NS_LOG_LOGIC("Cancelling scheduled release event");
+        m_releaseEvent.Cancel();
+        return true;
     }
 }
 
 void
 McpttPusher::Start()
 {
-  NS_LOG_FUNCTION (this);
-  if (m_automatic)
+    NS_LOG_FUNCTION(this);
+    if (m_automatic)
     {
-      NS_LOG_LOGIC ("Pusher starting pushes and releases.");
-      SchedulePush ();
+        NS_LOG_LOGIC("Pusher starting pushes and releases.");
+        SchedulePush();
     }
-  else
+    else
     {
-      NS_LOG_LOGIC ("Pusher starting but waiting for manual push event.");
+        NS_LOG_LOGIC("Pusher starting but waiting for manual push event.");
     }
 }
 
 void
 McpttPusher::Stop()
 {
-  NS_LOG_FUNCTION (this);
-  if (m_releaseEvent.IsRunning () || m_pushEvent.IsRunning ())
+    NS_LOG_FUNCTION(this);
+    if (m_releaseEvent.IsRunning() || m_pushEvent.IsRunning())
     {
-      NS_LOG_LOGIC ("Pusher stopping pushes and releases.");
-      if (IsPushing ())
+        NS_LOG_LOGIC("Pusher stopping pushes and releases.");
+        if (IsPushing())
         {
-          SetPushing (false);
+            SetPushing(false);
         }
-      CancelEvents ();
+        CancelEvents();
     }
 }
 
 void
 McpttPusher::DoDispose()
 {
-  NS_LOG_FUNCTION (this);
-  SetPttApp(nullptr);
-  m_pttIatVariable = nullptr;
-  m_pttDurationVariable = nullptr;
-  Object::DoDispose ();
+    NS_LOG_FUNCTION(this);
+    SetPttApp(nullptr);
+    m_pttIatVariable = nullptr;
+    m_pttDurationVariable = nullptr;
+    Object::DoDispose();
 }
 
 Ptr<McpttPttApp>
 McpttPusher::GetPttApp() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_pttApp;
+    NS_LOG_FUNCTION(this);
+    return m_pttApp;
 }
 
 void
-McpttPusher::SetPttApp (Ptr<McpttPttApp> pttApp)
+McpttPusher::SetPttApp(Ptr<McpttPttApp> pttApp)
 {
-  NS_LOG_FUNCTION (this << pttApp);
-  m_pttApp = pttApp;
+    NS_LOG_FUNCTION(this << pttApp);
+    m_pttApp = pttApp;
 }
 
 bool
 McpttPusher::IsPushing() const
 {
-  return m_pushing;
+    return m_pushing;
 }
 
 void
-McpttPusher::SetPushing (bool pushing)
+McpttPusher::SetPushing(bool pushing)
 {
-  m_pushing = pushing;
+    m_pushing = pushing;
 }
 
 } // namespace psc

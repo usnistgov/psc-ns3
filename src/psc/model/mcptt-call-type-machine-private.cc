@@ -29,512 +29,554 @@
  * employees is not subject to copyright protection within the United States.
  */
 
+#include "mcptt-call-type-machine-private.h"
+
+#include "mcptt-call-machine-private.h"
+#include "mcptt-call-msg-field.h"
+#include "mcptt-call-msg.h"
+#include "mcptt-call-type-machine-private-state.h"
+#include "mcptt-call-type-machine.h"
+#include "mcptt-emerg-alert-machine.h"
+#include "mcptt-entity-id.h"
+#include "mcptt-floor-participant.h"
+#include "mcptt-ptt-app.h"
+
 #include <ns3/log.h>
 #include <ns3/object.h>
 #include <ns3/ptr.h>
 #include <ns3/type-id.h>
 
-#include "mcptt-ptt-app.h"
-#include "mcptt-floor-participant.h"
-#include "mcptt-call-machine-private.h"
-#include "mcptt-call-msg.h"
-#include "mcptt-call-msg-field.h"
-#include "mcptt-call-type-machine.h"
-#include "mcptt-call-type-machine-private-state.h"
-#include "mcptt-emerg-alert-machine.h"
-#include "mcptt-entity-id.h"
+namespace ns3
+{
 
-#include "mcptt-call-type-machine-private.h"
+NS_LOG_COMPONENT_DEFINE("McpttCallTypeMachinePrivate");
 
-namespace ns3 {
+namespace psc
+{
 
-NS_LOG_COMPONENT_DEFINE ("McpttCallTypeMachinePrivate");
-
-namespace psc {
-
-NS_OBJECT_ENSURE_REGISTERED (McpttCallTypeMachinePrivate);
+NS_OBJECT_ENSURE_REGISTERED(McpttCallTypeMachinePrivate);
 
 TypeId
 McpttCallTypeMachinePrivate::GetTypeId()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+    NS_LOG_FUNCTION_NOARGS();
 
-  static TypeId tid = TypeId ("ns3::psc::McpttCallTypeMachinePrivate")
-    .SetParent<McpttCallTypeMachine> ()
-    .AddConstructor<McpttCallTypeMachinePrivate> ()
-    .AddTraceSource ("StateChangeTrace", "The trace for capturing state changes.",
-                     MakeTraceSourceAccessor (&McpttCallTypeMachinePrivate::m_stateChangeTrace),
-                     "ns3::psc::McpttCallMachine::StateChangeTracedCallback")
-  ;
+    static TypeId tid =
+        TypeId("ns3::psc::McpttCallTypeMachinePrivate")
+            .SetParent<McpttCallTypeMachine>()
+            .AddConstructor<McpttCallTypeMachinePrivate>()
+            .AddTraceSource(
+                "StateChangeTrace",
+                "The trace for capturing state changes.",
+                MakeTraceSourceAccessor(&McpttCallTypeMachinePrivate::m_stateChangeTrace),
+                "ns3::psc::McpttCallMachine::StateChangeTracedCallback");
 
-  return tid;
+    return tid;
 }
 
-McpttCallTypeMachinePrivate::McpttCallTypeMachinePrivate (Ptr<McpttCallMachinePrivate> owner)
-  : McpttCallTypeMachine (),
-    m_callType (McpttCallMsgFieldCallType::PRIVATE),
-    m_owner (owner),
-    m_priority (McpttCallMsgFieldCallType::GetCallTypePriority (McpttCallMsgFieldCallType::BASIC_GROUP)),
-    m_state (McpttCallTypeMachinePrivateStateQ0::GetInstance ()),
-    m_upgradeCb (MakeNullCallback<void, uint8_t> ())
+McpttCallTypeMachinePrivate::McpttCallTypeMachinePrivate(Ptr<McpttCallMachinePrivate> owner)
+    : McpttCallTypeMachine(),
+      m_callType(McpttCallMsgFieldCallType::PRIVATE),
+      m_owner(owner),
+      m_priority(
+          McpttCallMsgFieldCallType::GetCallTypePriority(McpttCallMsgFieldCallType::BASIC_GROUP)),
+      m_state(McpttCallTypeMachinePrivateStateQ0::GetInstance()),
+      m_upgradeCb(MakeNullCallback<void, uint8_t>())
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 McpttCallTypeMachinePrivate::~McpttCallTypeMachinePrivate()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
-McpttCallTypeMachinePrivate::ChangeState (Ptr<McpttCallTypeMachinePrivateState>  state)
+McpttCallTypeMachinePrivate::ChangeState(Ptr<McpttCallTypeMachinePrivateState> state)
 {
-  NS_LOG_FUNCTION (this << state);
+    NS_LOG_FUNCTION(this << state);
 
-  if (!IsStarted ())
+    if (!IsStarted())
     {
-      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
-      return;
+        NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " not started yet.");
+        return;
     }
-  std::string selected = "False";
-  if (GetOwner ()->GetCall ()->GetCallId () == GetOwner ()->GetCall ()->GetOwner ()->GetSelectedCall ()->GetCallId ())
+    std::string selected = "False";
+    if (GetOwner()->GetCall()->GetCallId() ==
+        GetOwner()->GetCall()->GetOwner()->GetSelectedCall()->GetCallId())
     {
-      selected = "True";
+        selected = "True";
     }
 
-  McpttEntityId stateId = state->GetInstanceStateId ();
-  Ptr<McpttCallTypeMachinePrivateState> curr = GetState ();
+    McpttEntityId stateId = state->GetInstanceStateId();
+    Ptr<McpttCallTypeMachinePrivateState> curr = GetState();
 
-  McpttEntityId currStateId = curr->GetInstanceStateId ();
+    McpttEntityId currStateId = curr->GetInstanceStateId();
 
-  if (currStateId != stateId)
+    if (currStateId != stateId)
     {
-      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () << " moving from state " << *curr << " to state " << *state << ".");
+        NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                     << " " << GetOwner()->GetCall()->GetOwner()->GetUserId()
+                     << " moving from state " << *curr << " to state " << *state << ".");
 
-      SetState (state);
-      m_stateChangeTrace (GetOwner ()->GetCall ()->GetOwner ()->GetUserId (), GetOwner ()->GetCall ()->GetCallId (), selected, GetInstanceTypeId ().GetName (), currStateId.GetName (), stateId.GetName ());
+        SetState(state);
+        m_stateChangeTrace(GetOwner()->GetCall()->GetOwner()->GetUserId(),
+                           GetOwner()->GetCall()->GetCallId(),
+                           selected,
+                           GetInstanceTypeId().GetName(),
+                           currStateId.GetName(),
+                           stateId.GetName());
     }
 }
 
 void
 McpttCallTypeMachinePrivate::Downgrade()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  if (!IsStarted ())
+    if (!IsStarted())
     {
-      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
-      return;
+        NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " not started yet.");
+        return;
     }
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  " downgrading call.");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << " " << GetOwner()->GetCall()->GetOwner()->GetUserId() << " downgrading call.");
 
-  Ptr<McpttCallTypeMachinePrivateState> state = GetState ();
+    Ptr<McpttCallTypeMachinePrivateState> state = GetState();
 
-  state->Downgrade (*this);
+    state->Downgrade(*this);
 }
 
 void
 McpttCallTypeMachinePrivate::ExpiryOfTfp1()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  if (!IsStarted ())
+    if (!IsStarted())
     {
-      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
-      return;
+        NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " not started yet.");
+        return;
     }
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  "'s TFP1 timer expired.");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << " " << GetOwner()->GetCall()->GetOwner()->GetUserId()
+                 << "'s TFP1 timer expired.");
 
-  Ptr<McpttCallTypeMachinePrivateState> state = GetState ();
+    Ptr<McpttCallTypeMachinePrivateState> state = GetState();
 
-  state->ExpiryOfTfp1 (*this);
+    state->ExpiryOfTfp1(*this);
 }
 
 void
 McpttCallTypeMachinePrivate::ExpiryOfTfp6()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  if (!IsStarted ())
+    if (!IsStarted())
     {
-      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
-      return;
+        NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " not started yet.");
+        return;
     }
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  "'s TFP6 timer expired.");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << " " << GetOwner()->GetCall()->GetOwner()->GetUserId()
+                 << "'s TFP6 timer expired.");
 
-  Ptr<McpttCallTypeMachinePrivateState> state = GetState ();
+    Ptr<McpttCallTypeMachinePrivateState> state = GetState();
 
-  state->ExpiryOfTfp6 (*this);
+    state->ExpiryOfTfp6(*this);
 }
 
 void
 McpttCallTypeMachinePrivate::ExpiryOfTfp8()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  if (!IsStarted ())
+    if (!IsStarted())
     {
-      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
-      return;
+        NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " not started yet.");
+        return;
     }
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  "'s TFP8 timer expired.");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << " " << GetOwner()->GetCall()->GetOwner()->GetUserId()
+                 << "'s TFP8 timer expired.");
 
-  Ptr<McpttCallTypeMachinePrivateState> state = GetState ();
+    Ptr<McpttCallTypeMachinePrivateState> state = GetState();
 
-  state->ExpiryOfTfp8 (*this);
+    state->ExpiryOfTfp8(*this);
 }
 
 TypeId
 McpttCallTypeMachinePrivate::GetInstanceTypeId() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return McpttCallTypeMachinePrivate::GetTypeId ();
+    return McpttCallTypeMachinePrivate::GetTypeId();
 }
 
 McpttEntityId
 McpttCallTypeMachinePrivate::GetStateId() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return GetState ()->GetInstanceStateId ();
+    return GetState()->GetInstanceStateId();
 }
 
 void
 McpttCallTypeMachinePrivate::InitiateCall()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  if (!IsStarted ())
+    if (!IsStarted())
     {
-      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
-      return;
+        NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " not started yet.");
+        return;
     }
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  " initiating private call.");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << " " << GetOwner()->GetCall()->GetOwner()->GetUserId()
+                 << " initiating private call.");
 
-  Ptr<McpttCallTypeMachinePrivateState> state = GetState ();
+    Ptr<McpttCallTypeMachinePrivateState> state = GetState();
 
-  state->InitiateCall (*this);
+    state->InitiateCall(*this);
 }
 
 bool
 McpttCallTypeMachinePrivate::IsStarted() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  bool isStarted = GetStarted ();
+    bool isStarted = GetStarted();
 
-  return isStarted;
+    return isStarted;
 }
 
 void
-McpttCallTypeMachinePrivate::ReceiveAccept (const McpttCallMsgPrivateAccept& msg)
+McpttCallTypeMachinePrivate::ReceiveAccept(const McpttCallMsgPrivateAccept& msg)
 {
-  NS_LOG_FUNCTION (this << msg);
+    NS_LOG_FUNCTION(this << msg);
 
-  if (!IsStarted ())
+    if (!IsStarted())
     {
-      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
-      return;
+        NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " not started yet.");
+        return;
     }
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  " received " << msg << ".");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << " " << GetOwner()->GetCall()->GetOwner()->GetUserId() << " received " << msg
+                 << ".");
 
-  Ptr<McpttCallTypeMachinePrivateState> state = GetState ();
+    Ptr<McpttCallTypeMachinePrivateState> state = GetState();
 
-  state->ReceiveAccept (*this, msg);
+    state->ReceiveAccept(*this, msg);
 }
 
 void
-McpttCallTypeMachinePrivate::ReceiveAcceptAck (const McpttCallMsgPrivateAcceptAck& msg)
+McpttCallTypeMachinePrivate::ReceiveAcceptAck(const McpttCallMsgPrivateAcceptAck& msg)
 {
-  NS_LOG_FUNCTION (this << msg);
+    NS_LOG_FUNCTION(this << msg);
 
-  if (!IsStarted ())
+    if (!IsStarted())
     {
-      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
-      return;
+        NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " not started yet.");
+        return;
     }
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  " received " << msg << ".");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << " " << GetOwner()->GetCall()->GetOwner()->GetUserId() << " received " << msg
+                 << ".");
 
-  Ptr<McpttCallTypeMachinePrivateState> state = GetState ();
+    Ptr<McpttCallTypeMachinePrivateState> state = GetState();
 
-  state->ReceiveAcceptAck (*this, msg);
+    state->ReceiveAcceptAck(*this, msg);
 }
 
 void
-McpttCallTypeMachinePrivate::ReceiveEmergencyCancel (const McpttCallMsgPrivateEmergCancel& msg)
+McpttCallTypeMachinePrivate::ReceiveEmergencyCancel(const McpttCallMsgPrivateEmergCancel& msg)
 {
-  NS_LOG_FUNCTION (this << msg);
+    NS_LOG_FUNCTION(this << msg);
 
-  if (!IsStarted ())
+    if (!IsStarted())
     {
-      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
-      return;
+        NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " not started yet.");
+        return;
     }
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  " received " << msg << ".");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << " " << GetOwner()->GetCall()->GetOwner()->GetUserId() << " received " << msg
+                 << ".");
 
-  Ptr<McpttCallTypeMachinePrivateState> state = GetState ();
+    Ptr<McpttCallTypeMachinePrivateState> state = GetState();
 
-  state->ReceiveEmergencyCancel (*this, msg);
+    state->ReceiveEmergencyCancel(*this, msg);
 }
 
 void
-McpttCallTypeMachinePrivate::ReceiveEmergencyCancelAck (const McpttCallMsgPrivateEmergCancelAck& msg)
+McpttCallTypeMachinePrivate::ReceiveEmergencyCancelAck(const McpttCallMsgPrivateEmergCancelAck& msg)
 {
-  NS_LOG_FUNCTION (this << msg);
+    NS_LOG_FUNCTION(this << msg);
 
-  if (!IsStarted ())
+    if (!IsStarted())
     {
-      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
-      return;
+        NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " not started yet.");
+        return;
     }
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  " received " << msg << ".");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << " " << GetOwner()->GetCall()->GetOwner()->GetUserId() << " received " << msg
+                 << ".");
 
-  Ptr<McpttCallTypeMachinePrivateState> state = GetState ();
+    Ptr<McpttCallTypeMachinePrivateState> state = GetState();
 
-  state->ReceiveEmergencyCancelAck (*this, msg);
+    state->ReceiveEmergencyCancelAck(*this, msg);
 }
 
 void
-McpttCallTypeMachinePrivate::ReceiveReject (const McpttCallMsgPrivateReject& msg)
+McpttCallTypeMachinePrivate::ReceiveReject(const McpttCallMsgPrivateReject& msg)
 {
-  NS_LOG_FUNCTION (this << msg);
+    NS_LOG_FUNCTION(this << msg);
 
-  if (!IsStarted ())
+    if (!IsStarted())
     {
-      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
-      return;
+        NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " not started yet.");
+        return;
     }
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  " received " << msg << ".");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << " " << GetOwner()->GetCall()->GetOwner()->GetUserId() << " received " << msg
+                 << ".");
 
-  Ptr<McpttCallTypeMachinePrivateState> state = GetState ();
+    Ptr<McpttCallTypeMachinePrivateState> state = GetState();
 
-  state->ReceiveReject (*this, msg);
+    state->ReceiveReject(*this, msg);
 }
 
 void
-McpttCallTypeMachinePrivate::ReceiveRelease (const McpttCallMsgPrivateRelease& msg)
+McpttCallTypeMachinePrivate::ReceiveRelease(const McpttCallMsgPrivateRelease& msg)
 {
-  NS_LOG_FUNCTION (this << msg);
+    NS_LOG_FUNCTION(this << msg);
 
-  if (!IsStarted ())
+    if (!IsStarted())
     {
-      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
-      return;
+        NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " not started yet.");
+        return;
     }
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  " received " << msg << ".");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << " " << GetOwner()->GetCall()->GetOwner()->GetUserId() << " received " << msg
+                 << ".");
 
-  Ptr<McpttCallTypeMachinePrivateState> state = GetState ();
+    Ptr<McpttCallTypeMachinePrivateState> state = GetState();
 
-  state->ReceiveRelease (*this, msg);
+    state->ReceiveRelease(*this, msg);
 }
 
 void
-McpttCallTypeMachinePrivate::ReceiveSetupRequest (const McpttCallMsgPrivateSetupReq& msg)
+McpttCallTypeMachinePrivate::ReceiveSetupRequest(const McpttCallMsgPrivateSetupReq& msg)
 {
-  NS_LOG_FUNCTION (this << msg);
+    NS_LOG_FUNCTION(this << msg);
 
-  if (!IsStarted ())
+    if (!IsStarted())
     {
-      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
-      return;
+        NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " not started yet.");
+        return;
     }
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  " received " << msg << ".");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << " " << GetOwner()->GetCall()->GetOwner()->GetUserId() << " received " << msg
+                 << ".");
 
-  Ptr<McpttCallTypeMachinePrivateState> state = GetState ();
+    Ptr<McpttCallTypeMachinePrivateState> state = GetState();
 
-  state->ReceiveSetupRequest (*this, msg);
+    state->ReceiveSetupRequest(*this, msg);
 }
 
 void
 McpttCallTypeMachinePrivate::ReleaseCall()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  if (!IsStarted ())
+    if (!IsStarted())
     {
-      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
-      return;
+        NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " not started yet.");
+        return;
     }
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  " releasing call.");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << " " << GetOwner()->GetCall()->GetOwner()->GetUserId() << " releasing call.");
 
-  Ptr<McpttCallTypeMachinePrivateState> state = GetState ();
+    Ptr<McpttCallTypeMachinePrivateState> state = GetState();
 
-  state->ReleaseCall (*this);
+    state->ReleaseCall(*this);
 }
 
 void
-McpttCallTypeMachinePrivate::Send (const McpttCallMsg& msg)
+McpttCallTypeMachinePrivate::Send(const McpttCallMsg& msg)
 {
-  NS_LOG_FUNCTION (this << msg);
+    NS_LOG_FUNCTION(this << msg);
 
-  if (!IsStarted ())
+    if (!IsStarted())
     {
-      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
-      return;
+        NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " not started yet.");
+        return;
     }
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () << " trying to send " << msg << ".");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << " " << GetOwner()->GetCall()->GetOwner()->GetUserId() << " trying to send "
+                 << msg << ".");
 
-  Ptr<McpttCallMachinePrivate> owner = GetOwner ();
-  owner->Send (msg);
+    Ptr<McpttCallMachinePrivate> owner = GetOwner();
+    owner->Send(msg);
 }
 
 void
 McpttCallTypeMachinePrivate::Start()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  " started.");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << " " << GetOwner()->GetCall()->GetOwner()->GetUserId() << " started.");
 
-  SetStarted (true);
+    SetStarted(true);
 }
 
 void
 McpttCallTypeMachinePrivate::Stop()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  " stopped.");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << " " << GetOwner()->GetCall()->GetOwner()->GetUserId() << " stopped.");
 
-  SetStarted (false);
+    SetStarted(false);
 }
 
 void
-McpttCallTypeMachinePrivate::UpgradeTo (const McpttCallMsgFieldCallType& callType)
+McpttCallTypeMachinePrivate::UpgradeTo(const McpttCallMsgFieldCallType& callType)
 {
-  NS_LOG_FUNCTION (this << callType);
+    NS_LOG_FUNCTION(this << callType);
 
-  if (!IsStarted ())
+    if (!IsStarted())
     {
-      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
-      return;
+        NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " not started yet.");
+        return;
     }
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  " upgrading call type to " << (uint32_t)callType.GetType () << ".");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << " " << GetOwner()->GetCall()->GetOwner()->GetUserId()
+                 << " upgrading call type to " << (uint32_t)callType.GetType() << ".");
 
-  Ptr<McpttCallTypeMachinePrivateState> state = GetState ();
+    Ptr<McpttCallTypeMachinePrivateState> state = GetState();
 
-  state->UpgradeTo (*this, callType);
+    state->UpgradeTo(*this, callType);
 }
 
 void
 McpttCallTypeMachinePrivate::DoDispose()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  SetOwner(nullptr);
+    SetOwner(nullptr);
 }
 
 McpttCallMsgFieldCallType
 McpttCallTypeMachinePrivate::GetCallType() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_callType;
+    return m_callType;
 }
 
 Ptr<McpttCallMachinePrivate>
 McpttCallTypeMachinePrivate::GetOwner() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_owner;
+    return m_owner;
 }
 
 uint8_t
 McpttCallTypeMachinePrivate::GetPriority() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_priority;
+    return m_priority;
 }
 
 bool
 McpttCallTypeMachinePrivate::GetStarted() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_started;
+    return m_started;
 }
 
 Ptr<McpttCallTypeMachinePrivateState>
 McpttCallTypeMachinePrivate::GetState() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_state;
+    return m_state;
 }
 
 void
-McpttCallTypeMachinePrivate::SetDowngradeCb (const Callback<void>  downgradeCb)
+McpttCallTypeMachinePrivate::SetDowngradeCb(const Callback<void> downgradeCb)
 {
-  NS_LOG_FUNCTION (this << &downgradeCb);
+    NS_LOG_FUNCTION(this << &downgradeCb);
 
-  m_downgradeCb = downgradeCb;
+    m_downgradeCb = downgradeCb;
 }
 
 void
-McpttCallTypeMachinePrivate::SetCallType (const McpttCallMsgFieldCallType& callType)
+McpttCallTypeMachinePrivate::SetCallType(const McpttCallMsgFieldCallType& callType)
 {
-  NS_LOG_FUNCTION (this << callType);
+    NS_LOG_FUNCTION(this << callType);
 
-  m_callType = callType;
+    m_callType = callType;
 }
 
 void
-McpttCallTypeMachinePrivate::SetOwner (Ptr<McpttCallMachinePrivate> owner)
+McpttCallTypeMachinePrivate::SetOwner(Ptr<McpttCallMachinePrivate> owner)
 {
-  NS_LOG_FUNCTION (this << owner);
+    NS_LOG_FUNCTION(this << owner);
 
-  m_owner = owner;
+    m_owner = owner;
 }
 
 void
-McpttCallTypeMachinePrivate::SetPriority (uint8_t priority)
+McpttCallTypeMachinePrivate::SetPriority(uint8_t priority)
 {
-  NS_LOG_FUNCTION (this << (uint32_t)priority);
+    NS_LOG_FUNCTION(this << (uint32_t)priority);
 
-  m_priority = priority;
+    m_priority = priority;
 }
 
 void
-McpttCallTypeMachinePrivate::SetStarted (const bool& started)
+McpttCallTypeMachinePrivate::SetStarted(const bool& started)
 {
-  NS_LOG_FUNCTION (this << started);
+    NS_LOG_FUNCTION(this << started);
 
-  m_started = started;
+    m_started = started;
 }
 
 void
-McpttCallTypeMachinePrivate::SetState (Ptr<McpttCallTypeMachinePrivateState>  state)
+McpttCallTypeMachinePrivate::SetState(Ptr<McpttCallTypeMachinePrivateState> state)
 {
-  NS_LOG_FUNCTION (this << &state);
+    NS_LOG_FUNCTION(this << &state);
 
-  m_state = state;
+    m_state = state;
 }
 
 void
-McpttCallTypeMachinePrivate::SetUpgradeCb (const Callback<void, uint8_t>  upgradeCb)
+McpttCallTypeMachinePrivate::SetUpgradeCb(const Callback<void, uint8_t> upgradeCb)
 {
-  NS_LOG_FUNCTION (this << &upgradeCb);
+    NS_LOG_FUNCTION(this << &upgradeCb);
 
-  m_upgradeCb = upgradeCb;
+    m_upgradeCb = upgradeCb;
 }
 
 } // namespace psc
 } // namespace ns3
-

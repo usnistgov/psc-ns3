@@ -29,32 +29,32 @@
  * employees is not subject to copyright protection within the United States.
  */
 
+#include "mcptt-counter.h"
+
 #include <ns3/log.h>
 #include <ns3/object.h>
 #include <ns3/ptr.h>
 #include <ns3/type-id.h>
 
-#include "mcptt-counter.h"
+namespace ns3
+{
 
-namespace ns3 {
+NS_LOG_COMPONENT_DEFINE("McpttCounter");
 
-NS_LOG_COMPONENT_DEFINE ("McpttCounter");
+namespace psc
+{
 
-namespace psc {
-
-NS_OBJECT_ENSURE_REGISTERED (McpttCounter);
+NS_OBJECT_ENSURE_REGISTERED(McpttCounter);
 
 TypeId
 McpttCounter::GetTypeId()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+    NS_LOG_FUNCTION_NOARGS();
 
-  static TypeId tid = TypeId ("ns3::psc::McpttCounter")
-    .SetParent<Object> ()
-    .AddConstructor<McpttCounter> ()
-  ;
+    static TypeId tid =
+        TypeId("ns3::psc::McpttCounter").SetParent<Object>().AddConstructor<McpttCounter>();
 
-  return tid;
+    return tid;
 }
 
 McpttCounter::McpttCounter()
@@ -64,178 +64,182 @@ McpttCounter::McpttCounter()
       m_start(0),
       m_value(0)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-McpttCounter::McpttCounter (const McpttEntityId& id, uint32_t start, uint32_t limit)
-  : Object (),
-    m_id (id),
-    m_limit (limit),
-    m_start (start),
-    m_value (start)
+McpttCounter::McpttCounter(const McpttEntityId& id, uint32_t start, uint32_t limit)
+    : Object(),
+      m_id(id),
+      m_limit(limit),
+      m_start(start),
+      m_value(start)
 {
-  NS_LOG_FUNCTION (this << id << limit << start);
+    NS_LOG_FUNCTION(this << id << limit << start);
 }
 
 McpttCounter::~McpttCounter()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 TypeId
 McpttCounter::GetInstanceTypeId() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return McpttCounter::GetTypeId ();
+    return McpttCounter::GetTypeId();
 }
 
 void
-McpttCounter::Increment (uint32_t amount)
+McpttCounter::Increment(uint32_t amount)
 {
-  NS_LOG_FUNCTION (this << amount);
+    NS_LOG_FUNCTION(this << amount);
 
-  McpttEntityId id = GetId ();
-  uint32_t value = GetValue ();
+    McpttEntityId id = GetId();
+    uint32_t value = GetValue();
 
-  NS_LOG_LOGIC ("Counter " << id << " incrementing " << value  << " by " << amount << " for total of " << (value + amount) << ".");
+    NS_LOG_LOGIC("Counter " << id << " incrementing " << value << " by " << amount
+                            << " for total of " << (value + amount) << ".");
 
-  value += amount;
+    value += amount;
 
-  SetValue (value);
+    SetValue(value);
 }
 
 bool
 McpttCounter::IsLimitExceeded() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  McpttEntityId id = GetId ();
-  uint32_t limit = GetLimit ();
-  uint32_t value = GetValue ();
+    McpttEntityId id = GetId();
+    uint32_t limit = GetLimit();
+    uint32_t value = GetValue();
 
-  bool isExceeded = (value > limit);
+    bool isExceeded = (value > limit);
 
-  NS_LOG_LOGIC ("Counter " << id << " limit is" << (isExceeded ? " " : " not ") << "exceeded " << "(" << value << "/" << limit << ").");
+    NS_LOG_LOGIC("Counter " << id << " limit is" << (isExceeded ? " " : " not ") << "exceeded "
+                            << "(" << value << "/" << limit << ").");
 
-  return isExceeded;
+    return isExceeded;
 }
 
 bool
 McpttCounter::IsLimitReached() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  McpttEntityId id = GetId ();
-  uint32_t limit = GetLimit ();
-  uint32_t value = GetValue ();
+    McpttEntityId id = GetId();
+    uint32_t limit = GetLimit();
+    uint32_t value = GetValue();
 
-  bool isReached = (value >= limit);
+    bool isReached = (value >= limit);
 
-  NS_LOG_LOGIC ("Counter " << id << " limit is" << (isReached ? " " : " not ") << "reached " << "(" << value << "/" << limit << ").");
+    NS_LOG_LOGIC("Counter " << id << " limit is" << (isReached ? " " : " not ") << "reached "
+                            << "(" << value << "/" << limit << ").");
 
-  return isReached;
+    return isReached;
 }
 
 void
-McpttCounter::Print (std::ostream& os) const
+McpttCounter::Print(std::ostream& os) const
 {
-  NS_LOG_FUNCTION (this << &os);
+    NS_LOG_FUNCTION(this << &os);
 
-  McpttEntityId id = GetId ();
-  uint32_t limit = GetLimit ();
-  uint32_t start = GetStart ();
-  uint32_t value = GetValue ();
+    McpttEntityId id = GetId();
+    uint32_t limit = GetLimit();
+    uint32_t start = GetStart();
+    uint32_t value = GetValue();
 
-  os << id << "(";
-  os << "start-value=" << start << ";";
-  os << "current-value=" << value << ";";
-  os << "limit=" << limit;
-  os << ")";
+    os << id << "(";
+    os << "start-value=" << start << ";";
+    os << "current-value=" << value << ";";
+    os << "limit=" << limit;
+    os << ")";
 }
 
 void
-McpttCounter::Reset ()
+McpttCounter::Reset()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  McpttEntityId id = GetId ();
-  uint32_t start = GetStart ();
+    McpttEntityId id = GetId();
+    uint32_t start = GetStart();
 
-  NS_LOG_LOGIC ("Reseting counter " << id << " to " << start << ".");
+    NS_LOG_LOGIC("Reseting counter " << id << " to " << start << ".");
 
-  SetValue (start);
+    SetValue(start);
 }
 
 McpttEntityId
 McpttCounter::GetId() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_id;
+    return m_id;
 }
 
 uint32_t
 McpttCounter::GetLimit() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_limit;
+    return m_limit;
 }
 
 uint32_t
 McpttCounter::GetStart() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_start;
+    return m_start;
 }
 
 uint32_t
 McpttCounter::GetValue() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_value;
+    return m_value;
 }
 
 void
-McpttCounter::SetId (const McpttEntityId& id)
+McpttCounter::SetId(const McpttEntityId& id)
 {
-  NS_LOG_FUNCTION (this << id);
+    NS_LOG_FUNCTION(this << id);
 
-  m_id = id;
+    m_id = id;
 }
 
 void
-McpttCounter::SetLimit (uint32_t limit)
+McpttCounter::SetLimit(uint32_t limit)
 {
-  NS_LOG_FUNCTION (this << limit);
+    NS_LOG_FUNCTION(this << limit);
 
-  m_limit = limit;
+    m_limit = limit;
 }
 
 void
-McpttCounter::SetStart (uint32_t start)
+McpttCounter::SetStart(uint32_t start)
 {
-  NS_LOG_FUNCTION (this << start);
+    NS_LOG_FUNCTION(this << start);
 
-  m_start = start;
+    m_start = start;
 }
 
 void
-McpttCounter::SetValue (uint32_t value)
+McpttCounter::SetValue(uint32_t value)
 {
-  NS_LOG_FUNCTION (this << value);
+    NS_LOG_FUNCTION(this << value);
 
-  m_value = value;
+    m_value = value;
 }
 
-std::ostream& operator<< (std::ostream& os, const McpttCounter& counter)
+std::ostream&
+operator<<(std::ostream& os, const McpttCounter& counter)
 {
-  counter.Print (os);
+    counter.Print(os);
 
-  return os;
+    return os;
 }
 
 } // namespace psc

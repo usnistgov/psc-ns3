@@ -29,91 +29,95 @@
  * employees is not subject to copyright protection within the United States.
  */
 
-#include <ns3/simulator.h>
-#include <ns3/log.h>
-#include <ns3/ptr.h>
-#include <ns3/type-id.h>
+#include "mcptt-pusher-orchestrator-interface.h"
 
 #include "mcptt-pusher.h"
 
-#include "mcptt-pusher-orchestrator-interface.h"
+#include <ns3/log.h>
+#include <ns3/ptr.h>
+#include <ns3/simulator.h>
+#include <ns3/type-id.h>
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("McpttPusherOrchestratorInterface");
+NS_LOG_COMPONENT_DEFINE("McpttPusherOrchestratorInterface");
 
-namespace psc {
+namespace psc
+{
 
-NS_OBJECT_ENSURE_REGISTERED (McpttPusherOrchestratorInterface);
+NS_OBJECT_ENSURE_REGISTERED(McpttPusherOrchestratorInterface);
 
 TypeId
 McpttPusherOrchestratorInterface::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::psc::McpttPusherOrchestratorInterface")
-    .SetParent<Object> ()
-    .AddTraceSource ("PttInterarrivalTimeTrace",
-                     "The trace for capturing PTT interarrival times.",
-                     MakeTraceSourceAccessor (&McpttPusherOrchestratorInterface::m_pttIatTrace),
-                     "ns3::Time::TracedCallback")
-    .AddTraceSource ("PttDurationTrace",
-                     "The trace for capturing PTT durations.",
-                     MakeTraceSourceAccessor (&McpttPusherOrchestratorInterface::m_pttDurationTrace),
-                     "ns3::Time::TracedCallback")
-  ;
+    static TypeId tid =
+        TypeId("ns3::psc::McpttPusherOrchestratorInterface")
+            .SetParent<Object>()
+            .AddTraceSource(
+                "PttInterarrivalTimeTrace",
+                "The trace for capturing PTT interarrival times.",
+                MakeTraceSourceAccessor(&McpttPusherOrchestratorInterface::m_pttIatTrace),
+                "ns3::Time::TracedCallback")
+            .AddTraceSource(
+                "PttDurationTrace",
+                "The trace for capturing PTT durations.",
+                MakeTraceSourceAccessor(&McpttPusherOrchestratorInterface::m_pttDurationTrace),
+                "ns3::Time::TracedCallback");
 
-  return tid;
+    return tid;
 }
 
 McpttPusherOrchestratorInterface::McpttPusherOrchestratorInterface()
     : Object()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 McpttPusherOrchestratorInterface::~McpttPusherOrchestratorInterface()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
-McpttPusherOrchestratorInterface::StartAt (const Time& t)
+McpttPusherOrchestratorInterface::StartAt(const Time& t)
 {
-  NS_LOG_FUNCTION (this << t);
+    NS_LOG_FUNCTION(this << t);
 
-  m_startEvent = Simulator::Schedule (t, &McpttPusherOrchestratorInterface::Start, this);
+    m_startEvent = Simulator::Schedule(t, &McpttPusherOrchestratorInterface::Start, this);
 }
 
 void
-McpttPusherOrchestratorInterface::StopAt (const Time& t)
+McpttPusherOrchestratorInterface::StopAt(const Time& t)
 {
-  NS_LOG_FUNCTION (this << t);
+    NS_LOG_FUNCTION(this << t);
 
-  m_stopEvent = Simulator::Schedule (t, &McpttPusherOrchestratorInterface::Stop, this);
+    m_stopEvent = Simulator::Schedule(t, &McpttPusherOrchestratorInterface::Stop, this);
 }
 
 void
 McpttPusherOrchestratorInterface::DoDispose()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  m_startEvent.Cancel ();
-  m_stopEvent.Cancel ();
+    m_startEvent.Cancel();
+    m_stopEvent.Cancel();
 }
 
 void
-McpttPusherOrchestratorInterface::TracePttIat (const uint32_t userId, const Time& iat)
+McpttPusherOrchestratorInterface::TracePttIat(const uint32_t userId, const Time& iat)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  m_pttIatTrace (userId, iat);
+    m_pttIatTrace(userId, iat);
 }
 
 void
-McpttPusherOrchestratorInterface::TracePttDuration (const uint32_t userId, const Time& duration)
+McpttPusherOrchestratorInterface::TracePttDuration(const uint32_t userId, const Time& duration)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  m_pttDurationTrace (userId, duration);
+    m_pttDurationTrace(userId, duration);
 }
 
 } // namespace psc

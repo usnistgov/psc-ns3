@@ -30,8 +30,23 @@
  */
 
 // Override default context logging
-#define NS_LOG_APPEND_CONTEXT \
-  if (m_call && m_call->GetOwner ()) { std::clog << " [node " << m_call->GetOwner ()->GetNode ()->GetId () << "] "; }
+#define NS_LOG_APPEND_CONTEXT                                                                      \
+    if (m_call && m_call->GetOwner())                                                              \
+    {                                                                                              \
+        std::clog << " [node " << m_call->GetOwner()->GetNode()->GetId() << "] ";                  \
+    }
+
+#include "mcptt-call-machine-grp-basic.h"
+
+#include "mcptt-call-machine-grp-basic-state.h"
+#include "mcptt-call-msg-field.h"
+#include "mcptt-call-msg.h"
+#include "mcptt-call-type-machine-grp-basic.h"
+#include "mcptt-call.h"
+#include "mcptt-counter.h"
+#include "mcptt-emerg-alert-machine-basic.h"
+#include "mcptt-ptt-app.h"
+#include "mcptt-timer.h"
 
 #include <ns3/assert.h>
 #include <ns3/boolean.h>
@@ -40,1299 +55,1350 @@
 #include <ns3/object.h>
 #include <ns3/pointer.h>
 #include <ns3/ptr.h>
+#include <ns3/random-variable-stream.h>
 #include <ns3/type-id.h>
 #include <ns3/uinteger.h>
-#include <ns3/random-variable-stream.h>
 
-#include "mcptt-call.h"
-#include "mcptt-call-machine-grp-basic-state.h"
-#include "mcptt-call-msg.h"
-#include "mcptt-call-msg-field.h"
-#include "mcptt-call-type-machine-grp-basic.h"
-#include "mcptt-counter.h"
-#include "mcptt-emerg-alert-machine-basic.h"
-#include "mcptt-ptt-app.h"
-#include "mcptt-timer.h"
+namespace ns3
+{
 
-#include "mcptt-call-machine-grp-basic.h"
+NS_LOG_COMPONENT_DEFINE("McpttCallMachineGrpBasic");
 
-namespace ns3 {
-
-NS_LOG_COMPONENT_DEFINE ("McpttCallMachineGrpBasic");
-
-namespace psc {
+namespace psc
+{
 /** McpttCallMachineGrpBasic - begin **/
 
-NS_OBJECT_ENSURE_REGISTERED (McpttCallMachineGrpBasic);
+NS_OBJECT_ENSURE_REGISTERED(McpttCallMachineGrpBasic);
 
 TypeId
 McpttCallMachineGrpBasic::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::psc::McpttCallMachineGrpBasic")
-    .SetParent<McpttCallMachineGrp> ()
-    .AddConstructor<McpttCallMachineGrpBasic> ()
-    .AddAttribute ("CallTypeMachine", "The call type machine.",
-                   PointerValue (),
-                   MakePointerAccessor (&McpttCallMachineGrpBasic::m_typeMachine),
-                   MakePointerChecker<McpttCallTypeMachineGrpBasic> ())
-    .AddAttribute ("CFG3", "The initial limit to use for counter CFG3.",
-                   UintegerValue (1000),
-                   MakeUintegerAccessor (&McpttCallMachineGrpBasic::SetLimitCfg3),
-                   MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("ConfirmMode", "The flag that indicates if confirm mode should be indicated.",
-                   BooleanValue (true),
-                   MakeBooleanAccessor (&McpttCallMachineGrpBasic::m_confirmMode),
-                   MakeBooleanChecker ())
-    .AddAttribute ("EmergAlertMachine", "The emergency alert machine.",
-                   PointerValue (),
-                   MakePointerAccessor (&McpttCallMachineGrpBasic::m_emergMachine),
-                   MakePointerChecker<McpttEmergAlertMachine> ())
-    .AddAttribute ("RefreshInterval", "The minimum amount of time (in milliseconds) between periodic call announcements.",
-                   UintegerValue (10000),
-                   MakeUintegerAccessor (&McpttCallMachineGrpBasic::SetRefIntVal),
-                   MakeUintegerChecker<uint16_t> ())
-    .AddAttribute ("TFG1", "The initial delay to use for timer TFG1 (Time value).",
-                   TimeValue (MilliSeconds (150)),
-                   MakeTimeAccessor (&McpttCallMachineGrpBasic::SetDelayTfg1),
-                   MakeTimeChecker ())
-    .AddAttribute ("TFG3", "The initial delay to use for timer TFG3 (Time value).",
-                   TimeValue (MilliSeconds (40)),
-                   MakeTimeAccessor (&McpttCallMachineGrpBasic::SetDelayTfg3),
-                   MakeTimeChecker ())
-    .AddAttribute ("TFG4", "The initial delay to use for timer TFG4 (Time value).",
-                   TimeValue (Seconds (30)),
-                   MakeTimeAccessor (&McpttCallMachineGrpBasic::SetDelayTfg4),
-                   MakeTimeChecker ())
-    .AddAttribute ("TFG5", "The initial delay to use for timer TFG5 (Time value).",
-                   TimeValue (Seconds (30)),
-                   MakeTimeAccessor (&McpttCallMachineGrpBasic::SetDelayTfg5),
-                   MakeTimeChecker ())
-    .AddAttribute ("TFG6-X", "The X value to use when calculating the delay for TFG6 (Time value).",
-                   TimeValue (Seconds (65535)),
-                   MakeTimeAccessor (&McpttCallMachineGrpBasic::m_delayTfg6X),
-                   MakeTimeChecker (Seconds (1), Seconds (65535)))
-    .AddAttribute ("UserAckRequired", "The flag that indicates if user acknowledgements are required.",
-                   BooleanValue (false),
-                   MakeBooleanAccessor (&McpttCallMachineGrpBasic::m_userAckReq),
-                   MakeBooleanChecker ())
-    .AddTraceSource ("StateChangeTrace", "The trace for capturing state changes.",
-                     MakeTraceSourceAccessor (&McpttCallMachineGrpBasic::m_stateChangeTrace),
-                     "ns3::psc::McpttCallMachine::StateChangeTracedCallback")
-  ;
+    static TypeId tid =
+        TypeId("ns3::psc::McpttCallMachineGrpBasic")
+            .SetParent<McpttCallMachineGrp>()
+            .AddConstructor<McpttCallMachineGrpBasic>()
+            .AddAttribute("CallTypeMachine",
+                          "The call type machine.",
+                          PointerValue(),
+                          MakePointerAccessor(&McpttCallMachineGrpBasic::m_typeMachine),
+                          MakePointerChecker<McpttCallTypeMachineGrpBasic>())
+            .AddAttribute("CFG3",
+                          "The initial limit to use for counter CFG3.",
+                          UintegerValue(1000),
+                          MakeUintegerAccessor(&McpttCallMachineGrpBasic::SetLimitCfg3),
+                          MakeUintegerChecker<uint32_t>())
+            .AddAttribute("ConfirmMode",
+                          "The flag that indicates if confirm mode should be indicated.",
+                          BooleanValue(true),
+                          MakeBooleanAccessor(&McpttCallMachineGrpBasic::m_confirmMode),
+                          MakeBooleanChecker())
+            .AddAttribute("EmergAlertMachine",
+                          "The emergency alert machine.",
+                          PointerValue(),
+                          MakePointerAccessor(&McpttCallMachineGrpBasic::m_emergMachine),
+                          MakePointerChecker<McpttEmergAlertMachine>())
+            .AddAttribute(
+                "RefreshInterval",
+                "The minimum amount of time (in milliseconds) between periodic call announcements.",
+                UintegerValue(10000),
+                MakeUintegerAccessor(&McpttCallMachineGrpBasic::SetRefIntVal),
+                MakeUintegerChecker<uint16_t>())
+            .AddAttribute("TFG1",
+                          "The initial delay to use for timer TFG1 (Time value).",
+                          TimeValue(MilliSeconds(150)),
+                          MakeTimeAccessor(&McpttCallMachineGrpBasic::SetDelayTfg1),
+                          MakeTimeChecker())
+            .AddAttribute("TFG3",
+                          "The initial delay to use for timer TFG3 (Time value).",
+                          TimeValue(MilliSeconds(40)),
+                          MakeTimeAccessor(&McpttCallMachineGrpBasic::SetDelayTfg3),
+                          MakeTimeChecker())
+            .AddAttribute("TFG4",
+                          "The initial delay to use for timer TFG4 (Time value).",
+                          TimeValue(Seconds(30)),
+                          MakeTimeAccessor(&McpttCallMachineGrpBasic::SetDelayTfg4),
+                          MakeTimeChecker())
+            .AddAttribute("TFG5",
+                          "The initial delay to use for timer TFG5 (Time value).",
+                          TimeValue(Seconds(30)),
+                          MakeTimeAccessor(&McpttCallMachineGrpBasic::SetDelayTfg5),
+                          MakeTimeChecker())
+            .AddAttribute("TFG6-X",
+                          "The X value to use when calculating the delay for TFG6 (Time value).",
+                          TimeValue(Seconds(65535)),
+                          MakeTimeAccessor(&McpttCallMachineGrpBasic::m_delayTfg6X),
+                          MakeTimeChecker(Seconds(1), Seconds(65535)))
+            .AddAttribute("UserAckRequired",
+                          "The flag that indicates if user acknowledgements are required.",
+                          BooleanValue(false),
+                          MakeBooleanAccessor(&McpttCallMachineGrpBasic::m_userAckReq),
+                          MakeBooleanChecker())
+            .AddTraceSource("StateChangeTrace",
+                            "The trace for capturing state changes.",
+                            MakeTraceSourceAccessor(&McpttCallMachineGrpBasic::m_stateChangeTrace),
+                            "ns3::psc::McpttCallMachine::StateChangeTracedCallback");
 
-  return tid;
+    return tid;
 }
 
-McpttCallMachineGrpBasic::McpttCallMachineGrpBasic (Ptr<McpttCall> call)
-  : McpttCallMachineGrp (),
-    m_callId (McpttCallMsgFieldCallId ()),
-    m_cfg3 (CreateObject<McpttCounter> (McpttEntityId (3, "CFG3"))),
-    m_emergMachine (CreateObject<McpttEmergAlertMachineBasic> (this)),
-    m_grpId (McpttCallMsgFieldGrpId ()),
-    m_mergeCb (MakeNullCallback<void, uint16_t> ()),
-    m_newCallCb (MakeNullCallback<void, uint16_t> ()),
-    m_origId (McpttCallMsgFieldUserId ()),
-    m_call (call),
-    m_probeRespVal (false),
-    m_refInt (McpttCallMsgFieldRefreshInterval ()),
-    m_randomCallIdGenerator (CreateObject<UniformRandomVariable> ()),
-    m_rndDelays (CreateObjectWithAttributes<UniformRandomVariable> ("Min", DoubleValue (0.0), "Max", DoubleValue (1.0))),
-    m_sdp (McpttCallMsgFieldSdp ()),
-    m_started (false),
-    m_startTime (McpttCallMsgFieldStartTime ()),
-    m_state (McpttCallMachineGrpBasicStateS1::GetInstance ()),
-    m_stateChangeCb (MakeNullCallback<void, const McpttEntityId&, const McpttEntityId&> ()),
-    m_tfg1 (CreateObject<McpttTimer> (McpttEntityId (1, "TFG1"))),
-    m_tfg2 (CreateObject<McpttTimer> (McpttEntityId (2, "TFG2"))),
-    m_tfg3 (CreateObject<McpttTimer> (McpttEntityId (3, "TFG3"))),
-    m_tfg4 (CreateObject<McpttTimer> (McpttEntityId (4, "TFG4"))),
-    m_tfg5 (CreateObject<McpttTimer> (McpttEntityId (5, "TFG5"))),
-    m_tfg6 (CreateObject<McpttTimer> (McpttEntityId (6, "TFG6"))),
-    m_typeMachine (CreateObject<McpttCallTypeMachineGrpBasic> (this))
+McpttCallMachineGrpBasic::McpttCallMachineGrpBasic(Ptr<McpttCall> call)
+    : McpttCallMachineGrp(),
+      m_callId(McpttCallMsgFieldCallId()),
+      m_cfg3(CreateObject<McpttCounter>(McpttEntityId(3, "CFG3"))),
+      m_emergMachine(CreateObject<McpttEmergAlertMachineBasic>(this)),
+      m_grpId(McpttCallMsgFieldGrpId()),
+      m_mergeCb(MakeNullCallback<void, uint16_t>()),
+      m_newCallCb(MakeNullCallback<void, uint16_t>()),
+      m_origId(McpttCallMsgFieldUserId()),
+      m_call(call),
+      m_probeRespVal(false),
+      m_refInt(McpttCallMsgFieldRefreshInterval()),
+      m_randomCallIdGenerator(CreateObject<UniformRandomVariable>()),
+      m_rndDelays(CreateObjectWithAttributes<UniformRandomVariable>("Min",
+                                                                    DoubleValue(0.0),
+                                                                    "Max",
+                                                                    DoubleValue(1.0))),
+      m_sdp(McpttCallMsgFieldSdp()),
+      m_started(false),
+      m_startTime(McpttCallMsgFieldStartTime()),
+      m_state(McpttCallMachineGrpBasicStateS1::GetInstance()),
+      m_stateChangeCb(MakeNullCallback<void, const McpttEntityId&, const McpttEntityId&>()),
+      m_tfg1(CreateObject<McpttTimer>(McpttEntityId(1, "TFG1"))),
+      m_tfg2(CreateObject<McpttTimer>(McpttEntityId(2, "TFG2"))),
+      m_tfg3(CreateObject<McpttTimer>(McpttEntityId(3, "TFG3"))),
+      m_tfg4(CreateObject<McpttTimer>(McpttEntityId(4, "TFG4"))),
+      m_tfg5(CreateObject<McpttTimer>(McpttEntityId(5, "TFG5"))),
+      m_tfg6(CreateObject<McpttTimer>(McpttEntityId(6, "TFG6"))),
+      m_typeMachine(CreateObject<McpttCallTypeMachineGrpBasic>(this))
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  m_tfg1->Link (&McpttCallMachineGrpBasic::ExpiryOfTfg1, this);
-  m_tfg2->Link (&McpttCallMachineGrpBasic::ExpiryOfTfg2, this);
-  m_tfg3->Link (&McpttCallMachineGrpBasic::ExpiryOfTfg3, this);
-  m_tfg4->Link (&McpttCallMachineGrpBasic::ExpiryOfTfg4, this);
-  m_tfg5->Link (&McpttCallMachineGrpBasic::ExpiryOfTfg5, this);
-  m_tfg6->Link (&McpttCallMachineGrpBasic::ExpiryOfTfg6, this);
+    m_tfg1->Link(&McpttCallMachineGrpBasic::ExpiryOfTfg1, this);
+    m_tfg2->Link(&McpttCallMachineGrpBasic::ExpiryOfTfg2, this);
+    m_tfg3->Link(&McpttCallMachineGrpBasic::ExpiryOfTfg3, this);
+    m_tfg4->Link(&McpttCallMachineGrpBasic::ExpiryOfTfg4, this);
+    m_tfg5->Link(&McpttCallMachineGrpBasic::ExpiryOfTfg5, this);
+    m_tfg6->Link(&McpttCallMachineGrpBasic::ExpiryOfTfg6, this);
 }
 
 McpttCallMachineGrpBasic::~McpttCallMachineGrpBasic()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
 McpttCallMachineGrpBasic::AcceptCall()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  if (!IsStarted ())
+    if (!IsStarted())
     {
-      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
-      return;
+        NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " not started yet.");
+        return;
     }
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " " << GetCall ()->GetOwner ()->GetUserId () << " accepting call.");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << " " << GetCall()->GetOwner()->GetUserId() << " accepting call.");
 
-  Ptr<McpttCallMachineGrpBasicState> state = GetState ();
-  Ptr<McpttCallTypeMachineGrpBasic> typeMachine = GetTypeMachine ();
+    Ptr<McpttCallMachineGrpBasicState> state = GetState();
+    Ptr<McpttCallTypeMachineGrpBasic> typeMachine = GetTypeMachine();
 
-  state->AcceptCall (*this);
-  typeMachine->CallStarted ();
+    state->AcceptCall(*this);
+    typeMachine->CallStarted();
 }
 
 void
 McpttCallMachineGrpBasic::BeginEmergAlert()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  Ptr<McpttCallTypeMachineGrpBasic> typeMachine = GetTypeMachine ();
-  Ptr<McpttEmergAlertMachineBasic> emergMachine = GetEmergMachine ();
+    Ptr<McpttCallTypeMachineGrpBasic> typeMachine = GetTypeMachine();
+    Ptr<McpttEmergAlertMachineBasic> emergMachine = GetEmergMachine();
 
-  emergMachine->SendEmergAlert ();
-  typeMachine->UpgradeTo (McpttCallMsgFieldCallType::EMERGENCY_GROUP);
+    emergMachine->SendEmergAlert();
+    typeMachine->UpgradeTo(McpttCallMsgFieldCallType::EMERGENCY_GROUP);
 }
 
 Time
 McpttCallMachineGrpBasic::CalcDelayForAfterCallProbe()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  Ptr<RandomVariableStream> rndDelays = GetRndDelays ();
-  double x = rndDelays->GetValue ();
+    Ptr<RandomVariableStream> rndDelays = GetRndDelays();
+    double x = rndDelays->GetValue();
 
-  double seconds = (1.0 / 12.0) * x;
+    double seconds = (1.0 / 12.0) * x;
 
-  Time delay = Seconds (seconds);
+    Time delay = Seconds(seconds);
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " " << GetCall ()->GetOwner ()->GetUserId () << " calculated " << delay.GetSeconds () << "s for TFG2 after call probe.");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << " " << GetCall()->GetOwner()->GetUserId() << " calculated "
+                 << delay.GetSeconds() << "s for TFG2 after call probe.");
 
-  return delay;
+    return delay;
 }
 
 Time
 McpttCallMachineGrpBasic::CalcDelayForPeriodicAnnoun()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  Ptr<RandomVariableStream> rndDelays = GetRndDelays ();
-  McpttCallMsgFieldRefreshInterval refInt = GetRefInt ();
+    Ptr<RandomVariableStream> rndDelays = GetRndDelays();
+    McpttCallMsgFieldRefreshInterval refInt = GetRefInt();
 
-  double x = rndDelays->GetValue ();
-  uint16_t interval = refInt.GetInterval ();
+    double x = rndDelays->GetValue();
+    uint16_t interval = refInt.GetInterval();
 
-  double seconds = (interval / 1000.0) * ((2.0 / 3.0) + ((2.0 / 3.0) * x));
+    double seconds = (interval / 1000.0) * ((2.0 / 3.0) + ((2.0 / 3.0) * x));
 
-  Time delay = Seconds (seconds);
+    Time delay = Seconds(seconds);
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " " << GetCall ()->GetOwner ()->GetUserId () << " calculated " << delay.GetSeconds () << "s for TFG2 periodic anouncement.");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << " " << GetCall()->GetOwner()->GetUserId() << " calculated "
+                 << delay.GetSeconds() << "s for TFG2 periodic anouncement.");
 
-  return delay;
+    return delay;
 }
 
 Time
 McpttCallMachineGrpBasic::CalcDelayForMaxDuration() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  McpttCallMsgFieldStartTime startTimeField = GetStartTime ();
-  Time startTime = startTimeField.GetTime ();
+    McpttCallMsgFieldStartTime startTimeField = GetStartTime();
+    Time startTime = startTimeField.GetTime();
 
-  double x = m_delayTfg6X.GetSeconds ();
-  double y = Simulator::Now ().GetSeconds ();
-  double z = startTime.GetSeconds ();
+    double x = m_delayTfg6X.GetSeconds();
+    double y = Simulator::Now().GetSeconds();
+    double z = startTime.GetSeconds();
 
-  double seconds = x - (y - z);
-  //TODO: Not in standard - making sure that the calculated time is at least zero.
-  seconds = (seconds < 0.0 ? 0.0 : seconds);
+    double seconds = x - (y - z);
+    // TODO: Not in standard - making sure that the calculated time is at least zero.
+    seconds = (seconds < 0.0 ? 0.0 : seconds);
 
-  Time delay = Seconds (seconds);
+    Time delay = Seconds(seconds);
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " " << GetCall ()->GetOwner ()->GetUserId () << " calculated " << delay.GetSeconds () << "s for TFG6 max duration.");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << " " << GetCall()->GetOwner()->GetUserId() << " calculated "
+                 << delay.GetSeconds() << "s for TFG6 max duration.");
 
-  return delay;
+    return delay;
 }
 
 void
 McpttCallMachineGrpBasic::CancelEmergAlert()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  Ptr<McpttCallTypeMachineGrpBasic> typeMachine = GetTypeMachine ();
-  Ptr<McpttEmergAlertMachineBasic> emergMachine = GetEmergMachine ();
+    Ptr<McpttCallTypeMachineGrpBasic> typeMachine = GetTypeMachine();
+    Ptr<McpttEmergAlertMachineBasic> emergMachine = GetEmergMachine();
 
-  emergMachine->CancelEmergAlert ();
+    emergMachine->CancelEmergAlert();
 
-  //TODO: Not in standard - checking for another emergency state users before downgrading from the emergency call type.
-  if (!emergMachine->IsOtherInEmergState ())
+    // TODO: Not in standard - checking for another emergency state users before downgrading from
+    // the emergency call type.
+    if (!emergMachine->IsOtherInEmergState())
     {
-      typeMachine->Downgrade ();
+        typeMachine->Downgrade();
     }
 }
 
 void
-McpttCallMachineGrpBasic::ChangeState (Ptr<McpttCallMachineGrpBasicState>  state)
+McpttCallMachineGrpBasic::ChangeState(Ptr<McpttCallMachineGrpBasicState> state)
 {
-  NS_LOG_FUNCTION (this << state);
+    NS_LOG_FUNCTION(this << state);
 
-  if (!IsStarted ())
+    if (!IsStarted())
     {
-      NS_LOG_LOGIC ("Not started yet.");
-      return;
+        NS_LOG_LOGIC("Not started yet.");
+        return;
     }
-  std::string selected = "False";
-  if (GetCall ()->GetCallId () == GetCall ()->GetOwner ()->GetSelectedCall ()->GetCallId ())
+    std::string selected = "False";
+    if (GetCall()->GetCallId() == GetCall()->GetOwner()->GetSelectedCall()->GetCallId())
     {
-      selected = "True";
+        selected = "True";
     }
 
-  McpttEntityId stateId = state->GetInstanceStateId ();
-  Ptr<McpttCallMachineGrpBasicState> curr = GetState ();
+    McpttEntityId stateId = state->GetInstanceStateId();
+    Ptr<McpttCallMachineGrpBasicState> curr = GetState();
 
-  McpttEntityId currStateId = curr->GetInstanceStateId ();
+    McpttEntityId currStateId = curr->GetInstanceStateId();
 
-  if (currStateId != stateId)
+    if (currStateId != stateId)
     {
-      NS_LOG_LOGIC (GetCall ()->GetOwner ()->GetUserId () << " moving from state " << *curr << " to state " << *state << ".");
+        NS_LOG_LOGIC(GetCall()->GetOwner()->GetUserId()
+                     << " moving from state " << *curr << " to state " << *state << ".");
 
-      SetState (state);
-      if (!m_stateChangeCb.IsNull ())
+        SetState(state);
+        if (!m_stateChangeCb.IsNull())
         {
-          m_stateChangeCb (curr->GetInstanceStateId (), state->GetInstanceStateId ());
+            m_stateChangeCb(curr->GetInstanceStateId(), state->GetInstanceStateId());
         }
-      m_stateChangeTrace (m_call->GetOwner ()->GetUserId (), m_call->GetCallId (), selected, GetInstanceTypeId ().GetName (), currStateId.GetName (), stateId.GetName ());
+        m_stateChangeTrace(m_call->GetOwner()->GetUserId(),
+                           m_call->GetCallId(),
+                           selected,
+                           GetInstanceTypeId().GetName(),
+                           currStateId.GetName(),
+                           stateId.GetName());
     }
 }
 
 void
 McpttCallMachineGrpBasic::DowngradeCallType()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  Ptr<McpttCallTypeMachineGrpBasic> typeMachine = GetTypeMachine ();
+    Ptr<McpttCallTypeMachineGrpBasic> typeMachine = GetTypeMachine();
 
-  typeMachine->Downgrade ();
+    typeMachine->Downgrade();
 }
 
 uint32_t
 McpttCallMachineGrpBasic::GetCallerUserId() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  McpttCallMsgFieldUserId userIdField = GetOrigId ();
-  uint32_t callerId = userIdField.GetId ();
+    McpttCallMsgFieldUserId userIdField = GetOrigId();
+    uint32_t callerId = userIdField.GetId();
 
-  return callerId;
+    return callerId;
 }
 
 McpttCallMsgFieldCallType
 McpttCallMachineGrpBasic::GetCallType() const
 {
-  Ptr<McpttCallTypeMachineGrpBasic> typeMachine = GetTypeMachine ();
-  McpttCallMsgFieldCallType typeField = typeMachine->GetCallType ();
+    Ptr<McpttCallTypeMachineGrpBasic> typeMachine = GetTypeMachine();
+    McpttCallMsgFieldCallType typeField = typeMachine->GetCallType();
 
-  return typeField;
+    return typeField;
 }
 
 TypeId
 McpttCallMachineGrpBasic::GetInstanceTypeId() const
 {
-  return McpttCallMachineGrpBasic::GetTypeId ();
+    return McpttCallMachineGrpBasic::GetTypeId();
 }
 
 McpttEntityId
 McpttCallMachineGrpBasic::GetStateId() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  Ptr<McpttCallMachineGrpBasicState> state = GetState ();
-  McpttEntityId stateId = state->GetInstanceStateId ();
+    Ptr<McpttCallMachineGrpBasicState> state = GetState();
+    McpttEntityId stateId = state->GetInstanceStateId();
 
-  return stateId;
+    return stateId;
 }
 
 Ptr<McpttCallTypeMachine>
 McpttCallMachineGrpBasic::GetCallTypeMachine() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  Ptr<McpttCallTypeMachineGrpBasic> grpTypeMachine = GetTypeMachine ();
-  Ptr<McpttCallTypeMachine> typeMachine = DynamicCast<McpttCallTypeMachine, McpttCallTypeMachineGrpBasic> (grpTypeMachine);
+    Ptr<McpttCallTypeMachineGrpBasic> grpTypeMachine = GetTypeMachine();
+    Ptr<McpttCallTypeMachine> typeMachine =
+        DynamicCast<McpttCallTypeMachine, McpttCallTypeMachineGrpBasic>(grpTypeMachine);
 
-  return typeMachine;
+    return typeMachine;
 }
 
 void
 McpttCallMachineGrpBasic::InitiateCall()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  if (!IsStarted ())
+    if (!IsStarted())
     {
-      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
-      return;
+        NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " not started yet.");
+        return;
     }
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " " << GetCall ()->GetOwner ()->GetUserId () << " initiating group call.");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << " " << GetCall()->GetOwner()->GetUserId() << " initiating group call.");
 
-  Ptr<McpttCallMachineGrpBasicState> state = GetState ();
-  Ptr<McpttCallTypeMachineGrpBasic> typeMachine = GetTypeMachine ();
+    Ptr<McpttCallMachineGrpBasicState> state = GetState();
+    Ptr<McpttCallTypeMachineGrpBasic> typeMachine = GetTypeMachine();
 
-  state->InitiateCall (*this);
-  typeMachine->InitiateCall ();
+    state->InitiateCall(*this);
+    typeMachine->InitiateCall();
 }
 
 bool
 McpttCallMachineGrpBasic::IsCallOngoing() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  Ptr<McpttCallMachineGrpBasicState> state = GetState ();
-  bool isCallOngoing = state->IsCallOngoing (*this);
+    Ptr<McpttCallMachineGrpBasicState> state = GetState();
+    bool isCallOngoing = state->IsCallOngoing(*this);
 
-  return isCallOngoing;
+    return isCallOngoing;
 }
 
 bool
 McpttCallMachineGrpBasic::IsConfirmMode() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " " << GetCall ()->GetOwner ()->GetUserId () << " is" << (m_confirmMode ? " " : " NOT ") << "indicating confirm mode.");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << " " << GetCall()->GetOwner()->GetUserId() << " is"
+                 << (m_confirmMode ? " " : " NOT ") << "indicating confirm mode.");
 
-  return m_confirmMode;
+    return m_confirmMode;
 }
 
 bool
 McpttCallMachineGrpBasic::IsStarted() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  bool isStarted = GetStarted ();
+    bool isStarted = GetStarted();
 
-  return isStarted;
+    return isStarted;
 }
 
 bool
 McpttCallMachineGrpBasic::IsUserAckReq() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " " << GetCall ()->GetOwner ()->GetUserId () << " does" << (m_userAckReq ? " " : " NOT ") << "require user acknowledgement.");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << " " << GetCall()->GetOwner()->GetUserId() << " does"
+                 << (m_userAckReq ? " " : " NOT ") << "require user acknowledgement.");
 
-  return m_userAckReq;
+    return m_userAckReq;
 }
 
 void
-McpttCallMachineGrpBasic::NotifyMerge (uint16_t callId)
+McpttCallMachineGrpBasic::NotifyMerge(uint16_t callId)
 {
-  NS_LOG_FUNCTION (this << (uint32_t)callId);
+    NS_LOG_FUNCTION(this << (uint32_t)callId);
 
-  if (!m_mergeCb.IsNull ())
+    if (!m_mergeCb.IsNull())
     {
-      m_mergeCb (callId);
+        m_mergeCb(callId);
     }
 }
 
 void
-McpttCallMachineGrpBasic::NotifyNewCall (uint16_t callId)
+McpttCallMachineGrpBasic::NotifyNewCall(uint16_t callId)
 {
-  NS_LOG_FUNCTION (this << (uint32_t)callId);
+    NS_LOG_FUNCTION(this << (uint32_t)callId);
 
-  if (!m_newCallCb.IsNull ())
+    if (!m_newCallCb.IsNull())
     {
-      m_newCallCb (callId);
+        m_newCallCb(callId);
     }
 }
 
 void
-McpttCallMachineGrpBasic::Receive (const McpttCallMsg& msg)
+McpttCallMachineGrpBasic::Receive(const McpttCallMsg& msg)
 {
-  NS_LOG_FUNCTION (this << msg);
+    NS_LOG_FUNCTION(this << msg);
 
-  if (!IsStarted ())
+    if (!IsStarted())
     {
-      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
-      return;
+        NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " not started yet.");
+        return;
     }
 
-  msg.Visit (*this);
+    msg.Visit(*this);
 }
 
 void
-McpttCallMachineGrpBasic::Receive (const McpttMediaMsg& msg)
+McpttCallMachineGrpBasic::Receive(const McpttMediaMsg& msg)
 {
-  NS_LOG_FUNCTION (this << msg);
+    NS_LOG_FUNCTION(this << msg);
 
-  if (!IsStarted ())
+    if (!IsStarted())
     {
-      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
-      return;
+        NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " not started yet.");
+        return;
     }
 }
 
 void
-McpttCallMachineGrpBasic::ReceiveGrpCallAccept (const McpttCallMsgGrpAccept& msg)
+McpttCallMachineGrpBasic::ReceiveGrpCallAccept(const McpttCallMsgGrpAccept& msg)
 {
-  NS_LOG_FUNCTION (this << msg);
+    NS_LOG_FUNCTION(this << msg);
 
-  if (!IsStarted ())
+    if (!IsStarted())
     {
-      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
-      return;
+        NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " not started yet.");
+        return;
     }
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " " << GetCall ()->GetOwner ()->GetUserId () << " received " << msg << ".");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << " " << GetCall()->GetOwner()->GetUserId() << " received " << msg << ".");
 
-  Ptr<McpttCallMachineGrpBasicState> state = GetState ();
-  state->ReceiveGrpCallAccept (*this, msg);
+    Ptr<McpttCallMachineGrpBasicState> state = GetState();
+    state->ReceiveGrpCallAccept(*this, msg);
 }
 
 void
-McpttCallMachineGrpBasic::ReceiveGrpCallAnnoun (const McpttCallMsgGrpAnnoun& msg)
+McpttCallMachineGrpBasic::ReceiveGrpCallAnnoun(const McpttCallMsgGrpAnnoun& msg)
 {
-  NS_LOG_FUNCTION (this << msg);
+    NS_LOG_FUNCTION(this << msg);
 
-  if (!IsStarted ())
+    if (!IsStarted())
     {
-      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
-      return;
+        NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " not started yet.");
+        return;
     }
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " " << GetCall ()->GetOwner ()->GetUserId () << " received " << msg << ".");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << " " << GetCall()->GetOwner()->GetUserId() << " received " << msg << ".");
 
-  Ptr<McpttCallMachineGrpBasicState> state = GetState ();
-  Ptr<McpttCallTypeMachineGrpBasic> typeMachine = GetTypeMachine ();
+    Ptr<McpttCallMachineGrpBasicState> state = GetState();
+    Ptr<McpttCallTypeMachineGrpBasic> typeMachine = GetTypeMachine();
 
-  state->ReceiveGrpCallAnnoun (*this, msg);
-  typeMachine->ReceiveGrpCallAnnoun (msg);
+    state->ReceiveGrpCallAnnoun(*this, msg);
+    typeMachine->ReceiveGrpCallAnnoun(msg);
 }
 
 void
-McpttCallMachineGrpBasic::ReceiveGrpCallEmergAlert (const McpttCallMsgGrpEmergAlert& msg)
+McpttCallMachineGrpBasic::ReceiveGrpCallEmergAlert(const McpttCallMsgGrpEmergAlert& msg)
 {
-  NS_LOG_FUNCTION (this << msg);
+    NS_LOG_FUNCTION(this << msg);
 
-  if (!IsStarted ())
+    if (!IsStarted())
     {
-      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
-      return;
+        NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " not started yet.");
+        return;
     }
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " " << GetCall ()->GetOwner ()->GetUserId () << " received " << msg << ".");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << " " << GetCall()->GetOwner()->GetUserId() << " received " << msg << ".");
 
-  Ptr<McpttEmergAlertMachineBasic> emergMachine = GetEmergMachine ();
-  emergMachine->ReceiveGrpCallEmergAlert (msg);
+    Ptr<McpttEmergAlertMachineBasic> emergMachine = GetEmergMachine();
+    emergMachine->ReceiveGrpCallEmergAlert(msg);
 }
 
 void
-McpttCallMachineGrpBasic::ReceiveGrpCallEmergAlertAck (const McpttCallMsgGrpEmergAlertAck& msg)
+McpttCallMachineGrpBasic::ReceiveGrpCallEmergAlertAck(const McpttCallMsgGrpEmergAlertAck& msg)
 {
-  NS_LOG_FUNCTION (this << msg);
+    NS_LOG_FUNCTION(this << msg);
 
-  if (!IsStarted ())
+    if (!IsStarted())
     {
-      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
-      return;
+        NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " not started yet.");
+        return;
     }
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " " << GetCall ()->GetOwner ()->GetUserId () << " received " << msg << ".");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << " " << GetCall()->GetOwner()->GetUserId() << " received " << msg << ".");
 }
 
 void
-McpttCallMachineGrpBasic::ReceiveGrpCallEmergAlertCancel (const McpttCallMsgGrpEmergAlertCancel& msg)
+McpttCallMachineGrpBasic::ReceiveGrpCallEmergAlertCancel(const McpttCallMsgGrpEmergAlertCancel& msg)
 {
-  NS_LOG_FUNCTION (this << msg);
+    NS_LOG_FUNCTION(this << msg);
 
-  if (!IsStarted ())
+    if (!IsStarted())
     {
-      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
-      return;
+        NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " not started yet.");
+        return;
     }
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " " << GetCall ()->GetOwner ()->GetUserId () << " received " << msg << ".");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << " " << GetCall()->GetOwner()->GetUserId() << " received " << msg << ".");
 
-  Ptr<McpttEmergAlertMachineBasic> emergMachine = GetEmergMachine ();
-  emergMachine->ReceiveGrpCallEmergAlertCancel (msg);
+    Ptr<McpttEmergAlertMachineBasic> emergMachine = GetEmergMachine();
+    emergMachine->ReceiveGrpCallEmergAlertCancel(msg);
 }
 
 void
-McpttCallMachineGrpBasic::ReceiveGrpCallEmergAlertCancelAck (const McpttCallMsgGrpEmergAlertCancelAck& msg)
+McpttCallMachineGrpBasic::ReceiveGrpCallEmergAlertCancelAck(
+    const McpttCallMsgGrpEmergAlertCancelAck& msg)
 {
-  NS_LOG_FUNCTION (this << msg);
+    NS_LOG_FUNCTION(this << msg);
 
-  if (!IsStarted ())
+    if (!IsStarted())
     {
-      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
-      return;
+        NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " not started yet.");
+        return;
     }
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " " << GetCall ()->GetOwner ()->GetUserId () << " received " << msg << ".");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << " " << GetCall()->GetOwner()->GetUserId() << " received " << msg << ".");
 }
 
 void
-McpttCallMachineGrpBasic::ReceiveGrpCallEmergEnd (const McpttCallMsgGrpEmergEnd& msg)
+McpttCallMachineGrpBasic::ReceiveGrpCallEmergEnd(const McpttCallMsgGrpEmergEnd& msg)
 {
-  NS_LOG_FUNCTION (this << msg);
+    NS_LOG_FUNCTION(this << msg);
 
-  if (!IsStarted ())
+    if (!IsStarted())
     {
-      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
-      return;
+        NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " not started yet.");
+        return;
     }
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " " << GetCall ()->GetOwner ()->GetUserId () << " received " << msg << ".");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << " " << GetCall()->GetOwner()->GetUserId() << " received " << msg << ".");
 
-  Ptr<McpttCallTypeMachineGrpBasic> typeMachine = GetTypeMachine ();
-  typeMachine->ReceiveGrpCallEmergEnd (msg);
+    Ptr<McpttCallTypeMachineGrpBasic> typeMachine = GetTypeMachine();
+    typeMachine->ReceiveGrpCallEmergEnd(msg);
 }
 
 void
-McpttCallMachineGrpBasic::ReceiveGrpCallImmPerilEnd (const McpttCallMsgGrpImmPerilEnd& msg)
+McpttCallMachineGrpBasic::ReceiveGrpCallImmPerilEnd(const McpttCallMsgGrpImmPerilEnd& msg)
 {
-  NS_LOG_FUNCTION (this << msg);
+    NS_LOG_FUNCTION(this << msg);
 
-  if (!IsStarted ())
+    if (!IsStarted())
     {
-      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
-      return;
+        NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " not started yet.");
+        return;
     }
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " " << GetCall ()->GetOwner ()->GetUserId () << " received " << msg << ".");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << " " << GetCall()->GetOwner()->GetUserId() << " received " << msg << ".");
 
-  Ptr<McpttCallTypeMachineGrpBasic> typeMachine = GetTypeMachine ();
-  typeMachine->ReceiveGrpCallImmPerilEnd (msg);
+    Ptr<McpttCallTypeMachineGrpBasic> typeMachine = GetTypeMachine();
+    typeMachine->ReceiveGrpCallImmPerilEnd(msg);
 }
 
 void
-McpttCallMachineGrpBasic::ReceiveGrpCallProbe (const McpttCallMsgGrpProbe& msg)
+McpttCallMachineGrpBasic::ReceiveGrpCallProbe(const McpttCallMsgGrpProbe& msg)
 {
-  NS_LOG_FUNCTION (this << &msg);
+    NS_LOG_FUNCTION(this << &msg);
 
-  if (!IsStarted ())
+    if (!IsStarted())
     {
-      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
-      return;
+        NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " not started yet.");
+        return;
     }
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " " << GetCall ()->GetOwner ()->GetUserId () << " received " << msg << ".");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << " " << GetCall()->GetOwner()->GetUserId() << " received " << msg << ".");
 
-  Ptr<McpttCallMachineGrpBasicState> state = GetState ();
-  state->ReceiveGrpCallProbe (*this, msg);
+    Ptr<McpttCallMachineGrpBasicState> state = GetState();
+    state->ReceiveGrpCallProbe(*this, msg);
 }
 
 void
 McpttCallMachineGrpBasic::RejectCall()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  if (!IsStarted ())
+    if (!IsStarted())
     {
-      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
-      return;
+        NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " not started yet.");
+        return;
     }
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " " << GetCall ()->GetOwner ()->GetUserId () << " rejected call.");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << " " << GetCall()->GetOwner()->GetUserId() << " rejected call.");
 
-  Ptr<McpttCallMachineGrpBasicState> state = GetState ();
-  Ptr<McpttCallTypeMachineGrpBasic> typeMachine = GetTypeMachine ();
+    Ptr<McpttCallMachineGrpBasicState> state = GetState();
+    Ptr<McpttCallTypeMachineGrpBasic> typeMachine = GetTypeMachine();
 
-  state->RejectCall (*this);
-  typeMachine->RejectCall ();
+    state->RejectCall(*this);
+    typeMachine->RejectCall();
 }
 
 void
 McpttCallMachineGrpBasic::ReleaseCall()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  if (!IsStarted ())
+    if (!IsStarted())
     {
-      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
-      return;
+        NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " not started yet.");
+        return;
     }
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " " << GetCall ()->GetOwner ()->GetUserId () << " released call.");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << " " << GetCall()->GetOwner()->GetUserId() << " released call.");
 
-  Ptr<McpttCallMachineGrpBasicState> state = GetState ();
-  Ptr<McpttCallTypeMachineGrpBasic> typeMachine = GetTypeMachine ();
+    Ptr<McpttCallMachineGrpBasicState> state = GetState();
+    Ptr<McpttCallTypeMachineGrpBasic> typeMachine = GetTypeMachine();
 
-  state->ReleaseCall (*this);
-  typeMachine->ReleaseCall ();
+    state->ReleaseCall(*this);
+    typeMachine->ReleaseCall();
 }
 
 void
-McpttCallMachineGrpBasic::ReportEvent (const char* reason) const
+McpttCallMachineGrpBasic::ReportEvent(const char* reason) const
 {
-  GetCall ()->GetOwner ()->ReportEvent (GetCall ()->GetCallId (), reason);
+    GetCall()->GetOwner()->ReportEvent(GetCall()->GetCallId(), reason);
 }
 
 void
-McpttCallMachineGrpBasic::Send (const McpttCallMsg& msg)
+McpttCallMachineGrpBasic::Send(const McpttCallMsg& msg)
 {
-  NS_LOG_FUNCTION (this << msg);
+    NS_LOG_FUNCTION(this << msg);
 
-  if (!IsStarted ())
+    if (!IsStarted())
     {
-      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
-      return;
+        NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " not started yet.");
+        return;
     }
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " " << GetCall ()->GetOwner ()->GetUserId () << " trying to send " << msg << ".");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << " " << GetCall()->GetOwner()->GetUserId() << " trying to send " << msg << ".");
 
-  GetCall ()->Send (msg);
+    GetCall()->Send(msg);
 }
 
 void
-McpttCallMachineGrpBasic::SetDelayTfg1 (const Time& delayTfg1)
+McpttCallMachineGrpBasic::SetDelayTfg1(const Time& delayTfg1)
 {
-  NS_LOG_FUNCTION (this << &delayTfg1);
+    NS_LOG_FUNCTION(this << &delayTfg1);
 
-  GetTfg1 ()->SetDelay (delayTfg1);
-}
-void
-McpttCallMachineGrpBasic::SetDelayTfg3 (const Time& delayTfg3)
-{
-  NS_LOG_FUNCTION (this << &delayTfg3);
-
-  GetTfg3 ()->SetDelay (delayTfg3);
-}
-void
-McpttCallMachineGrpBasic::SetDelayTfg4 (const Time& delayTfg4)
-{
-  NS_LOG_FUNCTION (this << &delayTfg4);
-
-  GetTfg4 ()->SetDelay (delayTfg4);
-}
-void
-McpttCallMachineGrpBasic::SetDelayTfg5 (const Time& delayTfg5)
-{
-  NS_LOG_FUNCTION (this << &delayTfg5);
-
-  GetTfg5 ()->SetDelay (delayTfg5);
+    GetTfg1()->SetDelay(delayTfg1);
 }
 
 void
-McpttCallMachineGrpBasic::SetGrpId (uint32_t grpId)
+McpttCallMachineGrpBasic::SetDelayTfg3(const Time& delayTfg3)
 {
-  NS_LOG_FUNCTION (this << grpId);
+    NS_LOG_FUNCTION(this << &delayTfg3);
 
-  McpttCallMsgFieldGrpId grpIdField;
-  grpIdField.SetGrpId (grpId);
-
-  SetGrpId (grpIdField);
+    GetTfg3()->SetDelay(delayTfg3);
 }
 
 void
-McpttCallMachineGrpBasic::SetLimitCfg3 (uint32_t limitCfg3)
+McpttCallMachineGrpBasic::SetDelayTfg4(const Time& delayTfg4)
 {
-  NS_LOG_FUNCTION (this << limitCfg3);
+    NS_LOG_FUNCTION(this << &delayTfg4);
 
-  GetCfg3 ()->SetLimit (limitCfg3);
+    GetTfg4()->SetDelay(delayTfg4);
 }
 
 void
-McpttCallMachineGrpBasic::SetRefIntVal (uint16_t refIntVal)
+McpttCallMachineGrpBasic::SetDelayTfg5(const Time& delayTfg5)
 {
-  NS_LOG_FUNCTION (this << (uint32_t)refIntVal);
+    NS_LOG_FUNCTION(this << &delayTfg5);
 
-  SetRefInt (McpttCallMsgFieldRefreshInterval (refIntVal));
+    GetTfg5()->SetDelay(delayTfg5);
+}
+
+void
+McpttCallMachineGrpBasic::SetGrpId(uint32_t grpId)
+{
+    NS_LOG_FUNCTION(this << grpId);
+
+    McpttCallMsgFieldGrpId grpIdField;
+    grpIdField.SetGrpId(grpId);
+
+    SetGrpId(grpIdField);
+}
+
+void
+McpttCallMachineGrpBasic::SetLimitCfg3(uint32_t limitCfg3)
+{
+    NS_LOG_FUNCTION(this << limitCfg3);
+
+    GetCfg3()->SetLimit(limitCfg3);
+}
+
+void
+McpttCallMachineGrpBasic::SetRefIntVal(uint16_t refIntVal)
+{
+    NS_LOG_FUNCTION(this << (uint32_t)refIntVal);
+
+    SetRefInt(McpttCallMsgFieldRefreshInterval(refIntVal));
 }
 
 void
 McpttCallMachineGrpBasic::Start()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " " << GetCall ()->GetOwner ()->GetUserId () << " started.");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << " " << GetCall()->GetOwner()->GetUserId() << " started.");
 
-  Ptr<McpttEmergAlertMachineBasic> emergMachine = GetEmergMachine ();
-  emergMachine->Start ();
+    Ptr<McpttEmergAlertMachineBasic> emergMachine = GetEmergMachine();
+    emergMachine->Start();
 
-  SetStarted (true);
+    SetStarted(true);
 }
 
 void
 McpttCallMachineGrpBasic::Stop()
 {
-  Ptr<McpttCall> call = GetCall ();
-  Ptr<McpttTimer> tfg1 = GetTfg1 ();
-  Ptr<McpttTimer> tfg2 = GetTfg2 ();
-  Ptr<McpttTimer> tfg3 = GetTfg3 ();
-  Ptr<McpttTimer> tfg4 = GetTfg4 ();
-  Ptr<McpttTimer> tfg5 = GetTfg5 ();
-  Ptr<McpttTimer> tfg6 = GetTfg6 ();
-  Ptr<McpttCallTypeMachineGrpBasic> typeMachine = GetTypeMachine ();
-  Ptr<McpttEmergAlertMachineBasic> emergMachine = GetEmergMachine ();
-  Ptr<McpttFloorParticipant> floorMachine = call->GetFloorMachine ();
+    Ptr<McpttCall> call = GetCall();
+    Ptr<McpttTimer> tfg1 = GetTfg1();
+    Ptr<McpttTimer> tfg2 = GetTfg2();
+    Ptr<McpttTimer> tfg3 = GetTfg3();
+    Ptr<McpttTimer> tfg4 = GetTfg4();
+    Ptr<McpttTimer> tfg5 = GetTfg5();
+    Ptr<McpttTimer> tfg6 = GetTfg6();
+    Ptr<McpttCallTypeMachineGrpBasic> typeMachine = GetTypeMachine();
+    Ptr<McpttEmergAlertMachineBasic> emergMachine = GetEmergMachine();
+    Ptr<McpttFloorParticipant> floorMachine = call->GetFloorMachine();
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " " << GetCall ()->GetOwner ()->GetUserId () << " stopped.");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << " " << GetCall()->GetOwner()->GetUserId() << " stopped.");
 
-  if (floorMachine->IsStarted ())
+    if (floorMachine->IsStarted())
     {
-      floorMachine->Stop ();
+        floorMachine->Stop();
     }
 
-  if (call->IsFloorChannelOpen ())
+    if (call->IsFloorChannelOpen())
     {
-      call->CloseFloorChannel ();
+        call->CloseFloorChannel();
     }
 
-  if (call->IsMediaChannelOpen ())
+    if (call->IsMediaChannelOpen())
     {
-      call->CloseMediaChannel ();
+        call->CloseMediaChannel();
     }
 
-  if (emergMachine->IsStarted ())
+    if (emergMachine->IsStarted())
     {
-      emergMachine->Stop ();
+        emergMachine->Stop();
     }
 
-  if (typeMachine->IsStarted ())
+    if (typeMachine->IsStarted())
     {
-      typeMachine->Stop ();
+        typeMachine->Stop();
     }
 
-  if (tfg1->IsRunning ())
+    if (tfg1->IsRunning())
     {
-      tfg1->Stop ();
+        tfg1->Stop();
     }
 
-  if (tfg2->IsRunning ())
+    if (tfg2->IsRunning())
     {
-      tfg2->Stop ();
+        tfg2->Stop();
     }
 
-  if (tfg3->IsRunning ())
+    if (tfg3->IsRunning())
     {
-      tfg3->Stop ();
+        tfg3->Stop();
     }
 
-  if (tfg4->IsRunning ())
+    if (tfg4->IsRunning())
     {
-      tfg4->Stop ();
+        tfg4->Stop();
     }
 
-  if (tfg5->IsRunning ())
+    if (tfg5->IsRunning())
     {
-      tfg5->Stop ();
+        tfg5->Stop();
     }
 
-  if (tfg6->IsRunning ())
+    if (tfg6->IsRunning())
     {
-      tfg6->Stop ();
+        tfg6->Stop();
     }
 
-  SetCallId (0);
-  //TODO: his should be released but since the same call machine is reused for
-  //a new call for the same group, this will be left in place
-  //SetGrpId (0);
-  SetOrigId (0);
-  SetProbeRespVal (false);
-  //TODO: his should be released but since the same call machine is reused for
-  //a new call for the same group, this will be left in place
-  //SetRefInt (0);
-  SetStartTime (Seconds (0));
-  SetState (McpttCallMachineGrpBasicStateS1::GetInstance ());
-  SetStarted (false);
+    SetCallId(0);
+    // TODO: his should be released but since the same call machine is reused for
+    // a new call for the same group, this will be left in place
+    // SetGrpId (0);
+    SetOrigId(0);
+    SetProbeRespVal(false);
+    // TODO: his should be released but since the same call machine is reused for
+    // a new call for the same group, this will be left in place
+    // SetRefInt (0);
+    SetStartTime(Seconds(0));
+    SetState(McpttCallMachineGrpBasicStateS1::GetInstance());
+    SetStarted(false);
 }
 
 void
-McpttCallMachineGrpBasic::UpgradeCallType (uint8_t callType)
+McpttCallMachineGrpBasic::UpgradeCallType(uint8_t callType)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  Ptr<McpttCallTypeMachineGrpBasic> typeMachine = GetTypeMachine ();
+    Ptr<McpttCallTypeMachineGrpBasic> typeMachine = GetTypeMachine();
 
-  typeMachine->UpgradeTo (callType);
+    typeMachine->UpgradeTo(callType);
 }
 
 void
 McpttCallMachineGrpBasic::DoDispose()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  SetEmergMachine(nullptr);
-  SetRndDelays(nullptr);
-  SetState(nullptr);
-  SetTfg1(nullptr);
-  SetTfg2(nullptr);
-  SetTfg3(nullptr);
-  SetTfg4(nullptr);
-  SetTfg5(nullptr);
-  SetTfg6(nullptr);
-  SetTypeMachine(nullptr);
+    SetEmergMachine(nullptr);
+    SetRndDelays(nullptr);
+    SetState(nullptr);
+    SetTfg1(nullptr);
+    SetTfg2(nullptr);
+    SetTfg3(nullptr);
+    SetTfg4(nullptr);
+    SetTfg5(nullptr);
+    SetTfg6(nullptr);
+    SetTypeMachine(nullptr);
 }
 
 void
 McpttCallMachineGrpBasic::ExpiryOfTfg1()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  if (!IsStarted ())
+    if (!IsStarted())
     {
-      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
-      return;
+        NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " not started yet.");
+        return;
     }
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " " << GetCall ()->GetOwner ()->GetUserId () << "'s TFG1 timer expired.");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << " " << GetCall()->GetOwner()->GetUserId() << "'s TFG1 timer expired.");
 
-  Ptr<McpttCallMachineGrpBasicState> state = GetState ();
-  Ptr<McpttCallTypeMachineGrpBasic> typeMachine = GetTypeMachine ();
+    Ptr<McpttCallMachineGrpBasicState> state = GetState();
+    Ptr<McpttCallTypeMachineGrpBasic> typeMachine = GetTypeMachine();
 
-  state->ExpiryOfTfg1 (*this);
-  typeMachine->ExpiryOfTfg1 ();
+    state->ExpiryOfTfg1(*this);
+    typeMachine->ExpiryOfTfg1();
 }
 
 void
 McpttCallMachineGrpBasic::ExpiryOfTfg2()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  if (!IsStarted ())
+    if (!IsStarted())
     {
-      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
-      return;
+        NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " not started yet.");
+        return;
     }
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " " << GetCall ()->GetOwner ()->GetUserId () << "'s TFG2 timer expired.");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << " " << GetCall()->GetOwner()->GetUserId() << "'s TFG2 timer expired.");
 
-  Ptr<McpttCallMachineGrpBasicState> state = GetState ();
-  state->ExpiryOfTfg2 (*this);
+    Ptr<McpttCallMachineGrpBasicState> state = GetState();
+    state->ExpiryOfTfg2(*this);
 }
 
 void
 McpttCallMachineGrpBasic::ExpiryOfTfg3()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  if (!IsStarted ())
+    if (!IsStarted())
     {
-      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
-      return;
+        NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " not started yet.");
+        return;
     }
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " " << GetCall ()->GetOwner ()->GetUserId () << "'s TFG3 timer expired.");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << " " << GetCall()->GetOwner()->GetUserId() << "'s TFG3 timer expired.");
 
-  Ptr<McpttCallMachineGrpBasicState> state = GetState ();
-  state->ExpiryOfTfg3 (*this);
+    Ptr<McpttCallMachineGrpBasicState> state = GetState();
+    state->ExpiryOfTfg3(*this);
 }
 
 void
 McpttCallMachineGrpBasic::ExpiryOfTfg4()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  if (!IsStarted ())
+    if (!IsStarted())
     {
-      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
-      return;
+        NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " not started yet.");
+        return;
     }
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " " << GetCall ()->GetOwner ()->GetUserId () << "'s TFG4 timer expired.");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << " " << GetCall()->GetOwner()->GetUserId() << "'s TFG4 timer expired.");
 
-  Ptr<McpttCallMachineGrpBasicState> state = GetState ();
-  state->ExpiryOfTfg4 (*this);
+    Ptr<McpttCallMachineGrpBasicState> state = GetState();
+    state->ExpiryOfTfg4(*this);
 }
 
 void
 McpttCallMachineGrpBasic::ExpiryOfTfg5()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  if (!IsStarted ())
+    if (!IsStarted())
     {
-      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
-      return;
+        NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " not started yet.");
+        return;
     }
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " " << GetCall ()->GetOwner ()->GetUserId () << "'s TFG5 timer expired.");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << " " << GetCall()->GetOwner()->GetUserId() << "'s TFG5 timer expired.");
 
-  Ptr<McpttCallMachineGrpBasicState> state = GetState ();
-  state->ExpiryOfTfg5 (*this);
+    Ptr<McpttCallMachineGrpBasicState> state = GetState();
+    state->ExpiryOfTfg5(*this);
 }
 
 void
 McpttCallMachineGrpBasic::ExpiryOfTfg6()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  if (!IsStarted ())
+    if (!IsStarted())
     {
-      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
-      return;
+        NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " not started yet.");
+        return;
     }
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " " << GetCall ()->GetOwner ()->GetUserId () << "'s TFG6 timer expired.");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << " " << GetCall()->GetOwner()->GetUserId() << "'s TFG6 timer expired.");
 
-  Ptr<McpttCallMachineGrpBasicState> state = GetState ();
-  state->ExpiryOfTfg6 (*this);
+    Ptr<McpttCallMachineGrpBasicState> state = GetState();
+    state->ExpiryOfTfg6(*this);
 }
 
 bool
 McpttCallMachineGrpBasic::GetStarted() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_started;
+    return m_started;
 }
 
 void
-McpttCallMachineGrpBasic::SetStarted (const bool& started)
+McpttCallMachineGrpBasic::SetStarted(const bool& started)
 {
-  NS_LOG_FUNCTION (this << started);
+    NS_LOG_FUNCTION(this << started);
 
-  m_started = started;
+    m_started = started;
 }
 
 McpttCallMsgFieldCallId
 McpttCallMachineGrpBasic::GetCallId() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_callId;
+    return m_callId;
 }
 
 Ptr<McpttCounter>
 McpttCallMachineGrpBasic::GetCfg3() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_cfg3;
+    return m_cfg3;
 }
 
 Ptr<McpttEmergAlertMachineBasic>
 McpttCallMachineGrpBasic::GetEmergMachine() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_emergMachine;
+    return m_emergMachine;
 }
 
 McpttCallMsgFieldGrpId
 McpttCallMachineGrpBasic::GetGrpId() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_grpId;
+    return m_grpId;
 }
 
 McpttCallMsgFieldUserId
 McpttCallMachineGrpBasic::GetOrigId() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_origId;
+    return m_origId;
 }
 
 Ptr<McpttCall>
 McpttCallMachineGrpBasic::GetCall() const
 {
-  return m_call;
+    return m_call;
 }
 
 bool
 McpttCallMachineGrpBasic::GetProbeRespVal() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_probeRespVal;
+    return m_probeRespVal;
 }
 
 McpttCallMsgFieldRefreshInterval
 McpttCallMachineGrpBasic::GetRefInt() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_refInt;
+    return m_refInt;
 }
 
 uint16_t
 McpttCallMachineGrpBasic::GenerateRandomCallId() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_randomCallIdGenerator->GetInteger (0, 65535);
+    return m_randomCallIdGenerator->GetInteger(0, 65535);
 }
 
 Ptr<RandomVariableStream>
 McpttCallMachineGrpBasic::GetRndDelays() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_rndDelays;
+    return m_rndDelays;
 }
 
 McpttCallMsgFieldSdp
 McpttCallMachineGrpBasic::GetSdp() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_sdp;
+    return m_sdp;
 }
 
 McpttCallMsgFieldStartTime
 McpttCallMachineGrpBasic::GetStartTime() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_startTime;
+    return m_startTime;
 }
 
 Ptr<McpttCallMachineGrpBasicState>
 McpttCallMachineGrpBasic::GetState() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_state;
+    return m_state;
 }
 
 Ptr<McpttTimer>
 McpttCallMachineGrpBasic::GetTfg1() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_tfg1;
+    return m_tfg1;
 }
 
 Ptr<McpttTimer>
 McpttCallMachineGrpBasic::GetTfg2() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_tfg2;
+    return m_tfg2;
 }
 
 Ptr<McpttTimer>
 McpttCallMachineGrpBasic::GetTfg3() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_tfg3;
+    return m_tfg3;
 }
 
 Ptr<McpttTimer>
 McpttCallMachineGrpBasic::GetTfg4() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_tfg4;
+    return m_tfg4;
 }
 
 Ptr<McpttTimer>
 McpttCallMachineGrpBasic::GetTfg5() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_tfg5;
+    return m_tfg5;
 }
 
 Ptr<McpttTimer>
 McpttCallMachineGrpBasic::GetTfg6() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_tfg6;
+    return m_tfg6;
 }
 
 Ptr<McpttCallTypeMachineGrpBasic>
 McpttCallMachineGrpBasic::GetTypeMachine() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_typeMachine;
+    return m_typeMachine;
 }
 
 void
-McpttCallMachineGrpBasic::SetCallId (const McpttCallMsgFieldCallId& callId)
+McpttCallMachineGrpBasic::SetCallId(const McpttCallMsgFieldCallId& callId)
 {
-  NS_LOG_FUNCTION (this << callId);
+    NS_LOG_FUNCTION(this << callId);
 
-  m_callId = callId;
+    m_callId = callId;
 }
 
 void
-McpttCallMachineGrpBasic::SetCfg3 (Ptr<McpttCounter>  cfg3)
+McpttCallMachineGrpBasic::SetCfg3(Ptr<McpttCounter> cfg3)
 {
-  NS_LOG_FUNCTION (this << cfg3);
+    NS_LOG_FUNCTION(this << cfg3);
 
-  m_cfg3 = cfg3;
+    m_cfg3 = cfg3;
 }
 
 void
-McpttCallMachineGrpBasic::SetEmergMachine (Ptr<McpttEmergAlertMachineBasic>  emergMachine)
+McpttCallMachineGrpBasic::SetEmergMachine(Ptr<McpttEmergAlertMachineBasic> emergMachine)
 {
-  NS_LOG_FUNCTION (this << &emergMachine);
+    NS_LOG_FUNCTION(this << &emergMachine);
 
-  if (emergMachine)
+    if (emergMachine)
     {
-      emergMachine->SetOwner (this);
+        emergMachine->SetOwner(this);
     }
 
-  m_emergMachine = emergMachine;
+    m_emergMachine = emergMachine;
 }
 
 void
-McpttCallMachineGrpBasic::SetGrpId (const McpttCallMsgFieldGrpId& grpId)
+McpttCallMachineGrpBasic::SetGrpId(const McpttCallMsgFieldGrpId& grpId)
 {
-  NS_LOG_FUNCTION (this << grpId);
+    NS_LOG_FUNCTION(this << grpId);
 
-  m_grpId = grpId;
+    m_grpId = grpId;
 }
 
 void
-McpttCallMachineGrpBasic::SetMergeCb (const Callback<void, uint16_t>  mergeCb)
+McpttCallMachineGrpBasic::SetMergeCb(const Callback<void, uint16_t> mergeCb)
 {
-  NS_LOG_FUNCTION (this << &mergeCb);
+    NS_LOG_FUNCTION(this << &mergeCb);
 
-  m_mergeCb = mergeCb;
+    m_mergeCb = mergeCb;
 }
 
 void
-McpttCallMachineGrpBasic::SetNewCallCb (const Callback<void, uint16_t>  newCallCb)
+McpttCallMachineGrpBasic::SetNewCallCb(const Callback<void, uint16_t> newCallCb)
 {
-  NS_LOG_FUNCTION (this << &newCallCb);
+    NS_LOG_FUNCTION(this << &newCallCb);
 
-  m_newCallCb = newCallCb;
+    m_newCallCb = newCallCb;
 }
 
 void
-McpttCallMachineGrpBasic::SetOrigId (const McpttCallMsgFieldUserId& origId)
+McpttCallMachineGrpBasic::SetOrigId(const McpttCallMsgFieldUserId& origId)
 {
-  NS_LOG_FUNCTION (this << origId);
+    NS_LOG_FUNCTION(this << origId);
 
-  m_origId = origId;
+    m_origId = origId;
 }
 
 void
-McpttCallMachineGrpBasic::SetCall (Ptr<McpttCall> call)
+McpttCallMachineGrpBasic::SetCall(Ptr<McpttCall> call)
 {
-  NS_LOG_FUNCTION (this << call);
-  m_call = call;
+    NS_LOG_FUNCTION(this << call);
+    m_call = call;
 }
 
 void
-McpttCallMachineGrpBasic::SetProbeRespVal (const bool& probeRespVal)
+McpttCallMachineGrpBasic::SetProbeRespVal(const bool& probeRespVal)
 {
-  NS_LOG_FUNCTION (this << probeRespVal);
+    NS_LOG_FUNCTION(this << probeRespVal);
 
-  m_probeRespVal = probeRespVal;
+    m_probeRespVal = probeRespVal;
 }
 
 void
-McpttCallMachineGrpBasic::SetRefInt (const McpttCallMsgFieldRefreshInterval& refInt)
+McpttCallMachineGrpBasic::SetRefInt(const McpttCallMsgFieldRefreshInterval& refInt)
 {
-  NS_LOG_FUNCTION (this << refInt);
+    NS_LOG_FUNCTION(this << refInt);
 
-  m_refInt = refInt;
+    m_refInt = refInt;
 }
 
 void
-McpttCallMachineGrpBasic::SetRndDelays (Ptr<RandomVariableStream>  rndDelays)
+McpttCallMachineGrpBasic::SetRndDelays(Ptr<RandomVariableStream> rndDelays)
 {
-  NS_LOG_FUNCTION (this << &rndDelays);
+    NS_LOG_FUNCTION(this << &rndDelays);
 
-  m_rndDelays = rndDelays;
+    m_rndDelays = rndDelays;
 }
 
 void
-McpttCallMachineGrpBasic::SetSdp (const McpttCallMsgFieldSdp& sdp)
+McpttCallMachineGrpBasic::SetSdp(const McpttCallMsgFieldSdp& sdp)
 {
-  NS_LOG_FUNCTION (this << sdp);
+    NS_LOG_FUNCTION(this << sdp);
 
-  m_sdp = sdp;
+    m_sdp = sdp;
 }
 
 void
-McpttCallMachineGrpBasic::SetStartTime (const McpttCallMsgFieldStartTime& startTime)
+McpttCallMachineGrpBasic::SetStartTime(const McpttCallMsgFieldStartTime& startTime)
 {
-  NS_LOG_FUNCTION (this << startTime);
+    NS_LOG_FUNCTION(this << startTime);
 
-  m_startTime = startTime;
+    m_startTime = startTime;
 }
 
 void
-McpttCallMachineGrpBasic::SetState (Ptr<McpttCallMachineGrpBasicState>  state)
+McpttCallMachineGrpBasic::SetState(Ptr<McpttCallMachineGrpBasicState> state)
 {
-  NS_LOG_FUNCTION (this << &state);
+    NS_LOG_FUNCTION(this << &state);
 
-  m_state = state;
+    m_state = state;
 }
 
 void
-McpttCallMachineGrpBasic::SetStateChangeCb (const Callback<void, const McpttEntityId&, const McpttEntityId&>  stateChangeCb)
+McpttCallMachineGrpBasic::SetStateChangeCb(
+    const Callback<void, const McpttEntityId&, const McpttEntityId&> stateChangeCb)
 {
-  NS_LOG_FUNCTION (this << &stateChangeCb);
+    NS_LOG_FUNCTION(this << &stateChangeCb);
 
-  m_stateChangeCb = stateChangeCb;
+    m_stateChangeCb = stateChangeCb;
 }
 
 void
-McpttCallMachineGrpBasic::SetTfg1 (Ptr<McpttTimer>  tfg1)
+McpttCallMachineGrpBasic::SetTfg1(Ptr<McpttTimer> tfg1)
 {
-  NS_LOG_FUNCTION (this << tfg1);
+    NS_LOG_FUNCTION(this << tfg1);
 
-  m_tfg1 = tfg1;
+    m_tfg1 = tfg1;
 }
 
 void
-McpttCallMachineGrpBasic::SetTfg2 (Ptr<McpttTimer>  tfg2)
+McpttCallMachineGrpBasic::SetTfg2(Ptr<McpttTimer> tfg2)
 {
-  NS_LOG_FUNCTION (this << tfg2);
+    NS_LOG_FUNCTION(this << tfg2);
 
-  m_tfg2 = tfg2;
+    m_tfg2 = tfg2;
 }
 
 void
-McpttCallMachineGrpBasic::SetTfg3 (Ptr<McpttTimer>  tfg3)
+McpttCallMachineGrpBasic::SetTfg3(Ptr<McpttTimer> tfg3)
 {
-  NS_LOG_FUNCTION (this << tfg3);
+    NS_LOG_FUNCTION(this << tfg3);
 
-  m_tfg3 = tfg3;
+    m_tfg3 = tfg3;
 }
 
 void
-McpttCallMachineGrpBasic::SetTfg4 (Ptr<McpttTimer>  tfg4)
+McpttCallMachineGrpBasic::SetTfg4(Ptr<McpttTimer> tfg4)
 {
-  NS_LOG_FUNCTION (this << tfg4);
+    NS_LOG_FUNCTION(this << tfg4);
 
-  m_tfg4 = tfg4;
+    m_tfg4 = tfg4;
 }
 
 void
-McpttCallMachineGrpBasic::SetTfg5 (Ptr<McpttTimer>  tfg5)
+McpttCallMachineGrpBasic::SetTfg5(Ptr<McpttTimer> tfg5)
 {
-  NS_LOG_FUNCTION (this << tfg5);
+    NS_LOG_FUNCTION(this << tfg5);
 
-  m_tfg5 = tfg5;
+    m_tfg5 = tfg5;
 }
 
 void
-McpttCallMachineGrpBasic::SetTfg6 (Ptr<McpttTimer>  tfg6)
+McpttCallMachineGrpBasic::SetTfg6(Ptr<McpttTimer> tfg6)
 {
-  NS_LOG_FUNCTION (this << tfg6);
+    NS_LOG_FUNCTION(this << tfg6);
 
-  m_tfg6 = tfg6;
+    m_tfg6 = tfg6;
 }
 
 void
-McpttCallMachineGrpBasic::SetTypeMachine (Ptr<McpttCallTypeMachineGrpBasic>  typeMachine)
+McpttCallMachineGrpBasic::SetTypeMachine(Ptr<McpttCallTypeMachineGrpBasic> typeMachine)
 {
-  NS_LOG_FUNCTION (this << &typeMachine);
+    NS_LOG_FUNCTION(this << &typeMachine);
 
-  if (typeMachine)
+    if (typeMachine)
     {
-      typeMachine->SetOwner (this);
+        typeMachine->SetOwner(this);
     }
 
-  m_typeMachine = typeMachine;
+    m_typeMachine = typeMachine;
 }
+
 /** McpttCallMachineGrpBasic - end **/
 
 } // namespace psc
 } // namespace ns3
-

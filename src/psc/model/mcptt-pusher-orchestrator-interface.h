@@ -32,15 +32,17 @@
 #ifndef MCPTT_PUSHER_ORCHESTRATOR_INTERFACE_H
 #define MCPTT_PUSHER_ORCHESTRATOR_INTERFACE_H
 
+#include "mcptt-pusher.h"
+
 #include <ns3/object.h>
 #include <ns3/ptr.h>
 #include <ns3/type-id.h>
 
-#include "mcptt-pusher.h"
+namespace ns3
+{
 
-namespace ns3 {
-
-namespace psc {
+namespace psc
+{
 
 /**
  * \ingroup mcptt
@@ -52,93 +54,93 @@ namespace psc {
  */
 class McpttPusherOrchestratorInterface : public Object
 {
-public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId (void);
-  /**
-   * \brief Creates an instance of the McpttPusherOrchestratorInterface class.
-   */
-  McpttPusherOrchestratorInterface (void);
-  /**
-   * \brief The destructor of the McpttPusherOrchestratorInterface class.
-   */
-  virtual ~McpttPusherOrchestratorInterface (void);
-  /**
-   * \brief Adds a pusher to the orchestrated set.
-   * \param pusher The pusher to add.
-   */
-  virtual void AddPusher (Ptr<McpttPusher> pusher) = 0;
-  /**
-   * \brief Set the stream for each random variable.
-   * \param stream The starting stream number.
-   * \returns The number of streams that were set.
-   */
-  virtual int64_t AssignStreams (int64_t stream) = 0;
-  /**
-   * \brief Gets the set of orchestrated pushers.
-   * \returns The set of pushers.
-   */
-  virtual std::vector<Ptr<McpttPusher> > GetPushers (void) const = 0;
-  /**
-   * \brief Gets the set of pushers that are currently pushing the button.
-   * \returns The set of pushers.
-   */
-  virtual std::vector<Ptr<McpttPusher> > GetActivePushers (void) const = 0;
-  /**
-   * \brief Generates an interarrival time.
-   * \returns The interarrival time.
-   */
-  virtual Time NextPttIat (void) = 0;
-  /**
-   * \brief Generates a PTT duration.
-   * \returns The PTT duration.
-   */
-  virtual Time NextPttDuration (void) = 0;
-  /**
-   * \brief Starts orchestrating the pushers.
-   */
-  virtual void Start (void) = 0;
-  /**
-   * \brief Schedules the orchestrator to start at the given time.
-   * \brief t The time at which to start.
-   */
-  virtual void StartAt (const Time& t);
-  /**
-   * \brief Stops orchestrating the pushers.
-   */
-  virtual void Stop (void) = 0;
-  /**
-   * \brief Schedules the orchestrator to stop at the given time.
-   * \brief t The time at which to stop the orchestrator.
-   */
-  virtual void StopAt (const Time& t);
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId(void);
+    /**
+     * \brief Creates an instance of the McpttPusherOrchestratorInterface class.
+     */
+    McpttPusherOrchestratorInterface(void);
+    /**
+     * \brief The destructor of the McpttPusherOrchestratorInterface class.
+     */
+    virtual ~McpttPusherOrchestratorInterface(void);
+    /**
+     * \brief Adds a pusher to the orchestrated set.
+     * \param pusher The pusher to add.
+     */
+    virtual void AddPusher(Ptr<McpttPusher> pusher) = 0;
+    /**
+     * \brief Set the stream for each random variable.
+     * \param stream The starting stream number.
+     * \returns The number of streams that were set.
+     */
+    virtual int64_t AssignStreams(int64_t stream) = 0;
+    /**
+     * \brief Gets the set of orchestrated pushers.
+     * \returns The set of pushers.
+     */
+    virtual std::vector<Ptr<McpttPusher>> GetPushers(void) const = 0;
+    /**
+     * \brief Gets the set of pushers that are currently pushing the button.
+     * \returns The set of pushers.
+     */
+    virtual std::vector<Ptr<McpttPusher>> GetActivePushers(void) const = 0;
+    /**
+     * \brief Generates an interarrival time.
+     * \returns The interarrival time.
+     */
+    virtual Time NextPttIat(void) = 0;
+    /**
+     * \brief Generates a PTT duration.
+     * \returns The PTT duration.
+     */
+    virtual Time NextPttDuration(void) = 0;
+    /**
+     * \brief Starts orchestrating the pushers.
+     */
+    virtual void Start(void) = 0;
+    /**
+     * \brief Schedules the orchestrator to start at the given time.
+     * \brief t The time at which to start.
+     */
+    virtual void StartAt(const Time& t);
+    /**
+     * \brief Stops orchestrating the pushers.
+     */
+    virtual void Stop(void) = 0;
+    /**
+     * \brief Schedules the orchestrator to stop at the given time.
+     * \brief t The time at which to stop the orchestrator.
+     */
+    virtual void StopAt(const Time& t);
 
-protected:
-  /**
-   * \brief Disposes of Object resources.
-   */
-  virtual void DoDispose (void);
-  /**
-   * Traces the interarrival time.
-   * \param userId The MCPTT user ID of the pusher.
-   * \param iat The interarrival time.
-   */
-  virtual void TracePttIat (const uint32_t userId, const Time& iat);
-  /**
-   * Traces the duration.
-   * \param userId The MCPTT user ID of the pusher.
-   * \param duration The duration.
-   */
-  virtual void TracePttDuration (const uint32_t userId, const Time& duration);
+  protected:
+    /**
+     * \brief Disposes of Object resources.
+     */
+    virtual void DoDispose(void);
+    /**
+     * Traces the interarrival time.
+     * \param userId The MCPTT user ID of the pusher.
+     * \param iat The interarrival time.
+     */
+    virtual void TracePttIat(const uint32_t userId, const Time& iat);
+    /**
+     * Traces the duration.
+     * \param userId The MCPTT user ID of the pusher.
+     * \param duration The duration.
+     */
+    virtual void TracePttDuration(const uint32_t userId, const Time& duration);
 
-private:
-  EventId m_startEvent; //!< The start event.
-  EventId m_stopEvent; //!< The stop event.
-  TracedCallback<uint32_t, Time> m_pttIatTrace; //!< The interarrival time trace.
-  TracedCallback<uint32_t, Time> m_pttDurationTrace; //!< The duration trace.
+  private:
+    EventId m_startEvent;                              //!< The start event.
+    EventId m_stopEvent;                               //!< The stop event.
+    TracedCallback<uint32_t, Time> m_pttIatTrace;      //!< The interarrival time trace.
+    TracedCallback<uint32_t, Time> m_pttDurationTrace; //!< The duration trace.
 };
 
 } // namespace psc

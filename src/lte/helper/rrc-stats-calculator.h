@@ -36,9 +36,10 @@
 #ifndef RRC_STATS_CALCULATOR_H_
 #define RRC_STATS_CALCULATOR_H_
 
+#include "lte-stats-calculator.h"
+
 #include "ns3/lte-common.h"
 #include "ns3/lte-sl-header.h"
-#include "ns3/lte-stats-calculator.h"
 #include "ns3/nstime.h"
 #include "ns3/uinteger.h"
 #include <ns3/config.h>

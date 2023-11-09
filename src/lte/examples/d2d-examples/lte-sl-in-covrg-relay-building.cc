@@ -434,7 +434,8 @@ main(int argc, char* argv[])
                                 remoteUeNodes.Get(0)->GetObject<ConstantVelocityMobilityModel>(),
                                 Vector(rm_vel_x, rm_vel_y, 0.0));
         }
-        ns3::MobilityHelper::EnableAscii(ascii.CreateFileStream("MobilityTrace.txt"), remoteUeNodes);
+        ns3::MobilityHelper::EnableAscii(ascii.CreateFileStream("MobilityTrace.txt"),
+                                         remoteUeNodes);
     }
 
     // Install LTE devices to the nodes

@@ -22,9 +22,10 @@
 #ifndef LTE_SL_HARQ_PHY_MODULE_H
 #define LTE_SL_HARQ_PHY_MODULE_H
 
+#include "lte-harq-phy.h"
+
 #include <ns3/assert.h>
 #include <ns3/log.h>
-#include <ns3/lte-harq-phy.h>
 #include <ns3/simple-ref-count.h>
 
 #include <map>

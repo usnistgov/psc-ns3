@@ -37,9 +37,8 @@
 #define LTE_SL_UE_CONTROLLER_H
 
 #include "lte-sl-o2o-comm-params.h"
+#include "lte-sl-ue-rrc.h"
 
-#include <ns3/lte-sl-o2o-comm-params.h>
-#include <ns3/lte-sl-ue-rrc.h>
 #include <ns3/object.h>
 
 namespace ns3

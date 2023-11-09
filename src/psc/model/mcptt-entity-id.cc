@@ -29,97 +29,102 @@
  * employees is not subject to copyright protection within the United States.
  */
 
+#include "mcptt-entity-id.h"
+
 #include <iostream>
 #include <stdint.h>
 #include <string>
 
-#include "mcptt-entity-id.h"
+namespace ns3
+{
 
-namespace ns3 {
-
-namespace psc {
+namespace psc
+{
 
 McpttEntityId::McpttEntityId()
     : m_name(""),
       m_number(0)
-{}
+{
+}
 
-McpttEntityId::McpttEntityId (uint32_t number, const std::string& name)
-  : m_name (name),
-    m_number (number)
-{}
+McpttEntityId::McpttEntityId(uint32_t number, const std::string& name)
+    : m_name(name),
+      m_number(number)
+{
+}
 
 McpttEntityId::~McpttEntityId()
-{}
+{
+}
 
 bool
-McpttEntityId::IsEqualTo (const McpttEntityId& other) const
+McpttEntityId::IsEqualTo(const McpttEntityId& other) const
 {
-  std::string myName = GetName ();
-  uint32_t myNumber = GetNumber ();
-  std::string theirName = other.GetName ();
-  uint32_t theirNumber = other.GetNumber ();
+    std::string myName = GetName();
+    uint32_t myNumber = GetNumber();
+    std::string theirName = other.GetName();
+    uint32_t theirNumber = other.GetNumber();
 
-  bool isEqual = (myNumber == theirNumber && myName == theirName);
+    bool isEqual = (myNumber == theirNumber && myName == theirName);
 
-  return isEqual;
+    return isEqual;
 }
 
 void
-McpttEntityId::Print (std::ostream& os) const
+McpttEntityId::Print(std::ostream& os) const
 {
-  std::string myName = GetName ();
+    std::string myName = GetName();
 
-  os << myName;
+    os << myName;
 }
 
 std::string
 McpttEntityId::GetName() const
 {
-  return m_name;
+    return m_name;
 }
 
 uint32_t
 McpttEntityId::GetNumber() const
 {
-  return m_number;
+    return m_number;
 }
 
 void
-McpttEntityId::SetName (const std::string& name)
+McpttEntityId::SetName(const std::string& name)
 {
-  m_name = name;
+    m_name = name;
 }
 
 void
-McpttEntityId::SetNumber (uint32_t number)
+McpttEntityId::SetNumber(uint32_t number)
 {
-  m_number = number;
-}
-bool
-operator== (const McpttEntityId& rhs, const McpttEntityId& lhs)
-{
-  bool isEqual = rhs.IsEqualTo (lhs);
-
-  return isEqual;
+    m_number = number;
 }
 
 bool
-operator!= (const McpttEntityId& rhs, const McpttEntityId& lhs)
+operator==(const McpttEntityId& rhs, const McpttEntityId& lhs)
 {
-  bool notEqual = !rhs.IsEqualTo (lhs);
+    bool isEqual = rhs.IsEqualTo(lhs);
 
-  return notEqual;
+    return isEqual;
+}
+
+bool
+operator!=(const McpttEntityId& rhs, const McpttEntityId& lhs)
+{
+    bool notEqual = !rhs.IsEqualTo(lhs);
+
+    return notEqual;
 }
 
 std::ostream&
-operator<< (std::ostream& os, const McpttEntityId& id)
+operator<<(std::ostream& os, const McpttEntityId& id)
 {
-  id.Print (os);
+    id.Print(os);
 
-  return os;
+    return os;
 }
 
 } // namespace psc
 } // namespace ns3
-

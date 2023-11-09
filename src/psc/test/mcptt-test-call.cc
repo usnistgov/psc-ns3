@@ -29,122 +29,123 @@
  * employees is not subject to copyright protection within the United States.
  */
 
+#include "mcptt-test-call.h"
+
 #include "ns3/log.h"
+#include "ns3/mcptt-on-network-call-machine-client.h"
+#include "ns3/mcptt-ptt-app.h"
 #include "ns3/object.h"
 #include "ns3/packet.h"
 #include "ns3/sip-header.h"
-#include "ns3/mcptt-on-network-call-machine-client.h"
-#include "ns3/mcptt-ptt-app.h"
-#include "mcptt-test-call.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("McpttTestCall");
+NS_LOG_COMPONENT_DEFINE("McpttTestCall");
 
-namespace psc {
-namespace tests {
+namespace psc
+{
+namespace tests
+{
 
-NS_OBJECT_ENSURE_REGISTERED (McpttTestCall);
+NS_OBJECT_ENSURE_REGISTERED(McpttTestCall);
 
 TypeId
 McpttTestCall::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::psc::McpttTestCall")
-    .SetParent<McpttCall> ()
-  ;
-  return tid;
+    static TypeId tid = TypeId("ns3::psc::McpttTestCall").SetParent<McpttCall>();
+    return tid;
 }
 
-McpttTestCall::McpttTestCall (McpttCall::NetworkCallType callType)
-  : McpttCall (callType)
+McpttTestCall::McpttTestCall(McpttCall::NetworkCallType callType)
+    : McpttCall(callType)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 McpttTestCall::~McpttTestCall()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 bool
-McpttTestCall::ShouldDrop (const McpttMsg& msg)
+McpttTestCall::ShouldDrop(const McpttMsg& msg)
 {
-  bool drop = false;
-  for (auto it = m_droppers.begin(); it != m_droppers.end() && !drop; it++)
-  {
-      drop = (*it)->ShouldDropMsg (msg);
-    }
-  return drop;
-}
-
-void
-McpttTestCall::Receive (Ptr<Packet> pkt, const sip::SipHeader& hdr)
-{
-  NS_LOG_FUNCTION (this << pkt << hdr);
-  NS_ASSERT_MSG (hdr.GetCallId () == GetCallId (), "Received message for wrong call ID");
-  NS_LOG_DEBUG ("Received SIP packet for call ID " << GetCallId ());
-  Ptr<Packet> pktCopy = pkt->Copy ();
-  pktCopy->AddHeader (hdr);
-  GetOwner ()->TraceMessageReceive (GetCallId (), pktCopy, hdr.GetInstanceTypeId ());
-  GetCallMachine ()->GetObject<McpttOnNetworkCallMachineClient> ()->ReceiveCallPacket (pkt, hdr);
-}
-
-void
-McpttTestCall::Receive (const McpttCallMsg& msg)
-{
-  NS_LOG_FUNCTION (this << &msg);
-
-  if (ShouldDrop (msg))
+    bool drop = false;
+    for (auto it = m_droppers.begin(); it != m_droppers.end() && !drop; it++)
     {
-      NS_LOG_DEBUG ("Dropping McpttCallMsg");
-      return;
+        drop = (*it)->ShouldDropMsg(msg);
     }
-  GetCallMachine ()->Receive (msg);
+    return drop;
 }
 
 void
-McpttTestCall::Receive (const McpttFloorMsg& msg)
+McpttTestCall::Receive(Ptr<Packet> pkt, const sip::SipHeader& hdr)
 {
-  NS_LOG_FUNCTION (this << &msg);
-
-  if (ShouldDrop (msg))
-    {
-      NS_LOG_DEBUG ("Dropping McpttFloorMsg");
-      return;
-    }
-
-  GetFloorMachine ()->Receive (msg);
+    NS_LOG_FUNCTION(this << pkt << hdr);
+    NS_ASSERT_MSG(hdr.GetCallId() == GetCallId(), "Received message for wrong call ID");
+    NS_LOG_DEBUG("Received SIP packet for call ID " << GetCallId());
+    Ptr<Packet> pktCopy = pkt->Copy();
+    pktCopy->AddHeader(hdr);
+    GetOwner()->TraceMessageReceive(GetCallId(), pktCopy, hdr.GetInstanceTypeId());
+    GetCallMachine()->GetObject<McpttOnNetworkCallMachineClient>()->ReceiveCallPacket(pkt, hdr);
 }
 
 void
-McpttTestCall::Receive (const McpttMediaMsg& msg)
+McpttTestCall::Receive(const McpttCallMsg& msg)
 {
-  NS_LOG_FUNCTION (this << &msg);
+    NS_LOG_FUNCTION(this << &msg);
 
-  if (ShouldDrop (msg))
+    if (ShouldDrop(msg))
     {
-      NS_LOG_DEBUG ("Dropping McpttMediaMsg");
-      return;
+        NS_LOG_DEBUG("Dropping McpttCallMsg");
+        return;
+    }
+    GetCallMachine()->Receive(msg);
+}
+
+void
+McpttTestCall::Receive(const McpttFloorMsg& msg)
+{
+    NS_LOG_FUNCTION(this << &msg);
+
+    if (ShouldDrop(msg))
+    {
+        NS_LOG_DEBUG("Dropping McpttFloorMsg");
+        return;
     }
 
-  GetCallMachine ()->Receive (msg);
-  GetFloorMachine ()->Receive (msg);
+    GetFloorMachine()->Receive(msg);
+}
+
+void
+McpttTestCall::Receive(const McpttMediaMsg& msg)
+{
+    NS_LOG_FUNCTION(this << &msg);
+
+    if (ShouldDrop(msg))
+    {
+        NS_LOG_DEBUG("Dropping McpttMediaMsg");
+        return;
+    }
+
+    GetCallMachine()->Receive(msg);
+    GetFloorMachine()->Receive(msg);
 }
 
 void
 McpttTestCall::DoDispose()
 {
-  m_droppers.clear ();
-  McpttCall::DoDispose ();
+    m_droppers.clear();
+    McpttCall::DoDispose();
 }
 
 void
-McpttTestCall::AddDropper (Ptr<McpttMsgDropper>  dropper)
+McpttTestCall::AddDropper(Ptr<McpttMsgDropper> dropper)
 {
-  m_droppers.push_back (dropper);
+    m_droppers.push_back(dropper);
 }
 
 } // namespace tests
 } // namespace psc
 } // namespace ns3
-

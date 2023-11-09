@@ -32,18 +32,20 @@
 #ifndef MCPTT_TEST_CASE_CONFIG_H
 #define MCPTT_TEST_CASE_CONFIG_H
 
-
-#include <ns3/nstime.h>
 #include <ns3/application-container.h>
 #include <ns3/mcptt-ptt-app.h>
+#include <ns3/nstime.h>
 #include <ns3/ptr.h>
 #include <ns3/simple-ref-count.h>
-#include <ns3/type-id.h>
 #include <ns3/test.h>
+#include <ns3/type-id.h>
 
-namespace ns3 {
-namespace psc {
-namespace tests {
+namespace ns3
+{
+namespace psc
+{
+namespace tests
+{
 
 class McpttTestCall;
 
@@ -52,39 +54,45 @@ class McpttTestCall;
  */
 class McpttTestCaseConfig : public SimpleRefCount<McpttTestCaseConfig>
 {
-public:
-  McpttTestCaseConfig (void);
-  McpttTestCaseConfig (const uint32_t& appCount, const TypeId& appTid, const TypeId& callTid, const TypeId& floorTid, const Time& start, const Time& stop);
-  virtual ~McpttTestCaseConfig (void);
-  virtual ApplicationContainer Configure (void);
+  public:
+    McpttTestCaseConfig(void);
+    McpttTestCaseConfig(const uint32_t& appCount,
+                        const TypeId& appTid,
+                        const TypeId& callTid,
+                        const TypeId& floorTid,
+                        const Time& start,
+                        const Time& stop);
+    virtual ~McpttTestCaseConfig(void);
+    virtual ApplicationContainer Configure(void);
 
-private:
-  uint32_t m_appCount;
-  TypeId m_appTid;
-  TypeId m_callTid;
-  TypeId m_floorTid;
-  Time m_start;
-  Time m_stop;
+  private:
+    uint32_t m_appCount;
+    TypeId m_appTid;
+    TypeId m_callTid;
+    TypeId m_floorTid;
+    Time m_start;
+    Time m_stop;
 
-public:
-  virtual uint32_t GetAppCount (void) const;
-  virtual TypeId GetAppTid (void) const;
-  virtual TypeId GetCallTid (void) const;
-  virtual TypeId GetFloorTid (void) const;
-  virtual Time GetStart (void) const;
-  virtual Time GetStop (void) const;
-  virtual void SetAppCount (const uint32_t& appCount);
-  virtual void SetAppTid (const TypeId& appTid);
-  virtual void SetCallTid (const TypeId& callTid);
-  virtual void SetFloorTid (const TypeId& floorTid);
-  virtual void SetStart (const Time& start);
-  virtual void SetStop (const Time& stop);
-  virtual Ptr<McpttTestCall> CreateTestCall (ObjectFactory& callFac, ObjectFactory& floorFac, uint16_t callId) const;
+  public:
+    virtual uint32_t GetAppCount(void) const;
+    virtual TypeId GetAppTid(void) const;
+    virtual TypeId GetCallTid(void) const;
+    virtual TypeId GetFloorTid(void) const;
+    virtual Time GetStart(void) const;
+    virtual Time GetStop(void) const;
+    virtual void SetAppCount(const uint32_t& appCount);
+    virtual void SetAppTid(const TypeId& appTid);
+    virtual void SetCallTid(const TypeId& callTid);
+    virtual void SetFloorTid(const TypeId& floorTid);
+    virtual void SetStart(const Time& start);
+    virtual void SetStop(const Time& stop);
+    virtual Ptr<McpttTestCall> CreateTestCall(ObjectFactory& callFac,
+                                              ObjectFactory& floorFac,
+                                              uint16_t callId) const;
 };
 
-} //namespace tests
-} //namespace psc
-} //namespace ns3
+} // namespace tests
+} // namespace psc
+} // namespace ns3
 
 #endif
-

@@ -48,241 +48,242 @@
 // Some elements ported from NIST ns-2.31 SIP implementation
 
 #include "sip-header.h"
+
 #include "ns3/log.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("SipHeader");
+NS_LOG_COMPONENT_DEFINE("SipHeader");
 
-namespace sip {
+namespace sip
+{
 
-NS_OBJECT_ENSURE_REGISTERED (SipHeader);
+NS_OBJECT_ENSURE_REGISTERED(SipHeader);
 
 std::string
-SipMessageTypeToString (SipHeader::SipMessageType messageType)
+SipMessageTypeToString(SipHeader::SipMessageType messageType)
 {
-  switch (messageType)
+    switch (messageType)
     {
-      case SipHeader::SIP_REQUEST:
+    case SipHeader::SIP_REQUEST:
         return "Request";
-      case SipHeader::SIP_RESPONSE:
+    case SipHeader::SIP_RESPONSE:
         return "Response";
-      case SipHeader::SIP_INVALID:
+    case SipHeader::SIP_INVALID:
         return "Invalid";
-      default:
+    default:
         return "Unknown";
     }
-  return "Unknown";
+    return "Unknown";
 }
 
 std::string
-SipMethodToString (SipHeader::SipMethod method)
+SipMethodToString(SipHeader::SipMethod method)
 {
-  switch (method)
+    switch (method)
     {
-      case SipHeader::INVITE:
+    case SipHeader::INVITE:
         return "INVITE";
-      case SipHeader::BYE:
+    case SipHeader::BYE:
         return "BYE";
-      case SipHeader::ACK:
+    case SipHeader::ACK:
         return "ACK";
-      case SipHeader::CANCEL:
+    case SipHeader::CANCEL:
         return "CANCEL";
-      case SipHeader::INVALID_METHOD:
+    case SipHeader::INVALID_METHOD:
         return "Invalid";
-      default:
+    default:
         return "Unknown";
     }
-  return "Unknown";
+    return "Unknown";
 }
 
 std::string
-SipStatusCodeToString (uint16_t statusCode)
+SipStatusCodeToString(uint16_t statusCode)
 {
-  switch (statusCode)
+    switch (statusCode)
     {
-      case 100:
+    case 100:
         return "100 Trying";
-      case 200:
+    case 200:
         return "200 OK";
-      default:
+    default:
         return "Unknown";
     }
-  return "Unknown";
+    return "Unknown";
 }
 
-SipHeader::SipHeader ()
-{}
+SipHeader::SipHeader()
+{
+}
 
-SipHeader::~SipHeader ()
-{}
+SipHeader::~SipHeader()
+{
+}
 
 TypeId
 SipHeader::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::sip::SipHeader")
-    .SetParent<Header> ()
-    .SetGroupName ("Sip")
-    .AddConstructor<SipHeader> ()
-  ;
-  return tid;
+    static TypeId tid = TypeId("ns3::sip::SipHeader")
+                            .SetParent<Header>()
+                            .SetGroupName("Sip")
+                            .AddConstructor<SipHeader>();
+    return tid;
 }
 
 void
-SipHeader::SetMessageType (SipHeader::SipMessageType messageType)
+SipHeader::SetMessageType(SipHeader::SipMessageType messageType)
 {
-  m_messageType = messageType;
+    m_messageType = messageType;
 }
 
 SipHeader::SipMessageType
 SipHeader::GetMessageType() const
 {
-  return SipHeader::SipMessageType (m_messageType);
+    return SipHeader::SipMessageType(m_messageType);
 }
 
 std::string
 SipHeader::GetMessageTypeName() const
 {
-  return SipMessageTypeToString (SipMessageType (m_messageType));
+    return SipMessageTypeToString(SipMessageType(m_messageType));
 }
 
 void
-SipHeader::SetMethod (SipMethod method)
+SipHeader::SetMethod(SipMethod method)
 {
-  m_method = method;
+    m_method = method;
 }
 
 SipHeader::SipMethod
 SipHeader::GetMethod() const
 {
-  return SipHeader::SipMethod (m_method);
+    return SipHeader::SipMethod(m_method);
 }
 
 std::string
 SipHeader::GetMethodName() const
 {
-  return SipMethodToString (SipMethod (m_method));
+    return SipMethodToString(SipMethod(m_method));
 }
 
 void
-SipHeader::SetStatusCode (uint16_t statusCode)
+SipHeader::SetStatusCode(uint16_t statusCode)
 {
-  m_statusCode = statusCode;
+    m_statusCode = statusCode;
 }
 
 uint16_t
 SipHeader::GetStatusCode() const
 {
-  return m_statusCode;
+    return m_statusCode;
 }
 
 void
-SipHeader::SetRequestUri (uint32_t requestUri)
+SipHeader::SetRequestUri(uint32_t requestUri)
 {
-  m_requestUri = requestUri;
+    m_requestUri = requestUri;
 }
 
 uint32_t
 SipHeader::GetRequestUri() const
 {
-  return m_requestUri;
+    return m_requestUri;
 }
 
 void
-SipHeader::SetFrom (uint32_t from)
+SipHeader::SetFrom(uint32_t from)
 {
-  m_from = from;
+    m_from = from;
 }
 
 uint32_t
 SipHeader::GetFrom() const
 {
-  return m_from;
+    return m_from;
 }
 
 void
-SipHeader::SetTo (uint32_t to)
+SipHeader::SetTo(uint32_t to)
 {
-  m_to = to;
+    m_to = to;
 }
 
 uint32_t
 SipHeader::GetTo() const
 {
-  return m_to;
+    return m_to;
 }
 
 void
-SipHeader::SetCallId (uint16_t callId)
+SipHeader::SetCallId(uint16_t callId)
 {
-  m_callId = callId;
+    m_callId = callId;
 }
 
 uint16_t
 SipHeader::GetCallId() const
 {
-  return m_callId;
+    return m_callId;
 }
 
 TypeId
 SipHeader::GetInstanceTypeId() const
 {
-  return GetTypeId ();
+    return GetTypeId();
 }
 
 void
-SipHeader::Print (std::ostream &os) const
+SipHeader::Print(std::ostream& os) const
 {
-  if (m_messageType == SipHeader::SIP_REQUEST)
+    if (m_messageType == SipHeader::SIP_REQUEST)
     {
-      os << SipMessageTypeToString (SipHeader::SipMessageType (m_messageType)) << " "
-         << SipMethodToString (SipHeader::SipMethod (m_method)) << " "
-         << "RequestUri=" << m_requestUri << " "
-      ;
+        os << SipMessageTypeToString(SipHeader::SipMessageType(m_messageType)) << " "
+           << SipMethodToString(SipHeader::SipMethod(m_method)) << " "
+           << "RequestUri=" << m_requestUri << " ";
     }
-  else if (m_messageType == SipHeader::SIP_RESPONSE)
+    else if (m_messageType == SipHeader::SIP_RESPONSE)
     {
-      os << SipMessageTypeToString (SipHeader::SipMessageType (m_messageType)) << " "
-         << SipStatusCodeToString (m_statusCode) << " "
-      ;
+        os << SipMessageTypeToString(SipHeader::SipMessageType(m_messageType)) << " "
+           << SipStatusCodeToString(m_statusCode) << " ";
     }
-  os << "From=" << m_from << " "
-     << "To=" << m_to << " "
-     << "CallId=" << m_callId
-  ;
+    os << "From=" << m_from << " "
+       << "To=" << m_to << " "
+       << "CallId=" << m_callId;
 }
 
 uint32_t
 SipHeader::GetSerializedSize() const
 {
-  return 1 + 1 + 2 + 4 + 4 + 4 + 2;
+    return 1 + 1 + 2 + 4 + 4 + 4 + 2;
 }
 
 void
-SipHeader::Serialize (Buffer::Iterator start) const
+SipHeader::Serialize(Buffer::Iterator start) const
 {
-  Buffer::Iterator i = start;
-  i.WriteU8 (m_messageType);
-  i.WriteU8 (m_method);
-  i.WriteHtonU16 (m_statusCode);
-  i.WriteHtonU32 (m_requestUri);
-  i.WriteHtonU32 (m_from);
-  i.WriteHtonU32 (m_to);
-  i.WriteHtonU16 (m_callId);
+    Buffer::Iterator i = start;
+    i.WriteU8(m_messageType);
+    i.WriteU8(m_method);
+    i.WriteHtonU16(m_statusCode);
+    i.WriteHtonU32(m_requestUri);
+    i.WriteHtonU32(m_from);
+    i.WriteHtonU32(m_to);
+    i.WriteHtonU16(m_callId);
 }
 
 uint32_t
-SipHeader::Deserialize (Buffer::Iterator start)
+SipHeader::Deserialize(Buffer::Iterator start)
 {
-  Buffer::Iterator i = start;
-  m_messageType = i.ReadU8 ();
-  m_method = i.ReadU8 ();
-  m_statusCode = i.ReadNtohU16 ();
-  m_requestUri = i.ReadNtohU32 ();
-  m_from = i.ReadNtohU32 ();
-  m_to = i.ReadNtohU32 ();
-  m_callId = i.ReadNtohU16 ();
-  return GetSerializedSize ();
+    Buffer::Iterator i = start;
+    m_messageType = i.ReadU8();
+    m_method = i.ReadU8();
+    m_statusCode = i.ReadNtohU16();
+    m_requestUri = i.ReadNtohU32();
+    m_from = i.ReadNtohU32();
+    m_to = i.ReadNtohU32();
+    m_callId = i.ReadNtohU16();
+    return GetSerializedSize();
 }
 
 } // namespace sip

@@ -29,87 +29,101 @@
  * employees is not subject to copyright protection within the United States.
  */
 
+#include "mcptt-floor-msg-sink.h"
+
+#include "mcptt-entity-id.h"
+#include "mcptt-floor-queue.h"
+
 #include <ns3/log.h>
 #include <ns3/object.h>
 #include <ns3/ptr.h>
 #include <ns3/type-id.h>
 
-#include "mcptt-entity-id.h"
-#include "mcptt-floor-queue.h"
+namespace ns3
+{
 
-#include "mcptt-floor-msg-sink.h"
+namespace psc
+{
 
-namespace ns3 {
-
-namespace psc {
-
-NS_LOG_COMPONENT_DEFINE ("McpttFloorMsgSink");
+NS_LOG_COMPONENT_DEFINE("McpttFloorMsgSink");
 
 /** McpttFloorMsgSink - begin **/
 McpttFloorMsgSink::McpttFloorMsgSink()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 McpttFloorMsgSink::~McpttFloorMsgSink()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
-McpttFloorMsgSink::Receive (const McpttFloorMsg& msg)
-{}
+McpttFloorMsgSink::Receive(const McpttFloorMsg& msg)
+{
+}
 
 void
-McpttFloorMsgSink::Receive (const McpttMediaMsg& msg)
-{}
+McpttFloorMsgSink::Receive(const McpttMediaMsg& msg)
+{
+}
 
 void
-McpttFloorMsgSink::ReceiveFloorAck (const McpttFloorMsgAck& msg)
-{}
+McpttFloorMsgSink::ReceiveFloorAck(const McpttFloorMsgAck& msg)
+{
+}
 
 void
-McpttFloorMsgSink::ReceiveFloorDeny (const McpttFloorMsgDeny& msg)
-{}
+McpttFloorMsgSink::ReceiveFloorDeny(const McpttFloorMsgDeny& msg)
+{
+}
 
 void
-McpttFloorMsgSink::ReceiveFloorGranted (const McpttFloorMsgGranted& msg)
-{}
+McpttFloorMsgSink::ReceiveFloorGranted(const McpttFloorMsgGranted& msg)
+{
+}
 
 void
-McpttFloorMsgSink::ReceiveFloorIdle (const McpttFloorMsgIdle& msg)
-{}
+McpttFloorMsgSink::ReceiveFloorIdle(const McpttFloorMsgIdle& msg)
+{
+}
 
 void
-McpttFloorMsgSink::ReceiveFloorQueuePositionRequest (const McpttFloorMsgQueuePositionRequest& msg)
-{}
+McpttFloorMsgSink::ReceiveFloorQueuePositionRequest(const McpttFloorMsgQueuePositionRequest& msg)
+{
+}
 
 void
-McpttFloorMsgSink::ReceiveFloorQueuePositionInfo (const McpttFloorMsgQueuePositionInfo& msg)
-{}
+McpttFloorMsgSink::ReceiveFloorQueuePositionInfo(const McpttFloorMsgQueuePositionInfo& msg)
+{
+}
 
 void
-McpttFloorMsgSink::ReceiveFloorRelease (const McpttFloorMsgRelease& msg)
-{}
+McpttFloorMsgSink::ReceiveFloorRelease(const McpttFloorMsgRelease& msg)
+{
+}
 
 void
-McpttFloorMsgSink::ReceiveFloorRequest (const McpttFloorMsgRequest& msg)
-{}
+McpttFloorMsgSink::ReceiveFloorRequest(const McpttFloorMsgRequest& msg)
+{
+}
 
 void
-McpttFloorMsgSink::ReceiveFloorRevoke (const McpttFloorMsgRevoke& msg)
-{}
+McpttFloorMsgSink::ReceiveFloorRevoke(const McpttFloorMsgRevoke& msg)
+{
+}
 
 void
-McpttFloorMsgSink::ReceiveFloorTaken (const McpttFloorMsgTaken& msg)
-{}
+McpttFloorMsgSink::ReceiveFloorTaken(const McpttFloorMsgTaken& msg)
+{
+}
 
 void
-McpttFloorMsgSink::ReceiveMedia (const McpttMediaMsg& msg)
-{}
+McpttFloorMsgSink::ReceiveMedia(const McpttMediaMsg& msg)
+{
+}
 
 /** McpttFloorMsgSink - end **/
 
 } // namespace psc
 } // namespace ns3
-

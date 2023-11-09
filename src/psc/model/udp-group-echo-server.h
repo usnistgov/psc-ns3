@@ -24,29 +24,32 @@
 #ifndef UDP_GROUP_ECHO_SERVER_H
 #define UDP_GROUP_ECHO_SERVER_H
 
-#include "ns3/application.h"
-#include "ns3/ptr.h"
 #include "ns3/address.h"
+#include "ns3/application.h"
 #include "ns3/nstime.h"
+#include "ns3/ptr.h"
 #include "ns3/traced-callback.h"
+
 #include <map>
 #include <string>
 
-namespace ns3 {
+namespace ns3
+{
 
 class Socket;
 class Packet;
 
-namespace psc {
+namespace psc
+{
 
 /**
  * Structure to store information about the client
  */
 struct UdpGroupEchoClient
 {
-  Address m_address; //!< The remote address of the client
-  Address m_echo_address; //!< The address where to send a response
-  Time m_timestamp; //!< Last time the server heard from the client
+    Address m_address;      //!< The remote address of the client
+    Address m_echo_address; //!< The address where to send a response
+    Time m_timestamp;       //!< Last time the server heard from the client
 };
 
 /**
@@ -57,70 +60,69 @@ struct UdpGroupEchoClient
  */
 class UdpGroupEchoServer : public Application
 {
-public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId (void);
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId(void);
 
-  /**
-   * \brief Mode of echo operation
-   */
-  typedef enum
-  {
-    INF_SESSION,       /**<  Group echo with no session expiration time */
-    NO_GROUP_SESSION,  /**<  Server echoes single client only           */
-    TIMEOUT_LIMITED    /**<  Server forwards to group within timeout    */
-  } Mode_t;
+    /**
+     * \brief Mode of echo operation
+     */
+    typedef enum
+    {
+        INF_SESSION,      /**<  Group echo with no session expiration time */
+        NO_GROUP_SESSION, /**<  Server echoes single client only           */
+        TIMEOUT_LIMITED   /**<  Server forwards to group within timeout    */
+    } Mode_t;
 
-  UdpGroupEchoServer ();
-  virtual ~UdpGroupEchoServer ();
-  /**
-   * Adds a new client to the list of clients to echo messages
-   * \param client The new client address to add
-   */
-  virtual void AddClient (const Address& client);
+    UdpGroupEchoServer();
+    virtual ~UdpGroupEchoServer();
+    /**
+     * Adds a new client to the list of clients to echo messages
+     * \param client The new client address to add
+     */
+    virtual void AddClient(const Address& client);
 
-protected:
-  virtual void DoDispose (void);
+  protected:
+    virtual void DoDispose(void);
 
-private:
-  virtual void StartApplication (void);
-  virtual void StopApplication (void);
+  private:
+    virtual void StartApplication(void);
+    virtual void StopApplication(void);
 
-  /**
-   * \brief Handle a packet reception.
-   *
-   * This function is called by lower layers.
-   *
-   * \param socket the socket the packet was received to.
-   */
-  void HandleRead (Ptr<Socket> socket);
-  /**
-   * \brief Log client information.
-   *
-   * This function logs the number of clients and their session information.
-   * To log the output, at least NS_LOG_INFO must be enabled for this class.
-   *
-   */
-  void LogClients (void);
+    /**
+     * \brief Handle a packet reception.
+     *
+     * This function is called by lower layers.
+     *
+     * \param socket the socket the packet was received to.
+     */
+    void HandleRead(Ptr<Socket> socket);
+    /**
+     * \brief Log client information.
+     *
+     * This function logs the number of clients and their session information.
+     * To log the output, at least NS_LOG_INFO must be enabled for this class.
+     *
+     */
+    void LogClients(void);
 
-  Mode_t m_mode; ///< Mode of echo operation
-  uint16_t m_port; ///< Port on which we listen for incoming packets.
-  uint16_t m_port_client; ///< Port on which we echo packets to client.
-  Ptr<Socket> m_socket; ///< IPv4 Socket
-  Ptr<Socket> m_socket6; ///< IPv6 Socket
-  Address m_local; ///< local multicast address
-  std::map<std::string, UdpGroupEchoClient> m_clients; ///< Group of clients
-  Time m_timeout; ///< Inactive client session expiration time
-  bool m_echoClient; ///< Set server to echo back to the client.
-  TracedCallback<Ptr<const Packet>, const Address &> m_rxTrace; ///< Callbacks for tracing the packet Rx events
-
+    Mode_t m_mode;          ///< Mode of echo operation
+    uint16_t m_port;        ///< Port on which we listen for incoming packets.
+    uint16_t m_port_client; ///< Port on which we echo packets to client.
+    Ptr<Socket> m_socket;   ///< IPv4 Socket
+    Ptr<Socket> m_socket6;  ///< IPv6 Socket
+    Address m_local;        ///< local multicast address
+    std::map<std::string, UdpGroupEchoClient> m_clients; ///< Group of clients
+    Time m_timeout;    ///< Inactive client session expiration time
+    bool m_echoClient; ///< Set server to echo back to the client.
+    TracedCallback<Ptr<const Packet>, const Address&>
+        m_rxTrace; ///< Callbacks for tracing the packet Rx events
 };
 
 } // namespace psc
 } // namespace ns3
 
 #endif /* UDP_GROUP_ECHO_SERVER_H */
-

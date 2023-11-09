@@ -32,15 +32,17 @@
 #ifndef MCPTT_MSG_H
 #define MCPTT_MSG_H
 
-#include <iostream>
-
 #include <ns3/header.h>
 #include <ns3/simple-ref-count.h>
 #include <ns3/type-id.h>
 
-namespace ns3 {
+#include <iostream>
 
-namespace psc {
+namespace ns3
+{
+
+namespace psc
+{
 
 /**
  * \ingroup mcptt
@@ -51,52 +53,54 @@ namespace psc {
  */
 class McpttMsg : public Header
 {
-public:
-  /**
-   * Gets the type ID of the McpttMsg class.
-   * \returns The type ID.
-   */
-  static TypeId GetTypeId (void);
-  /**
-   * The destructor of the McpttMsg class.
-   */
-  virtual ~McpttMsg (void);
-  /**
-   * Gets the type ID of this McpttMsg instance.
-   * \returns The type ID.
-   */
-  virtual TypeId GetInstanceTypeId (void) const;
-  /**
-   * Indicates whether or not the message is a given type.
-   * \param type The message type.
-   * \returns True, if this message matches the given type, or false otherwise.
-   */
-  virtual bool IsA (const TypeId& type) const;
-  virtual uint32_t        Deserialize (Buffer::Iterator start)
-  {
-    return 0;
-  }
+  public:
+    /**
+     * Gets the type ID of the McpttMsg class.
+     * \returns The type ID.
+     */
+    static TypeId GetTypeId(void);
+    /**
+     * The destructor of the McpttMsg class.
+     */
+    virtual ~McpttMsg(void);
+    /**
+     * Gets the type ID of this McpttMsg instance.
+     * \returns The type ID.
+     */
+    virtual TypeId GetInstanceTypeId(void) const;
+    /**
+     * Indicates whether or not the message is a given type.
+     * \param type The message type.
+     * \returns True, if this message matches the given type, or false otherwise.
+     */
+    virtual bool IsA(const TypeId& type) const;
 
-  virtual uint32_t        GetSerializedSize (void) const
-  {
-    return 0;
-  }
+    virtual uint32_t Deserialize(Buffer::Iterator start)
+    {
+        return 0;
+    }
 
-  virtual void    Print (std::ostream &os) const
-  { }
+    virtual uint32_t GetSerializedSize(void) const
+    {
+        return 0;
+    }
 
-  virtual void    Serialize (Buffer::Iterator start) const
-  { }
+    virtual void Print(std::ostream& os) const
+    {
+    }
 
-protected:
-  /**
-  * Creates an instance of the McpttMsg class.
-  */
-  McpttMsg (void);
+    virtual void Serialize(Buffer::Iterator start) const
+    {
+    }
+
+  protected:
+    /**
+     * Creates an instance of the McpttMsg class.
+     */
+    McpttMsg(void);
 };
 
 } // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_MSG_H */
-

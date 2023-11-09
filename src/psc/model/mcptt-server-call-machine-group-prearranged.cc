@@ -29,74 +29,87 @@
  * employees is not subject to copyright protection within the United States.
  */
 
-#include <ns3/log.h>
-#include <ns3/object.h>
-#include <ns3/type-id.h>
-#include <ns3/uinteger.h>
-#include <ns3/vector.h>
-#include <ns3/sip-header.h>
-#include <ns3/string.h>
-#include <ns3/pointer.h>
-#include <ns3/random-variable-stream.h>
-#include "mcptt-server-app.h"
-#include "mcptt-server-call.h"
+#include "mcptt-server-call-machine-group-prearranged.h"
+
 #include "mcptt-on-network-floor-arbitrator.h"
 #include "mcptt-on-network-floor-participant.h"
 #include "mcptt-on-network-floor-towards-participant.h"
-
-#include "mcptt-server-call-machine-group-prearranged.h"
+#include "mcptt-server-app.h"
 #include "mcptt-server-call-machine-group-prearranged-state.h"
+#include "mcptt-server-call.h"
 
-namespace ns3 {
+#include <ns3/log.h>
+#include <ns3/object.h>
+#include <ns3/pointer.h>
+#include <ns3/random-variable-stream.h>
+#include <ns3/sip-header.h>
+#include <ns3/string.h>
+#include <ns3/type-id.h>
+#include <ns3/uinteger.h>
+#include <ns3/vector.h>
 
-NS_LOG_COMPONENT_DEFINE ("McpttServerCallMachineGroupPrearranged");
+namespace ns3
+{
 
-namespace psc {
+NS_LOG_COMPONENT_DEFINE("McpttServerCallMachineGroupPrearranged");
+
+namespace psc
+{
 
 /** McpttServerCallMachine - begin **/
-NS_OBJECT_ENSURE_REGISTERED (McpttServerCallMachineGroupPrearranged);
+NS_OBJECT_ENSURE_REGISTERED(McpttServerCallMachineGroupPrearranged);
 
 TypeId
 McpttServerCallMachineGroupPrearranged::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::psc::McpttServerCallMachineGroupPrearranged")
-    .SetParent<McpttServerCallMachineGrp> ()
-    .AddConstructor<McpttServerCallMachineGroupPrearranged> ()
-    .AddAttribute ("FloorPort", "The port to use for floor control messages.",
-                   UintegerValue (49150),
-                   MakeUintegerAccessor (&McpttServerCallMachineGroupPrearranged::m_floorPort),
-                   MakeUintegerChecker<uint16_t> ())
-    .AddAttribute ("MediaPort", "The port to use for media messages.",
-                   UintegerValue (49151),
-                   MakeUintegerAccessor (&McpttServerCallMachineGroupPrearranged::m_mediaPort),
-                   MakeUintegerChecker<uint16_t> ())
-    .AddAttribute ("CallType", "The call type to use for this call machine.",
-                   UintegerValue (McpttCallMsgFieldCallType::BASIC_GROUP),
-                   MakeUintegerAccessor (&McpttServerCallMachineGroupPrearranged::m_callType),
-                   MakeUintegerChecker<uint8_t> ())
-    .AddAttribute ("InvitePayloadSize",
-                   "Random variable to fill out the INVITE packet to a typical size",
-                   // Nemergent 1750 bytes on wire, minus headers
-                   StringValue ("ns3::ConstantRandomVariable[Constant=1700]"),
-                   MakePointerAccessor (&McpttServerCallMachineGroupPrearranged::m_invitePayloadSize),
-                   MakePointerChecker<RandomVariableStream> ())
-    .AddAttribute ("ByePayloadSize",
-                   "Random variable to fill out the BYE packet to a typical size",
-                   // Nemergent 868 bytes on wire, minus headers
-                   StringValue ("ns3::ConstantRandomVariable[Constant=800]"),
-                   MakePointerAccessor (&McpttServerCallMachineGroupPrearranged::m_byePayloadSize),
-                   MakePointerChecker<RandomVariableStream> ())
-    .AddAttribute ("ResponsePayloadSize",
-                   "Random variable to fill out the 200 OK packet to a typical size",
-                   // Nemergent 1305 bytes on wire, minus headers
-                   StringValue ("ns3::ConstantRandomVariable[Constant=1250]"),
-                   MakePointerAccessor (&McpttServerCallMachineGroupPrearranged::m_responsePayloadSize),
-                   MakePointerChecker<RandomVariableStream> ())
-    .AddTraceSource ("StateChangeTrace", "The trace for capturing state changes.",
-                     MakeTraceSourceAccessor (&McpttServerCallMachineGroupPrearranged::m_stateChangeTrace),
-                     "ns3::psc::McpttServerCallMachine::StateChangeTracedCallback")
-  ;
-  return tid;
+    static TypeId tid =
+        TypeId("ns3::psc::McpttServerCallMachineGroupPrearranged")
+            .SetParent<McpttServerCallMachineGrp>()
+            .AddConstructor<McpttServerCallMachineGroupPrearranged>()
+            .AddAttribute(
+                "FloorPort",
+                "The port to use for floor control messages.",
+                UintegerValue(49150),
+                MakeUintegerAccessor(&McpttServerCallMachineGroupPrearranged::m_floorPort),
+                MakeUintegerChecker<uint16_t>())
+            .AddAttribute(
+                "MediaPort",
+                "The port to use for media messages.",
+                UintegerValue(49151),
+                MakeUintegerAccessor(&McpttServerCallMachineGroupPrearranged::m_mediaPort),
+                MakeUintegerChecker<uint16_t>())
+            .AddAttribute("CallType",
+                          "The call type to use for this call machine.",
+                          UintegerValue(McpttCallMsgFieldCallType::BASIC_GROUP),
+                          MakeUintegerAccessor(&McpttServerCallMachineGroupPrearranged::m_callType),
+                          MakeUintegerChecker<uint8_t>())
+            .AddAttribute(
+                "InvitePayloadSize",
+                "Random variable to fill out the INVITE packet to a typical size",
+                // Nemergent 1750 bytes on wire, minus headers
+                StringValue("ns3::ConstantRandomVariable[Constant=1700]"),
+                MakePointerAccessor(&McpttServerCallMachineGroupPrearranged::m_invitePayloadSize),
+                MakePointerChecker<RandomVariableStream>())
+            .AddAttribute(
+                "ByePayloadSize",
+                "Random variable to fill out the BYE packet to a typical size",
+                // Nemergent 868 bytes on wire, minus headers
+                StringValue("ns3::ConstantRandomVariable[Constant=800]"),
+                MakePointerAccessor(&McpttServerCallMachineGroupPrearranged::m_byePayloadSize),
+                MakePointerChecker<RandomVariableStream>())
+            .AddAttribute(
+                "ResponsePayloadSize",
+                "Random variable to fill out the 200 OK packet to a typical size",
+                // Nemergent 1305 bytes on wire, minus headers
+                StringValue("ns3::ConstantRandomVariable[Constant=1250]"),
+                MakePointerAccessor(&McpttServerCallMachineGroupPrearranged::m_responsePayloadSize),
+                MakePointerChecker<RandomVariableStream>())
+            .AddTraceSource("StateChangeTrace",
+                            "The trace for capturing state changes.",
+                            MakeTraceSourceAccessor(
+                                &McpttServerCallMachineGroupPrearranged::m_stateChangeTrace),
+                            "ns3::psc::McpttServerCallMachine::StateChangeTracedCallback");
+    return tid;
 }
 
 McpttServerCallMachineGroupPrearranged::McpttServerCallMachineGroupPrearranged()
@@ -105,228 +118,272 @@ McpttServerCallMachineGroupPrearranged::McpttServerCallMachineGroupPrearranged()
       m_callId(0),
       m_started(false)
 {
-  NS_LOG_FUNCTION (this);
-  m_state = McpttServerCallMachineGroupPrearrangedStateS1::GetInstance ();
-  m_stateChangeCb = MakeNullCallback<void, const McpttEntityId&, const McpttEntityId&> ();
+    NS_LOG_FUNCTION(this);
+    m_state = McpttServerCallMachineGroupPrearrangedStateS1::GetInstance();
+    m_stateChangeCb = MakeNullCallback<void, const McpttEntityId&, const McpttEntityId&>();
 }
 
 McpttServerCallMachineGroupPrearranged::~McpttServerCallMachineGroupPrearranged()
 {
-  NS_LOG_FUNCTION (this);
-  m_pending.clear ();
-  m_pending.shrink_to_fit ();
+    NS_LOG_FUNCTION(this);
+    m_pending.clear();
+    m_pending.shrink_to_fit();
 }
 
 void
-McpttServerCallMachineGroupPrearranged::SetState (Ptr<McpttServerCallMachineGroupPrearrangedState>  state)
+McpttServerCallMachineGroupPrearranged::SetState(
+    Ptr<McpttServerCallMachineGroupPrearrangedState> state)
 {
-  NS_LOG_FUNCTION (this << &state);
-  McpttEntityId stateId = state->GetInstanceStateId ();
-  McpttEntityId currStateId = m_state->GetInstanceStateId ();
-  if (m_started && (stateId != currStateId))
+    NS_LOG_FUNCTION(this << &state);
+    McpttEntityId stateId = state->GetInstanceStateId();
+    McpttEntityId currStateId = m_state->GetInstanceStateId();
+    if (m_started && (stateId != currStateId))
     {
-      NS_LOG_LOGIC ("Server moving from state " << *m_state << " to state " << *state << ".");
-      m_state = state;
-      if (!m_stateChangeCb.IsNull ())
+        NS_LOG_LOGIC("Server moving from state " << *m_state << " to state " << *state << ".");
+        m_state = state;
+        if (!m_stateChangeCb.IsNull())
         {
-          m_stateChangeCb (currStateId, stateId);
+            m_stateChangeCb(currStateId, stateId);
         }
-      std::string selected = "N/A"; // Selected call indicator not applicable
-      m_stateChangeTrace (GetUserId (), m_serverCall->GetCallId (), selected, GetInstanceTypeId ().GetName (), currStateId.GetName (), stateId.GetName ());
+        std::string selected = "N/A"; // Selected call indicator not applicable
+        m_stateChangeTrace(GetUserId(),
+                           m_serverCall->GetCallId(),
+                           selected,
+                           GetInstanceTypeId().GetName(),
+                           currStateId.GetName(),
+                           stateId.GetName());
     }
 }
 
 Ptr<McpttServerCallMachineGroupPrearrangedState>
 McpttServerCallMachineGroupPrearranged::GetState() const
 {
-  return m_state;
+    return m_state;
 }
 
 void
-McpttServerCallMachineGroupPrearranged::SetStateChangeCb (const Callback<void, const McpttEntityId&, const McpttEntityId&>  stateChangeCb)
+McpttServerCallMachineGroupPrearranged::SetStateChangeCb(
+    const Callback<void, const McpttEntityId&, const McpttEntityId&> stateChangeCb)
 {
-  NS_LOG_FUNCTION (this << &stateChangeCb);
+    NS_LOG_FUNCTION(this << &stateChangeCb);
 
-  m_stateChangeCb = stateChangeCb;
+    m_stateChangeCb = stateChangeCb;
 }
 
 void
-McpttServerCallMachineGroupPrearranged::SendSipRequest (uint32_t from, uint32_t to, Ptr<Packet> pkt, const sip::SipHeader& hdr)
+McpttServerCallMachineGroupPrearranged::SendSipRequest(uint32_t from,
+                                                       uint32_t to,
+                                                       Ptr<Packet> pkt,
+                                                       const sip::SipHeader& hdr)
 {
-  NS_LOG_FUNCTION (this << from << to << pkt << hdr);
-  Ptr<McpttOnNetworkFloorTowardsParticipant> participant = GetServerCall ()->GetArbitrator ()->GetParticipantByUserId (to);
-  Ptr<sip::SipProxy> proxy = GetServerCall ()->GetOwner ()->GetSipProxy ();
-  NS_ASSERT_MSG (participant, "Participant " << to << " not found");
+    NS_LOG_FUNCTION(this << from << to << pkt << hdr);
+    Ptr<McpttOnNetworkFloorTowardsParticipant> participant =
+        GetServerCall()->GetArbitrator()->GetParticipantByUserId(to);
+    Ptr<sip::SipProxy> proxy = GetServerCall()->GetOwner()->GetSipProxy();
+    NS_ASSERT_MSG(participant, "Participant " << to << " not found");
 
-  Address addr = participant->GetPeerAddress ();
-  if (Ipv4Address::IsMatchingType (addr))
+    Address addr = participant->GetPeerAddress();
+    if (Ipv4Address::IsMatchingType(addr))
     {
-      Ipv4Address ipv4Addr = Ipv4Address::ConvertFrom (addr);
-      NS_LOG_DEBUG ("IPv4 address for SIP request: " << ipv4Addr);
-      UintegerValue portValue;
-      GetServerCall ()->GetOwner ()->GetAttribute ("CallPort", portValue);
-      uint16_t callPort = portValue.Get ();
-      InetSocketAddress inetAddr (ipv4Addr, callPort);
-      if (hdr.GetMethod () == sip::SipHeader::INVITE)
+        Ipv4Address ipv4Addr = Ipv4Address::ConvertFrom(addr);
+        NS_LOG_DEBUG("IPv4 address for SIP request: " << ipv4Addr);
+        UintegerValue portValue;
+        GetServerCall()->GetOwner()->GetAttribute("CallPort", portValue);
+        uint16_t callPort = portValue.Get();
+        InetSocketAddress inetAddr(ipv4Addr, callPort);
+        if (hdr.GetMethod() == sip::SipHeader::INVITE)
         {
-          proxy->SendInvite (pkt, inetAddr, hdr.GetRequestUri (),
-                             from, to, hdr.GetCallId (),
-                             MakeCallback (&McpttServerCall::SendCallControlPacket, GetServerCall ()));
+            proxy->SendInvite(
+                pkt,
+                inetAddr,
+                hdr.GetRequestUri(),
+                from,
+                to,
+                hdr.GetCallId(),
+                MakeCallback(&McpttServerCall::SendCallControlPacket, GetServerCall()));
         }
-      else if (hdr.GetMethod () == sip::SipHeader::BYE)
+        else if (hdr.GetMethod() == sip::SipHeader::BYE)
         {
-          proxy->SendBye (pkt, inetAddr, hdr.GetRequestUri (),
-                          from, to, hdr.GetCallId (),
-                          MakeCallback (&McpttServerCall::SendCallControlPacket, GetServerCall ()));
+            proxy->SendBye(pkt,
+                           inetAddr,
+                           hdr.GetRequestUri(),
+                           from,
+                           to,
+                           hdr.GetCallId(),
+                           MakeCallback(&McpttServerCall::SendCallControlPacket, GetServerCall()));
         }
-      else
+        else
         {
-          NS_FATAL_ERROR ("Unsupported SIP method type");
+            NS_FATAL_ERROR("Unsupported SIP method type");
         }
     }
-  else if (Ipv6Address::IsMatchingType (addr))
+    else if (Ipv6Address::IsMatchingType(addr))
     {
-      Ipv6Address ipv6Addr = Ipv6Address::ConvertFrom (addr);
-      NS_LOG_DEBUG ("IPv6 address for SIP request: " << ipv6Addr);
-      UintegerValue portValue;
-      GetServerCall ()->GetOwner ()->GetAttribute ("CallPort", portValue);
-      uint16_t callPort = portValue.Get ();
-      Inet6SocketAddress inet6Addr (ipv6Addr, callPort);
-      if (hdr.GetMethod () == sip::SipHeader::INVITE)
+        Ipv6Address ipv6Addr = Ipv6Address::ConvertFrom(addr);
+        NS_LOG_DEBUG("IPv6 address for SIP request: " << ipv6Addr);
+        UintegerValue portValue;
+        GetServerCall()->GetOwner()->GetAttribute("CallPort", portValue);
+        uint16_t callPort = portValue.Get();
+        Inet6SocketAddress inet6Addr(ipv6Addr, callPort);
+        if (hdr.GetMethod() == sip::SipHeader::INVITE)
         {
-          proxy->SendInvite (pkt, inet6Addr, hdr.GetRequestUri (),
-                             from, to, hdr.GetCallId (),
-                             MakeCallback (&McpttServerCall::SendCallControlPacket, GetServerCall ()));
+            proxy->SendInvite(
+                pkt,
+                inet6Addr,
+                hdr.GetRequestUri(),
+                from,
+                to,
+                hdr.GetCallId(),
+                MakeCallback(&McpttServerCall::SendCallControlPacket, GetServerCall()));
         }
-      else if (hdr.GetMethod () == sip::SipHeader::BYE)
+        else if (hdr.GetMethod() == sip::SipHeader::BYE)
         {
-          proxy->SendBye (pkt, inet6Addr, hdr.GetRequestUri (),
-                          from, to, hdr.GetCallId (),
-                          MakeCallback (&McpttServerCall::SendCallControlPacket, GetServerCall ()));
+            proxy->SendBye(pkt,
+                           inet6Addr,
+                           hdr.GetRequestUri(),
+                           from,
+                           to,
+                           hdr.GetCallId(),
+                           MakeCallback(&McpttServerCall::SendCallControlPacket, GetServerCall()));
         }
-      else
+        else
         {
-          NS_FATAL_ERROR ("Unsupported SIP method type");
+            NS_FATAL_ERROR("Unsupported SIP method type");
         }
     }
-  else
+    else
     {
-      NS_FATAL_ERROR ("Address support not implemented");
+        NS_FATAL_ERROR("Address support not implemented");
     }
 }
 
 void
-McpttServerCallMachineGroupPrearranged::SendSipResponse (uint32_t from, uint32_t to, Ptr<Packet> pkt, uint16_t statusCode, const sip::SipHeader& hdr)
+McpttServerCallMachineGroupPrearranged::SendSipResponse(uint32_t from,
+                                                        uint32_t to,
+                                                        Ptr<Packet> pkt,
+                                                        uint16_t statusCode,
+                                                        const sip::SipHeader& hdr)
 {
-  NS_LOG_FUNCTION (this << from << to << pkt << statusCode << hdr);
-  bool found = false;
-  Ptr<sip::SipProxy> proxy = GetServerCall ()->GetOwner ()->GetSipProxy ();
-  for (uint32_t i = 0; i < GetServerCall ()->GetArbitrator ()->GetNParticipants (); i++)
+    NS_LOG_FUNCTION(this << from << to << pkt << statusCode << hdr);
+    bool found = false;
+    Ptr<sip::SipProxy> proxy = GetServerCall()->GetOwner()->GetSipProxy();
+    for (uint32_t i = 0; i < GetServerCall()->GetArbitrator()->GetNParticipants(); i++)
     {
-      Ptr<McpttOnNetworkFloorTowardsParticipant> participant = GetServerCall ()->GetArbitrator ()->GetParticipant (i);
-      // In SIP, if a response is needed, it means that this agent is
-      // in a UAS (server) role, and the 'from' field will be the originating
-      // (UAC) ID, and the 'to' field will be this agent's ID.
-      if (participant->GetPeerUserId () == from)
+        Ptr<McpttOnNetworkFloorTowardsParticipant> participant =
+            GetServerCall()->GetArbitrator()->GetParticipant(i);
+        // In SIP, if a response is needed, it means that this agent is
+        // in a UAS (server) role, and the 'from' field will be the originating
+        // (UAC) ID, and the 'to' field will be this agent's ID.
+        if (participant->GetPeerUserId() == from)
         {
-          Address addr = participant->GetPeerAddress ();
-          if (Ipv4Address::IsMatchingType (addr))
+            Address addr = participant->GetPeerAddress();
+            if (Ipv4Address::IsMatchingType(addr))
             {
-              Ipv4Address ipv4Addr = Ipv4Address::ConvertFrom (addr);
-              UintegerValue portValue;
-              GetServerCall ()->GetOwner ()->GetAttribute ("CallPort", portValue);
-              uint16_t callPort = portValue.Get ();
-              InetSocketAddress inetAddr (ipv4Addr, callPort);
-              proxy->SendResponse (pkt, inetAddr, statusCode,
-                                   from, to, hdr.GetCallId (),
-                                   MakeCallback (&McpttServerCall::SendCallControlPacket, GetServerCall ()));
-              found = true;
+                Ipv4Address ipv4Addr = Ipv4Address::ConvertFrom(addr);
+                UintegerValue portValue;
+                GetServerCall()->GetOwner()->GetAttribute("CallPort", portValue);
+                uint16_t callPort = portValue.Get();
+                InetSocketAddress inetAddr(ipv4Addr, callPort);
+                proxy->SendResponse(
+                    pkt,
+                    inetAddr,
+                    statusCode,
+                    from,
+                    to,
+                    hdr.GetCallId(),
+                    MakeCallback(&McpttServerCall::SendCallControlPacket, GetServerCall()));
+                found = true;
             }
-          else if (Ipv6Address::IsMatchingType (addr))
+            else if (Ipv6Address::IsMatchingType(addr))
             {
-              Ipv6Address ipv6Addr = Ipv6Address::ConvertFrom (addr);
-              UintegerValue portValue;
-              GetServerCall ()->GetOwner ()->GetAttribute ("CallPort", portValue);
-              uint16_t callPort = portValue.Get ();
-              Inet6SocketAddress inet6Addr (ipv6Addr, callPort);
-              proxy->SendResponse (pkt, inet6Addr, statusCode,
-                                   from, to, hdr.GetCallId (),
-                                   MakeCallback (&McpttServerCall::SendCallControlPacket, GetServerCall ()));
-              found = true;
+                Ipv6Address ipv6Addr = Ipv6Address::ConvertFrom(addr);
+                UintegerValue portValue;
+                GetServerCall()->GetOwner()->GetAttribute("CallPort", portValue);
+                uint16_t callPort = portValue.Get();
+                Inet6SocketAddress inet6Addr(ipv6Addr, callPort);
+                proxy->SendResponse(
+                    pkt,
+                    inet6Addr,
+                    statusCode,
+                    from,
+                    to,
+                    hdr.GetCallId(),
+                    MakeCallback(&McpttServerCall::SendCallControlPacket, GetServerCall()));
+                found = true;
             }
-          else
+            else
             {
-              NS_FATAL_ERROR ("Address support not implemented");
+                NS_FATAL_ERROR("Address support not implemented");
             }
         }
     }
-  NS_ASSERT_MSG (found, "Group member not found");
+    NS_ASSERT_MSG(found, "Group member not found");
 }
 
 void
 McpttServerCallMachineGroupPrearranged::AcceptCall()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
 McpttServerCallMachineGroupPrearranged::BeginEmergAlert()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
 McpttServerCallMachineGroupPrearranged::CancelEmergAlert()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
 McpttServerCallMachineGroupPrearranged::DowngradeCallType()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 uint32_t
 McpttServerCallMachineGroupPrearranged::GetCallerUserId() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return 0;
+    return 0;
 }
 
 McpttCallMsgFieldCallId
 McpttServerCallMachineGroupPrearranged::GetCallId() const
 {
-  return m_callId;
+    return m_callId;
 }
 
 McpttCallMsgFieldCallType
 McpttServerCallMachineGroupPrearranged::GetCallType() const
 {
-  McpttCallMsgFieldCallType callTypeField;
-  callTypeField.SetType (m_callType);
+    McpttCallMsgFieldCallType callTypeField;
+    callTypeField.SetType(m_callType);
 
-  return callTypeField;
+    return callTypeField;
 }
 
 TypeId
 McpttServerCallMachineGroupPrearranged::GetInstanceTypeId() const
 {
-  return McpttServerCallMachineGroupPrearranged::GetTypeId ();
+    return McpttServerCallMachineGroupPrearranged::GetTypeId();
 }
 
 Ptr<McpttServerCall>
 McpttServerCallMachineGroupPrearranged::GetServerCall() const
 {
-  return m_serverCall;
+    return m_serverCall;
 }
 
 McpttEntityId
 McpttServerCallMachineGroupPrearranged::GetStateId() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_state->GetInstanceStateId ();
+    NS_LOG_FUNCTION(this);
+    return m_state->GetInstanceStateId();
 }
 
 bool
@@ -337,224 +394,223 @@ McpttServerCallMachineGroupPrearranged::IsCallOngoing() const
 }
 
 bool
-McpttServerCallMachineGroupPrearranged::IsGrpCall (uint32_t grpId) const
+McpttServerCallMachineGroupPrearranged::IsGrpCall(uint32_t grpId) const
 {
-  NS_LOG_FUNCTION (this << grpId);
+    NS_LOG_FUNCTION(this << grpId);
 
-  return false;
+    return false;
 }
 
 bool
-McpttServerCallMachineGroupPrearranged::IsPrivateCall (uint32_t userId) const
+McpttServerCallMachineGroupPrearranged::IsPrivateCall(uint32_t userId) const
 {
-  NS_LOG_FUNCTION (this << userId);
+    NS_LOG_FUNCTION(this << userId);
 
-  return false;
+    return false;
 }
 
 void
-McpttServerCallMachineGroupPrearranged::ReceiveCallPacket (Ptr<Packet> pkt, const sip::SipHeader& sipHeader)
+McpttServerCallMachineGroupPrearranged::ReceiveCallPacket(Ptr<Packet> pkt,
+                                                          const sip::SipHeader& sipHeader)
 {
-  NS_LOG_FUNCTION (this << pkt << sipHeader);
-  uint16_t callId = sipHeader.GetCallId ();
-  NS_ASSERT_MSG (callId == m_serverCall->GetCallId (), "mismatch of call ID");
-  if (sipHeader.GetMessageType () == sip::SipHeader::SIP_REQUEST)
+    NS_LOG_FUNCTION(this << pkt << sipHeader);
+    uint16_t callId = sipHeader.GetCallId();
+    NS_ASSERT_MSG(callId == m_serverCall->GetCallId(), "mismatch of call ID");
+    if (sipHeader.GetMessageType() == sip::SipHeader::SIP_REQUEST)
     {
-      if (sipHeader.GetMethod () == sip::SipHeader::INVITE)
+        if (sipHeader.GetMethod() == sip::SipHeader::INVITE)
         {
-          m_state->ReceiveInvite (*this, pkt, sipHeader);
+            m_state->ReceiveInvite(*this, pkt, sipHeader);
         }
-      else if (sipHeader.GetMethod () == sip::SipHeader::BYE)
+        else if (sipHeader.GetMethod() == sip::SipHeader::BYE)
         {
-          m_state->ReceiveBye (*this, pkt, sipHeader);
+            m_state->ReceiveBye(*this, pkt, sipHeader);
         }
     }
-  else if (sipHeader.GetMessageType () == sip::SipHeader::SIP_RESPONSE)
+    else if (sipHeader.GetMessageType() == sip::SipHeader::SIP_RESPONSE)
     {
-      m_state->ReceiveResponse (*this, pkt, sipHeader);
+        m_state->ReceiveResponse(*this, pkt, sipHeader);
     }
 }
 
 void
-McpttServerCallMachineGroupPrearranged::Receive (const McpttMediaMsg& msg)
+McpttServerCallMachineGroupPrearranged::Receive(const McpttMediaMsg& msg)
 {
-  NS_LOG_FUNCTION (this << &msg);
+    NS_LOG_FUNCTION(this << &msg);
 }
 
 void
 McpttServerCallMachineGroupPrearranged::RejectCall()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
-McpttServerCallMachineGroupPrearranged::SetCallId (const McpttCallMsgFieldCallId& callId)
+McpttServerCallMachineGroupPrearranged::SetCallId(const McpttCallMsgFieldCallId& callId)
 {
-  NS_LOG_DEBUG (this << callId);
-  m_callId = callId.GetCallId ();
+    NS_LOG_DEBUG(this << callId);
+    m_callId = callId.GetCallId();
 }
 
 void
-McpttServerCallMachineGroupPrearranged::SetNewCallCb (const Callback<void, uint16_t>  newCallCb)
+McpttServerCallMachineGroupPrearranged::SetNewCallCb(const Callback<void, uint16_t> newCallCb)
 {
-  NS_LOG_FUNCTION (this << &newCallCb);
+    NS_LOG_FUNCTION(this << &newCallCb);
 }
 
 void
-McpttServerCallMachineGroupPrearranged::SetServerCall (Ptr<McpttServerCall> call)
+McpttServerCallMachineGroupPrearranged::SetServerCall(Ptr<McpttServerCall> call)
 {
-  NS_LOG_FUNCTION (this << call);
-  m_serverCall = call;
+    NS_LOG_FUNCTION(this << call);
+    m_serverCall = call;
 }
 
 void
 McpttServerCallMachineGroupPrearranged::Start()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  Ptr<McpttServerCall> call = GetServerCall ();
-  Ptr<McpttServerApp> serverApp = call->GetOwner ();
+    Ptr<McpttServerCall> call = GetServerCall();
+    Ptr<McpttServerApp> serverApp = call->GetOwner();
 
-  Ptr<McpttOnNetworkFloorArbitrator> arbitrator = call->GetArbitrator ();
-  arbitrator->Start ();
-  m_started = true;
-  SetState (McpttServerCallMachineGroupPrearrangedStateS1::GetInstance ());
+    Ptr<McpttOnNetworkFloorArbitrator> arbitrator = call->GetArbitrator();
+    arbitrator->Start();
+    m_started = true;
+    SetState(McpttServerCallMachineGroupPrearrangedStateS1::GetInstance());
 }
 
 void
 McpttServerCallMachineGroupPrearranged::Stop()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  Ptr<McpttServerCall> call = GetServerCall ();
-  Ptr<McpttOnNetworkFloorArbitrator> arbitrator = call->GetArbitrator ();
+    Ptr<McpttServerCall> call = GetServerCall();
+    Ptr<McpttOnNetworkFloorArbitrator> arbitrator = call->GetArbitrator();
 
-  arbitrator->Stop ();
-  m_started = false;
-  SetState (McpttServerCallMachineGroupPrearrangedStateS1::GetInstance ());
+    arbitrator->Stop();
+    m_started = false;
+    SetState(McpttServerCallMachineGroupPrearrangedStateS1::GetInstance());
 }
 
 void
-McpttServerCallMachineGroupPrearranged::UpgradeCallType (uint8_t callType)
+McpttServerCallMachineGroupPrearranged::UpgradeCallType(uint8_t callType)
 {
-  NS_LOG_FUNCTION (this << (uint32_t)callType);
-  m_callType = callType;
+    NS_LOG_FUNCTION(this << (uint32_t)callType);
+    m_callType = callType;
 }
 
 uint32_t
 McpttServerCallMachineGroupPrearranged::GetInvitePayloadSize()
 {
-  double value = m_invitePayloadSize->GetValue ();
-  NS_ASSERT_MSG (value > 0, "Invalid random variate");
-  return (static_cast<uint32_t> (value));
+    double value = m_invitePayloadSize->GetValue();
+    NS_ASSERT_MSG(value > 0, "Invalid random variate");
+    return (static_cast<uint32_t>(value));
 }
 
 uint32_t
 McpttServerCallMachineGroupPrearranged::GetByePayloadSize()
 {
-  double value = m_byePayloadSize->GetValue ();
-  NS_ASSERT_MSG (value > 0, "Invalid random variate");
-  return (static_cast<uint32_t> (value));
+    double value = m_byePayloadSize->GetValue();
+    NS_ASSERT_MSG(value > 0, "Invalid random variate");
+    return (static_cast<uint32_t>(value));
 }
 
 uint32_t
 McpttServerCallMachineGroupPrearranged::GetResponsePayloadSize()
 {
-  double value = m_responsePayloadSize->GetValue ();
-  NS_ASSERT_MSG (value > 0, "Invalid random variate");
-  return (static_cast<uint32_t> (value));
+    double value = m_responsePayloadSize->GetValue();
+    NS_ASSERT_MSG(value > 0, "Invalid random variate");
+    return (static_cast<uint32_t>(value));
 }
 
 int64_t
-McpttServerCallMachineGroupPrearranged::AssignStreams (int64_t stream)
+McpttServerCallMachineGroupPrearranged::AssignStreams(int64_t stream)
 {
-  NS_LOG_FUNCTION (this << stream);
-  int64_t streamsUsed = 0;
-  m_invitePayloadSize->SetStream (stream + streamsUsed);
-  streamsUsed++;
-  m_responsePayloadSize->SetStream (stream + streamsUsed);
-  streamsUsed++;
-  m_byePayloadSize->SetStream (stream + streamsUsed);
-  streamsUsed++;
-  return streamsUsed;
+    NS_LOG_FUNCTION(this << stream);
+    int64_t streamsUsed = 0;
+    m_invitePayloadSize->SetStream(stream + streamsUsed);
+    streamsUsed++;
+    m_responsePayloadSize->SetStream(stream + streamsUsed);
+    streamsUsed++;
+    m_byePayloadSize->SetStream(stream + streamsUsed);
+    streamsUsed++;
+    return streamsUsed;
 }
 
 void
 McpttServerCallMachineGroupPrearranged::DoDispose()
 {
-  NS_LOG_FUNCTION (this);
-  m_serverCall = nullptr;
-  m_state = nullptr;
-  m_stateChangeCb = MakeNullCallback<void, const McpttEntityId&, const McpttEntityId&> ();
-  McpttServerCallMachine::DoDispose ();
+    NS_LOG_FUNCTION(this);
+    m_serverCall = nullptr;
+    m_state = nullptr;
+    m_stateChangeCb = MakeNullCallback<void, const McpttEntityId&, const McpttEntityId&>();
+    McpttServerCallMachine::DoDispose();
 }
 
 void
-McpttServerCallMachineGroupPrearranged::SetGrpId (uint32_t grpId)
+McpttServerCallMachineGroupPrearranged::SetGrpId(uint32_t grpId)
 {
-  NS_LOG_FUNCTION (this << grpId);
-  McpttCallMsgFieldGrpId grpIdField;
-  grpIdField.SetGrpId (grpId);
-  m_grpId = grpIdField;
+    NS_LOG_FUNCTION(this << grpId);
+    McpttCallMsgFieldGrpId grpIdField;
+    grpIdField.SetGrpId(grpId);
+    m_grpId = grpIdField;
 }
 
 void
-McpttServerCallMachineGroupPrearranged::SetUserId (uint32_t userId)
+McpttServerCallMachineGroupPrearranged::SetUserId(uint32_t userId)
 {
-  NS_LOG_FUNCTION (this << userId);
-  m_userId = userId;
+    NS_LOG_FUNCTION(this << userId);
+    m_userId = userId;
 }
 
 McpttCallMsgFieldGrpId
 McpttServerCallMachineGroupPrearranged::GetGrpId() const
 {
-  return m_grpId;
+    return m_grpId;
 }
 
 uint32_t
 McpttServerCallMachineGroupPrearranged::GetUserId() const
 {
-  return m_userId;
+    return m_userId;
 }
 
-
 void
-McpttServerCallMachineGroupPrearranged::SetPendingTransactionList (std::vector<uint32_t> pending)
+McpttServerCallMachineGroupPrearranged::SetPendingTransactionList(std::vector<uint32_t> pending)
 {
-  NS_LOG_FUNCTION (this);
-  if (!m_pending.empty())
-  {
-      NS_LOG_DEBUG ("Replacing existing pending transaction list with size " << m_pending.size ());
-      m_pending.clear ();
-      m_pending.shrink_to_fit ();
+    NS_LOG_FUNCTION(this);
+    if (!m_pending.empty())
+    {
+        NS_LOG_DEBUG("Replacing existing pending transaction list with size " << m_pending.size());
+        m_pending.clear();
+        m_pending.shrink_to_fit();
     }
-  m_pending = pending;
+    m_pending = pending;
 }
 
 bool
-McpttServerCallMachineGroupPrearranged::RemoveFromPending (uint32_t userId)
+McpttServerCallMachineGroupPrearranged::RemoveFromPending(uint32_t userId)
 {
-  NS_LOG_FUNCTION (this << userId);
-  bool found = false;
-  for (auto it = m_pending.begin (); it != m_pending.end (); it++)
+    NS_LOG_FUNCTION(this << userId);
+    bool found = false;
+    for (auto it = m_pending.begin(); it != m_pending.end(); it++)
     {
-      if (*it == userId)
+        if (*it == userId)
         {
-          NS_LOG_DEBUG ("Found entry for id " << userId);
-          m_pending.erase (it);
-          found = true;
-          break;
+            NS_LOG_DEBUG("Found entry for id " << userId);
+            m_pending.erase(it);
+            found = true;
+            break;
         }
     }
-  return found;
+    return found;
 }
 
 uint32_t
 McpttServerCallMachineGroupPrearranged::GetNPendingTransactions() const
 {
-  return m_pending.size ();
+    return m_pending.size();
 }
 
 } // namespace psc
 } // namespace ns3
-

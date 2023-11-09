@@ -744,8 +744,8 @@ class MemberLteUeCphySapUser : public LteUeCphySapUser
     void ResetSyncIndicationCounter() override;
 
     void ReportSlssMeasurements(LteUeCphySapUser::UeSlssMeasurementsParameters params,
-                                        uint64_t slssid,
-                                        uint16_t offset) override;
+                                uint64_t slssid,
+                                uint16_t offset) override;
     void ReportSubframeIndication(uint16_t frameNo, uint16_t subFrameNo) override;
     void ReceiveMibSL(Ptr<Packet> p, uint16_t slssid) override;
     void ReportChangeOfSyncRef(LteSlSyncParams params) override;

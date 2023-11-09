@@ -32,45 +32,48 @@
 #ifndef MCPTT_TEST_CASE_H
 #define MCPTT_TEST_CASE_H
 
+#include "mcptt-test-case-config.h"
+
 #include <ns3/application-container.h>
 #include <ns3/mcptt-ptt-app.h>
 #include <ns3/ptr.h>
 #include <ns3/test.h>
 
-#include "mcptt-test-case-config.h"
-
-namespace ns3 {
-namespace psc {
-namespace tests {
+namespace ns3
+{
+namespace psc
+{
+namespace tests
+{
 
 /**
  * Test case framework for off-network MCPTT tests
  */
 class McpttTestCase : public TestCase
 {
-public:
-  McpttTestCase (const std::string& name, Ptr<McpttTestCaseConfig>  config);
-  virtual Ptr<McpttPttApp> GetApp (uint32_t index = 0);
-  virtual Ptr<McpttCallMachine> GetCallMachine (uint32_t index = 0);
-  virtual Ptr<McpttFloorParticipant> GetFloorMachine (uint32_t index = 0);
+  public:
+    McpttTestCase(const std::string& name, Ptr<McpttTestCaseConfig> config);
+    virtual Ptr<McpttPttApp> GetApp(uint32_t index = 0);
+    virtual Ptr<McpttCallMachine> GetCallMachine(uint32_t index = 0);
+    virtual Ptr<McpttFloorParticipant> GetFloorMachine(uint32_t index = 0);
 
-protected:
-  virtual void Configure (void);
-  virtual void Execute (void) = 0;
-  virtual void Stop (void);
+  protected:
+    virtual void Configure(void);
+    virtual void Execute(void) = 0;
+    virtual void Stop(void);
 
-private:
-  virtual void DoRun (void);
+  private:
+    virtual void DoRun(void);
 
-private:
-  ApplicationContainer m_clientApps;
-  Ptr<McpttTestCaseConfig> m_config;
+  private:
+    ApplicationContainer m_clientApps;
+    Ptr<McpttTestCaseConfig> m_config;
 
-protected:
-  virtual ApplicationContainer GetClientApps (void) const;
-  virtual Ptr<McpttTestCaseConfig> GetConfig (void) const;
-  virtual void SetClientApps (const ApplicationContainer& clientApps);
-  virtual void SetConfig (Ptr<McpttTestCaseConfig>  config);
+  protected:
+    virtual ApplicationContainer GetClientApps(void) const;
+    virtual Ptr<McpttTestCaseConfig> GetConfig(void) const;
+    virtual void SetClientApps(const ApplicationContainer& clientApps);
+    virtual void SetConfig(Ptr<McpttTestCaseConfig> config);
 };
 
 } // namespace tests
@@ -78,4 +81,3 @@ protected:
 } // namespace ns3
 
 #endif
-

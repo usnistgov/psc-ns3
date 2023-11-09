@@ -39,6 +39,8 @@
 #include <ns3/ptr.h>
 #include <ns3/type-id.h>
 
-namespace ns3 {}
+namespace ns3
+{
+}
 
 #endif /* SIP_TRANSACTION_H */

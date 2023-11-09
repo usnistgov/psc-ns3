@@ -29,151 +29,170 @@
  * employees is not subject to copyright protection within the United States.
  */
 
-#include <ns3/config.h>
+#include "mcptt-test-case-config-on-network.h"
+
 #include <ns3/application-container.h>
-#include <ns3/core-module.h>
 #include <ns3/config-store.h>
+#include <ns3/config.h>
+#include <ns3/core-module.h>
 #include <ns3/csma-module.h>
 #include <ns3/internet-module.h>
 #include <ns3/mcptt-server-app.h>
 #include <ns3/mobility-helper.h>
 #include <ns3/network-module.h>
 
-#include "mcptt-test-case-config-on-network.h"
-
-namespace ns3 {
-namespace psc {
-namespace tests {
+namespace ns3
+{
+namespace psc
+{
+namespace tests
+{
 
 McpttTestCaseConfigOnNetwork::McpttTestCaseConfigOnNetwork()
     : McpttTestCaseConfig()
 {
-  m_clientHelper.SetPttApp ("ns3::psc::McpttPttApp",
-                            "PushOnStart", BooleanValue (false));
-  m_clientHelper.SetMediaSrc ("ns3::psc::McpttMediaSrc",
-                              "Bytes", UintegerValue (60),
-                              "DataRate", DataRateValue (DataRate ("24kb/s")));
-  m_clientHelper.SetPusher ("ns3::psc::McpttPusher",
-                            "Automatic", BooleanValue (false));
+    m_clientHelper.SetPttApp("ns3::psc::McpttPttApp", "PushOnStart", BooleanValue(false));
+    m_clientHelper.SetMediaSrc("ns3::psc::McpttMediaSrc",
+                               "Bytes",
+                               UintegerValue(60),
+                               "DataRate",
+                               DataRateValue(DataRate("24kb/s")));
+    m_clientHelper.SetPusher("ns3::psc::McpttPusher", "Automatic", BooleanValue(false));
 
-  m_callHelper.SetArbitrator ("ns3::psc::McpttOnNetworkFloorArbitrator",
-                              "AckRequired", BooleanValue (false),
-                              "AudioCutIn", BooleanValue (false),
-                              "DualFloorSupported", BooleanValue (false),
-                              "TxSsrc", UintegerValue (100),
-                              "QueueingSupported", BooleanValue (true));
-  m_callHelper.SetTowardsParticipant ("ns3::psc::McpttOnNetworkFloorTowardsParticipant",
-                                      "ReceiveOnly", BooleanValue (false));
-  m_callHelper.SetParticipant ("ns3::psc::McpttOnNetworkFloorParticipant",
-                               "AckRequired", BooleanValue (false),
-                               "GenMedia", BooleanValue (true));
-  m_callHelper.SetServerCall ("ns3::psc::McpttServerCall",
-                              "AmbientListening", BooleanValue (false),
-                              "TemporaryGroup", BooleanValue (false));
+    m_callHelper.SetArbitrator("ns3::psc::McpttOnNetworkFloorArbitrator",
+                               "AckRequired",
+                               BooleanValue(false),
+                               "AudioCutIn",
+                               BooleanValue(false),
+                               "DualFloorSupported",
+                               BooleanValue(false),
+                               "TxSsrc",
+                               UintegerValue(100),
+                               "QueueingSupported",
+                               BooleanValue(true));
+    m_callHelper.SetTowardsParticipant("ns3::psc::McpttOnNetworkFloorTowardsParticipant",
+                                       "ReceiveOnly",
+                                       BooleanValue(false));
+    m_callHelper.SetParticipant("ns3::psc::McpttOnNetworkFloorParticipant",
+                                "AckRequired",
+                                BooleanValue(false),
+                                "GenMedia",
+                                BooleanValue(true));
+    m_callHelper.SetServerCall("ns3::psc::McpttServerCall",
+                               "AmbientListening",
+                               BooleanValue(false),
+                               "TemporaryGroup",
+                               BooleanValue(false));
 }
 
 McpttTestCaseConfigOnNetwork::~McpttTestCaseConfigOnNetwork()
-{ }
+{
+}
 
 ApplicationContainer
 McpttTestCaseConfigOnNetwork::Configure()
 {
-  uint32_t appCount = GetAppCount ();
-  Time start = GetStart ();
-  Time stop = GetStop ();
+    uint32_t appCount = GetAppCount();
+    Time start = GetStart();
+    Time stop = GetStop();
 
-  Config::Reset ();
+    Config::Reset();
 
-  NodeContainer nodes;
-  NodeContainer servers;
-  NodeContainer clients;
-  servers.Create (1);
-  clients.Create (appCount);
-  nodes.Add (servers);
-  nodes.Add (clients);
+    NodeContainer nodes;
+    NodeContainer servers;
+    NodeContainer clients;
+    servers.Create(1);
+    clients.Create(appCount);
+    nodes.Add(servers);
+    nodes.Add(clients);
 
-  MobilityHelper mobility;
-  mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
-                                 "MinX", DoubleValue (0.0),
-                                 "MinY", DoubleValue (0.0),
-                                 "DeltaX", DoubleValue (5.0),
-                                 "DeltaY", DoubleValue (5.0),
-                                 "GridWidth", UintegerValue (2),
-                                 "LayoutType", StringValue ("RowFirst"));
-  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
-  mobility.Install (nodes);
+    MobilityHelper mobility;
+    mobility.SetPositionAllocator("ns3::GridPositionAllocator",
+                                  "MinX",
+                                  DoubleValue(0.0),
+                                  "MinY",
+                                  DoubleValue(0.0),
+                                  "DeltaX",
+                                  DoubleValue(5.0),
+                                  "DeltaY",
+                                  DoubleValue(5.0),
+                                  "GridWidth",
+                                  UintegerValue(2),
+                                  "LayoutType",
+                                  StringValue("RowFirst"));
+    mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+    mobility.Install(nodes);
 
-  CsmaHelper csma;
-  csma.SetChannelAttribute ("DataRate", StringValue ("100Mbps"));
-  csma.SetChannelAttribute ("Delay", TimeValue (Seconds (1.0e-6)));
+    CsmaHelper csma;
+    csma.SetChannelAttribute("DataRate", StringValue("100Mbps"));
+    csma.SetChannelAttribute("Delay", TimeValue(Seconds(1.0e-6)));
 
-  NetDeviceContainer devices;
-  devices = csma.Install (nodes);
+    NetDeviceContainer devices;
+    devices = csma.Install(nodes);
 
-  InternetStackHelper stack;
-  stack.Install (nodes);
+    InternetStackHelper stack;
+    stack.Install(nodes);
 
-  Ipv4AddressHelper address;
-  address.SetBase ("10.1.1.0", "255.255.255.0");
-  Ipv4InterfaceContainer interfaces;
-  interfaces = address.Assign (devices);
+    Ipv4AddressHelper address;
+    address.SetBase("10.1.1.0", "255.255.255.0");
+    Ipv4InterfaceContainer interfaces;
+    interfaces = address.Assign(devices);
 
-  ApplicationContainer serverApps;
-  serverApps.Add (m_serverHelper.Install (servers.Get (0)));
-  serverApps.Start (start);
-  serverApps.Stop (stop);
+    ApplicationContainer serverApps;
+    serverApps.Add(m_serverHelper.Install(servers.Get(0)));
+    serverApps.Start(start);
+    serverApps.Stop(stop);
 
-  m_serverApp = DynamicCast<McpttServerApp> (serverApps.Get (0));
-  Ipv4Address serverAddress = interfaces.GetAddress (0);
-  m_serverApp->SetLocalAddress (serverAddress);
+    m_serverApp = DynamicCast<McpttServerApp>(serverApps.Get(0));
+    Ipv4Address serverAddress = interfaces.GetAddress(0);
+    m_serverApp->SetLocalAddress(serverAddress);
 
-  ApplicationContainer clientApps;
-  clientApps.Add (m_clientHelper.Install (clients));
-  clientApps.Start (start);
-  clientApps.Stop (stop);
+    ApplicationContainer clientApps;
+    clientApps.Add(m_clientHelper.Install(clients));
+    clientApps.Start(start);
+    clientApps.Stop(stop);
 
-  for (uint32_t idx = 0; idx < clientApps.GetN (); idx++)
+    for (uint32_t idx = 0; idx < clientApps.GetN(); idx++)
     {
-      Ptr<McpttPttApp> pttApp = DynamicCast<McpttPttApp> (clientApps.Get (idx));
+        Ptr<McpttPttApp> pttApp = DynamicCast<McpttPttApp>(clientApps.Get(idx));
 
-      Ipv4Address clientAddress = interfaces.GetAddress (idx + servers.GetN ());
-      pttApp->SetLocalAddress (clientAddress);
+        Ipv4Address clientAddress = interfaces.GetAddress(idx + servers.GetN());
+        pttApp->SetLocalAddress(clientAddress);
     }
 
-  McpttCallMsgFieldCallType callType = McpttCallMsgFieldCallType::BASIC_GROUP;
-  uint32_t groupId = 1;
-  m_callHelper.AddCall (clientApps, m_serverApp, groupId, callType, start, stop);
+    McpttCallMsgFieldCallType callType = McpttCallMsgFieldCallType::BASIC_GROUP;
+    uint32_t groupId = 1;
+    m_callHelper.AddCall(clientApps, m_serverApp, groupId, callType, start, stop);
 
-  Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
+    Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 
-  return clientApps;
+    return clientApps;
 }
 
 void
-McpttTestCaseConfigOnNetwork::SetCallHelper (const McpttCallHelper& callHelper)
+McpttTestCaseConfigOnNetwork::SetCallHelper(const McpttCallHelper& callHelper)
 {
-  m_callHelper = callHelper;
+    m_callHelper = callHelper;
 }
 
 void
-McpttTestCaseConfigOnNetwork::SetClientHelper (const McpttHelper& clientHelper)
+McpttTestCaseConfigOnNetwork::SetClientHelper(const McpttHelper& clientHelper)
 {
-  m_clientHelper = clientHelper;
+    m_clientHelper = clientHelper;
 }
 
 void
-McpttTestCaseConfigOnNetwork::SetServerHelper (const McpttServerHelper& serverHelper)
+McpttTestCaseConfigOnNetwork::SetServerHelper(const McpttServerHelper& serverHelper)
 {
-  m_serverHelper = serverHelper;
+    m_serverHelper = serverHelper;
 }
 
 Ptr<McpttServerApp>
 McpttTestCaseConfigOnNetwork::GetServerApp() const
 {
-  return m_serverApp;
+    return m_serverApp;
 }
 
 } // namespace tests
 } // namespace psc
 } // namespace ns3
-

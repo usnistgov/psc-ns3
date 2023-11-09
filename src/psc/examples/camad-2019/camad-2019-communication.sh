@@ -43,9 +43,9 @@ trap "kill 0" EXIT #If you kill this process, it will kill all childs too (e.g.,
 # 1. Add the built scenario to your path before running this script           #
 #    E.g., using the command:                                                 #
 #       $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:`pwd`/build/lib             #
-# 2. Copy the scenario file (camad-2019-communication.cc) to the 'scratch'    # 
+# 2. Copy the scenario file (camad-2019-communication.cc) to the 'scratch'    #
 # folder                                                                      #
-# 3. Copy this script to the ns3 root folder                                  #  
+# 3. Copy this script to the ns3 root folder                                  #
 #                                                                             #
 # Running the evaluation:                                                     #
 # 1. Set the number of trials/run per set you desire to run by modifying the  #
@@ -72,7 +72,7 @@ function RunEvaluation {
 
   appDurationTime="10"
   slPeriodArray="40 80 120 160 240 280 320"
-  txTypeArray="Regular Relay Remote" 
+  txTypeArray="Regular Relay Remote"
   outputDirBase="output_camad-2019-communication"
 
   echo -e "Starting Evaluation... \n   Output: $outputDirBase"
@@ -80,22 +80,22 @@ function RunEvaluation {
   mkdir -p $outputDirBase
 
   rxTypeArray="Remote Relay Regular"
-  metricArray="AverageMeanDelay AveragePacketLoss" 
+  metricArray="AverageMeanDelay AveragePacketLoss"
 
   for txType in $txTypeArray
   do
     for slPeriod in $slPeriodArray
     do
-      
+
       outputDirSet="${outputDirBase}/set_txType-${txType}_slPeriod-${slPeriod}"
-     
+
       mkdir -p $outputDirSet
-              
-      parameters="--slPeriod=${slPeriod} --txType=${txType} --appDurationTime=${appDurationTime}" 
+
+      parameters="--slPeriod=${slPeriod} --txType=${txType} --appDurationTime=${appDurationTime}"
       RunSet $outputDirSet "$parameters" #&
       wait
       ProcessSet $outputDirSet $appDurationTime #&
-      
+
     done #for slPeriod in $slPeriodArray
   done #for txType in $txTypeArray
 
@@ -107,9 +107,9 @@ function RunEvaluation {
   for txType in $txTypeArray
   do
     for rxType in $rxTypeArray
-    do    
+    do
       for metric in $metricArray
-      do 
+      do
         echo -e "slPeriod\tmean\tci" > "${outputDirBase}/set_txType-${txType}_rxType-${rxType}_slPeriod-vs-${metric}_CI.txt"
       done
     done #for rxType in $rxTypeArray
@@ -120,16 +120,16 @@ function RunEvaluation {
       for metric in $metricArray
       do
         for rxType in $rxTypeArray
-        do    
+        do
           awk -v slPeriod=${slPeriod} '{print slPeriod"\t"$0; }' $outputDirSet/${metric}_${rxType}_CI.txt >> "${outputDirBase}/set_txType-${txType}_rxType-${rxType}_slPeriod-vs-${metric}_CI.txt"
         done #for rxType in $rxTypeArray
-        
-      done 
+
+      done
     done #for slPeriod in $slPeriodArray
-    
+
   done #for txType in $txTypeArray
 
-  
+
   pairsOfInterest="Regular_Relay Regular_Remote Relay_Remote Remote_Regular Remote_Remote"
   for metric in $metricArray
   do
@@ -139,20 +139,20 @@ function RunEvaluation {
     do
       #Get tx and rx
 
-      IFS='_'; 
-      arrIN=($pair); 
+      IFS='_';
+      arrIN=($pair);
       unset IFS;
-      
-      txType=${arrIN[0]} 
-      rxType=${arrIN[1]} 
 
-      #Build the plot 
+      txType=${arrIN[0]}
+      rxType=${arrIN[1]}
+
+      #Build the plot
       stringToPlotnSlPeriodsVsMetric=" $stringToPlotnSlPeriodsVsMetric \"${outputDirBase}/set_txType-${txType}_rxType-${rxType}_slPeriod-vs-${metric}_CI.txt\" using 1:2:3 with yerr ps 2 lc $lc title \"${txType} -> ${rxType}\", '' using 1:2 with lines lc $lc notitle,"
-      lc=$(($lc+1))  
-    done #for pair in $pairsOfInterest 
-    
+      lc=$(($lc+1))
+    done #for pair in $pairsOfInterest
+
     #Plot
-    echo "reset 
+    echo "reset
             set terminal pngcairo nocrop enhanced size 1280,800 font 'Helvetica,16
             set output \"${outputDirBase}/set_slPeriod-vs-${metric}_CI.png\"
             set xlabel \"Sl Period length (ms) \"
@@ -160,7 +160,7 @@ function RunEvaluation {
             set yrange [0:]
             set key outside right center
             plot $stringToPlotnSlPeriodsVsMetric " | gnuplot
-    
+
   done #for metric in $metricArray
 
   echo "Done. "
@@ -170,25 +170,25 @@ function RunEvaluation {
 function RunSet {
   outputDirSet=$1
   parameters=$2
-  echo -e "Running Set: $outputDirSet" 
+  echo -e "Running Set: $outputDirSet"
   for ((runN=$startRun; runN<=$endRun; runN++))
-  do  
+  do
     outputDir="${outputDirSet}/run${runN}"
     mkdir -p $outputDir
     cd $outputDir
     simParameters="$parameters --RngRun=${runN}"
 
-    echo -e "Running Trial: $outputDir" 
-    echo -e "outputDir: $outputDir \n simParameters: $simParameters" > info.txt 
-    
+    echo -e "Running Trial: $outputDir"
+    echo -e "outputDir: $outputDir \n simParameters: $simParameters" > info.txt
+
     #Run the simulation
     ../../../build/scratch/$scenario $simParameters &
 
     n=$(($runN % $nThreads))
     if [ "$n" -eq 0 ];then
-	     wait
+         wait
     fi
- 
+
     cd ../../.. #ns3/baseDir/SetDir/RunDir   Important!
 
   done # for ((runN=$startRun; runN<=$endRun; runN++))
@@ -200,33 +200,33 @@ function ProcessSet {
 
   outputDirSet=$1
   appDuration=$2
-   
+
   sep="/set_"
-  setParamsString="${outputDirSet#*$sep}"  
-  echo -e "Processing Set: $outputDirSet " 
-  
+  setParamsString="${outputDirSet#*$sep}"
+  echo -e "Processing Set: $outputDirSet "
+
   rxTypeArray="Remote Relay Regular"
- 
+
   #Obtain run metrics
   for ((runN=$startRun; runN<=$endRun; runN++))
-  do  
+  do
     outputDir="${outputDirSet}/run${runN}"
 
     cd $outputDir
 
-    echo -e "Processing Trial: $outputDir" 
+    echo -e "Processing Trial: $outputDir"
 
-    #### RUN METRICS ####################################        
-  
-    #Obtain number of transmitted packets 
+    #### RUN METRICS ####################################
+
+    #Obtain number of transmitted packets
     nTxPkts=`awk 'BEGIN {nTxPkts=0;} {if ($2 == "tx") {nTxPkts++;} }END{print nTxPkts;}' AppPacketTrace.txt`
 
     for rxType in $rxTypeArray
     do
-      echo -n > MeanDelay_${rxType}_AllNodes.txt 
-      echo -n > PacketLoss_${rxType}_AllNodes.txt 
-      
-      #Get Rx IDs  
+      echo -n > MeanDelay_${rxType}_AllNodes.txt
+      echo -n > PacketLoss_${rxType}_AllNodes.txt
+
+      #Get Rx IDs
       rxNodes=`awk -v rxType=${rxType} '{if ($2 == "rx" && $3 == rxType) {rxs[$4]++;}}END{for (rx in rxs){print rx;}}' AppPacketTrace.txt`
 
       #For each Rx ID
@@ -234,52 +234,52 @@ function ProcessSet {
       do
         #Obtain Rx packets for the node (rx packets with PktSize ($5) = 12, are the 'ping' packets, ignore them)
         awk -v nodeId=${nodeId} -v rxType=${rxType} '{if ($3 == rxType && $4 == nodeId && $2 == "rx" && $5 != 12 ) {print $0;}}' AppPacketTrace.txt > AppPacketTrace_${rxType}_Node${nodeId}.txt
-        
+
         #Calculate Packet Loss
         awk -v nTxPkts=${nTxPkts} 'BEGIN{count=0;}{count ++; }
         END {print (nTxPkts - count)/nTxPkts;}' AppPacketTrace_${rxType}_Node${nodeId}.txt > PacketLoss_${rxType}_Node${nodeId}.txt
         cat PacketLoss_${rxType}_Node${nodeId}.txt >> PacketLoss_${rxType}_AllNodes.txt
         rm PacketLoss_${rxType}_Node${nodeId}.txt
 
-        #Calculate Mean Delay 
+        #Calculate Mean Delay
         awk 'BEGIN{sumDelay=0; count=0; }{count ++; sumDelay+=$7;}
-        END {if (count > 0) {print sumDelay/count;}}' AppPacketTrace_${rxType}_Node${nodeId}.txt > MeanDelay_${rxType}_Node${nodeId}.txt   
-        cat MeanDelay_${rxType}_Node${nodeId}.txt >> MeanDelay_${rxType}_AllNodes.txt 
+        END {if (count > 0) {print sumDelay/count;}}' AppPacketTrace_${rxType}_Node${nodeId}.txt > MeanDelay_${rxType}_Node${nodeId}.txt
+        cat MeanDelay_${rxType}_Node${nodeId}.txt >> MeanDelay_${rxType}_AllNodes.txt
         rm MeanDelay_${rxType}_Node${nodeId}.txt
         rm AppPacketTrace_${rxType}_Node${nodeId}.txt
-          
+
       done #for nodeId in $rxNodes
-  
-      #Geting the averages 
+
+      #Geting the averages
       awk 'BEGIN { sum=0; count=0;}{sum+=$1; count++;} END{ if (count > 0) {print sum/count;} }' MeanDelay_${rxType}_AllNodes.txt  > AverageMeanDelay_${rxType}.txt
       awk 'BEGIN { sum=0; count=0;}{sum+=$1; count++;} END{ if (count > 0) {print sum/count;} }' PacketLoss_${rxType}_AllNodes.txt  > AveragePacketLoss_${rxType}.txt
       rm MeanDelay_${rxType}_AllNodes.txt
       rm PacketLoss_${rxType}_AllNodes.txt
-      
+
     done #for rxType in $rxTypeArray
-    
+
     #### END RUN METRICS ################################
-                      
+
     n=$(($runN % $nThreads))
     if [ "$n" -eq 0 ];then
        wait
     fi
-    
+
     cd ../../.. #ns3/baseDir/SetDir/RunDir   Important!
 
   done #  for ((runN=$startRun; runN<=$endRun; runN++))
- 
+
   ######## SET METRICS ###########################
-      
+
   for rxType in $rxTypeArray
   do
-    metricArray="AverageMeanDelay AveragePacketLoss" 
+    metricArray="AverageMeanDelay AveragePacketLoss"
     for metric in $metricArray
     do
-    
+
       #Gathering all the data
       awk '{print $1;}' ${outputDirSet}/run*/${metric}_${rxType}.txt | sort -n > "${outputDirSet}/${metric}_${rxType}_AllData.txt"
-      
+
       #Mean and 95% Confidence interval
       awk 'BEGIN{sum=0; count=0; sumForStd=0; }
       {
@@ -288,26 +288,26 @@ function ProcessSet {
         }
       }END{
         if (count > 0 ){
-          mean=sum/count; 
+          mean=sum/count;
           for (i in values) {
-            delta=values[i]-mean; 
-            sumForStd+=(delta^2); 
+            delta=values[i]-mean;
+            sumForStd+=(delta^2);
           }
-          stdev = sqrt(sumForStd/count); 
+          stdev = sqrt(sumForStd/count);
           ci = 1.96 * (stdev/(sqrt (count)));
           #print mean, stdev;
           print mean"\t"ci;
-        } 
+        }
         else {
           print "nan\tnan";
         }
       }'  "${outputDirSet}/${metric}_${rxType}_AllData.txt" | sort -g > "${outputDirSet}/${metric}_${rxType}_CI.txt"
-      
+
       #Cleaning
       rm "${outputDirSet}/${metric}_${rxType}_AllData.txt"
     done #for metric in $metricArray
   done #for rxType in $rxTypeArray
-} #function ProcessSet 
+} #function ProcessSet
 
 
 RunEvaluation

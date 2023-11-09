@@ -36,9 +36,10 @@
 #ifndef LTE_SL_ENB_RRC_H
 #define LTE_SL_ENB_RRC_H
 
+#include "lte-rrc-sap.h"
+#include "lte-sl-pool.h"
+
 #include <ns3/event-id.h>
-#include <ns3/lte-rrc-sap.h>
-#include <ns3/lte-sl-pool.h>
 #include <ns3/nstime.h>
 #include <ns3/object.h>
 #include <ns3/traced-callback.h>

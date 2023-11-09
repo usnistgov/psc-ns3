@@ -33,125 +33,127 @@
  * subject to copyright protection within the United States.
  */
 
-#include "ns3/log.h"
-
 #include "psc-application-configuration.h"
 
-namespace ns3 {
+#include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("PscApplicationConfiguration");
-
-namespace psc {
-
-NS_OBJECT_ENSURE_REGISTERED (PscApplicationConfiguration);
-
-PscApplicationConfiguration::PscApplicationConfiguration (
-  std::string name,
-  TypeId sType,
-  uint16_t basePort
-  )
+namespace ns3
 {
-  NS_LOG_FUNCTION (this << name << sType << basePort);
 
-  m_name = name;
-  m_socketType = sType;
-  m_port = basePort;
-  m_instances = 0;
+NS_LOG_COMPONENT_DEFINE("PscApplicationConfiguration");
+
+namespace psc
+{
+
+NS_OBJECT_ENSURE_REGISTERED(PscApplicationConfiguration);
+
+PscApplicationConfiguration::PscApplicationConfiguration(std::string name,
+                                                         TypeId sType,
+                                                         uint16_t basePort)
+{
+    NS_LOG_FUNCTION(this << name << sType << basePort);
+
+    m_name = name;
+    m_socketType = sType;
+    m_port = basePort;
+    m_instances = 0;
 }
 
-PscApplicationConfiguration::~PscApplicationConfiguration ()
+PscApplicationConfiguration::~PscApplicationConfiguration()
 {
     m_packetsPerSessionRandomVariable = nullptr;
     m_packetIntervalRandomVariable = nullptr;
     m_sessionIntervalRandomVariable = nullptr;
 }
 
-void PscApplicationConfiguration::SetApplicationPattern (
-  Ptr<RandomVariableStream> pktsPerSessionRandomVariable,
-  Ptr<RandomVariableStream> pktsIntervalRandomVariable,
-  Ptr<RandomVariableStream> sessionIntervalRandomVariable,
-  uint32_t pSizeClient, uint32_t pSizeServer)
+void
+PscApplicationConfiguration::SetApplicationPattern(
+    Ptr<RandomVariableStream> pktsPerSessionRandomVariable,
+    Ptr<RandomVariableStream> pktsIntervalRandomVariable,
+    Ptr<RandomVariableStream> sessionIntervalRandomVariable,
+    uint32_t pSizeClient,
+    uint32_t pSizeServer)
 {
-  NS_LOG_FUNCTION (this << pktsPerSessionRandomVariable << pktsIntervalRandomVariable << sessionIntervalRandomVariable << pSizeClient << pSizeServer);
+    NS_LOG_FUNCTION(this << pktsPerSessionRandomVariable << pktsIntervalRandomVariable
+                         << sessionIntervalRandomVariable << pSizeClient << pSizeServer);
 
-  m_packetsPerSessionRandomVariable = pktsPerSessionRandomVariable;
-  m_packetIntervalRandomVariable = pktsIntervalRandomVariable;
-  m_sessionIntervalRandomVariable = sessionIntervalRandomVariable;
-  m_packetSizeClient = pSizeClient;
-  m_packetSizeServer = pSizeServer;
-
+    m_packetsPerSessionRandomVariable = pktsPerSessionRandomVariable;
+    m_packetIntervalRandomVariable = pktsIntervalRandomVariable;
+    m_sessionIntervalRandomVariable = sessionIntervalRandomVariable;
+    m_packetSizeClient = pSizeClient;
+    m_packetSizeServer = pSizeServer;
 }
 
 std::string
 PscApplicationConfiguration::GetName() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_name;
+    return m_name;
 }
 
 TypeId
 PscApplicationConfiguration::GetSocketType() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_socketType;
+    return m_socketType;
 }
 
 uint16_t
 PscApplicationConfiguration::GetNextPort()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_port++;
+    return m_port++;
 }
 
 uint32_t
-PscApplicationConfiguration::GetPacketSizeClient ()
+PscApplicationConfiguration::GetPacketSizeClient()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_packetSizeClient;
+    return m_packetSizeClient;
 }
 
 uint32_t
-PscApplicationConfiguration::GetPacketSizeServer ()
+PscApplicationConfiguration::GetPacketSizeServer()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_packetSizeServer;
+    return m_packetSizeServer;
 }
 
 Ptr<RandomVariableStream>
-PscApplicationConfiguration::GetPacketsPerSession ()
+PscApplicationConfiguration::GetPacketsPerSession()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_packetsPerSessionRandomVariable;
+    return m_packetsPerSessionRandomVariable;
 }
 
 Ptr<RandomVariableStream>
-PscApplicationConfiguration::GetPacketInterval ()
+PscApplicationConfiguration::GetPacketInterval()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_packetIntervalRandomVariable;
+    return m_packetIntervalRandomVariable;
 }
 
 Ptr<RandomVariableStream>
-PscApplicationConfiguration::GetSessionInterval ()
+PscApplicationConfiguration::GetSessionInterval()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_sessionIntervalRandomVariable;
+    return m_sessionIntervalRandomVariable;
 }
 
 uint32_t
 PscApplicationConfiguration::IncrementInstances()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_instances++;
+    return m_instances++;
 }
 
 } // namespace psc

@@ -33,9 +33,10 @@
  * subject to copyright protection within the United States.
  */
 
+#include "lte-nist-error-model.h"
+
 #include <ns3/fatal-error.h>
 #include <ns3/log.h>
-#include <ns3/lte-nist-error-model.h>
 #include <ns3/math.h>
 
 #include <stdint.h>

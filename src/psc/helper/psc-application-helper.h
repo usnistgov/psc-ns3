@@ -36,19 +36,20 @@
 #ifndef PSC_APPLICATION_HELPER_H
 #define PSC_APPLICATION_HELPER_H
 
-#include "ns3/pointer.h"
-#include "ns3/node.h"
+#include "ns3/application-container.h"
 #include "ns3/eps-bearer.h"
 #include "ns3/lte-helper.h"
-#include "ns3/random-variable-stream.h"
-#include "ns3/application-container.h"
+#include "ns3/node.h"
 #include "ns3/object-factory.h"
-
-#include "ns3/psc-application.h"
+#include "ns3/pointer.h"
 #include "ns3/psc-application-configuration.h"
+#include "ns3/psc-application.h"
+#include "ns3/random-variable-stream.h"
 
-namespace ns3 {
-namespace psc {
+namespace ns3
+{
+namespace psc
+{
 
 /**
  * \ingroup pscincident
@@ -71,121 +72,130 @@ namespace psc {
  */
 class PscApplicationHelper : public Object
 {
-public:
-  /**
-   * Enumeration with the different types of traces we may request for a node.
-   */
-  enum TraceType_t
-  {
-    TX,                 ///< Trace the transmission of packets
-    RX                 ///< Trace the reception of packets
-  };
+  public:
+    /**
+     * Enumeration with the different types of traces we may request for a node.
+     */
+    enum TraceType_t
+    {
+        TX, ///< Trace the transmission of packets
+        RX  ///< Trace the reception of packets
+    };
 
-  /**
-   * Enumeration used to tell the helper which of the nodes in the application is
-   * an LTE node.
-   */
-  enum LteNode_t
-  {
-    CLIENT,               ///< The client node is an LTE node.
-    SERVER,               ///< The server node is an LTE node.
-    BOTH                  ///< Both the client and server nodes are LTE nodes
-  };
+    /**
+     * Enumeration used to tell the helper which of the nodes in the application is
+     * an LTE node.
+     */
+    enum LteNode_t
+    {
+        CLIENT, ///< The client node is an LTE node.
+        SERVER, ///< The server node is an LTE node.
+        BOTH    ///< Both the client and server nodes are LTE nodes
+    };
 
-  /**
-   * Get the TypeId for this class.
-   * \return The object TypeId
-   */
-  static TypeId GetTypeId (void);
+    /**
+     * Get the TypeId for this class.
+     * \return The object TypeId
+     */
+    static TypeId GetTypeId(void);
 
-  /**
-   * Default constructor, where InitAppList is invoked.
-   */
-  PscApplicationHelper ();
-  /**
-   * Default destructor, where all the smart pointers are set to null.
-   */
-  ~PscApplicationHelper ();
+    /**
+     * Default constructor, where InitAppList is invoked.
+     */
+    PscApplicationHelper();
+    /**
+     * Default destructor, where all the smart pointers are set to null.
+     */
+    ~PscApplicationHelper();
 
-  /**
-   * \brief Method that installs the specified application in the provided nodes,
-   * with the specified start and stop times.
-   *
-   * This method installs an application in the nodes provided with the
-   * parameters stored in the PscApplication::m_appConfigList .
-   *
-   * After configuring the packet size and remote address attributes in the client and server
-   * ObjectFactory, this method invokes PscApplication::InstallClientPriv and
-   * PscApplication::InstallServerPriv.
-   *
-   * \param config The application configuration
-   * \param client The node where to deploy the client application (assuming REQs go UL; if not, client and server are reversed from these names).
-   * \param server The node where to deploy the server application (assuming REQs go UL; if not, client and server are reversed from these names).
-   * \param serverAddress The address to use by the client when initiating the connection.
-   * \param serverResponse Indicates if the server should send a response or not.
-   * \param startTime Time at which the client application will start (the server application starts one second earlier to make sure it is listening and ready when the first packet arrives).
-   * \param stopTime Time at which the client and server applications will stop.
-   *
-   * \return An ApplicationContainer with the client application and the server application, stored in that order.
-   */
-  ApplicationContainer Install (Ptr<PscApplicationConfiguration> config, Ptr<Node> client, Ptr<Node> server,
-                                Ipv6Address serverAddress, bool serverResponse,
-                                Time startTime, Time stopTime);
+    /**
+     * \brief Method that installs the specified application in the provided nodes,
+     * with the specified start and stop times.
+     *
+     * This method installs an application in the nodes provided with the
+     * parameters stored in the PscApplication::m_appConfigList .
+     *
+     * After configuring the packet size and remote address attributes in the client and server
+     * ObjectFactory, this method invokes PscApplication::InstallClientPriv and
+     * PscApplication::InstallServerPriv.
+     *
+     * \param config The application configuration
+     * \param client The node where to deploy the client application (assuming REQs go UL; if not,
+     * client and server are reversed from these names). \param server The node where to deploy the
+     * server application (assuming REQs go UL; if not, client and server are reversed from these
+     * names). \param serverAddress The address to use by the client when initiating the connection.
+     * \param serverResponse Indicates if the server should send a response or not.
+     * \param startTime Time at which the client application will start (the server application
+     * starts one second earlier to make sure it is listening and ready when the first packet
+     * arrives). \param stopTime Time at which the client and server applications will stop.
+     *
+     * \return An ApplicationContainer with the client application and the server application,
+     * stored in that order.
+     */
+    ApplicationContainer Install(Ptr<PscApplicationConfiguration> config,
+                                 Ptr<Node> client,
+                                 Ptr<Node> server,
+                                 Ipv6Address serverAddress,
+                                 bool serverResponse,
+                                 Time startTime,
+                                 Time stopTime);
 
-private:
-  /**
-   * Method that creates a client application and deploys it in the specified node.
-   *
-   * We need to pass the type of application to configure the members that are instances of RandomStreamVariable (we get those parameters from m_appConfigList and 'name' serves as the index of that array).
-   *
-   * \param config Configuration of the application to deploy.
-   * \param client Node where to deploy the application.
-   * \return A pointer to the application created and deployed.
-   */
-  Ptr<Application> InstallClientPriv (Ptr<PscApplicationConfiguration> config, Ptr<Node> client);
+  private:
+    /**
+     * Method that creates a client application and deploys it in the specified node.
+     *
+     * We need to pass the type of application to configure the members that are instances of
+     * RandomStreamVariable (we get those parameters from m_appConfigList and 'name' serves as the
+     * index of that array).
+     *
+     * \param config Configuration of the application to deploy.
+     * \param client Node where to deploy the application.
+     * \return A pointer to the application created and deployed.
+     */
+    Ptr<Application> InstallClientPriv(Ptr<PscApplicationConfiguration> config, Ptr<Node> client);
 
-  /**
-   * Method that creates a server application and deploys it in the specified node.
-   *
-   * \param server Node where to deploy the application.
-   * \return A pointer to the application created and deployed.
-   */
-  Ptr<Application> InstallServerPriv (Ptr<Node> server);
+    /**
+     * Method that creates a server application and deploys it in the specified node.
+     *
+     * \param server Node where to deploy the application.
+     * \return A pointer to the application created and deployed.
+     */
+    Ptr<Application> InstallServerPriv(Ptr<Node> server);
 
-  /**
-   * Object factory for the client applications.
-   */
-  ObjectFactory m_clientFactory;
-  /**
-   * Object factory for the server applications.
-   */
-  ObjectFactory m_serverFactory;
+    /**
+     * Object factory for the client applications.
+     */
+    ObjectFactory m_clientFactory;
+    /**
+     * Object factory for the server applications.
+     */
+    ObjectFactory m_serverFactory;
 
-  /**
-   * Container with all the client applications created through this helper.
-   * Used to trace the demand over time.
-   */
-  ApplicationContainer m_incidentClientAppsCreated;
+    /**
+     * Container with all the client applications created through this helper.
+     * Used to trace the demand over time.
+     */
+    ApplicationContainer m_incidentClientAppsCreated;
 
-  /**
-   * Temporary storage of the RandomStreamVariable for the number of packets in a session.
-   */
-  Ptr<RandomVariableStream> m_tmpPktsSession;
-  /**
-   * Temporary storage of the RandomStreamVariable for the interval between packets.
-   */
-  Ptr<RandomVariableStream> m_tmpPktInterval;
-  /**
-   * Temporary storage of the RandomStreamVariable for the interval between sessions.
-   */
-  Ptr<RandomVariableStream> m_tmpSessionInterval;
+    /**
+     * Temporary storage of the RandomStreamVariable for the number of packets in a session.
+     */
+    Ptr<RandomVariableStream> m_tmpPktsSession;
+    /**
+     * Temporary storage of the RandomStreamVariable for the interval between packets.
+     */
+    Ptr<RandomVariableStream> m_tmpPktInterval;
+    /**
+     * Temporary storage of the RandomStreamVariable for the interval between sessions.
+     */
+    Ptr<RandomVariableStream> m_tmpSessionInterval;
 
-  /**
-   * Minimum interval between sever response packets.
-   */
-  Time m_minTimeBetweenServerRsps;
+    /**
+     * Minimum interval between sever response packets.
+     */
+    Time m_minTimeBetweenServerRsps;
 
-}; //class PscApplicationHelper
+}; // class PscApplicationHelper
 
 } // namespace psc
 

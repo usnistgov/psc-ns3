@@ -33,13 +33,15 @@
  * subject to copyright protection within the United States.
  */
 
+#include "lte-3gpp-hex-grid-enb-topology-helper.h"
+
+#include "epc-helper.h"
+
 #include <ns3/abort.h>
 #include <ns3/angles.h>
 #include <ns3/building.h>
 #include <ns3/double.h>
-#include <ns3/epc-helper.h>
 #include <ns3/log.h>
-#include <ns3/lte-3gpp-hex-grid-enb-topology-helper.h>
 #include <ns3/lte-enb-net-device.h>
 #include <ns3/lte-enb-phy.h>
 #include <ns3/lte-spectrum-phy.h>

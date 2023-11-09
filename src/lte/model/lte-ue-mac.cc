@@ -86,10 +86,10 @@ class UeMemberLteUeCmacSapProvider : public LteUeCmacSapProvider
     void NotifyConnectionSuccessful() override;
     void SetImsi(uint64_t imsi) override;
     void AddSlLc(uint8_t lcId,
-                         uint32_t srcL2Id,
-                         uint32_t dstL2Id,
-                         LteUeCmacSapProvider::LogicalChannelConfig lcConfig,
-                         LteMacSapUser* msu) override;
+                 uint32_t srcL2Id,
+                 uint32_t dstL2Id,
+                 LteUeCmacSapProvider::LogicalChannelConfig lcConfig,
+                 LteMacSapUser* msu) override;
     void RemoveSlLc(uint8_t lcId, uint32_t srcL2Id, uint32_t dstL2Id) override;
     // Sidelink Communication
     void AddSlCommTxPool(uint32_t dstL2Id, Ptr<SidelinkTxCommResourcePool> pool) override;

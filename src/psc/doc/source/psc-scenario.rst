@@ -1,4 +1,5 @@
 .. include:: replace.txt
+.. highlight:: cpp
 
 +++++++++++++++++++++++++++
 Incident Scenario Framework
@@ -9,13 +10,13 @@ document incidents with enough detail to be reproducible by different
 researchers using different platforms. In addition, the guidelines separated the
 description of the incident and the communication needs (who, what, where) from
 the technology (how), thus making it easier to investigate different network
-capabilities for the same scenario. 
+capabilities for the same scenario.
 
 Similarly, the objective of the incident scenario framework presented in this
 section is to provide a set of classes and a methodology for developing
 potentially complex scenarios involving hundreds of users and a multitude of
 applications. The modular approach helps the users evaluate different
-technologies and configurations without having to start from scratch. 
+technologies and configurations without having to start from scratch.
 
 ---------------
 Design Overview
@@ -27,18 +28,18 @@ The methodology for implementing scenarios involves the following steps:
 
 #. Configure the network: configure technology specific devices in the nodes. For example, deploy an LTE network and attach NetDevices to the nodes.
 
-#. Configure the applications: deploy applications in the nodes with appropriate start and stop time based on the scenario events. 
+#. Configure the applications: deploy applications in the nodes with appropriate start and stop time based on the scenario events.
 
 This methodology was used to implement the fictional school shooting scenario described in [NIST2021c]_ and whose implementation is located in ``psc/example/schoolshooting``.
 
 
 To assist with the description of scenarios and provide consistent information,
 a new class ``ns3::psc::PscScenarioDefinition`` was created to define and store
-scenario information composed of: 
+scenario information composed of:
 
 * Areas: an area is a zone of interest in the scenario. When an incident occurs, first responders typically define perimeters and areas where specific activities will take place (e.g., triage). Those areas are defined by a name and a rectangle.
 
-* Structures: a structure represents a building at the location of the incident. A structure is defined by a name and a BuildingContainer to store one or more ns-3 buildings. 
+* Structures: a structure represents a building at the location of the incident. A structure is defined by a name and a BuildingContainer to store one or more ns-3 buildings.
 
 * Node groups: a group of nodes associated with a given role. Typical response teams are organized by roles, e.g., SWAT teams or firefighters. A group of nodes is defined by the name of the group and a NodeContainer with one or more ns-3 nodes.
 
@@ -46,7 +47,7 @@ scenario information composed of:
 
 * Applications: a list of applications used during the incident.
 
-The ``ns3::psc::PscScenarioDefinition`` stores the information using different maps with a user-provided unique ID as the key. 
+The ``ns3::psc::PscScenarioDefinition`` stores the information using different maps with a user-provided unique ID as the key.
 
 The implementation is provided in the following file:
 
@@ -63,7 +64,7 @@ completely before attaching the helper otherwise some information may not be
 included in the trace files.
 
 The name of the trace files is based on the scenario name and append a suffix
-based on the type of trace and the file extension ".txt". 
+based on the type of trace and the file extension ".txt".
 
 The trace file for the areas has a name that ends with the suffix "-areas.txt" and
 has the following format:
@@ -124,13 +125,13 @@ in simulation time.
 
 The implementation of the example is provided in the following files:
 
-* ``src/psc/examples/schoolshooting/psc-schoolshooting.cc`` The main program to launch the example. 
-* ``src/psc/examples/schoolshooting/schoolshooting-definition-helper.{h.cc}`` Helper class to define the scenario. 
-* ``src/psc/examples/schoolshooting/schoolshooting-network-technology-helper.{h.cc}`` Abstract helper class that defines the API for the underlying technology helper. 
-* ``src/psc/examples/schoolshooting/schoolshooting-lte-helper.{h.cc}`` Helper class for deploying the LTE network supporting the incident that implements the underlying technology API. 
-* ``src/psc/examples/schoolshooting/schoolshooting-application-helper.{h.cc}`` Helper class to define and deploy the applications. 
-* ``src/psc/examples/schoolshooting/schoolshooting-application-trace-helper.{h.cc}`` Helper class to activate application traces. 
-* ``src/psc/examples/schoolshooting/schoolshooting-lte-vis-helper.{h.cc}`` Helper class to visualize the incident using NetSimulyzer [NIST2021b]_. 
+* ``src/psc/examples/schoolshooting/psc-schoolshooting.cc`` The main program to launch the example.
+* ``src/psc/examples/schoolshooting/schoolshooting-definition-helper.{h.cc}`` Helper class to define the scenario.
+* ``src/psc/examples/schoolshooting/schoolshooting-network-technology-helper.{h.cc}`` Abstract helper class that defines the API for the underlying technology helper.
+* ``src/psc/examples/schoolshooting/schoolshooting-lte-helper.{h.cc}`` Helper class for deploying the LTE network supporting the incident that implements the underlying technology API.
+* ``src/psc/examples/schoolshooting/schoolshooting-application-helper.{h.cc}`` Helper class to define and deploy the applications.
+* ``src/psc/examples/schoolshooting/schoolshooting-application-trace-helper.{h.cc}`` Helper class to activate application traces.
+* ``src/psc/examples/schoolshooting/schoolshooting-lte-vis-helper.{h.cc}`` Helper class to visualize the incident using NetSimulyzer [NIST2021b]_.
 
 Helpers
 +++++++
@@ -141,7 +142,7 @@ SchoolShootingDefinitionHelper
 The ``SchoolShootingDefinitionHelper`` helper is responsible for defining the
 school shooting scenario description. All the areas, buildings, nodes, and
 events are defined in this class. The helper also defines the mobility models of
-each node throughout the duration of the incident. 
+each node throughout the duration of the incident.
 
 SchoolShootingNetworkTechnologyHelper
 -------------------------------------
@@ -149,7 +150,7 @@ SchoolShootingNetworkTechnologyHelper
 The ``SchoolShootingNetworkTechnologyHelper`` helper is meant to provide an API
 for technology specific deployment helpers. It provides virtual functions to
 access nodes specified in the scenario that may be implemented differently based
-on the technology used. 
+on the technology used.
 
 SchoolShootingLteHelper
 -----------------------
@@ -157,7 +158,7 @@ SchoolShootingLteHelper
 The ``SchoolShootingLteHelper`` helper is a subclass of
 ``SchoolShootingNetworkTechnologyHelper`` and is responsible for deploying an
 LTE network and associated devices in order to provide first responders with a
-means of communication. 
+means of communication.
 
 SchoolShootingApplicationHelper
 -------------------------------
@@ -175,7 +176,7 @@ The ``SchoolShootingApplicationHelper`` helper is responsible for creating trace
 files associated with the various applications. When an application trace is
 enabled, the helper will connect to the model's trace sources and register
 callback functions to write traces to files. Because the scenario uses different
-types of applications, the helper functions are specific to each application model. 
+types of applications, the helper functions are specific to each application model.
 
 SchoolShootingLteVisHelper
 ---------------------------
@@ -185,7 +186,7 @@ JSON file to replay and visualize the incident with NetSimulyzer [NIST2021b]_. I
 connects to the scenario definition to obtain building and node information
 (including positions throughout the simulation), to the technology helper to
 obtain network information (e.g., eNodeB height), and to the application helper
-to connect to the applications' trace sources. 
+to connect to the applications' trace sources.
 
 Attributes
 ++++++++++
@@ -252,25 +253,28 @@ The following code block shows the minimum setup to create a simulation based on
 
 .. sourcecode:: cpp
 
-   //1. Create the scenario
-   Ptr<SchoolShootingDefinitionHelper> scenarioDefinitionHelper = CreateObject<SchoolShootingDefinitionHelper> ();
+    // 1. Create the scenario
+    Ptr<SchoolShootingDefinitionHelper> scenarioDefinitionHelper =
+        CreateObject<SchoolShootingDefinitionHelper>();
 
-   //2. Create technology helper and initialize the network
-   Ptr<SchoolShootingLteHelper> lteScenarioHelper = CreateObject<SchoolShootingLteHelper> ();
-   lteScenarioHelper->SetScenarioDefinitionHelper (scenarioDefinitionHelper);
-   lteScenarioHelper->Initialize ();
+    // 2. Create technology helper and initialize the network
+    Ptr<SchoolShootingLteHelper> lteScenarioHelper = CreateObject<SchoolShootingLteHelper>();
+    lteScenarioHelper->SetScenarioDefinitionHelper(scenarioDefinitionHelper);
+    lteScenarioHelper->Initialize();
 
-   //3. Create the application helper and 
-   Ptr<SchoolShootingApplicationHelper> scenarioApplicationHelper = CreateObject<SchoolShootingApplicationHelper> ();
-   scenarioApplicationHelper->SetTechnologyHelper (lteScenarioHelper);
-   scenarioApplicationHelper->SetScenarioDefinitionHelper (scenarioDefinitionHelper);
+    // 3. Create the application helper and
+    Ptr<SchoolShootingApplicationHelper> scenarioApplicationHelper =
+        CreateObject<SchoolShootingApplicationHelper>();
+    scenarioApplicationHelper->SetTechnologyHelper(lteScenarioHelper);
+    scenarioApplicationHelper->SetScenarioDefinitionHelper(scenarioDefinitionHelper);
 
-   //4. Enable traces
-   Ptr<PscScenarioTraceHelper> scenarioTraceHelper = CreateObject<PscScenarioTraceHelper> (scenarioDefinitionHelper->GetScenarioDefinition ());
-   scenarioTraceHelper->EnableScenarioTraces ();
-   scenarioApplicationHelper->EnableApplicationTraces ();
-   lteScenarioHelper->EnableLteTraces ();
- 
+    // 4. Enable traces
+    Ptr<PscScenarioTraceHelper> scenarioTraceHelper =
+        CreateObject<PscScenarioTraceHelper>(scenarioDefinitionHelper->GetScenarioDefinition());   
+    scenarioTraceHelper->EnableScenarioTraces();
+    scenarioApplicationHelper->EnableApplicationTraces();
+    lteScenarioHelper->EnableLteTraces();
+
 However, for convenience, the example program supports a few options to change
 the application behavior and the trace selection. The list of arguments is
 listed by using the‘—PrintHelp’ option shown below:
@@ -316,7 +320,7 @@ application as defined in the enumeration
 to validate the application configuration. Note that the behavior observed with
 a single application enabled does not necessarily reflect the behavior that will
 be observed when all the applications are enabled due to the possibility of
-congestion and packet loss. 
+congestion and packet loss.
 
 In addition to the parameters exposed as command-line arguments, ns-3 allows the
 configuration of the default value of any class attribute through the
@@ -330,7 +334,7 @@ to scenario files, application-specific traces are also generated. The number
 and format of the traces is dependent on the model being used. By default the
 following files will be created:
 
-* Scenario information: 
+* Scenario information:
 
    * ``SchoolShootingLte-structures.txt``: list of buildings and their locations.
    * ``SchoolShootingLte-areas.txt``: list of areas and their boundaries.

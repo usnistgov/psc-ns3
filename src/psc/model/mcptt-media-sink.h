@@ -32,13 +32,15 @@
 #ifndef MCPTT_MEDIA_SINK_H
 #define MCPTT_MEDIA_SINK_H
 
-#include <ns3/ptr.h>
-
 #include "mcptt-media-msg.h"
 
-namespace ns3 {
+#include <ns3/ptr.h>
 
-namespace psc {
+namespace ns3
+{
+
+namespace psc
+{
 
 /**
  * \ingroup mcptt
@@ -49,29 +51,31 @@ namespace psc {
  */
 class McpttMediaSink
 {
-public:
-/**
-  * The destructor of the McpttMediaSink class.
-  */
-  virtual ~McpttMediaSink (void)
-  { }
-  /**
-   * Takes a request to send a media message.
-   * \param msg The message to send.
-   * \return True, if the message will be sent.
-   */
-  virtual bool TakeSendReq (McpttMediaMsg& msg) = 0;
+  public:
+    /**
+     * The destructor of the McpttMediaSink class.
+     */
+    virtual ~McpttMediaSink(void)
+    {
+    }
 
-protected:
-  /**
-   * The constructor of the McpttMediaSink class.
-   */
-  McpttMediaSink (void)
-  { }
+    /**
+     * Takes a request to send a media message.
+     * \param msg The message to send.
+     * \return True, if the message will be sent.
+     */
+    virtual bool TakeSendReq(McpttMediaMsg& msg) = 0;
+
+  protected:
+    /**
+     * The constructor of the McpttMediaSink class.
+     */
+    McpttMediaSink(void)
+    {
+    }
 };
 
 } // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_MEDIA_SINK_H */
-

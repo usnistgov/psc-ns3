@@ -45,7 +45,7 @@ on_network = []
 relay = []
 off_network = []
 
-# Read in values 
+# Read in values
 fd = open(filename, 'r')
 for line in fd:
     col = line.split()
@@ -101,11 +101,11 @@ columns = ('Immed', 'Queue', 'Aband', 'Deny', 'Fail')
 rows = ('on-network', 'off-network', 'relay')
 
 # Convert counts to percentages, formatted as strings
-percentages = counts/counts.sum(axis=1)[:,None] 
+percentages = counts/counts.sum(axis=1)[:,None]
 percentages_list = percentages.tolist()
 formatted = [ [ '%.0f%%' % (100*elem) for elem in percentages_list[0]],
-	[ '%.0f%%' % (100*elem) for elem in percentages_list[1]],
-	[ '%.0f%%' % (100*elem) for elem in percentages_list[2]]]
+    [ '%.0f%%' % (100*elem) for elem in percentages_list[1]],
+    [ '%.0f%%' % (100*elem) for elem in percentages_list[2]]]
 
 # Add table of outcomes; zorder ensures that the table overlays the gridlines
 the_table = plt.table(cellText=formatted, rowLabels=rows, colLabels=columns, loc='lower right', zorder=3)

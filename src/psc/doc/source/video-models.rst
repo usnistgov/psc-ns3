@@ -57,13 +57,13 @@ the inter-packet interval. If we use one of the provided sample distributions
 in ``src/psc/model/psc-video-streaming-distributions.{h,cc}`` we can load the
 values by using the attribute ``Distribution`` with one of the following labels:
 
-* "1080p-bright" for H.264 encoded videos at 1920x1080, 60 frames per second,  
+* "1080p-bright" for H.264 encoded videos at 1920x1080, 60 frames per second,
   Constant Rate Factor 15, and bright scenes
-* "1080p-dark" for H.264 encoded videos at 1920x1080, 60 frames per second,  
+* "1080p-dark" for H.264 encoded videos at 1920x1080, 60 frames per second,
   Constant Rate Factor 15, and dark scenes
-* "720p-bright" for H.264 encoded videos at 1280x720, 30 frames per second,  
+* "720p-bright" for H.264 encoded videos at 1280x720, 30 frames per second,
   Constant Rate Factor 25, and bright scenes
-* "720p-dark" for H.264 encoded videos at 1280x720, 30 frames per second,  
+* "720p-dark" for H.264 encoded videos at 1280x720, 30 frames per second,
   Constant Rate Factor 25, and dark scenes
 
 If we want to load our own data distribution, we can do so by calling
@@ -170,7 +170,7 @@ Attributes
 PscVideoStreaming
 -----------------
 * ``Distribution``:
-    Label in ``ns3::psc::PscVideoStreamingDistributions`` that selects 
+    Label in ``ns3::psc::PscVideoStreamingDistributions`` that selects
     the data distribution to be used by the model
 * ``ReceiverAddress``:
     Address of the node receiving the data packets
@@ -207,7 +207,7 @@ PscVideoStreaming
 Usage
 -----
 
-A simple usage example is provided in 
+A simple usage example is provided in
 ``src/psc/examples/example-video-streaming.cc``.
 
 The data distribution to be used can be loaded from one of the provided
@@ -215,16 +215,16 @@ distributions throught the ``Distribution`` Attribute:
 
 .. sourcecode:: cpp
 
-  Ptr <PscVideoStreaming> streamingServer = CreateObject <PscVideoStreaming> ();
-  streamingServer->SetAttribute ("Distribution", StringValue ("1080p-bright"));
+  Ptr <PscVideoStreaming> streamingServer = CreateObject<PscVideoStreaming>();
+  streamingServer->SetAttribute("Distribution", StringValue("1080p-bright"));
 
 Alternatively, the distribution data can be loaded from text files (one for the
 size distribution, one for the inter-packet interval distribution):
 
 .. sourcecode:: cpp
 
-  Ptr <PscVideoStreaming> streamingServer = CreateObject <PscVideoStreaming> ();
-  streamingServer->ReadCustomDistribution (sizeFilePath, intervalFilePath);
+  Ptr <PscVideoStreaming> streamingServer = CreateObject<PscVideoStreaming>();
+  streamingServer->ReadCustomDistribution(sizeFilePath, intervalFilePath);
 
 Once the application starts, the data that was loaded will be used to create
 some ``EmpiricalRandomVariables`` for use in the ``Send`` method. To change the
@@ -235,8 +235,8 @@ signal that the new data should be used:
 
 .. sourcecode:: cpp
 
-  Ptr <PscVideoStreaming> streamingServer = CreateObject <PscVideoStreaming> ();
+  Ptr <PscVideoStreaming> streamingServer = CreateObject<PscVideoStreaming>();
   ...
-  streamingServer->ReadCustomDistribution (sizeFilePath, intervalFilePath);
-  streamingServer->LoadCdfs ();
+  streamingServer->ReadCustomDistribution(sizeFilePath, intervalFilePath);
+  streamingServer->LoadCdfs();
 

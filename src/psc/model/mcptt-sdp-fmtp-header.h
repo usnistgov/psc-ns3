@@ -37,9 +37,11 @@
 #include <ns3/ptr.h>
 #include <ns3/type-id.h>
 
-namespace ns3 {
+namespace ns3
+{
 
-namespace psc {
+namespace psc
+{
 
 /**
  * \ingroup mcptt
@@ -53,46 +55,46 @@ namespace psc {
  */
 class McpttSdpFmtpHeader : public Header
 {
-public:
-  /**
-   * \brief Construct a null header
-   */
-  McpttSdpFmtpHeader ();
-  /**
-   * \brief Destructor
-   */
-  virtual ~McpttSdpFmtpHeader ();
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId (void);
+  public:
+    /**
+     * \brief Construct a null header
+     */
+    McpttSdpFmtpHeader();
+    /**
+     * \brief Destructor
+     */
+    virtual ~McpttSdpFmtpHeader();
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId(void);
 
-  // Below eight methods need doxygen
-  void SetMcQueueing (bool mcQueueing);
-  bool GetMcQueueing (void) const;
+    // Below eight methods need doxygen
+    void SetMcQueueing(bool mcQueueing);
+    bool GetMcQueueing(void) const;
 
-  void SetMcPriority (uint8_t mcPriority);
-  uint8_t GetMcPriority (void) const;
+    void SetMcPriority(uint8_t mcPriority);
+    uint8_t GetMcPriority(void) const;
 
-  void SetMcGranted (bool mcGranted);
-  bool GetMcGranted (void) const;
+    void SetMcGranted(bool mcGranted);
+    bool GetMcGranted(void) const;
 
-  void SetMcImplicitRequest (bool mcImplicitRequest);
-  bool GetMcImplicitRequest (void) const;
+    void SetMcImplicitRequest(bool mcImplicitRequest);
+    bool GetMcImplicitRequest(void) const;
 
-  // Documented in ns3::Header class
-  virtual TypeId GetInstanceTypeId (void) const;
-  virtual void Print (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize (void) const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+    // Documented in ns3::Header class
+    virtual TypeId GetInstanceTypeId(void) const;
+    virtual void Print(std::ostream& os) const;
+    virtual uint32_t GetSerializedSize(void) const;
+    virtual void Serialize(Buffer::Iterator start) const;
+    virtual uint32_t Deserialize(Buffer::Iterator start);
 
-private:
-  bool m_mcQueueing {false};
-  uint8_t m_mcPriority {1};
-  bool m_mcGranted {false};
-  bool m_mcImplicitRequest {false};
+  private:
+    bool m_mcQueueing{false};
+    uint8_t m_mcPriority{1};
+    bool m_mcGranted{false};
+    bool m_mcImplicitRequest{false};
 };
 
 } // namespace psc

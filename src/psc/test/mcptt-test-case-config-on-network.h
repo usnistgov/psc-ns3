@@ -32,6 +32,7 @@
 #ifndef MCPTT_TEST_CASE_CONFIG_ON_NETWORK_H
 #define MCPTT_TEST_CASE_CONFIG_ON_NETWORK_H
 
+#include "mcptt-test-case-config.h"
 
 #include <ns3/application-container.h>
 #include <ns3/mcptt-call-helper.h>
@@ -40,36 +41,37 @@
 #include <ns3/mcptt-server-helper.h>
 #include <ns3/ptr.h>
 #include <ns3/simple-ref-count.h>
-#include <ns3/type-id.h>
 #include <ns3/test.h>
+#include <ns3/type-id.h>
 
-#include "mcptt-test-case-config.h"
-
-namespace ns3 {
-namespace psc {
-namespace tests {
+namespace ns3
+{
+namespace psc
+{
+namespace tests
+{
 
 /**
  * Test case configuration framework for on-network MCPTT tests
  */
 class McpttTestCaseConfigOnNetwork : public McpttTestCaseConfig
 {
-public:
-  McpttTestCaseConfigOnNetwork (void);
-  virtual ~McpttTestCaseConfigOnNetwork (void);
-  virtual ApplicationContainer Configure (void);
+  public:
+    McpttTestCaseConfigOnNetwork(void);
+    virtual ~McpttTestCaseConfigOnNetwork(void);
+    virtual ApplicationContainer Configure(void);
 
-private:
-  McpttCallHelper m_callHelper;
-  McpttHelper m_clientHelper;
-  McpttServerHelper m_serverHelper;
-  Ptr<McpttServerApp> m_serverApp {nullptr};
+  private:
+    McpttCallHelper m_callHelper;
+    McpttHelper m_clientHelper;
+    McpttServerHelper m_serverHelper;
+    Ptr<McpttServerApp> m_serverApp{nullptr};
 
-public:
-  virtual void SetCallHelper (const McpttCallHelper& callHelper);
-  virtual void SetClientHelper (const McpttHelper& clientHelper);
-  virtual void SetServerHelper (const McpttServerHelper& serverHelper);
-  Ptr<McpttServerApp> GetServerApp (void) const;
+  public:
+    virtual void SetCallHelper(const McpttCallHelper& callHelper);
+    virtual void SetClientHelper(const McpttHelper& clientHelper);
+    virtual void SetServerHelper(const McpttServerHelper& serverHelper);
+    Ptr<McpttServerApp> GetServerApp(void) const;
 };
 
 } // namespace tests
@@ -77,4 +79,3 @@ public:
 } // namespace ns3
 
 #endif
-

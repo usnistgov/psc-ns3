@@ -53,7 +53,7 @@ defined as strings.  For simplicity, we use four-byte unsigned integers
 to represent URIs and addresses, although the model could be extended or
 changed to use strings in the future.
 
-The main idea in the |ns3| SIP design is for a client (user) of this model 
+The main idea in the |ns3| SIP design is for a client (user) of this model
 to delegate
 the responsibility to manage a SIP dialog, involving multiple SIP transactions, to SIP agents that will call back to the client to inform it of events such
 as "Call progressing" or "Call ending".  Responsibility for setting
@@ -74,7 +74,7 @@ and make use of the SIP agent.  So, for instance, in the case of MCPTT,
 each MCPTT user application and MCPTT server application will create its
 own instance of a ``SipAgent`` and ``SipProxy``, respectively, and will
 release its pointer to the SIP element upon the application deletion
-(usually at the end of simulation). 
+(usually at the end of simulation).
 
 The base class for ``SipAgent`` and ``SipProxy`` is the ``SipElement``
 class.  Most of the logic is implemented in this base class because
@@ -87,9 +87,9 @@ some configuration in the form of notional SDP messages.  The client would
 form an ``ns3::Packet`` and push an SDP header onto it, and then would
 hand the packet over to the ``SipAgent``.   The client would ask the
 ``SipAgent`` to send an INVITE request with this packet to a specific URI,
-and provide to the 
+and provide to the
 agent the following:  the From and To fields for the SIP header,
-the packet (possibly with SDP header already appended), 
+the packet (possibly with SDP header already appended),
 the address (IPv4 or IPv6) and port
 of the proxy, and a callback that can be used by SIP to send the resulting
 packet down the network stack.  The client would also register its own callback
@@ -99,7 +99,7 @@ process supports the teardown of a call (sending a SIP BYE instead of
 an INVITE) or session modification (re-INVITE).
 
 The implementation contains classes to hold state for SIP transactions
-and dialogs, including timers to protect against loss or lack of response.  
+and dialogs, including timers to protect against loss or lack of response.
 The following timers are used:
 
 * **Timer A:** INVITE request retransmit interval (UDP only); doubles upon retransmission.

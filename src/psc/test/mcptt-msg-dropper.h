@@ -36,42 +36,45 @@
 #include <ns3/simple-ref-count.h>
 #include <ns3/type-id.h>
 
-namespace ns3 {
-namespace psc {
-namespace tests {
+namespace ns3
+{
+namespace psc
+{
+namespace tests
+{
 
 class McpttMsgDropper : public SimpleRefCount<McpttMsgDropper>
 {
-public:
-  McpttMsgDropper (void);
-  virtual ~McpttMsgDropper (void);
-  virtual bool ShouldDropMsg (const McpttMsg& msg) = 0;
+  public:
+    McpttMsgDropper(void);
+    virtual ~McpttMsgDropper(void);
+    virtual bool ShouldDropMsg(const McpttMsg& msg) = 0;
 };
 
 class McpttMsgDropperImpl : public McpttMsgDropper
 {
-public:
-  McpttMsgDropperImpl (void);
-  McpttMsgDropperImpl (const uint32_t& limit, const TypeId& msgTypeId);
-  virtual ~McpttMsgDropperImpl (void);
-  virtual bool ShouldDropMsg (const McpttMsg& msg);
+  public:
+    McpttMsgDropperImpl(void);
+    McpttMsgDropperImpl(const uint32_t& limit, const TypeId& msgTypeId);
+    virtual ~McpttMsgDropperImpl(void);
+    virtual bool ShouldDropMsg(const McpttMsg& msg);
 
-protected:
-  virtual void IncrementReceived (const uint32_t& amount = 1);
-  virtual bool IsLimitReached (void) const;
+  protected:
+    virtual void IncrementReceived(const uint32_t& amount = 1);
+    virtual bool IsLimitReached(void) const;
 
-private:
-  uint32_t m_limit;
-  TypeId m_msgTypeId;
-  uint32_t m_received;
+  private:
+    uint32_t m_limit;
+    TypeId m_msgTypeId;
+    uint32_t m_received;
 
-protected:
-  virtual uint32_t GetLimit (void) const;
-  virtual TypeId GetMsgTypeId (void) const;
-  virtual uint32_t GetReceived (void) const;
-  virtual void SetLimit (const uint32_t& limit);
-  virtual void SetMsgTypeId (const TypeId& msgTypeId);
-  virtual void SetReceived (const uint32_t& receieved);
+  protected:
+    virtual uint32_t GetLimit(void) const;
+    virtual TypeId GetMsgTypeId(void) const;
+    virtual uint32_t GetReceived(void) const;
+    virtual void SetLimit(const uint32_t& limit);
+    virtual void SetMsgTypeId(const TypeId& msgTypeId);
+    virtual void SetReceived(const uint32_t& receieved);
 };
 
 } // namespace tests
@@ -79,4 +82,3 @@ protected:
 } // namespace ns3
 
 #endif
-

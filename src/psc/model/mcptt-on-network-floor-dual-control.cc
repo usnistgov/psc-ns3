@@ -29,16 +29,11 @@
  * employees is not subject to copyright protection within the United States.
  */
 
-#include <ns3/boolean.h>
-#include <ns3/log.h>
-#include <ns3/object.h>
-#include <ns3/ptr.h>
-#include <ns3/simulator.h>
-#include <ns3/type-id.h>
+#include "mcptt-on-network-floor-dual-control.h"
 
-#include "mcptt-counter.h"
 #include "mcptt-call-machine.h"
 #include "mcptt-call-type-machine.h"
+#include "mcptt-counter.h"
 #include "mcptt-floor-msg.h"
 #include "mcptt-media-msg.h"
 #include "mcptt-on-network-floor-arbitrator.h"
@@ -46,38 +41,48 @@
 #include "mcptt-ptt-app.h"
 #include "mcptt-timer.h"
 
-#include "mcptt-on-network-floor-dual-control.h"
+#include <ns3/boolean.h>
+#include <ns3/log.h>
+#include <ns3/object.h>
+#include <ns3/ptr.h>
+#include <ns3/simulator.h>
+#include <ns3/type-id.h>
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("McpttOnNetworkFloorDualControl");
+NS_LOG_COMPONENT_DEFINE("McpttOnNetworkFloorDualControl");
 
-namespace psc {
+namespace psc
+{
 
 /** McpttOnNetworkFloorDualControl - begin **/
-NS_OBJECT_ENSURE_REGISTERED (McpttOnNetworkFloorDualControl);
+NS_OBJECT_ENSURE_REGISTERED(McpttOnNetworkFloorDualControl);
 
 TypeId
 McpttOnNetworkFloorDualControl::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::psc::McpttOnNetworkFloorDualControl")
-    .SetParent<Object> ()
-    .AddConstructor<McpttOnNetworkFloorDualControl>()
-    .AddAttribute ("T11", "The delay to use for timer T11 (Time value)",
-                   TimeValue (Seconds (4)),
-                   MakeTimeAccessor (&McpttOnNetworkFloorDualControl::SetDelayT11),
-                   MakeTimeChecker ())
-    .AddAttribute ("T12", "The delay to use for timer T12 (Time value)",
-                   TimeValue (Seconds (30)),
-                   MakeTimeAccessor (&McpttOnNetworkFloorDualControl::SetDelayT12),
-                   MakeTimeChecker ())
-    .AddTraceSource ("StateChangeTrace",
-                     "The trace for capturing state changes.",
-                     MakeTraceSourceAccessor (&McpttOnNetworkFloorDualControl::m_stateChangeTrace),
-                     "ns3::psc::McpttOnNetworkFloorDualControl::StateChangeTrace")
-  ;
+    static TypeId tid =
+        TypeId("ns3::psc::McpttOnNetworkFloorDualControl")
+            .SetParent<Object>()
+            .AddConstructor<McpttOnNetworkFloorDualControl>()
+            .AddAttribute("T11",
+                          "The delay to use for timer T11 (Time value)",
+                          TimeValue(Seconds(4)),
+                          MakeTimeAccessor(&McpttOnNetworkFloorDualControl::SetDelayT11),
+                          MakeTimeChecker())
+            .AddAttribute("T12",
+                          "The delay to use for timer T12 (Time value)",
+                          TimeValue(Seconds(30)),
+                          MakeTimeAccessor(&McpttOnNetworkFloorDualControl::SetDelayT12),
+                          MakeTimeChecker())
+            .AddTraceSource(
+                "StateChangeTrace",
+                "The trace for capturing state changes.",
+                MakeTraceSourceAccessor(&McpttOnNetworkFloorDualControl::m_stateChangeTrace),
+                "ns3::psc::McpttOnNetworkFloorDualControl::StateChangeTrace");
 
-  return tid;
+    return tid;
 }
 
 McpttOnNetworkFloorDualControl::McpttOnNetworkFloorDualControl()
@@ -88,306 +93,321 @@ McpttOnNetworkFloorDualControl::McpttOnNetworkFloorDualControl()
       m_t11(CreateObject<McpttTimer>(McpttEntityId(11, "T11"))),
       m_t12(CreateObject<McpttTimer>(McpttEntityId(12, "T12")))
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  m_t11->Link (&McpttOnNetworkFloorDualControl::ExpiryOfT11, this);
-  m_t12->Link (&McpttOnNetworkFloorDualControl::ExpiryOfT12, this);
+    m_t11->Link(&McpttOnNetworkFloorDualControl::ExpiryOfT11, this);
+    m_t12->Link(&McpttOnNetworkFloorDualControl::ExpiryOfT12, this);
 }
 
 McpttOnNetworkFloorDualControl::~McpttOnNetworkFloorDualControl()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
 McpttOnNetworkFloorDualControl::CallRelease1()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  NS_LOG_LOGIC ("McpttOnNetworkFloorDualControl (" << this << ") taking call release notification (part I).");
+    NS_LOG_LOGIC("McpttOnNetworkFloorDualControl ("
+                 << this << ") taking call release notification (part I).");
 
-  m_state->CallRelease1 (*this);
+    m_state->CallRelease1(*this);
 }
 
 void
 McpttOnNetworkFloorDualControl::CallRelease2()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  NS_LOG_LOGIC ("McpttOnNetworkFloorDualControl (" << this << ") taking call release notification (part II).");
+    NS_LOG_LOGIC("McpttOnNetworkFloorDualControl ("
+                 << this << ") taking call release notification (part II).");
 
-  m_state->CallRelease2 (*this);
+    m_state->CallRelease2(*this);
 }
 
 void
 McpttOnNetworkFloorDualControl::ClientRelease()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  NS_LOG_LOGIC ("McpttOnNetworkFloorDualControl (" << this << ") taking client release notification.");
+    NS_LOG_LOGIC("McpttOnNetworkFloorDualControl (" << this
+                                                    << ") taking client release notification.");
 
-  m_state->ClientRelease (*this);
+    m_state->ClientRelease(*this);
 }
 
 void
-McpttOnNetworkFloorDualControl::ChangeState (Ptr<McpttOnNetworkFloorDualControlState>  state)
+McpttOnNetworkFloorDualControl::ChangeState(Ptr<McpttOnNetworkFloorDualControlState> state)
 {
-  NS_LOG_FUNCTION (this << state);
+    NS_LOG_FUNCTION(this << state);
 
-  McpttEntityId stateId = state->GetInstanceStateId ();
+    McpttEntityId stateId = state->GetInstanceStateId();
 
-  McpttEntityId currStateId = GetStateId ();
+    McpttEntityId currStateId = GetStateId();
 
-  if (currStateId != stateId)
+    if (currStateId != stateId)
     {
-      NS_LOG_LOGIC ("McpttOnNetworkFloorDualControl (" << this << ") moving from state " << *m_state << " to state " << *state << ".");
+        NS_LOG_LOGIC("McpttOnNetworkFloorDualControl (" << this << ") moving from state "
+                                                        << *m_state << " to state " << *state
+                                                        << ".");
 
-      m_state->Unselected (*this);
-      SetState (state);
-      state->Selected (*this);
+        m_state->Unselected(*this);
+        SetState(state);
+        state->Selected(*this);
 
-      if (!m_stateChangeCb.IsNull ())
+        if (!m_stateChangeCb.IsNull())
         {
-          m_stateChangeCb (currStateId, stateId);
+            m_stateChangeCb(currStateId, stateId);
         }
 
-      std::string selected = "N/A"; // Selected call indicator not applicable
-      m_stateChangeTrace (GetOwner ()->GetTxSsrc (), GetOwner ()->GetOwner ()->GetCallId (), selected, GetInstanceTypeId ().GetName (), currStateId.GetName (), stateId.GetName ());
+        std::string selected = "N/A"; // Selected call indicator not applicable
+        m_stateChangeTrace(GetOwner()->GetTxSsrc(),
+                           GetOwner()->GetOwner()->GetCallId(),
+                           selected,
+                           GetInstanceTypeId().GetName(),
+                           currStateId.GetName(),
+                           stateId.GetName());
     }
 }
 
 TypeId
 McpttOnNetworkFloorDualControl::GetInstanceTypeId() const
 {
-  return McpttOnNetworkFloorDualControl::GetTypeId ();
+    return McpttOnNetworkFloorDualControl::GetTypeId();
 }
 
 McpttEntityId
 McpttOnNetworkFloorDualControl::GetStateId() const
 {
-  McpttEntityId stateId = m_state->GetInstanceStateId ();
+    McpttEntityId stateId = m_state->GetInstanceStateId();
 
-  return stateId;
+    return stateId;
 }
 
 bool
 McpttOnNetworkFloorDualControl::IsStarted() const
 {
-  return m_state->GetInstanceStateId () != McpttOnNetworkFloorDualControlStateStartStop::GetStateId ();
+    return m_state->GetInstanceStateId() !=
+           McpttOnNetworkFloorDualControlStateStartStop::GetStateId();
 }
 
 void
-McpttOnNetworkFloorDualControl::ReceiveFloorRelease (const McpttFloorMsgRelease& msg)
+McpttOnNetworkFloorDualControl::ReceiveFloorRelease(const McpttFloorMsgRelease& msg)
 {
-  NS_LOG_FUNCTION (this << msg);
+    NS_LOG_FUNCTION(this << msg);
 
-  NS_LOG_LOGIC ("McpttOnNetworkFloorDualControl(" << this << ") received " << msg.GetInstanceTypeId () << ".");
+    NS_LOG_LOGIC("McpttOnNetworkFloorDualControl(" << this << ") received "
+                                                   << msg.GetInstanceTypeId() << ".");
 
-  m_state->ReceiveFloorRelease (*this, msg);
+    m_state->ReceiveFloorRelease(*this, msg);
 }
 
 void
-McpttOnNetworkFloorDualControl::ReceiveFloorRequest (const McpttFloorMsgRequest& msg)
+McpttOnNetworkFloorDualControl::ReceiveFloorRequest(const McpttFloorMsgRequest& msg)
 {
-  NS_LOG_FUNCTION (this << msg);
+    NS_LOG_FUNCTION(this << msg);
 
-  NS_LOG_LOGIC ("McpttOnNetworkFloorDualControl(" << this << ") received " << msg.GetInstanceTypeId () << ".");
+    NS_LOG_LOGIC("McpttOnNetworkFloorDualControl(" << this << ") received "
+                                                   << msg.GetInstanceTypeId() << ".");
 
-  m_state->ReceiveFloorRequest (*this, msg);
+    m_state->ReceiveFloorRequest(*this, msg);
 }
 
 void
-McpttOnNetworkFloorDualControl::ReceiveMedia (const McpttMediaMsg& msg)
+McpttOnNetworkFloorDualControl::ReceiveMedia(const McpttMediaMsg& msg)
 {
-  NS_LOG_FUNCTION (this << msg);
+    NS_LOG_FUNCTION(this << msg);
 
-  NS_LOG_LOGIC ("McpttOnNetworkFloorDualControl(" << this << ") received " << msg.GetInstanceTypeId () << ".");
+    NS_LOG_LOGIC("McpttOnNetworkFloorDualControl(" << this << ") received "
+                                                   << msg.GetInstanceTypeId() << ".");
 
-  m_state->ReceiveMedia (*this, msg);
+    m_state->ReceiveMedia(*this, msg);
 }
 
 void
-McpttOnNetworkFloorDualControl::ReceivePreemptiveFloorRequest (const McpttFloorMsgRequest& msg)
+McpttOnNetworkFloorDualControl::ReceivePreemptiveFloorRequest(const McpttFloorMsgRequest& msg)
 {
-  NS_LOG_FUNCTION (this << msg);
+    NS_LOG_FUNCTION(this << msg);
 
-  NS_LOG_LOGIC ("McpttOnNetworkFloorDualControl(" << this << ") received preemptive " << msg.GetInstanceTypeId () << ".");
+    NS_LOG_LOGIC("McpttOnNetworkFloorDualControl(" << this << ") received preemptive "
+                                                   << msg.GetInstanceTypeId() << ".");
 
-  m_state->ReceivePreemptiveFloorRequest (*this, msg);
+    m_state->ReceivePreemptiveFloorRequest(*this, msg);
 }
 
 void
-McpttOnNetworkFloorDualControl::SetDelayT11 (const Time& delayT11)
+McpttOnNetworkFloorDualControl::SetDelayT11(const Time& delayT11)
 {
-  NS_LOG_FUNCTION (this << delayT11);
+    NS_LOG_FUNCTION(this << delayT11);
 
-  GetT11 ()->SetDelay (delayT11);
+    GetT11()->SetDelay(delayT11);
 }
 
 void
-McpttOnNetworkFloorDualControl::SetDelayT12 (const Time& delayT12)
+McpttOnNetworkFloorDualControl::SetDelayT12(const Time& delayT12)
 {
-  NS_LOG_FUNCTION (this << delayT12);
+    NS_LOG_FUNCTION(this << delayT12);
 
-  GetT12 ()->SetDelay (delayT12);
+    GetT12()->SetDelay(delayT12);
 }
 
 void
 McpttOnNetworkFloorDualControl::Stop()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  if (GetT11 ()->IsRunning ())
+    if (GetT11()->IsRunning())
     {
-      GetT11 ()->Stop ();
+        GetT11()->Stop();
     }
 
-  if (GetT12 ()->IsRunning ())
+    if (GetT12()->IsRunning())
     {
-      GetT12 ()->Stop ();
+        GetT12()->Stop();
     }
 }
 
 void
 McpttOnNetworkFloorDualControl::Terminate()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  NS_LOG_LOGIC ("McpttOnNetworkFloorDualControl (" << this << ") taking terminate notification.");
+    NS_LOG_LOGIC("McpttOnNetworkFloorDualControl (" << this << ") taking terminate notification.");
 
-  m_state->Terminate (*this);
+    m_state->Terminate(*this);
 }
 
 void
 McpttOnNetworkFloorDualControl::DoDispose()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  m_owner = nullptr;
-  m_state = nullptr;
-  m_t11 = nullptr;
-  m_t12 = nullptr;
-  m_stateChangeCb = MakeNullCallback<void, const McpttEntityId&, const McpttEntityId&> ();
+    m_owner = nullptr;
+    m_state = nullptr;
+    m_t11 = nullptr;
+    m_t12 = nullptr;
+    m_stateChangeCb = MakeNullCallback<void, const McpttEntityId&, const McpttEntityId&>();
 }
 
 void
 McpttOnNetworkFloorDualControl::ExpiryOfT11()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  NS_LOG_LOGIC ("McpttOnNetworkFloorDualControl T11 expired.");
+    NS_LOG_LOGIC("McpttOnNetworkFloorDualControl T11 expired.");
 
-  m_state->ExpiryOfT11 (*this);
+    m_state->ExpiryOfT11(*this);
 }
 
 void
 McpttOnNetworkFloorDualControl::ExpiryOfT12()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  NS_LOG_LOGIC ("McpttOnNetworkFloorDualControl T12 expired.");
+    NS_LOG_LOGIC("McpttOnNetworkFloorDualControl T12 expired.");
 
-  m_state->ExpiryOfT12 (*this);
+    m_state->ExpiryOfT12(*this);
 }
 
 Ptr<McpttOnNetworkFloorArbitrator>
 McpttOnNetworkFloorDualControl::GetOwner() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_owner;
+    return m_owner;
 }
 
 uint32_t
 McpttOnNetworkFloorDualControl::GetStoredSsrc() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_storedSsrc;
+    return m_storedSsrc;
 }
 
 uint8_t
 McpttOnNetworkFloorDualControl::GetStoredPriority() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_storedPriority;
+    return m_storedPriority;
 }
 
 McpttFloorMsgFieldTrackInfo
 McpttOnNetworkFloorDualControl::GetTrackInfo() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_trackInfo;
+    return m_trackInfo;
 }
 
 Ptr<McpttTimer>
 McpttOnNetworkFloorDualControl::GetT11() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_t11;
+    return m_t11;
 }
 
 Ptr<McpttTimer>
 McpttOnNetworkFloorDualControl::GetT12() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_t12;
+    return m_t12;
 }
 
 void
-McpttOnNetworkFloorDualControl::SetOwner (Ptr<McpttOnNetworkFloorArbitrator> owner)
+McpttOnNetworkFloorDualControl::SetOwner(Ptr<McpttOnNetworkFloorArbitrator> owner)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  m_owner = owner;
+    m_owner = owner;
 }
 
 void
-McpttOnNetworkFloorDualControl::SetState (Ptr<McpttOnNetworkFloorDualControlState>  state)
+McpttOnNetworkFloorDualControl::SetState(Ptr<McpttOnNetworkFloorDualControlState> state)
 {
-  NS_LOG_FUNCTION (this << state);
+    NS_LOG_FUNCTION(this << state);
 
-  m_state = state;
+    m_state = state;
 }
 
 void
-McpttOnNetworkFloorDualControl::SetStateChangeCb (const Callback<void, const McpttEntityId&, const McpttEntityId&>  stateChangeCb)
+McpttOnNetworkFloorDualControl::SetStateChangeCb(
+    const Callback<void, const McpttEntityId&, const McpttEntityId&> stateChangeCb)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  m_stateChangeCb = stateChangeCb;
+    m_stateChangeCb = stateChangeCb;
 }
 
 void
-McpttOnNetworkFloorDualControl::SetStoredSsrc (const uint32_t storedSsrc)
+McpttOnNetworkFloorDualControl::SetStoredSsrc(const uint32_t storedSsrc)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  m_storedSsrc = storedSsrc;
+    m_storedSsrc = storedSsrc;
 }
 
 void
-McpttOnNetworkFloorDualControl::SetStoredPriority (uint8_t storedPriority)
+McpttOnNetworkFloorDualControl::SetStoredPriority(uint8_t storedPriority)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  m_storedPriority = storedPriority;
+    m_storedPriority = storedPriority;
 }
 
 void
-McpttOnNetworkFloorDualControl::SetTrackInfo (const McpttFloorMsgFieldTrackInfo& trackInfo)
+McpttOnNetworkFloorDualControl::SetTrackInfo(const McpttFloorMsgFieldTrackInfo& trackInfo)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  m_trackInfo = trackInfo;
+    m_trackInfo = trackInfo;
 }
 
 /** McpttOnNetworkFloorDualControl - end **/
 
 } // namespace psc
 } // namespace ns3
-

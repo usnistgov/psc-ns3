@@ -30,202 +30,207 @@
  * employees is not subject to copyright protection within the United States.
  */
 
-#include <ns3/core-module.h>
-#include <ns3/network-module.h>
-#include <ns3/internet-module.h>
-#include <ns3/point-to-point-module.h>
 #include <ns3/applications-module.h>
+#include <ns3/core-module.h>
 #include <ns3/csma-module.h>
+#include <ns3/internet-module.h>
+#include <ns3/network-module.h>
+#include <ns3/point-to-point-module.h>
 #include <ns3/psc-module.h>
 
 using namespace ns3;
 using namespace psc;
 
 /*
- * Example script that showcases how to instantiate and use the Intel HTTP 
+ * Example script that showcases how to instantiate and use the Intel HTTP
  * Models.
  *
- * By default, this scenario sets up a simple topology of two nodes linked 
- * by a Point-to-Point link with 2 ms delay and no loss. In the first node 
- * the script deploys an instance of the HTTP Client, and the second node 
- * hosts the instance of the HTTP Server. Once the applications are 
- * deployed, the simulation runs for 2000 seconds. At the end of the 
- * simulation, PCAP traces of the Point-to-Point link will be available 
+ * By default, this scenario sets up a simple topology of two nodes linked
+ * by a Point-to-Point link with 2 ms delay and no loss. In the first node
+ * the script deploys an instance of the HTTP Client, and the second node
+ * hosts the instance of the HTTP Server. Once the applications are
+ * deployed, the simulation runs for 2000 seconds. At the end of the
+ * simulation, PCAP traces of the Point-to-Point link will be available
  * with the name "example-one-client-intel-http-trace".
  *
  * This script can generate variations of this default scenario by
  * using the command-line flags "multipleApps" and "lossy". When using
- * "multipleApps" the script will showcase how multiple servers can be 
+ * "multipleApps" the script will showcase how multiple servers can be
  * deployed in a single node to serve multiple clients. In this case the
  * topology changes to 3 nodes connected through a CSMA link. The first node
- * becomes the HTTP server, with two instances deployed in ports 80 and 81, 
+ * becomes the HTTP server, with two instances deployed in ports 80 and 81,
  * and the other two nodes each host an instance of the HTTP Client, each
  * one connecting to one of the server ports. Similarly to the default
  * case, at the end of the simulation (2000 seconds), PCAP traces will be
  * available, this time with the name "example-many-clients-intel-http-trace".
  *
- * The "lossy" command-line option will configure the link used in the 
+ * The "lossy" command-line option will configure the link used in the
  * scenario to have a 5 % packet loss error rate on each NetDevice connected
- * to that link, to demonstrate the behavior of the model in lossy 
- * environments. This option can be used with both the default scenario and 
+ * to that link, to demonstrate the behavior of the model in lossy
+ * environments. This option can be used with both the default scenario and
  * the variant with multiple clients.
  */
 
-NS_LOG_COMPONENT_DEFINE ("ExampleAppHttpIntel");
+NS_LOG_COMPONENT_DEFINE("ExampleAppHttpIntel");
 
-enum class LossMode { Lossless, Lossy };
+enum class LossMode
+{
+    Lossless,
+    Lossy
+};
 
 void
-SingleServerClient (LossMode mode)
+SingleServerClient(LossMode mode)
 {
-  // Create the nodes
-  NodeContainer nodes;
-  nodes.Create (2);
+    // Create the nodes
+    NodeContainer nodes;
+    nodes.Create(2);
 
-  // Configure the point-to-point link between the nodes
-  PointToPointHelper pointToPoint;
-  pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("100Gbps"));
-  pointToPoint.SetChannelAttribute ("Delay", StringValue ("2ms"));
+    // Configure the point-to-point link between the nodes
+    PointToPointHelper pointToPoint;
+    pointToPoint.SetDeviceAttribute("DataRate", StringValue("100Gbps"));
+    pointToPoint.SetChannelAttribute("Delay", StringValue("2ms"));
 
-  NetDeviceContainer devices;
-  devices = pointToPoint.Install (nodes);
+    NetDeviceContainer devices;
+    devices = pointToPoint.Install(nodes);
 
-  // Configure IP addresses
-  InternetStackHelper stack;
-  stack.Install (nodes);
+    // Configure IP addresses
+    InternetStackHelper stack;
+    stack.Install(nodes);
 
-  Ipv4AddressHelper address;
-  address.SetBase ("10.1.1.0", "255.255.255.0");
-  Ipv4InterfaceContainer interfaces = address.Assign (devices);
+    Ipv4AddressHelper address;
+    address.SetBase("10.1.1.0", "255.255.255.0");
+    Ipv4InterfaceContainer interfaces = address.Assign(devices);
 
-  // Configure the applications
-  ApplicationContainer apps;
+    // Configure the applications
+    ApplicationContainer apps;
 
-  // HTTP Server (node 1)
-  IntelHttpServerHelper httpServerHelper;
-  apps.Add (httpServerHelper.Install (nodes.Get (1)));
+    // HTTP Server (node 1)
+    IntelHttpServerHelper httpServerHelper;
+    apps.Add(httpServerHelper.Install(nodes.Get(1)));
 
-  // HTTP Client (node 0)
-  IntelHttpClientHelper httpClientHelper (interfaces.GetAddress (1));
-  apps.Add (httpClientHelper.Install (nodes.Get (0)));
+    // HTTP Client (node 0)
+    IntelHttpClientHelper httpClientHelper(interfaces.GetAddress(1));
+    apps.Add(httpClientHelper.Install(nodes.Get(0)));
 
-  apps.Start (Seconds (2));
-  apps.Stop (Seconds (2000));
+    apps.Start(Seconds(2));
+    apps.Stop(Seconds(2000));
 
-  // Log the traffic in the point-to-point link in a pcap file
-  pointToPoint.EnablePcapAll ("example-one-client-intel-http-trace");
+    // Log the traffic in the point-to-point link in a pcap file
+    pointToPoint.EnablePcapAll("example-one-client-intel-http-trace");
 
-  if (mode == LossMode::Lossy)
+    if (mode == LossMode::Lossy)
     {
-      Ptr<RateErrorModel> errorModel = CreateObject<RateErrorModel> ();
-      errorModel->SetAttribute ("ErrorUnit",
-                                EnumValue (RateErrorModel::ErrorUnit::ERROR_UNIT_PACKET));
-      errorModel->SetAttribute ("ErrorRate", DoubleValue (0.05));
+        Ptr<RateErrorModel> errorModel = CreateObject<RateErrorModel>();
+        errorModel->SetAttribute("ErrorUnit",
+                                 EnumValue(RateErrorModel::ErrorUnit::ERROR_UNIT_PACKET));
+        errorModel->SetAttribute("ErrorRate", DoubleValue(0.05));
 
-      for (auto device = devices.Begin (); device != devices.End (); device++)
+        for (auto device = devices.Begin(); device != devices.End(); device++)
         {
-          (*device)->SetAttribute ("ReceiveErrorModel", PointerValue (errorModel));
+            (*device)->SetAttribute("ReceiveErrorModel", PointerValue(errorModel));
         }
     }
 
-  // Run the simulation for two thousand seconds, to show the sessions on and off pattern
-  Simulator::Stop (Seconds (2000));
-  Simulator::Run ();
-  Simulator::Destroy ();
+    // Run the simulation for two thousand seconds, to show the sessions on and off pattern
+    Simulator::Stop(Seconds(2000));
+    Simulator::Run();
+    Simulator::Destroy();
 }
 
 void
-MultipleServerClients (LossMode mode)
+MultipleServerClients(LossMode mode)
 {
-  // Create the nodes
-  NodeContainer nodes;
-  nodes.Create (3);
+    // Create the nodes
+    NodeContainer nodes;
+    nodes.Create(3);
 
-  CsmaHelper csma;
-  csma.SetChannelAttribute ("DataRate", StringValue ("100Gbps"));
-  NetDeviceContainer devices = csma.Install (nodes);
+    CsmaHelper csma;
+    csma.SetChannelAttribute("DataRate", StringValue("100Gbps"));
+    NetDeviceContainer devices = csma.Install(nodes);
 
-  InternetStackHelper stack;
-  stack.Install (nodes);
+    InternetStackHelper stack;
+    stack.Install(nodes);
 
-  Ipv4AddressHelper address;
-  address.SetBase ("10.1.1.0", "255.255.255.0");
-  Ipv4InterfaceContainer interfaces = address.Assign (devices);
+    Ipv4AddressHelper address;
+    address.SetBase("10.1.1.0", "255.255.255.0");
+    Ipv4InterfaceContainer interfaces = address.Assign(devices);
 
-  ApplicationContainer apps;
+    ApplicationContainer apps;
 
-  // HTTP Server (Node 0)
-  Ptr<Node> serverNode = nodes.Get (0);
-  const uint16_t serverPorts[] = {80U, 81U};
-  IntelHttpServerHelper serverHelper;
-  // Install a server application for each client
-  for (auto port : serverPorts)
+    // HTTP Server (Node 0)
+    Ptr<Node> serverNode = nodes.Get(0);
+    const uint16_t serverPorts[] = {80U, 81U};
+    IntelHttpServerHelper serverHelper;
+    // Install a server application for each client
+    for (auto port : serverPorts)
     {
-      serverHelper.Set ("Port", UintegerValue (port));
-      apps.Add (serverHelper.Install (serverNode));
+        serverHelper.Set("Port", UintegerValue(port));
+        apps.Add(serverHelper.Install(serverNode));
     }
 
-  // HTTP clients (Nodes 1 - 2)
-  Ipv4Address serverAddress = interfaces.GetAddress (0);
-  IntelHttpClientHelper clientHelper (serverAddress);
+    // HTTP clients (Nodes 1 - 2)
+    Ipv4Address serverAddress = interfaces.GetAddress(0);
+    IntelHttpClientHelper clientHelper(serverAddress);
 
-  // Attach each client to a different server port
-  clientHelper.Set ("RemotePort", UintegerValue (serverPorts[0]));
-  apps.Add (clientHelper.Install (nodes.Get (1)));
+    // Attach each client to a different server port
+    clientHelper.Set("RemotePort", UintegerValue(serverPorts[0]));
+    apps.Add(clientHelper.Install(nodes.Get(1)));
 
-  clientHelper.Set ("RemotePort", UintegerValue (serverPorts[1]));
-  apps.Add (clientHelper.Install (nodes.Get (2)));
+    clientHelper.Set("RemotePort", UintegerValue(serverPorts[1]));
+    apps.Add(clientHelper.Install(nodes.Get(2)));
 
-  apps.Start (Seconds (2));
-  apps.Stop (Seconds (2000));
+    apps.Start(Seconds(2));
+    apps.Stop(Seconds(2000));
 
-  // Log the traffic in the link in a pcap file
-  csma.EnablePcapAll ("example-many-clients-intel-http-trace");
+    // Log the traffic in the link in a pcap file
+    csma.EnablePcapAll("example-many-clients-intel-http-trace");
 
-  if (mode == LossMode::Lossy)
+    if (mode == LossMode::Lossy)
     {
-      Ptr<RateErrorModel> errorModel = CreateObject<RateErrorModel> ();
-      errorModel->SetAttribute ("ErrorUnit",
-                                EnumValue (RateErrorModel::ErrorUnit::ERROR_UNIT_PACKET));
-      errorModel->SetAttribute ("ErrorRate", DoubleValue (0.05));
+        Ptr<RateErrorModel> errorModel = CreateObject<RateErrorModel>();
+        errorModel->SetAttribute("ErrorUnit",
+                                 EnumValue(RateErrorModel::ErrorUnit::ERROR_UNIT_PACKET));
+        errorModel->SetAttribute("ErrorRate", DoubleValue(0.05));
 
-      for (auto device = devices.Begin (); device != devices.End (); device++)
+        for (auto device = devices.Begin(); device != devices.End(); device++)
         {
-          (*device)->SetAttribute ("ReceiveErrorModel", PointerValue (errorModel));
+            (*device)->SetAttribute("ReceiveErrorModel", PointerValue(errorModel));
         }
     }
 
-  // Run the simulation for two thousand seconds, to show the sessions on and off pattern
-  Simulator::Stop (Seconds (2000));
-  Simulator::Run ();
-  Simulator::Destroy ();
+    // Run the simulation for two thousand seconds, to show the sessions on and off pattern
+    Simulator::Stop(Seconds(2000));
+    Simulator::Run();
+    Simulator::Destroy();
 }
 
 int
-main (int argc, char *argv[])
+main(int argc, char* argv[])
 {
-  bool useMultiple = false;
-  bool useLossyNetwork = false;
+    bool useMultiple = false;
+    bool useLossyNetwork = false;
 
-  CommandLine cmd;
-  cmd.AddValue ("multipleApps", "Demonstrate using multiple client Nodes with one server Node",
-                useMultiple);
-  cmd.AddValue ("lossy", "Add 5 % loss to each net device in this example", useLossyNetwork);
+    CommandLine cmd;
+    cmd.AddValue("multipleApps",
+                 "Demonstrate using multiple client Nodes with one server Node",
+                 useMultiple);
+    cmd.AddValue("lossy", "Add 5 % loss to each net device in this example", useLossyNetwork);
 
-  cmd.Parse (argc, argv);
+    cmd.Parse(argc, argv);
 
-  LossMode mode = LossMode::Lossless;
-  if (useLossyNetwork)
-  {
-      mode = LossMode::Lossy;
-  }
+    LossMode mode = LossMode::Lossless;
+    if (useLossyNetwork)
+    {
+        mode = LossMode::Lossy;
+    }
 
-  if (useMultiple)
-  {
-      MultipleServerClients(mode);
-  }
-  else
-  {
-      SingleServerClient(mode);
-  }
+    if (useMultiple)
+    {
+        MultipleServerClients(mode);
+    }
+    else
+    {
+        SingleServerClient(mode);
+    }
 }

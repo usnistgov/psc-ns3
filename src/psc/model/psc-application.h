@@ -36,12 +36,14 @@
 #ifndef PSC_APPLICATION_H
 #define PSC_APPLICATION_H
 
+#include "ns3/application.h"
 #include "ns3/seq-ts-size-header.h"
 #include "ns3/traced-callback.h"
-#include "ns3/application.h"
 
-namespace ns3 {
-namespace psc {
+namespace ns3
+{
+namespace psc
+{
 
 /**
  * \ingroup pscincident
@@ -51,19 +53,20 @@ namespace psc {
  */
 class PscSequenceNumber
 {
-public:
-  /**
-   * Variable with the last packet ID generated
-   */
-  static uint64_t s_sequenceNumber;
-  /**
-   * Return a new packet ID
-   * \return A new packet ID value
-   */
-  static uint64_t GetSequenceNumber ()
-  {
-    return ++s_sequenceNumber;
-  }
+  public:
+    /**
+     * Variable with the last packet ID generated
+     */
+    static uint64_t s_sequenceNumber;
+
+    /**
+     * Return a new packet ID
+     * \return A new packet ID value
+     */
+    static uint64_t GetSequenceNumber()
+    {
+        return ++s_sequenceNumber;
+    }
 };
 
 /**
@@ -81,74 +84,74 @@ public:
  */
 class PscApplication : public Application
 {
-public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId (void);
-  /**
-   * Default constructor
-   */
-  PscApplication ();
-  /**
-   * Default destructor
-   */
-  virtual ~PscApplication ();
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId(void);
+    /**
+     * Default constructor
+     */
+    PscApplication();
+    /**
+     * Default destructor
+     */
+    virtual ~PscApplication();
 
-  /**
-   * Stop the application. This cancels the stop event at the original stop time
-   * and invokes the StopApplication method
-   */
-  virtual void StopNow () = 0;
+    /**
+     * Stop the application. This cancels the stop event at the original stop time
+     * and invokes the StopApplication method
+     */
+    virtual void StopNow() = 0;
 
-protected:
-  /**
-   * Method used to break reference cycles between smart pointers.
-   *
-   * Inherited from the ns3::Application parent class.
-   */
-  virtual void DoDispose (void);
+  protected:
+    /**
+     * Method used to break reference cycles between smart pointers.
+     *
+     * Inherited from the ns3::Application parent class.
+     */
+    virtual void DoDispose(void);
 
-  /**
-   * Application name
-   */
-  std::string m_appName;
+    /**
+     * Application name
+     */
+    std::string m_appName;
 
-  /**
-   * TID of the socket to be used.
-   * Needed because we may be using TCP or UDP sockets.
-   */
-  TypeId m_socketTid;
+    /**
+     * TID of the socket to be used.
+     * Needed because we may be using TCP or UDP sockets.
+     */
+    TypeId m_socketTid;
 
-  /**
-   *
-   * Trace source for transmitted packets.
-   * Assumes that the packet has a SeqTsSizeHeader
-   */
-  TracedCallback<std::string, SeqTsSizeHeader> m_txTrace;
-  /**
-   * Trace source for received packets
-   * Assumes that the packet has a SeqTsSizeHeader
-   */
-  TracedCallback<std::string, SeqTsSizeHeader> m_rxTrace;
-  /**
-   * Trace source for the start and stop time of the application
-   */
-  TracedCallback<std::string, Time, Time> m_startStopTimeTrace;
+    /**
+     *
+     * Trace source for transmitted packets.
+     * Assumes that the packet has a SeqTsSizeHeader
+     */
+    TracedCallback<std::string, SeqTsSizeHeader> m_txTrace;
+    /**
+     * Trace source for received packets
+     * Assumes that the packet has a SeqTsSizeHeader
+     */
+    TracedCallback<std::string, SeqTsSizeHeader> m_rxTrace;
+    /**
+     * Trace source for the start and stop time of the application
+     */
+    TracedCallback<std::string, Time, Time> m_startStopTimeTrace;
 
-  /**
-   * Type definition for the trace source for transmitted packets.
-   */
-  typedef void (*TxTracedCallback)(std::string, SeqTsSizeHeader);
-  /**
-   * Type definition for the trace source for received packets.
-   */
-  typedef void (*RxTracedCallback)(std::string, SeqTsSizeHeader);
-  /**
-   * Type definition for the trace source for start and stop time.
-   */
-  typedef void (*TimeTracedCallback)(std::string, Time, Time);
+    /**
+     * Type definition for the trace source for transmitted packets.
+     */
+    typedef void (*TxTracedCallback)(std::string, SeqTsSizeHeader);
+    /**
+     * Type definition for the trace source for received packets.
+     */
+    typedef void (*RxTracedCallback)(std::string, SeqTsSizeHeader);
+    /**
+     * Type definition for the trace source for start and stop time.
+     */
+    typedef void (*TimeTracedCallback)(std::string, Time, Time);
 
 }; // class PscApplication
 
@@ -156,4 +159,3 @@ protected:
 } // namespace ns3
 
 #endif // PSC_APPLICATION_H
-

@@ -23,7 +23,7 @@ Model Description
 =================
 
 The purpose of the MCPTT model is to enable research into the performance
-of MCPTT protocols in both off-network and on-network public safety scenarios. 
+of MCPTT protocols in both off-network and on-network public safety scenarios.
 Users are expected to be interested in studying Key Performance Indicators
 (KPIs) such as the push-to-talk access time (KPI1) or the mouth-to-ear
 latency (KPI3) metrics defined in Section 6.15.3 of [TS22179]_.
@@ -44,23 +44,23 @@ two applications for two users to communicate. Each type of call may be basic,
 imminent peril, or emergency, and this "call status" dictates which physical
 resources are used by this call.
 
-In the specifications, on-network calls are described not only by their 
-call type (basic, broadcast, and private) but also by how the supporting 
+In the specifications, on-network calls are described not only by their
+call type (basic, broadcast, and private) but also by how the supporting
 session is established (on-demand or pre-established), the group call
 model (pre-arranged or chat group (restricted)), and whether the call
 requires elevated access privileges to network resources (emergency
 or imminent peril calls).  The mode of call commencement (automatic or
-manually with user intervention) also can be defined.  The difference 
-between an on-demand and pre-established session is that in the 
-pre-established case, certain network setup steps are completed before 
-a user initiates the call; these steps include negotiation of IP 
-addresses and ports (e.g., Interactive Connectivity Establishment (ICE) procedures) 
-and coordination of bearers in the IP Media Subsystem (IMS) core.  In a 
-prearranged group call, the group members will be 
-defined a priori, while the chat group (restricted) call model allows 
-members to join calls without being invited.  The initial support in 
-|ns3| for on-network call types is the 'prearranged group call, using 
-on-demand session, with automatic commencement,' 
+manually with user intervention) also can be defined.  The difference
+between an on-demand and pre-established session is that in the
+pre-established case, certain network setup steps are completed before
+a user initiates the call; these steps include negotiation of IP
+addresses and ports (e.g., Interactive Connectivity Establishment (ICE) procedures)
+and coordination of bearers in the IP Media Subsystem (IMS) core.  In a
+prearranged group call, the group members will be
+defined a priori, while the chat group (restricted) call model allows
+members to join calls without being invited.  The initial support in
+|ns3| for on-network call types is the 'prearranged group call, using
+on-demand session, with automatic commencement,'
 defined in TS 24.379 [TS24379]_.
 
 When off-network, all call control messages are sent to all other applications
@@ -106,8 +106,8 @@ permission to transmit media.
 Design Documentation
 ====================
 
-The MCPTT model was implemented based on the 3GPP specifications 
-TS 24.379 [TS24379]_ and TS 24.380 [TS24380]_ release 14.4.0. 
+The MCPTT model was implemented based on the 3GPP specifications
+TS 24.379 [TS24379]_ and TS 24.380 [TS24380]_ release 14.4.0.
 This includes off-network models for floor control,
 basic group calls, broadcast group calls, and private calls. There are also
 several test cases that were invented by NIST that are also included with this
@@ -167,23 +167,23 @@ push the PTT button.
 
 .. sourcecode:: cpp
 
-  ObjectFactory callFac;
-  callFac.SetTypeId (McpttCallMachineGrpBasic::GetTypeId ());
-  callFac.Set ("GroupId", UintegerValue (1));
-  ObjectFactory floorFac;
-  floorFac.SetTypeId (McpttOffNetworkFloorParticipant::GetTypeId ());
+    ObjectFactory callFac;
+    callFac.SetTypeId(McpttCallMachineGrpBasic::GetTypeId());
+    callFac.Set("GroupId", UintegerValue(1));
+    ObjectFactory floorFac;
+    floorFac.SetTypeId(McpttOffNetworkFloorParticipant::GetTypeId());
 
-  for (uint32_t idx = 0; idx < clientApps.GetN (); idx++)
+    for (uint32_t idx = 0; idx < clientApps.GetN(); idx++)
     {
-      Ptr<McpttPttApp> pttApp = 
-        DynamicCast<McpttPttApp, Application> (clientApps.Get (idx));
-      pttApp->CreateCall (callFac, floorFac);
-      pttApp->SelectCall (0);
+        Ptr<McpttPttApp> pttApp = DynamicCast<McpttPttApp, Application>(clientApps.Get(idx));
+        pttApp->CreateCall(callFac, floorFac);
+        pttApp->SelectCall(0);
 
-      if (idx == 0)
+        if (idx == 0)
         {
-          Simulator::Schedule (Seconds (start.GetSeconds () + 1.0), 
-            &McpttPttApp::TakePushNotification, pttApp);
+            Simulator::Schedule(Seconds(start.GetSeconds() + 1.0),
+                                &McpttPttApp::TakePushNotification,
+                                pttApp);
         }
     }
 
@@ -200,7 +200,7 @@ Several MCPTT identifiers are used throughout the code, as follows.
     the MCPTT server is separately assigned a user ID, stored in the
     ``ns3::psc::McpttServerCallMachine`` instance.  This is initialized by default
     to 0, and typically left at the default value.
- 
+
   * ``MCPTT Group ID`` The MCPTT Group ID pertains to group calls; it is also,
     in practice, a SIP URI (i.e., a string value).  In this ns-3 model, for
     simplicity, it is stored as a 32-bit unsigned integer.  On clients,
@@ -217,9 +217,9 @@ Several MCPTT identifiers are used throughout the code, as follows.
     floor control messages.  In on-network operation, an SSRC is also
     assigned to the server (included in server-originated floor control
     messages).  The on-network arbitrator,
-    ``ns3::psc::McpttOnNetworkFloorArbitrator``, contains an attribute 
+    ``ns3::psc::McpttOnNetworkFloorArbitrator``, contains an attribute
     ``TxSsrc`` that defaults to the value 0.
-    For simplicity, the clients reuse the MCPTT User ID value for SSRC; 
+    For simplicity, the clients reuse the MCPTT User ID value for SSRC;
     i.e., all media streams are identified as being from the same source,
     in the current version of this model.
 
@@ -304,7 +304,7 @@ described in the standard. These state machines exist to maintain the call type
 
 * ``ns3::psc::McpttCallTypeMachineGrpBasic`` for a basic group call, and
 * ``ns3::psc::McpttCallTypeMachinePriv`` for a private call.
-    
+
 These state machines are also self-contained and are not associated with any
 "state" classes.
 
@@ -325,7 +325,7 @@ messages, the ``ns3::psc::McpttFloorMsg`` for floor control, and the
 ``ns3::psc::McpttFloorMsg`` classes both have many subclasses to represent each
 floor control or call control message used in the off-network portion of the
 standard. For example, the ``ns3::psc::McpttFloorMsgRequest`` class represents the
-"Floor Request" message described in TS 24.380 [TS24380]_. These classes are 
+"Floor Request" message described in TS 24.380 [TS24380]_. These classes are
 sent between
 the MCPTT applications and are consumed by the appropriate state machines
 throughout the simulation.
@@ -349,7 +349,7 @@ between multiple objects of the same type.
 
 The ``ns3::psc::McpttFloorQueue`` class is a wrapper around the ``std::vector``
 class that provides an interface for the floor queue that is described in TS
-24.380 [TS24380]_. This class is only associated with a floor machine for 
+24.380 [TS24380]_. This class is only associated with a floor machine for
 use when
 queuing is enabled in floor control. One can enable queuing in floor control
 for a particular call, simply by setting the capacity of this queue to a size
@@ -391,7 +391,7 @@ The ``ns3::psc::McpttPusherOrchestratorInterface`` is a base class for the subcl
 * ``ns3::psc::McpttPusherOrchestrator``,
 * ``ns3::psc::McpttPusherOrchestratorSpurtCdf``,
 * ``ns3::psc::McpttPusherOrchestratorSessionCdf``, and
-* ``ns3::psc::McpttPusherOrchestratorContention``. 
+* ``ns3::psc::McpttPusherOrchestratorContention``.
 
 The class
 ``ns3::psc::McpttPusherOrchestrator`` simply selects a random pusher from
@@ -468,17 +468,19 @@ and sessions for this configuration.
 
 .. sourcecode:: cpp
 
-  Ptr<McpttPusherOrchestratorSpurtCdf> spurtOrchestrator = CreateObject<McpttPusherOrchestratorSpurtCdf> ();
-  spurtOrchestrator->SetAttribute ("ActivityFactor", DoubleValue (1.0));
+    Ptr<McpttPusherOrchestratorSpurtCdf> spurtOrchestrator =
+        CreateObject<McpttPusherOrchestratorSpurtCdf>();
+    spurtOrchestrator->SetAttribute("ActivityFactor", DoubleValue(1.0));
 
-  Ptr<McpttPusherOrchestratorSessionCdf> sessionOrchestrator = CreateObject<McpttPusherOrchestratorSessionCdf> ();
-  sessionOrchestrator->SetAttribute ("ActivityFactor", DoubleValue (0.5));
-  sessionOrchestrator->SetAttribute ("Orchestrator", PointerValue (spurtOrchestrator));
+    Ptr<McpttPusherOrchestratorSessionCdf> sessionOrchestrator =
+        CreateObject<McpttPusherOrchestratorSessionCdf>();
+    sessionOrchestrator->SetAttribute("ActivityFactor", DoubleValue(0.5));
+    sessionOrchestrator->SetAttribute("Orchestrator", PointerValue(spurtOrchestrator));
 
-  sessionOrchestrator->StartAt (Seconds (2.0));
-  sessionOrchestrator->StopAt (Seconds (82.0);
-
-  mcpttHelper.Associate (sessionOrchestrator, clientApps);
+    sessionOrchestrator->StartAt(Seconds(2.0));
+    sessionOrchestrator->StopAt(Seconds(82.0));
+  
+    mcpttHelper.Associate(sessionOrchestrator, clientApps);
 
 It is also worth mentioning that if the Voice Activity Factor is less than
 1.0, then depending on the combination of Voice Activity Factor and session
@@ -553,12 +555,12 @@ configuration of an EPC network.  In the below snippet, the ImsHelper object
 is LteHelper, and the ImsHelper also is connected to
 the PGW node::
 
-   Ptr<ImsHelper> imsHelper = CreateObject<ImsHelper> ();
-   imsHelper->ConnectPgw (epcHelper->GetPgwNode ());
+   Ptr<ImsHelper> imsHelper = CreateObject<ImsHelper>();
+   imsHelper->ConnectPgw(epcHelper->GetPgwNode());
 
 The IMS node itself can be fetched as follows::
 
-   Ptr<Node> ims = imsHelper->GetImsNode ();
+   Ptr<Node> ims = imsHelper->GetImsNode();
 
 The ConnectPgw() method creates the IMS node, adds an IP (internet) stack to
 it, and then adds a point-to-point link between it and the PGW node.  The
@@ -631,72 +633,83 @@ followed.
 
 .. sourcecode:: cpp
 
-   ApplicationContainer clientApps;
-   McpttHelper mcpttHelper;
-   if (enableNsLogs)
-     {
-       mcpttHelper.EnableLogComponents ();
-     }
-   mcpttHelper.SetPttApp ("ns3::psc::McpttPttApp",
-                          "PeerAddress", Ipv4AddressValue (peerAddress),
-                          "PushOnStart", BooleanValue (true));
-   mcpttHelper.SetMediaSrc ("ns3::psc::McpttMediaSrc",
-                          "Bytes", UintegerValue (msgSize),
-                          "DataRate", DataRateValue (dataRate));
-   mcpttHelper.SetPusher ("ns3::psc::McpttPusher",
-                          "Automatic", BooleanValue (true));
-   mcpttHelper.SetPusherPttInterarrivalTimeVariable ("ns3::NormalRandomVariable",
-                          "Mean", DoubleValue (pushTimeMean),
-                          "Variance", DoubleValue (pushTimeVariance));
-   mcpttHelper.SetPusherPttDurationVariable ("ns3::NormalRandomVariable",
-                          "Mean", DoubleValue (releaseTimeMean),
-                          "Variance", DoubleValue (releaseTimeVariance));
- 
-   clientApps.Add (mcpttHelper.Install (ueNodes));
-   clientApps.Start (startTime);
-   clientApps.Stop (stopTime);
+    ApplicationContainer clientApps;
+    McpttHelper mcpttHelper;
+    if (enableNsLogs)
+    {
+        mcpttHelper.EnableLogComponents();
+    }
+    mcpttHelper.SetPttApp("ns3::psc::McpttPttApp",
+                          "PeerAddress",
+                          Ipv4AddressValue(peerAddress),
+                          "PushOnStart",
+                          BooleanValue(true));
+    mcpttHelper.SetMediaSrc("ns3::psc::McpttMediaSrc",
+                            "Bytes",
+                            UintegerValue(msgSize),
+                            "DataRate",
+                            DataRateValue(dataRate));
+    mcpttHelper.SetPusher("ns3::psc::McpttPusher", "Automatic", BooleanValue(true));
+    mcpttHelper.SetPusherPttInterarrivalTimeVariable("ns3::NormalRandomVariable",
+                                                     "Mean",
+                                                     DoubleValue(pushTimeMean),
+                                                     "Variance",
+                                                     DoubleValue(pushTimeVariance));
+    mcpttHelper.SetPusherPttDurationVariable("ns3::NormalRandomVariable",
+                                             "Mean",
+                                             DoubleValue(releaseTimeMean),
+                                             "Variance",
+                                             DoubleValue(releaseTimeVariance));
+
+    clientApps.Add(mcpttHelper.Install(ueNodes));
+    clientApps.Start(startTime);
+    clientApps.Stop(stopTime);
 
 The above will prepare each UE for the service, but call configuration
 remains to be configured.  For a basic group call type, using the
 basic floor machine, the helper provides a single statement to configure
 the call, as follows.
- 
+
 One could also use the following snippet to configure an
 ``ns3::psc::McpttPusherOrchestrator`` to control when push and release events
 occur for a set of ``ns3::psc::McpttPttApp`` applications.
 
 .. sourcecode:: cpp
 
-   ApplicationContainer clientApps;
-   McpttHelper mcpttHelper;
-   if (enableNsLogs)
-     {
-       mcpttHelper.EnableLogComponents ();
-     }
-   mcpttHelper.SetPttApp ("ns3::psc::McpttPttApp",
-                          "PeerAddress", Ipv4AddressValue (peerAddress),
-                          "PushOnStart", BooleanValue (true));
-   mcpttHelper.SetMediaSrc ("ns3::psc::McpttMediaSrc",
-                          "Bytes", UintegerValue (msgSize),
-                          "DataRate", DataRateValue (dataRate));
-   mcpttHelper.SetPusher ("ns3::psc::McpttPusher",
-                          "Automatic", BooleanValue (false));
- 
-   clientApps.Add (mcpttHelper.Install (ueNodes));
-   clientApps.Start (startTime);
-   clientApps.Stop (stopTime);
+    ApplicationContainer clientApps;
+    McpttHelper mcpttHelper;
+    if (enableNsLogs)
+    {
+        mcpttHelper.EnableLogComponents();
+    } 
+    mcpttHelper.SetPttApp("ns3::psc::McpttPttApp",
+                          "PeerAddress",
+                          Ipv4AddressValue(peerAddress),
+                          "PushOnStart",
+                          BooleanValue(true)); 
+    mcpttHelper.SetMediaSrc("ns3::psc::McpttMediaSrc",
+                            "Bytes",
+                            UintegerValue(msgSize),
+                            "DataRate",
+                            DataRateValue(dataRate));
+    mcpttHelper.SetPusher("ns3::psc::McpttPusher", "Automatic", BooleanValue(false));
 
-   Ptr<McpttPusherOrchestratorSpurtCdf> orchestrator = CreateObject<McpttPusherOrchestratorSpurtCdf> ();
-   orchestrator->SetAttribute ("ActivityFactor", DoubleValue (0.5));
-   orchestrator->StartAt (startTime);
+    clientApps.Add(mcpttHelper.Install(ueNodes));
+    clientApps.Start(startTime);
+    clientApps.Stop(stopTime);
 
-   mcpttHelper.Associate (orchestrator, clientApps);
+    Ptr<McpttPusherOrchestratorSpurtCdf> orchestrator =
+        CreateObject<McpttPusherOrchestratorSpurtCdf>();
+    orchestrator->SetAttribute("ActivityFactor", DoubleValue(0.5));
+    orchestrator->StartAt(startTime);
+
+    mcpttHelper.Associate(orchestrator, clientApps);
 
 The following method:
 
 .. sourcecode:: cpp
 
-   mcpttHelper.ConfigureBasicGrpCall (clientApps, usersPerGroup);
+   mcpttHelper.ConfigureBasicGrpCall(clientApps, usersPerGroup);
 
 encapsulates the following operations:
 
@@ -704,7 +717,7 @@ encapsulates the following operations:
 *  sets the floor control state machine type to ``ns3::psc::McpttOffNetworkFloorParticipant``
 *  iterates across the clientApps in the provided application container.  If
    the provided ``usersPerGroup`` value is equal to or greater than the size
-   of the ``clientApps`` container, all instances of ``McpttPttApp`` will 
+   of the ``clientApps`` container, all instances of ``McpttPttApp`` will
    be included in a call with the same GroupId.  If ``usersPerGroup`` is
    less than the size of ``clientApps``, the first ``usersPerGroup`` will
    be placed into a call with the first GroupId, the second ``usersPerGroup``
@@ -718,17 +731,17 @@ of the main program, as follows.
 
 .. sourcecode:: cpp
 
-   // MCPTT configuration
-   uint32_t usersPerGroup = 2;
-   DataRate dataRate = DataRate ("24kb/s");
-   uint32_t msgSize = 60; //60 + RTP header = 60 + 12 = 72
-   double pushTimeMean = 5.0; // seconds
-   double pushTimeVariance = 2.0; // seconds
-   double releaseTimeMean = 5.0; // seconds
-   double releaseTimeVariance = 2.0; // seconds
-   Ipv4Address peerAddress = Ipv4Address ("225.0.0.0");
-   Time startTime = Seconds (2);
-   Time stopTime = simTime;
+    // MCPTT configuration 
+    uint32_t usersPerGroup = 2;
+    DataRate dataRate = DataRate("24kb/s"); 
+    uint32_t msgSize = 60;            // 60 + RTP header = 60 + 12 = 72
+    double pushTimeMean = 5.0;        // seconds
+    double pushTimeVariance = 2.0;    // seconds
+    double releaseTimeMean = 5.0;     // seconds
+    double releaseTimeVariance = 2.0; // seconds
+    Ipv4Address peerAddress = Ipv4Address("225.0.0.0");
+    Time startTime = Seconds(2);
+    Time stopTime = simTime;
 
 Here, it is worth noting that the configuration sets two users per group,
 and the example only has two UEs, so both UEs will belong to the same GroupId.
@@ -737,10 +750,10 @@ should not be changed without similarly changing the IPv4 group address of
 the TFT configuration further down in the LTE configuration part of
 the program.  The TFT controls the mapping of IP packets to sidelink
 bearers.  If the packets are sent to a peer address for which a suitable
-TFT is not configured, they will be dropped in the sending UE's stack. 
+TFT is not configured, they will be dropped in the sending UE's stack.
 
 Another difference with respect to the D2D example is that, presently,
-only IPv4 addressing is supported, so there is no command-line option to 
+only IPv4 addressing is supported, so there is no command-line option to
 use IPv6.
 
 A further difference with respect to the D2D example is that the command-line
@@ -749,15 +762,15 @@ logging as in the LTE D2D example, but will instead enable all MCPTT logs,
 as shown above.
 
 Finally, we note four tracing statements inserted near the bottom of the
-program: 
- 
+program:
+
 .. sourcecode:: cpp
 
    NS_LOG_INFO ("Enabling MCPTT traces...");
-   mcpttHelper.EnableMsgTraces ();
-   mcpttHelper.EnableStateMachineTraces ();
-   mcpttHelper.EnableMouthToEarLatencyTrace ("mcptt-m2e-latency.txt");
-   mcpttHelper.EnableAccessTimeTrace ("mcptt-access-time.txt");
+   mcpttHelper.EnableMsgTraces();
+   mcpttHelper.EnableStateMachineTraces();
+   mcpttHelper.EnableMouthToEarLatencyTrace("mcptt-m2e-latency.txt");
+   mcpttHelper.EnableAccessTimeTrace("mcptt-access-time.txt");
 
 These statements are explained in the next section.  Some other aspects
 of LTE tracing are omitted in this modified example, in order to focus on
@@ -768,7 +781,7 @@ mcptt-on-network-two-calls
 
 The program ``mcptt-on-network-two-calls.cc`` is an adaptation of the LTE
 example ``lena-simple-epc.cc`` to experiment with two MCPTT on-network calls
-involving two different pairs of UEs to a single MCPTT server managing 
+involving two different pairs of UEs to a single MCPTT server managing
 both calls.  The first group call (between the first pair of UEs) starts
 when the McpttPttApps start at time 2 seconds and runs until simulation
 time 16 seconds.  The second call starts at time 18 seconds and runs
@@ -780,39 +793,39 @@ add the MCPTT server to the EPC (via the notional IMS) with an ImsHelper.
 
 .. sourcecode:: cpp
 
-   Ptr<ImsHelper> imsHelper = CreateObject<ImsHelper> ();
-   imsHelper->ConnectPgw (epcHelper->GetPgwNode ());
+   Ptr<ImsHelper> imsHelper = CreateObject<ImsHelper>();
+   imsHelper->ConnectPgw(epcHelper->GetPgwNode());
 
 MCPTT clients are added in a manner similar to off-network configuration; e.g.:
 
 .. sourcecode:: cpp
 
    McpttHelper mcpttClientHelper;
-   mcpttClientHelper.SetPttApp ("ns3::psc::McpttPttApp");
+   mcpttClientHelper.SetPttApp("ns3::psc::McpttPttApp");
    ...
-   clientAppContainer1.Add (mcpttClientHelper.Install (ueNodePair1));
-   clientAppContainer1.Start (start);
-   clientAppContainer1.Stop (stop);
+   clientAppContainer1.Add(mcpttClientHelper.Install(ueNodePair1));
+   clientAppContainer1.Start(start);
+   clientAppContainer1.Stop(stop);
 
 However, in addition, an MCPTT server app must be configured:
 
 .. sourcecode:: cpp
 
-   Ptr<McpttServerApp> serverApp = DynamicCast<McpttServerApp> (serverAppContainer.Get (0));
-   Ipv4Address serverAddress = Ipv4Address::ConvertFrom (imsHelper->GetImsGmAddress ());
-   serverApp->SetLocalAddress (serverAddress);
+    Ptr<McpttServerApp> serverApp = DynamicCast<McpttServerApp>(serverAppContainer.Get(0));
+    Ipv4Address serverAddress = Ipv4Address::ConvertFrom(imsHelper->GetImsGmAddress());
+    serverApp->SetLocalAddress(serverAddress);
 
 and in a similar manner, the local IP address of the UEs is configured:
 
 .. sourcecode:: cpp
 
-   for (uint32_t index = 0; index < ueIpIface.GetN (); index++)
-     {
-       Ptr<McpttPttApp> pttApp = clientAppContainer.Get (index)->GetObject<McpttPttApp> ();
-       Ipv4Address clientAddress = ueIpIface.GetAddress (index);
-       pttApp->SetLocalAddress (clientAddress);
-       NS_LOG_INFO ("client " << index << " ip address = " << clientAddress);
-     }
+    for (uint32_t index = 0; index < ueIpIface.GetN(); index++)
+    {
+        Ptr<McpttPttApp> pttApp = clientAppContainer.Get(index)->GetObject<McpttPttApp>();
+        Ipv4Address clientAddress = ueIpIface.GetAddress(index);
+        pttApp->SetLocalAddress(clientAddress);
+        NS_LOG_INFO("client " << index << " ip address = " << clientAddress);
+    }
 
 The next few statements show how to use a McpttCallHelper to configure
 the on-network components of floor arbitrator, the 'towards participant'
@@ -822,22 +835,22 @@ and properties of the call configurations on the server.
 
 .. sourcecode:: cpp
 
-   McpttCallHelper callHelper;
-   // Optional statements to tailor the configurable attributes
-   callHelper.SetArbitrator ("ns3::psc::McpttOnNetworkFloorArbitrator",
-                          "AckRequired", BooleanValue (false),
-                          "AudioCutIn", BooleanValue (false),
-                          "DualFloorSupported", BooleanValue (false),
-                          "TxSsrc", UintegerValue (100),
-                          "QueueingSupported", BooleanValue (true));
-   callHelper.SetTowardsParticipant ("ns3::psc::McpttOnNetworkFloorTowardsParticipant",
-                          "ReceiveOnly", BooleanValue (false));
-   callHelper.SetParticipant ("ns3::psc::McpttOnNetworkFloorParticipant",
-                          "AckRequired", BooleanValue (false),
-                          "GenMedia", BooleanValue (true));
-   callHelper.SetServerCall ("ns3::psc::McpttServerCall",
-                          "AmbientListening", BooleanValue (false),
-                          "TemporaryGroup", BooleanValue (false));
+    McpttCallHelper callHelper;
+    // Optional statements to tailor the configurable attributes
+    callHelper.SetArbitrator("ns3::psc::McpttOnNetworkFloorArbitrator",
+                             "AckRequired", BooleanValue(false),
+                             "AudioCutIn", BooleanValue(false),
+                             "DualFloorSupported", BooleanValue(false),
+                             "TxSsrc", UintegerValue(100),
+                             "QueueingSupported", BooleanValue(true));
+    callHelper.SetTowardsParticipant("ns3::psc::McpttOnNetworkFloorTowardsParticipant",
+                                     "ReceiveOnly", BooleanValue(false));
+    callHelper.SetParticipant("ns3::psc::McpttOnNetworkFloorParticipant",
+                              "AckRequired", BooleanValue(false),
+                              "GenMedia", BooleanValue(true));
+    callHelper.SetServerCall("ns3::psc::McpttServerCall",
+                             "AmbientListening", BooleanValue(false),
+                             "TemporaryGroup", BooleanValue(false));
 
 The next few statements configure the calls themselves, using the call helper.
 The user must specify the call type and group ID, the client (McpttPttAtt)
@@ -846,28 +859,28 @@ stop times of the call.
 
 .. sourcecode:: cpp
 
-   McpttCallMsgFieldCallType callType = McpttCallMsgFieldCallType::BASIC_GROUP;
-   // Add first call, to start at time 2 and stop at time 10
-   // Call will involve two nodes (7 and 8) and the MCPTT server (node 3)
-   uint32_t groupId = 1;
-   callHelper.AddCall (clientAppContainer1, serverApp, groupId, callType, Seconds (2), Seconds (16));
-
-   // Add second call, on new groupId, to start at time 8 and stop at time 15
-   // Call will involve two nodes (9 and 10) and the MCPTT server (node 3)
-   groupId = 2;
-   callHelper.AddCall (clientAppContainer2, serverApp, groupId, callType, Seconds (18), Seconds (34));
+    McpttCallMsgFieldCallType callType = McpttCallMsgFieldCallType::BASIC_GROUP;
+    // Add first call, to start at time 2 and stop at time 10
+    // Call will involve two nodes (7 and 8) and the MCPTT server (node 3)
+    uint32_t groupId = 1;
+    callHelper.AddCall(clientAppContainer1, serverApp, groupId, callType, Seconds(2), Seconds(16));
+    
+    // Add second call, on new groupId, to start at time 8 and stop at time 15
+    // Call will involve two nodes (9 and 10) and the MCPTT server (node 3)
+    groupId = 2;
+    callHelper.AddCall(clientAppContainer2, serverApp, groupId, callType, Seconds(18), Seconds(34));
 
 Finally, the MCPTT tracing can be enabled to trace messages, state machine
 transitions, and statistics such as mouth-to-ear latency and access time.
 
 .. sourcecode:: cpp
 
-   NS_LOG_INFO ("Enabling MCPTT traces...");
+   NS_LOG_INFO("Enabling MCPTT traces...");
    McpttTraceHelper traceHelper;
-   traceHelper.EnableMsgTraces ();
-   traceHelper.EnableStateMachineTraces ();
-   traceHelper.EnableMouthToEarLatencyTrace ("mcptt-m2e-latency.txt");
-   traceHelper.EnableAccessTimeTrace ("mcptt-access-time.txt");
+   traceHelper.EnableMsgTraces();
+   traceHelper.EnableStateMachineTraces();
+   traceHelper.EnableMouthToEarLatencyTrace("mcptt-m2e-latency.txt");
+   traceHelper.EnableAccessTimeTrace("mcptt-access-time.txt");
 
 mcptt-on-network-two-simultaneous-calls
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -885,33 +898,33 @@ to another subnet instead of the default 15.0.0.0:
 
 .. sourcecode:: cpp
 
-   Ptr<ImsHelper> imsHelper2 = CreateObject<ImsHelper> ();
-   imsHelper2->SetImsIpv4Network (Ipv4Address ("16.0.0.0"), Ipv4Mask ("255.0.0.0"));
-   imsHelper2->ConnectPgw (epcHelper->GetPgwNode ());
+    Ptr<ImsHelper> imsHelper2 = CreateObject<ImsHelper>(); 
+    imsHelper2->SetImsIpv4Network(Ipv4Address("16.0.0.0"), Ipv4Mask("255.0.0.0"));
+    imsHelper2->ConnectPgw(epcHelper->GetPgwNode());
+
 
 The first user is added to both the first and second call groups:
 
 .. sourcecode:: cpp
 
-   ApplicationContainer callContainer1;
-   callContainer1.Add (clientAppContainer1.Get (0));
-   ...
-   ApplicationContainer callContainer2;
+    ApplicationContainer callContainer1;
+    callContainer1.Add(clientAppContainer1.Get(0));
+    ...
+    ApplicationContainer callContainer2;
    ...
    // Add the first user to the second call also
-   callContainer2.Add (clientAppContainer1.Get (0));
+   callContainer2.Add(clientAppContainer1.Get(0));
 
 and the two calls configured in the call helper have different server apps:
 
 .. sourcecode:: cpp
 
-   McpttCallMsgFieldCallType callType = McpttCallMsgFieldCallType::BASIC_GROUP;
-   uint32_t groupId = 1;
-   callHelper.AddCall (callContainer1, serverApp, groupId, callType, callStartTime, callStopTime);
+    McpttCallMsgFieldCallType callType = McpttCallMsgFieldCallType::BASIC_GROUP;
+    uint32_t groupId = 1;
+    callHelper.AddCall(callContainer1, serverApp, groupId, callType, callStartTime, callStopTime);
 
-   groupId = 2;
-   callHelper.AddCall (callContainer2, serverApp2, groupId, callType, callStartTime, callStopTime);
-
+    groupId = 2;
+    callHelper.AddCall(callContainer2, serverApp2, groupId, callType, callStartTime, callStopTime);
 
 Finally, some events must be added to cause the first MCPTT user to switch
 calls at specified times.  This is done with the ``McpttPttApp::SelectCall``
@@ -919,11 +932,11 @@ method, such as follows:
 
 .. sourcecode:: cpp
 
-   // schedule events to cause the user (McpttPusher) to switch calls at the
-   // configured times in the simulation
-   Simulator::Schedule (callStartTime, &McpttPttApp::SelectCall, pttApp, 1, true);
-   Simulator::Schedule (firstSwitchTime, &McpttPttApp::SelectCall, pttApp, 2, true);
-   Simulator::Schedule (secondSwitchTime, &McpttPttApp::SelectCall, pttApp, 1, true);
+    // schedule events to cause the user (McpttPusher) to switch calls at the
+    // configured times in the simulation
+    Simulator::Schedule(callStartTime, &McpttPttApp::SelectCall, pttApp, 1, true);
+    Simulator::Schedule(firstSwitchTime, &McpttPttApp::SelectCall, pttApp, 2, true);
+    Simulator::Schedule(secondSwitchTime, &McpttPttApp::SelectCall, pttApp, 1, true);
 
 The program output of this program shows application and floor control
 events traced on userId 1, illustrating that as one call is selected
@@ -942,7 +955,7 @@ with one team in each of the three modes.  The off-network and
 on-network using relay teams are positioned within a building, preventing
 full on-network operation for those teams.  Each team creates an MCPTT
 call and uses the automatic pusher model to drive an MCPTT call for the
-duration of the call (default of 1000 seconds duration).  
+duration of the call (default of 1000 seconds duration).
 
 .. _fig-mcptt-operational-modes-scenario:
 
@@ -966,7 +979,7 @@ regarding the number of packets sent and received by each node.
 
 The call duration, whether floor control queueing is enabled or not (disabled
 by default), and the number of UEs per team are configurable as command-line
-options.  A simulation progress display is also optionally enabled by 
+options.  A simulation progress display is also optionally enabled by
 the ``--showProgress`` option.
 
 Finally, some plotting programs (requiring Python Matplotlib) are available
@@ -1028,11 +1041,11 @@ There may also be an additional field at the end of the row called "message"
 that will be included if the ``ns3::psc::McpttMsgStats::IncludeMessageContent``
 attribute is set to "true". The "time(s)" column describes the time (in
 seconds) at which a message was sent/received. The "nodeid" column
-contains the ns3::Node ID value of the sender or receiver, and the 
+contains the ns3::Node ID value of the sender or receiver, and the
 "callid" column contains the call ID for this message.  The "ssrc" field
 prints the RTP synchronization source (SSRC) field if available.  The
 "selected" column indicates whether the message was sent or received for
-the currently selected call on the client, or "N/A" for server messages. The  
+the currently selected call on the client, or "N/A" for server messages. The
 "rx/tx" column indicates if the message was sent or received, i.e., if "rx"
 is the value in the column then that means the message was received, while a
 value of "tx" indicates that the message was sent. The "bytes" columns
@@ -1052,9 +1065,9 @@ transitions and produces a file with the default name,
 The "time(s)" column describes the time (in seconds) at which the state
 transition took place. The "userid" column contains the user ID of the MCPTT
 user that the state machine is associated with. The "callid" column contains
-the ID of the call the state machine is associated with.  The 
+the ID of the call the state machine is associated with.  The
 "selected" column indicates whether the message was sent or received for
-the currently selected call on the client, or "N/A" for server messages. The  
+the currently selected call on the client, or "N/A" for server messages. The
 "typeid" column
 contains the string representation of the state machine's ``ns3::TypeId``.
 The "oldstate" column contains the string representation of the
@@ -1069,12 +1082,12 @@ the mouth-to-ear latency.  More information about this statistic can be
 found in NIST technical report NISTIR 8206 [NIST.IR.8206]_.  When the
 |ns3| model generates the first RTP packet of a talk spurt, the timestamp
 is encoded into the payload of that RTP packet and every subsequent RTP
-packet of the talk spurt.  Upon receipt of an ``ns3::psc::McpttMediaMsg``, the 
+packet of the talk spurt.  Upon receipt of an ``ns3::psc::McpttMediaMsg``, the
 receiving application will check whether the packet contains a newer
 'start-of-talkspurt' timestamp.  If so, this indicates the reception of the
 first RTP packet of a new talk spurt from a sender.  The latency of all
 such talk spurts, traced from the perspective of each receiving application,
-can be traced using the helper method 
+can be traced using the helper method
 ``ns3::psc::McpttHelper::EnableMouthToEarLatencyTrace()``. This method can be
 called with no arguments so that mouth-to-ear latency samples can be
 captured in the simulation via the
@@ -1088,8 +1101,8 @@ are also written to a file. The output file is formatted as follows.
   3.727000    3      8      1   0.024010
   3.727000    3      9      1   0.024010
 
-In the example, node ID 8 started to receive a talk spurt at time 3.727 s, 
-on call ID 1, with a mouth-to-ear latency of 24 ms (see Figure 1 of 
+In the example, node ID 8 started to receive a talk spurt at time 3.727 s,
+on call ID 1, with a mouth-to-ear latency of 24 ms (see Figure 1 of
 [NIST.IR.8206]_).
 
 The MCPTT Access time is defined as KPI1 in [TS22179]_, and measures the time

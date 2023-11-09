@@ -6,7 +6,7 @@ LTE D2D Models
 ==============
 
 This chapter is an excerpt of the LTE module documentation chapter,
-containing the D2D-related models that have been added to the |ns3| 
+containing the D2D-related models that have been added to the |ns3|
 LTE module.
 
 ++++++++++++++++++++

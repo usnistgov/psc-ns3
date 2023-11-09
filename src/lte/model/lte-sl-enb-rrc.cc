@@ -35,10 +35,11 @@
 
 #include "lte-sl-enb-rrc.h"
 
+#include "lte-rrc-sap.h"
+
 #include <ns3/abort.h>
 #include <ns3/fatal-error.h>
 #include <ns3/log.h>
-#include <ns3/lte-rrc-sap.h>
 #include <ns3/object-factory.h>
 #include <ns3/object-map.h>
 #include <ns3/pointer.h>

@@ -36,12 +36,13 @@
 #ifndef LTE_SL_UE_RRC_H
 #define LTE_SL_UE_RRC_H
 
+#include "lte-radio-bearer-info.h"
+#include "lte-rrc-sap.h"
+#include "lte-sl-header.h"
+#include "lte-sl-o2o-comm-params.h"
+#include "lte-sl-pool.h"
+
 #include <ns3/event-id.h>
-#include <ns3/lte-radio-bearer-info.h>
-#include <ns3/lte-rrc-sap.h>
-#include <ns3/lte-sl-header.h>
-#include <ns3/lte-sl-o2o-comm-params.h>
-#include <ns3/lte-sl-pool.h>
 #include <ns3/nstime.h>
 #include <ns3/object.h>
 #include <ns3/random-variable-stream.h>

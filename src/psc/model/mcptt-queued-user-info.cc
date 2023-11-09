@@ -29,33 +29,35 @@
  * employees is not subject to copyright protection within the United States.
  */
 
-#include <iostream>
+#include "mcptt-queued-user-info.h"
+
+#include "mcptt-floor-msg-field.h"
 
 #include <ns3/buffer.h>
 #include <ns3/log.h>
 #include <ns3/object-base.h>
 #include <ns3/type-id.h>
 
-#include "mcptt-floor-msg-field.h"
-#include "mcptt-queued-user-info.h"
+#include <iostream>
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("McpttQueuedUserInfo");
+NS_LOG_COMPONENT_DEFINE("McpttQueuedUserInfo");
 
-namespace psc {
+namespace psc
+{
 
-NS_OBJECT_ENSURE_REGISTERED (McpttQueuedUserInfo);
+NS_OBJECT_ENSURE_REGISTERED(McpttQueuedUserInfo);
 
 TypeId
 McpttQueuedUserInfo::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::psc::McpttQueuedUserInfo")
-    .SetParent<ObjectBase> ()
-    .AddConstructor<McpttQueuedUserInfo> ()
-  ;
+    static TypeId tid = TypeId("ns3::psc::McpttQueuedUserInfo")
+                            .SetParent<ObjectBase>()
+                            .AddConstructor<McpttQueuedUserInfo>();
 
-  return tid;
+    return tid;
 }
 
 McpttQueuedUserInfo::McpttQueuedUserInfo()
@@ -64,173 +66,174 @@ McpttQueuedUserInfo::McpttQueuedUserInfo()
       m_ssrc(0),
       m_userId(McpttFloorMsgFieldQueuedUserId())
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-McpttQueuedUserInfo::McpttQueuedUserInfo (uint32_t ssrc, const McpttFloorMsgFieldQueuedUserId& userId, const McpttFloorMsgFieldQueuePositionInfo& info)
-  : ObjectBase (),
-    m_info (McpttFloorMsgFieldQueuePositionInfo ()),
-    m_ssrc (0),
-    m_userId (McpttFloorMsgFieldQueuedUserId ())
+McpttQueuedUserInfo::McpttQueuedUserInfo(uint32_t ssrc,
+                                         const McpttFloorMsgFieldQueuedUserId& userId,
+                                         const McpttFloorMsgFieldQueuePositionInfo& info)
+    : ObjectBase(),
+      m_info(McpttFloorMsgFieldQueuePositionInfo()),
+      m_ssrc(0),
+      m_userId(McpttFloorMsgFieldQueuedUserId())
 {
-  NS_LOG_FUNCTION (this << ssrc << userId << info);
+    NS_LOG_FUNCTION(this << ssrc << userId << info);
 
-  SetSsrc (ssrc);
-  SetUserId (userId);
-  SetInfo (info);
+    SetSsrc(ssrc);
+    SetUserId(userId);
+    SetInfo(info);
 }
 
 McpttQueuedUserInfo::~McpttQueuedUserInfo()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 uint32_t
-McpttQueuedUserInfo::Deserialize (Buffer::Iterator& buff)
+McpttQueuedUserInfo::Deserialize(Buffer::Iterator& buff)
 {
-  NS_LOG_FUNCTION (this << &buff);
+    NS_LOG_FUNCTION(this << &buff);
 
-  uint32_t bytesRead = 0;
+    uint32_t bytesRead = 0;
 
-  NS_LOG_LOGIC ("McpttQueuedUserInfo deserializing...");
+    NS_LOG_LOGIC("McpttQueuedUserInfo deserializing...");
 
-  McpttFloorMsgFieldQueuedUserId userId;
-  McpttFloorMsgFieldQueuePositionInfo info;
+    McpttFloorMsgFieldQueuedUserId userId;
+    McpttFloorMsgFieldQueuePositionInfo info;
 
-  uint32_t ssrc = buff.ReadNtohU32 ();
-  bytesRead += 4;
+    uint32_t ssrc = buff.ReadNtohU32();
+    bytesRead += 4;
 
-  NS_LOG_LOGIC ("McpttQueuedUserInfo read four bytes (ssrc=" << ssrc << ").");
+    NS_LOG_LOGIC("McpttQueuedUserInfo read four bytes (ssrc=" << ssrc << ").");
 
-  bytesRead += userId.Deserialize (buff);
-  bytesRead += info.Deserialize (buff);
+    bytesRead += userId.Deserialize(buff);
+    bytesRead += info.Deserialize(buff);
 
-  SetSsrc (ssrc);
-  SetUserId (userId);
-  SetInfo (info);
+    SetSsrc(ssrc);
+    SetUserId(userId);
+    SetInfo(info);
 
-  return bytesRead;
+    return bytesRead;
 }
 
 uint32_t
 McpttQueuedUserInfo::GetSerializedSize() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  uint32_t size = 0;
-  McpttFloorMsgFieldQueuedUserId userId = GetUserId ();
-  McpttFloorMsgFieldQueuePositionInfo info = GetInfo ();
+    uint32_t size = 0;
+    McpttFloorMsgFieldQueuedUserId userId = GetUserId();
+    McpttFloorMsgFieldQueuePositionInfo info = GetInfo();
 
-  size += 4; // 4 bytes for the SSRC.
-  size += userId.GetSerializedSize ();
-  size += info.GetSerializedSize ();
+    size += 4; // 4 bytes for the SSRC.
+    size += userId.GetSerializedSize();
+    size += info.GetSerializedSize();
 
-  NS_LOG_LOGIC ("McpttQueuedUserInfo serialized size = " << size << " bytes.");
+    NS_LOG_LOGIC("McpttQueuedUserInfo serialized size = " << size << " bytes.");
 
-  return size;
+    return size;
 }
 
 TypeId
 McpttQueuedUserInfo::GetInstanceTypeId() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return McpttQueuedUserInfo::GetTypeId ();
+    return McpttQueuedUserInfo::GetTypeId();
 }
 
 void
-McpttQueuedUserInfo::Print (std::ostream& os) const
+McpttQueuedUserInfo::Print(std::ostream& os) const
 {
-  NS_LOG_FUNCTION (this << &os);
+    NS_LOG_FUNCTION(this << &os);
 
-  uint32_t ssrc = GetSsrc ();
-  McpttFloorMsgFieldQueuedUserId userId = GetUserId ();
-  McpttFloorMsgFieldQueuePositionInfo info = GetInfo ();
+    uint32_t ssrc = GetSsrc();
+    McpttFloorMsgFieldQueuedUserId userId = GetUserId();
+    McpttFloorMsgFieldQueuePositionInfo info = GetInfo();
 
-  os << "McpttQueuedUserInfo(";
-  os << "ssrc=" << ssrc << ";";
-  os << userId << ";";
-  os << info;
-  os << ")";
+    os << "McpttQueuedUserInfo(";
+    os << "ssrc=" << ssrc << ";";
+    os << userId << ";";
+    os << info;
+    os << ")";
 }
 
 void
-McpttQueuedUserInfo::Serialize (Buffer::Iterator& buff) const
+McpttQueuedUserInfo::Serialize(Buffer::Iterator& buff) const
 {
-  NS_LOG_FUNCTION (this << &buff);
+    NS_LOG_FUNCTION(this << &buff);
 
-  NS_LOG_LOGIC ("McpttQueuedUserInfo serializing...");
+    NS_LOG_LOGIC("McpttQueuedUserInfo serializing...");
 
-  uint32_t ssrc = GetSsrc ();
-  McpttFloorMsgFieldQueuedUserId userId = GetUserId ();
-  McpttFloorMsgFieldQueuePositionInfo info = GetInfo ();
+    uint32_t ssrc = GetSsrc();
+    McpttFloorMsgFieldQueuedUserId userId = GetUserId();
+    McpttFloorMsgFieldQueuePositionInfo info = GetInfo();
 
-  buff.WriteHtonU32 (ssrc);
+    buff.WriteHtonU32(ssrc);
 
-  NS_LOG_LOGIC ("McpttQueuedUserInfo wrote four bytes (ssrc=" << ssrc << ").");
+    NS_LOG_LOGIC("McpttQueuedUserInfo wrote four bytes (ssrc=" << ssrc << ").");
 
-  userId.Serialize (buff);
-  info.Serialize (buff);
+    userId.Serialize(buff);
+    info.Serialize(buff);
 }
 
 McpttFloorMsgFieldQueuePositionInfo
 McpttQueuedUserInfo::GetInfo() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_info;
+    return m_info;
 }
 
 uint32_t
 McpttQueuedUserInfo::GetSsrc() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_ssrc;
+    return m_ssrc;
 }
 
 McpttFloorMsgFieldQueuedUserId
 McpttQueuedUserInfo::GetUserId() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_userId;
+    return m_userId;
 }
 
 void
-McpttQueuedUserInfo::SetInfo (const McpttFloorMsgFieldQueuePositionInfo& info)
+McpttQueuedUserInfo::SetInfo(const McpttFloorMsgFieldQueuePositionInfo& info)
 {
-  NS_LOG_FUNCTION (this << info);
+    NS_LOG_FUNCTION(this << info);
 
-  m_info = info;
+    m_info = info;
 }
 
 void
-McpttQueuedUserInfo::SetSsrc (uint32_t ssrc)
+McpttQueuedUserInfo::SetSsrc(uint32_t ssrc)
 {
-  NS_LOG_FUNCTION (this << ssrc);
+    NS_LOG_FUNCTION(this << ssrc);
 
-  m_ssrc = ssrc;
+    m_ssrc = ssrc;
 }
 
 void
-McpttQueuedUserInfo::SetUserId (const McpttFloorMsgFieldQueuedUserId& userId)
+McpttQueuedUserInfo::SetUserId(const McpttFloorMsgFieldQueuedUserId& userId)
 {
-  NS_LOG_FUNCTION (this << userId);
+    NS_LOG_FUNCTION(this << userId);
 
-  m_userId = userId;
+    m_userId = userId;
 }
 
 std::ostream&
-operator<< (std::ostream& os, const McpttQueuedUserInfo& info)
+operator<<(std::ostream& os, const McpttQueuedUserInfo& info)
 {
-  NS_LOG_FUNCTION (&os << &info);
+    NS_LOG_FUNCTION(&os << &info);
 
-  info.Print (os);
+    info.Print(os);
 
-  return os;
+    return os;
 }
 
 } // namespace psc
 } // namespace ns3
-

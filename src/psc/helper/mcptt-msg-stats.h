@@ -32,15 +32,18 @@
 #ifndef MCPTT_MSG_STATS_H
 #define MCPTT_MSG_STATS_H
 
-#include <fstream>
-#include <ns3/object.h>
 #include <ns3/mcptt-msg.h>
 #include <ns3/mcptt-ptt-app.h>
+#include <ns3/object.h>
 #include <ns3/type-id.h>
 
-namespace ns3 {
+#include <fstream>
 
-namespace psc {
+namespace ns3
+{
+
+namespace psc
+{
 
 /**
  * \ingroup psc
@@ -49,85 +52,95 @@ namespace psc {
  */
 class McpttMsgStats : public Object
 {
-public:
-  /**
-   * Gets the type ID of the McpttMsgStats class.
-   * \returns The type ID.
-   */
-  static TypeId GetTypeId (void);
-  /**
-   * Creates an instance of the McpttMsgStats class.
-   */
-  McpttMsgStats (void);
-  /**
-   * \brief The destructor of the McpttMsgStats class.
-   */
-  virtual ~McpttMsgStats (void);
-  /**
-   * The sink function for tracing the received messages.
-   * \param app The app.
-   * \param callId The callId.
-   * \param pkt The packet sent or received
-   * \param headerType TypeId of the first header in the packet
-   */
-  virtual void ReceiveRxTrace (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
-  /**
-   * The sink function for tracing the transmitted messages.
-   * \param app The app.
-   * \param callId The callId.
-   * \param pkt The packet sent or received
-   * \param headerType TypeId of the first header in the packet
-   */
-  virtual void ReceiveTxTrace (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
+  public:
+    /**
+     * Gets the type ID of the McpttMsgStats class.
+     * \returns The type ID.
+     */
+    static TypeId GetTypeId(void);
+    /**
+     * Creates an instance of the McpttMsgStats class.
+     */
+    McpttMsgStats(void);
+    /**
+     * \brief The destructor of the McpttMsgStats class.
+     */
+    virtual ~McpttMsgStats(void);
+    /**
+     * The sink function for tracing the received messages.
+     * \param app The app.
+     * \param callId The callId.
+     * \param pkt The packet sent or received
+     * \param headerType TypeId of the first header in the packet
+     */
+    virtual void ReceiveRxTrace(Ptr<const Application> app,
+                                uint16_t callId,
+                                Ptr<const Packet> pkt,
+                                const TypeId& headerType);
+    /**
+     * The sink function for tracing the transmitted messages.
+     * \param app The app.
+     * \param callId The callId.
+     * \param pkt The packet sent or received
+     * \param headerType TypeId of the first header in the packet
+     */
+    virtual void ReceiveTxTrace(Ptr<const Application> app,
+                                uint16_t callId,
+                                Ptr<const Packet> pkt,
+                                const TypeId& headerType);
 
-protected:
-  /**
-   * Writes to the trace.
-   * \param app The app.
-   * \param callId The callId.
-   * \param pkt The packet sent or received
-   * \param headerType TypeId of the first header in the packet
-   * \param rx The flag that indicates if an RX or TX should be traced.
-   */
-  virtual void Trace (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType, bool rx);
+  protected:
+    /**
+     * Writes to the trace.
+     * \param app The app.
+     * \param callId The callId.
+     * \param pkt The packet sent or received
+     * \param headerType TypeId of the first header in the packet
+     * \param rx The flag that indicates if an RX or TX should be traced.
+     */
+    virtual void Trace(Ptr<const Application> app,
+                       uint16_t callId,
+                       Ptr<const Packet> pkt,
+                       const TypeId& headerType,
+                       bool rx);
 
-private:
-  /**
-   * Deserialize the McpttCallMsg header from the packet.  A base class
-   * pointer is returned, although the correct subclass is deserialized from
-   * the packet.  Returning a raw pointer instead of a C++ reference avoids
-   * slicing and lifecycle issues on the header object.
-   *
-   * The caller is responsible for deleting the returned header.
-   *
-   * \param pkt the packet from which to deserialize the header
-   * \return pointer to the deserialized header object
-   */
-  McpttCallMsg* ResolveCallMsgType (Ptr<const Packet> pkt);
-  /**
-   * Deserialize the McpttFloorMsg header from the packet.  A base class
-   * pointer is returned, although the correct subclass is deserialized from
-   * the packet.  Returning a raw pointer instead of a C++ reference avoids
-   * slicing and lifecycle issues on the header object.
-   *
-   * The caller is responsible for deleting the returned header.
-   *
-   * \param pkt the packet from which to deserialize the header
-   * \return pointer to the deserialized header object
-   */
-  McpttFloorMsg* ResolveFloorMsgType (Ptr<const Packet> pkt);
+  private:
+    /**
+     * Deserialize the McpttCallMsg header from the packet.  A base class
+     * pointer is returned, although the correct subclass is deserialized from
+     * the packet.  Returning a raw pointer instead of a C++ reference avoids
+     * slicing and lifecycle issues on the header object.
+     *
+     * The caller is responsible for deleting the returned header.
+     *
+     * \param pkt the packet from which to deserialize the header
+     * \return pointer to the deserialized header object
+     */
+    McpttCallMsg* ResolveCallMsgType(Ptr<const Packet> pkt);
+    /**
+     * Deserialize the McpttFloorMsg header from the packet.  A base class
+     * pointer is returned, although the correct subclass is deserialized from
+     * the packet.  Returning a raw pointer instead of a C++ reference avoids
+     * slicing and lifecycle issues on the header object.
+     *
+     * The caller is responsible for deleting the returned header.
+     *
+     * \param pkt the packet from which to deserialize the header
+     * \return pointer to the deserialized header object
+     */
+    McpttFloorMsg* ResolveFloorMsgType(Ptr<const Packet> pkt);
 
-  bool m_callControl; //!< The flag that indicates if call control messages should be included.
-  bool m_firstMsg; //!< Flag that indicates if no message has been traced yet.
-  bool m_floorControl; //!< The flag that indicates if floor control messages should be included.
-  bool m_includeMsgContent; //!< The flag that indicates if the message contents should be included.
-  bool m_media; //!< The flag that indicates if media messages should be included.
-  std::string m_outputFileName; //!< The file name of the trace file.
-  std::ofstream m_outputFile; //!< The file stream object of trace file
+    bool m_callControl;  //!< The flag that indicates if call control messages should be included.
+    bool m_firstMsg;     //!< Flag that indicates if no message has been traced yet.
+    bool m_floorControl; //!< The flag that indicates if floor control messages should be included.
+    bool m_includeMsgContent;     //!< The flag that indicates if the message contents should be
+                                  //!< included.
+    bool m_media;                 //!< The flag that indicates if media messages should be included.
+    std::string m_outputFileName; //!< The file name of the trace file.
+    std::ofstream m_outputFile;   //!< The file stream object of trace file
 };
 
 } // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_MSG_STATS_H */
-

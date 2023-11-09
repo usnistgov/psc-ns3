@@ -33,271 +33,298 @@
  * subject to copyright protection within the United States.
  */
 
-#include <algorithm>
-#include "ns3/log.h"
-#include "ns3/uinteger.h"
-#include "ns3/vector.h"
-#include "ns3/mobility-model.h"
-#include "ns3/simulator.h"
-
 #include "psc-scenario-trace-helper.h"
 
-namespace ns3 {
+#include "ns3/log.h"
+#include "ns3/mobility-model.h"
+#include "ns3/simulator.h"
+#include "ns3/uinteger.h"
+#include "ns3/vector.h"
 
-NS_LOG_COMPONENT_DEFINE ("PscScenarioTraceHelper");
+#include <algorithm>
 
-namespace psc {
+namespace ns3
+{
 
-NS_OBJECT_ENSURE_REGISTERED (PscScenarioTraceHelper);
+NS_LOG_COMPONENT_DEFINE("PscScenarioTraceHelper");
+
+namespace psc
+{
+
+NS_OBJECT_ENSURE_REGISTERED(PscScenarioTraceHelper);
 
 uint16_t PscScenarioTraceHelper::m_outputPrecision = 11;
 
-PscScenarioTraceHelper::PscScenarioTraceHelper () :
-  m_scenarioDefinition (nullptr),
-  m_areasOutputStreamWrapper (nullptr),
-  m_structuresOutputStreamWrapper (nullptr),
-  m_nodesOutputStreamWrapper (nullptr),
-  m_eventsOutputStreamWrapper (nullptr),
-  m_configOutputStreamWrapper (nullptr)
+PscScenarioTraceHelper::PscScenarioTraceHelper()
+    : m_scenarioDefinition(nullptr),
+      m_areasOutputStreamWrapper(nullptr),
+      m_structuresOutputStreamWrapper(nullptr),
+      m_nodesOutputStreamWrapper(nullptr),
+      m_eventsOutputStreamWrapper(nullptr),
+      m_configOutputStreamWrapper(nullptr)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-PscScenarioTraceHelper::PscScenarioTraceHelper (Ptr<PscScenarioDefinition> scenarioDefinition)
+PscScenarioTraceHelper::PscScenarioTraceHelper(Ptr<PscScenarioDefinition> scenarioDefinition)
 {
-  NS_LOG_FUNCTION (this << scenarioDefinition);
-  m_scenarioDefinition = scenarioDefinition;
+    NS_LOG_FUNCTION(this << scenarioDefinition);
+    m_scenarioDefinition = scenarioDefinition;
 }
 
 PscScenarioTraceHelper::~PscScenarioTraceHelper()
 {
-  NS_LOG_FUNCTION (this);
-  m_scenarioDefinition = nullptr;
-  m_areasOutputStreamWrapper = nullptr;
-  m_structuresOutputStreamWrapper = nullptr;
-  m_nodesOutputStreamWrapper = nullptr;
-  m_eventsOutputStreamWrapper = nullptr;
-  m_configOutputStreamWrapper = nullptr;
+    NS_LOG_FUNCTION(this);
+    m_scenarioDefinition = nullptr;
+    m_areasOutputStreamWrapper = nullptr;
+    m_structuresOutputStreamWrapper = nullptr;
+    m_nodesOutputStreamWrapper = nullptr;
+    m_eventsOutputStreamWrapper = nullptr;
+    m_configOutputStreamWrapper = nullptr;
 }
 
 TypeId
 PscScenarioTraceHelper::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::psc::PscScenarioTraceHelper")
-    .SetParent<Object> ()
-    .AddConstructor<PscScenarioTraceHelper> ()
-    .AddAttribute ("OutputPrecision",
-                   "Precision to use when printing decimal numbers (i.e., the timestamp), including the digits for the integer part",
-                   UintegerValue (11),
-                   MakeUintegerAccessor (
-                     &PscScenarioTraceHelper::SetOutputPrecision,
-                     &PscScenarioTraceHelper::GetOutputPrecision),
-                   MakeUintegerChecker<uint16_t> ())
-  ;
+    static TypeId tid =
+        TypeId("ns3::psc::PscScenarioTraceHelper")
+            .SetParent<Object>()
+            .AddConstructor<PscScenarioTraceHelper>()
+            .AddAttribute("OutputPrecision",
+                          "Precision to use when printing decimal numbers (i.e., the timestamp), "
+                          "including the digits for the integer part",
+                          UintegerValue(11),
+                          MakeUintegerAccessor(&PscScenarioTraceHelper::SetOutputPrecision,
+                                               &PscScenarioTraceHelper::GetOutputPrecision),
+                          MakeUintegerChecker<uint16_t>());
 
-  return tid;
+    return tid;
 }
 
 void
-PscScenarioTraceHelper::EnableScenarioTraces ()
+PscScenarioTraceHelper::EnableScenarioTraces()
 {
-  NS_LOG_FUNCTION (this);
-  EnableAreasTrace ();
-  EnableStructuresTrace ();
-  EnableNodesTrace ();
-  EnableEventsTrace ();
+    NS_LOG_FUNCTION(this);
+    EnableAreasTrace();
+    EnableStructuresTrace();
+    EnableNodesTrace();
+    EnableEventsTrace();
 }
 
 void
-PscScenarioTraceHelper::EnableAreasTrace ()
+PscScenarioTraceHelper::EnableAreasTrace()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  NS_ASSERT_MSG (!m_areasOutputStreamWrapper, "Make sure to call PscScenarioTraceHelper::EnableAreasTrace () only once");
+    NS_ASSERT_MSG(!m_areasOutputStreamWrapper,
+                  "Make sure to call PscScenarioTraceHelper::EnableAreasTrace () only once");
 
-  m_areasOutputStreamWrapper = Create<OutputStreamWrapper> (m_scenarioDefinition->GetName () + "-areas.txt", std::ios::out);
+    m_areasOutputStreamWrapper =
+        Create<OutputStreamWrapper>(m_scenarioDefinition->GetName() + "-areas.txt", std::ios::out);
 
-  (*m_areasOutputStreamWrapper->GetStream ()).precision (m_outputPrecision);
+    (*m_areasOutputStreamWrapper->GetStream()).precision(m_outputPrecision);
 
-  std::map<PscScenarioDefinition::AreaId, PscScenarioDefinition::AreaInfo> areas = m_scenarioDefinition->GetAreas ();
-  std::map<PscScenarioDefinition::AreaId, PscScenarioDefinition::AreaInfo>::iterator it;
+    std::map<PscScenarioDefinition::AreaId, PscScenarioDefinition::AreaInfo> areas =
+        m_scenarioDefinition->GetAreas();
+    std::map<PscScenarioDefinition::AreaId, PscScenarioDefinition::AreaInfo>::iterator it;
 
-  //print header line
-  *m_areasOutputStreamWrapper->GetStream () << "ID\tName\txMin\txMax\tyMin\tyMax" << std::endl;
+    // print header line
+    *m_areasOutputStreamWrapper->GetStream() << "ID\tName\txMin\txMax\tyMin\tyMax" << std::endl;
 
-  for (it = areas.begin (); it != areas.end (); it++)
+    for (it = areas.begin(); it != areas.end(); it++)
     {
-      //Fix the names in case there are spaces for easier parsing of the trace file
-      std::string nameFixed;
-      std::replace_copy (it->second.name.begin (), it->second.name.end (), std::back_inserter<std::string> (nameFixed), ' ', '_');
-      *m_areasOutputStreamWrapper->GetStream () << it->first
-                                                << "\t" << nameFixed
-                                                << "\t" << it->second.area.xMin
-                                                << "\t" << it->second.area.xMax
-                                                << "\t" << it->second.area.yMin
-                                                << "\t" << it->second.area.yMax << std::endl;
+        // Fix the names in case there are spaces for easier parsing of the trace file
+        std::string nameFixed;
+        std::replace_copy(it->second.name.begin(),
+                          it->second.name.end(),
+                          std::back_inserter<std::string>(nameFixed),
+                          ' ',
+                          '_');
+        *m_areasOutputStreamWrapper->GetStream()
+            << it->first << "\t" << nameFixed << "\t" << it->second.area.xMin << "\t"
+            << it->second.area.xMax << "\t" << it->second.area.yMin << "\t" << it->second.area.yMax
+            << std::endl;
     }
 
-  m_areasOutputStreamWrapper->GetStream ()->flush ();
+    m_areasOutputStreamWrapper->GetStream()->flush();
 }
 
 void
-PscScenarioTraceHelper::EnableStructuresTrace ()
+PscScenarioTraceHelper::EnableStructuresTrace()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  NS_ASSERT_MSG (!m_structuresOutputStreamWrapper, "Make sure to call PscScenarioTraceHelper::EnableStructuresTrace () only once");
+    NS_ASSERT_MSG(!m_structuresOutputStreamWrapper,
+                  "Make sure to call PscScenarioTraceHelper::EnableStructuresTrace () only once");
 
-  m_structuresOutputStreamWrapper = Create<OutputStreamWrapper> (m_scenarioDefinition->GetName () + "-structures.txt", std::ios::out);
+    m_structuresOutputStreamWrapper =
+        Create<OutputStreamWrapper>(m_scenarioDefinition->GetName() + "-structures.txt",
+                                    std::ios::out);
 
-  (*m_structuresOutputStreamWrapper->GetStream ()).precision (m_outputPrecision);
+    (*m_structuresOutputStreamWrapper->GetStream()).precision(m_outputPrecision);
 
-  //print header line
-  *m_structuresOutputStreamWrapper->GetStream () << "ID\tName\txMin\txMax\tyMin\tyMax\tzMin\tzMax" << std::endl;
+    // print header line
+    *m_structuresOutputStreamWrapper->GetStream()
+        << "ID\tName\txMin\txMax\tyMin\tyMax\tzMin\tzMax" << std::endl;
 
-  //loop through the structures
-  std::map<PscScenarioDefinition::StructureId, PscScenarioDefinition::StructureInfo> structures = m_scenarioDefinition->GetStructures ();
-  std::map<PscScenarioDefinition::StructureId, PscScenarioDefinition::StructureInfo>::iterator it;
-  for (it = structures.begin (); it != structures.end (); it++)
+    // loop through the structures
+    std::map<PscScenarioDefinition::StructureId, PscScenarioDefinition::StructureInfo> structures =
+        m_scenarioDefinition->GetStructures();
+    std::map<PscScenarioDefinition::StructureId, PscScenarioDefinition::StructureInfo>::iterator it;
+    for (it = structures.begin(); it != structures.end(); it++)
     {
-      PscScenarioDefinition::StructureInfo info = it->second;
-      //loop through the buildings
-      for (uint32_t i = 0; i < info.buildings.GetN (); i++)
+        PscScenarioDefinition::StructureInfo info = it->second;
+        // loop through the buildings
+        for (uint32_t i = 0; i < info.buildings.GetN(); i++)
         {
-          //Fix the names in case there are spaces for easier parsing of the trace file
-          std::string nameFixed;
-          std::replace_copy (it->second.name.begin (), it->second.name.end (), std::back_inserter<std::string> (nameFixed), ' ', '_');
-          *m_structuresOutputStreamWrapper->GetStream () << it->first
-                                                         << " " << nameFixed
-                                                         << "\t" << info.buildings.Get (i)->GetBoundaries ().xMin
-                                                         << "\t" << info.buildings.Get (i)->GetBoundaries ().xMax
-                                                         << "\t" << info.buildings.Get (i)->GetBoundaries ().yMin
-                                                         << "\t" << info.buildings.Get (i)->GetBoundaries ().yMax
-                                                         << "\t" << info.buildings.Get (i)->GetBoundaries ().zMin
-                                                         << "\t" << info.buildings.Get (i)->GetBoundaries ().zMax
-                                                         << std::endl;
+            // Fix the names in case there are spaces for easier parsing of the trace file
+            std::string nameFixed;
+            std::replace_copy(it->second.name.begin(),
+                              it->second.name.end(),
+                              std::back_inserter<std::string>(nameFixed),
+                              ' ',
+                              '_');
+            *m_structuresOutputStreamWrapper->GetStream()
+                << it->first << " " << nameFixed << "\t"
+                << info.buildings.Get(i)->GetBoundaries().xMin << "\t"
+                << info.buildings.Get(i)->GetBoundaries().xMax << "\t"
+                << info.buildings.Get(i)->GetBoundaries().yMin << "\t"
+                << info.buildings.Get(i)->GetBoundaries().yMax << "\t"
+                << info.buildings.Get(i)->GetBoundaries().zMin << "\t"
+                << info.buildings.Get(i)->GetBoundaries().zMax << std::endl;
         }
     }
 
-  m_structuresOutputStreamWrapper->GetStream ()->flush ();
+    m_structuresOutputStreamWrapper->GetStream()->flush();
 }
 
-
 void
-PscScenarioTraceHelper::EnableNodesTrace ()
+PscScenarioTraceHelper::EnableNodesTrace()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  NS_ASSERT_MSG (!m_nodesOutputStreamWrapper, "Make sure to call PscScenarioTraceHelper::EnableNodesTrace () only once");
+    NS_ASSERT_MSG(!m_nodesOutputStreamWrapper,
+                  "Make sure to call PscScenarioTraceHelper::EnableNodesTrace () only once");
 
-  m_nodesOutputStreamWrapper = Create<OutputStreamWrapper> (m_scenarioDefinition->GetName () + "-nodes.txt", std::ios::out);
+    m_nodesOutputStreamWrapper =
+        Create<OutputStreamWrapper>(m_scenarioDefinition->GetName() + "-nodes.txt", std::ios::out);
 
-  (*m_nodesOutputStreamWrapper->GetStream ()).precision (m_outputPrecision);
+    (*m_nodesOutputStreamWrapper->GetStream()).precision(m_outputPrecision);
 
-  //print header line
-  *m_nodesOutputStreamWrapper->GetStream () << "GroupID\tGroupName\tUID\tX\tY\tZ" << std::endl;
+    // print header line
+    *m_nodesOutputStreamWrapper->GetStream() << "GroupID\tGroupName\tUID\tX\tY\tZ" << std::endl;
 
-  //loop through the groups
-  std::map<PscScenarioDefinition::GroupId, PscScenarioDefinition::NodeGroupInfo> nodesInfo = m_scenarioDefinition->GetNodes ();
-  std::map<PscScenarioDefinition::GroupId, PscScenarioDefinition::NodeGroupInfo>::iterator it;
-  for (it = nodesInfo.begin (); it != nodesInfo.end (); it++)
+    // loop through the groups
+    std::map<PscScenarioDefinition::GroupId, PscScenarioDefinition::NodeGroupInfo> nodesInfo =
+        m_scenarioDefinition->GetNodes();
+    std::map<PscScenarioDefinition::GroupId, PscScenarioDefinition::NodeGroupInfo>::iterator it;
+    for (it = nodesInfo.begin(); it != nodesInfo.end(); it++)
     {
-      PscScenarioDefinition::NodeGroupInfo info = it->second;
-      //loop through the nodes
-      for (uint32_t i = 0; i < info.nodes.GetN (); i++)
+        PscScenarioDefinition::NodeGroupInfo info = it->second;
+        // loop through the nodes
+        for (uint32_t i = 0; i < info.nodes.GetN(); i++)
         {
-          //Fix the names in case there are spaces for easier parsing of the trace file
-          std::string nameFixed;
-          std::replace_copy (info.name.begin (), info.name.end (), std::back_inserter<std::string> (nameFixed), ' ', '_');
-          Vector position =  info.nodes.Get (i)->GetObject<MobilityModel> ()->GetPosition ();
-          *m_nodesOutputStreamWrapper->GetStream () << it->first
-                                                    << "\t" << nameFixed
-                                                    << "\t" << info.nodes.Get (i)->GetId ()
-                                                    << "\t" << position.x
-                                                    << "\t" << position.y
-                                                    << "\t" << position.z << std::endl;
+            // Fix the names in case there are spaces for easier parsing of the trace file
+            std::string nameFixed;
+            std::replace_copy(info.name.begin(),
+                              info.name.end(),
+                              std::back_inserter<std::string>(nameFixed),
+                              ' ',
+                              '_');
+            Vector position = info.nodes.Get(i)->GetObject<MobilityModel>()->GetPosition();
+            *m_nodesOutputStreamWrapper->GetStream()
+                << it->first << "\t" << nameFixed << "\t" << info.nodes.Get(i)->GetId() << "\t"
+                << position.x << "\t" << position.y << "\t" << position.z << std::endl;
         }
     }
 
-  m_nodesOutputStreamWrapper->GetStream ()->flush ();
+    m_nodesOutputStreamWrapper->GetStream()->flush();
 }
 
 void
-PscScenarioTraceHelper::EnableEventsTrace ()
+PscScenarioTraceHelper::EnableEventsTrace()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  NS_ASSERT_MSG (!m_eventsOutputStreamWrapper, "Make sure to call PscScenarioTraceHelper::EnableEventsTrace () only once");
+    NS_ASSERT_MSG(!m_eventsOutputStreamWrapper,
+                  "Make sure to call PscScenarioTraceHelper::EnableEventsTrace () only once");
 
-  m_eventsOutputStreamWrapper = Create<OutputStreamWrapper> (m_scenarioDefinition->GetName () + "-events.txt", std::ios::out);
+    m_eventsOutputStreamWrapper =
+        Create<OutputStreamWrapper>(m_scenarioDefinition->GetName() + "-events.txt", std::ios::out);
 
-  (*m_eventsOutputStreamWrapper->GetStream ()).precision (m_outputPrecision);
+    (*m_eventsOutputStreamWrapper->GetStream()).precision(m_outputPrecision);
 
-  //print header line
-  *m_eventsOutputStreamWrapper->GetStream () << "ID\tName\tTime" << std::endl;
+    // print header line
+    *m_eventsOutputStreamWrapper->GetStream() << "ID\tName\tTime" << std::endl;
 
-  std::map<PscScenarioDefinition::KeyEventId, PscScenarioDefinition::KeyEventInfo> events = m_scenarioDefinition->GetKeyEvents ();
-  std::map<PscScenarioDefinition::KeyEventId, PscScenarioDefinition::KeyEventInfo>::iterator it;
-  for (it = events.begin (); it != events.end (); it++)
+    std::map<PscScenarioDefinition::KeyEventId, PscScenarioDefinition::KeyEventInfo> events =
+        m_scenarioDefinition->GetKeyEvents();
+    std::map<PscScenarioDefinition::KeyEventId, PscScenarioDefinition::KeyEventInfo>::iterator it;
+    for (it = events.begin(); it != events.end(); it++)
     {
-      //Fix the names in case there are spaces for easier parsing of the trace file
-      std::string nameFixed;
-      std::replace_copy (it->second.name.begin (), it->second.name.end (), std::back_inserter<std::string> (nameFixed), ' ', '_');
-      *m_eventsOutputStreamWrapper->GetStream () << it->first
-                                                 << "\t" << nameFixed
-                                                 << "\t" << it->second.time.GetSeconds () << std::endl;
+        // Fix the names in case there are spaces for easier parsing of the trace file
+        std::string nameFixed;
+        std::replace_copy(it->second.name.begin(),
+                          it->second.name.end(),
+                          std::back_inserter<std::string>(nameFixed),
+                          ' ',
+                          '_');
+        *m_eventsOutputStreamWrapper->GetStream()
+            << it->first << "\t" << nameFixed << "\t" << it->second.time.GetSeconds() << std::endl;
     }
 
-  m_eventsOutputStreamWrapper->GetStream ()->flush ();
+    m_eventsOutputStreamWrapper->GetStream()->flush();
 }
 
 void
-PscScenarioTraceHelper::EnableTimeTrace (const Time& reportTime)
+PscScenarioTraceHelper::EnableTimeTrace(const Time& reportTime)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  NS_ASSERT_MSG (!m_timeOutputStreamWrapper, "Make sure to call PscScenarioTraceHelper::EnableTimeTrace () only once");
+    NS_ASSERT_MSG(!m_timeOutputStreamWrapper,
+                  "Make sure to call PscScenarioTraceHelper::EnableTimeTrace () only once");
 
-  m_eventsOutputStreamWrapper = Create<OutputStreamWrapper> (m_scenarioDefinition->GetName () + "-time.txt", std::ios::out);
+    m_eventsOutputStreamWrapper =
+        Create<OutputStreamWrapper>(m_scenarioDefinition->GetName() + "-time.txt", std::ios::out);
 
-  (*m_eventsOutputStreamWrapper->GetStream ()).precision (m_outputPrecision);
+    (*m_eventsOutputStreamWrapper->GetStream()).precision(m_outputPrecision);
 
-  //print header line
-  *m_eventsOutputStreamWrapper->GetStream () << "Time(s)" << std::endl;
+    // print header line
+    *m_eventsOutputStreamWrapper->GetStream() << "Time(s)" << std::endl;
 
-  Simulator::Schedule (reportTime, &PscScenarioTraceHelper::TraceTime, this, reportTime);
+    Simulator::Schedule(reportTime, &PscScenarioTraceHelper::TraceTime, this, reportTime);
 
-  m_eventsOutputStreamWrapper->GetStream ()->flush ();
+    m_eventsOutputStreamWrapper->GetStream()->flush();
 }
 
 void
-PscScenarioTraceHelper::TraceTime (const Time& reportTime)
+PscScenarioTraceHelper::TraceTime(const Time& reportTime)
 {
-  NS_ASSERT_MSG (!m_timeOutputStreamWrapper, "Make sure to call PscScenarioTraceHelper::EnableTimeTrace ()");
+    NS_ASSERT_MSG(!m_timeOutputStreamWrapper,
+                  "Make sure to call PscScenarioTraceHelper::EnableTimeTrace ()");
 
-  *m_eventsOutputStreamWrapper->GetStream () << Simulator::Now ().GetSeconds () << std::endl;
+    *m_eventsOutputStreamWrapper->GetStream() << Simulator::Now().GetSeconds() << std::endl;
 
-  m_eventsOutputStreamWrapper->GetStream ()->flush ();
+    m_eventsOutputStreamWrapper->GetStream()->flush();
 
-  Simulator::Schedule (reportTime, &PscScenarioTraceHelper::TraceTime, this, reportTime);
+    Simulator::Schedule(reportTime, &PscScenarioTraceHelper::TraceTime, this, reportTime);
 }
 
 void
-PscScenarioTraceHelper::SetOutputPrecision (uint16_t outputPrecision)
+PscScenarioTraceHelper::SetOutputPrecision(uint16_t outputPrecision)
 {
-  NS_LOG_FUNCTION (this << outputPrecision);
+    NS_LOG_FUNCTION(this << outputPrecision);
 
-  m_outputPrecision = outputPrecision;
+    m_outputPrecision = outputPrecision;
 }
 
 uint16_t
 PscScenarioTraceHelper::GetOutputPrecision() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_outputPrecision;
+    return m_outputPrecision;
 }
 
 } // namespace psc
 } // namespace ns3
-

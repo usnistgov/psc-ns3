@@ -22,10 +22,12 @@
 #ifndef PARABOLIC_3D_ANTENNA_MODEL_H
 #define PARABOLIC_3D_ANTENNA_MODEL_H
 
-#include <ns3/object.h>
 #include "antenna-model.h"
 
-namespace ns3 {
+#include <ns3/object.h>
+
+namespace ns3
+{
 
 /**
  *
@@ -36,95 +38,94 @@ namespace ns3 {
  */
 class Parabolic3dAntennaModel : public AntennaModel
 {
-public:
-  // inherited from Object
-  static TypeId GetTypeId ();
+  public:
+    // inherited from Object
+    static TypeId GetTypeId();
 
-  // inherited from AntennaModel
-  virtual double GetGainDb (Angles a);
+    // inherited from AntennaModel
+    virtual double GetGainDb(Angles a);
 
-  /**
-   * Sets the horizontal beamwidth
-   * \param horizontalBeamwidthDegrees The horizontal beamwidth in degrees
-   */
-  void SetHorizontalBeamwidth (double horizontalBeamwidthDegrees);
+    /**
+     * Sets the horizontal beamwidth
+     * \param horizontalBeamwidthDegrees The horizontal beamwidth in degrees
+     */
+    void SetHorizontalBeamwidth(double horizontalBeamwidthDegrees);
 
-  /**
-   * Gets the horizontal beamwidth
-   * \return The horizontal beamwidth in degrees
-   */
-  double GetHorizontalBeamwidth () const;
+    /**
+     * Gets the horizontal beamwidth
+     * \return The horizontal beamwidth in degrees
+     */
+    double GetHorizontalBeamwidth() const;
 
-  /**
-   * Sets the orientation (azimuth)
-   * \param orientationDegrees The orientation (azimuth) in degrees
-   */
-  void SetOrientation (double orientationDegrees);
+    /**
+     * Sets the orientation (azimuth)
+     * \param orientationDegrees The orientation (azimuth) in degrees
+     */
+    void SetOrientation(double orientationDegrees);
 
-  /**
-   * Gets the orientation
-   * \return The orientation in degrees
-   */
-  double GetOrientation () const;
+    /**
+     * Gets the orientation
+     * \return The orientation in degrees
+     */
+    double GetOrientation() const;
 
-  /**
-   * Sets the vertical beamwidth
-   * \param verticalBeamwidthDegrees The vetical beamwidth in degrees
-   */
-  void SetVerticalBeamwidth (double verticalBeamwidthDegrees);
+    /**
+     * Sets the vertical beamwidth
+     * \param verticalBeamwidthDegrees The vetical beamwidth in degrees
+     */
+    void SetVerticalBeamwidth(double verticalBeamwidthDegrees);
 
-  /**
-   * Gets the vertical beamwidth
-   * \return The vertical beamwidth in degrees
-   */
-  double GetVerticalBeamwidth () const;
+    /**
+     * Gets the vertical beamwidth
+     * \return The vertical beamwidth in degrees
+     */
+    double GetVerticalBeamwidth() const;
 
-  /**
-   * Sets the electrical tilt
-   * \param electricalTiltDegrees The electrical tilt in degrees
-   */
-  void SetElectricalTilt (double electricalTiltDegrees);
+    /**
+     * Sets the electrical tilt
+     * \param electricalTiltDegrees The electrical tilt in degrees
+     */
+    void SetElectricalTilt(double electricalTiltDegrees);
 
-  /**
-   * Gets the electrical tilt
-   * \return The electrical tilt in degrees
-   */
-  double GetElectricalTilt () const;
+    /**
+     * Gets the electrical tilt
+     * \return The electrical tilt in degrees
+     */
+    double GetElectricalTilt() const;
 
-  /**
-   * Sets the mechanical tilt
-   * \param mechanicalTiltDegrees The mechinacal tilt in degrees
-   */
-  void SetMechanicalTilt (double mechanicalTiltDegrees);
+    /**
+     * Sets the mechanical tilt
+     * \param mechanicalTiltDegrees The mechinacal tilt in degrees
+     */
+    void SetMechanicalTilt(double mechanicalTiltDegrees);
 
-  /**
-   * Gets the mechanical tilt
-   * \return The mechanical tilt in degrees
-   */
-  double GetMechanicalTilt () const;
+    /**
+     * Gets the mechanical tilt
+     * \return The mechanical tilt in degrees
+     */
+    double GetMechanicalTilt() const;
 
-private:
-  //Computes the gain on horizontal plane
-  double GetHorizontalGainDb (Angles a);
-  //Computes the gain on the vertical plane
-  double GetVerticalGainDb (Angles a);
+  private:
+    // Computes the gain on horizontal plane
+    double GetHorizontalGainDb(Angles a);
+    // Computes the gain on the vertical plane
+    double GetVerticalGainDb(Angles a);
 
-  double m_hBeamwidthRadians;
+    double m_hBeamwidthRadians;
 
-  double m_orientationRadians;
+    double m_orientationRadians;
 
-  double m_maxHAttenuation;
+    double m_maxHAttenuation;
 
-  double m_vBeamwidthRadians;
+    double m_vBeamwidthRadians;
 
-  double m_eTiltRadians;
+    double m_eTiltRadians;
 
-  double m_mTiltRadians;
+    double m_mTiltRadians;
 
-  double m_maxVAttenuation;
-  
-  double m_boresightGain;
+    double m_maxVAttenuation;
 
+    double m_boresightGain;
 };
 
 } // namespace ns3

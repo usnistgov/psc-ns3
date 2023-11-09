@@ -19,9 +19,10 @@
  * originally authored by Marco Miozzo  <marco.miozzo@cttc.es>.
  */
 
+#include "lte-sl-harq-phy.h"
+
 #include <ns3/assert.h>
 #include <ns3/log.h>
-#include <ns3/lte-sl-harq-phy.h>
 
 namespace ns3
 {

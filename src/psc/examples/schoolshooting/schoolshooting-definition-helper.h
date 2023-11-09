@@ -36,22 +36,24 @@
 #ifndef SCHOOLSCHOOTING_DEFINITION_HELPER_H
 #define SCHOOLSCHOOTING_DEFINITION_HELPER_H
 
-#include <stdint.h>
-#include <string>
-#include <map>
+#include "ns3/waypoint-mobility-model.h"
+#include <ns3/building-container.h>
+#include <ns3/node-container.h>
+#include <ns3/nstime.h>
 #include <ns3/object.h>
+#include <ns3/psc-scenario-definition.h>
 #include <ns3/ptr.h>
 #include <ns3/random-variable-stream.h>
-#include <ns3/node-container.h>
-#include <ns3/building-container.h>
 #include <ns3/traced-callback.h>
-#include <ns3/nstime.h>
-#include <ns3/psc-scenario-definition.h>
-#include "ns3/waypoint-mobility-model.h"
 
+#include <map>
+#include <stdint.h>
+#include <string>
 
-namespace ns3 {
-namespace psc {
+namespace ns3
+{
+namespace psc
+{
 
 /**
  * \ingroup pscincident
@@ -61,182 +63,185 @@ namespace psc {
  */
 class SchoolShootingDefinitionHelper : public Object
 {
-public:
-  /**
-   * Defines the 4 major areas in the incident
-   */
-  enum Areas: PscScenarioDefinition::AreaId
-  {
-    OUTER_PERIMETER_AREA,
-    INNER_PERIMETER_AREA,
-    STAGING_AREA,
-    UNIFIED_COMMAND_AREA
-  };
+  public:
+    /**
+     * Defines the 4 major areas in the incident
+     */
+    enum Areas : PscScenarioDefinition::AreaId
+    {
+        OUTER_PERIMETER_AREA,
+        INNER_PERIMETER_AREA,
+        STAGING_AREA,
+        UNIFIED_COMMAND_AREA
+    };
 
-  /**
-   * Defines the building structures
-   */
-  enum Structures: PscScenarioDefinition::StructureId
-  {
-    SCHOOL_BLD,
-    CLASSROOMS_BLD
-  };
+    /**
+     * Defines the building structures
+     */
+    enum Structures : PscScenarioDefinition::StructureId
+    {
+        SCHOOL_BLD,
+        CLASSROOMS_BLD
+    };
 
-  /**
-   * Defines major groups of users and assets
-   */
-  enum UserGroups: PscScenarioDefinition::GroupId
-  {
-    SWAT_TEAM_1,       //SWAT team 1 with 4 responders
-    SWAT_TEAM_2,       //SWAT team 2 with 4 responders
-    SWAT_TEAM_3,       //SWAT team 3 with 4 responders
-    SWAT_TEAM_4,       //SWAT team 4 with 4 responders
-    UC_TEAM,           //Unified command with 12 responders
-    UC_TEAM_VEHICLE,   //Mobile command unit
-    TASK_FORCE,        //68 personnel
-    TASK_FORCE_VEHICLES, //34 patrol cars
-    SA_VEHICLE,        //Mobile command unit for staging area
-    EMS,               //6 EMTs
-    EMS_VEHICLES,      //3 ambulances
-    FIRE,              //6 firefighters
-    FIRE_VEHICLES,     //2 fire trucks
-    HELICOPTER,        //1 helicopter
-    TRAFFIC_CAMERAS,   //4 traffic cameras
-    SCHOOL_CAMERAS,    //5 school cameras
-    OFFENDER,          //The offender
-    DEPLOYABLE_CAMERA //4 Deployable cameras
-  };
+    /**
+     * Defines major groups of users and assets
+     */
+    enum UserGroups : PscScenarioDefinition::GroupId
+    {
+        SWAT_TEAM_1,         // SWAT team 1 with 4 responders
+        SWAT_TEAM_2,         // SWAT team 2 with 4 responders
+        SWAT_TEAM_3,         // SWAT team 3 with 4 responders
+        SWAT_TEAM_4,         // SWAT team 4 with 4 responders
+        UC_TEAM,             // Unified command with 12 responders
+        UC_TEAM_VEHICLE,     // Mobile command unit
+        TASK_FORCE,          // 68 personnel
+        TASK_FORCE_VEHICLES, // 34 patrol cars
+        SA_VEHICLE,          // Mobile command unit for staging area
+        EMS,                 // 6 EMTs
+        EMS_VEHICLES,        // 3 ambulances
+        FIRE,                // 6 firefighters
+        FIRE_VEHICLES,       // 2 fire trucks
+        HELICOPTER,          // 1 helicopter
+        TRAFFIC_CAMERAS,     // 4 traffic cameras
+        SCHOOL_CAMERAS,      // 5 school cameras
+        OFFENDER,            // The offender
+        DEPLOYABLE_CAMERA    // 4 Deployable cameras
+    };
 
-  /**
-   * Defines timeline of major events
-   */
-  enum KeyEvents: PscScenarioDefinition::KeyEventId
-  {
-    E1_Incident_Start,
-    E2_TaskForce_Arrive,
-    E3_SWAT_Arrive,
-    E4_FireEMS_Arrive,
-    E5_UC_Setup,
-    E6_Perimeters_Ready,
-    E7_SWAT_Deploy,
-    E8_Offender_Found,
-    E9_Interdiction,
-    E10_Incident_Secured,
-    E11_EMS_Departure,
-    E12_Incident_End
-  };
+    /**
+     * Defines timeline of major events
+     */
+    enum KeyEvents : PscScenarioDefinition::KeyEventId
+    {
+        E1_Incident_Start,
+        E2_TaskForce_Arrive,
+        E3_SWAT_Arrive,
+        E4_FireEMS_Arrive,
+        E5_UC_Setup,
+        E6_Perimeters_Ready,
+        E7_SWAT_Deploy,
+        E8_Offender_Found,
+        E9_Interdiction,
+        E10_Incident_Secured,
+        E11_EMS_Departure,
+        E12_Incident_End
+    };
 
-  /**
-   * Default constructor.
-   */
-  SchoolShootingDefinitionHelper ();
+    /**
+     * Default constructor.
+     */
+    SchoolShootingDefinitionHelper();
 
-  /**
-   * Default destructor.
-   */
-  ~SchoolShootingDefinitionHelper ();
+    /**
+     * Default destructor.
+     */
+    ~SchoolShootingDefinitionHelper();
 
-  /**
-   * Get the TypeId for this class.
-   * \return The object TypeId
-   */
-  static TypeId GetTypeId (void);
+    /**
+     * Get the TypeId for this class.
+     * \return The object TypeId
+     */
+    static TypeId GetTypeId(void);
 
-  /**
-   * Assign fixed stream numbers to random variables. 
-   * \param stream The first stream index to use
-   * \return The number of stream indices assigned
-   */
-  int64_t AssignStreams (int64_t stream);
+    /**
+     * Assign fixed stream numbers to random variables.
+     * \param stream The first stream index to use
+     * \return The number of stream indices assigned
+     */
+    int64_t AssignStreams(int64_t stream);
 
-  /**
-   * Creates a PscScenarioDefinition based on current settings
-   * \param name Name of the scenario (used as prefix for traces)
-   */
-  void CreateScenario (std::string name);
-  
-  /**
-   * Returns the scenario definition
-   * \return The scenario definition
-   */
-  Ptr<PscScenarioDefinition> GetScenarioDefinition () const;
-  
-private:
-  /**
-   * Initialize the areas
-   */
-  void InitAreas ();
+    /**
+     * Creates a PscScenarioDefinition based on current settings
+     * \param name Name of the scenario (used as prefix for traces)
+     */
+    void CreateScenario(std::string name);
 
-  /**
-   * Initialize the buildings
-   */
-  void InitStructures ();
+    /**
+     * Returns the scenario definition
+     * \return The scenario definition
+     */
+    Ptr<PscScenarioDefinition> GetScenarioDefinition() const;
 
-  /**
-   * Initialize the key events occurring in the scenario
-   */
-  void InitKeyEvents ();
+  private:
+    /**
+     * Initialize the areas
+     */
+    void InitAreas();
 
-  /**
-   * Initialize the nodes and their mobility
-   */
-  void InitNodesAndMobility ();
+    /**
+     * Initialize the buildings
+     */
+    void InitStructures();
 
-  /**
-   * Pointer to the scenario definition
-   */
-  Ptr<PscScenarioDefinition> m_scenarioDefinition;  
-    
-  /**
-   * Move a node to the given position starting at the given time, then wait
-   * for the given amount of time.
-   *
-   * \param waypointMm The way point mobility model associated with the node
-   * \param t The time to start moving
-   * \param pos The destination
-   * \param waitTime Time to wait at the given position
-   * \return The time the node should start moving after waiting
-  */
-  double AddWayPoint (Ptr<WaypointMobilityModel> waypointMm, double t, Vector pos, double waitTime);
+    /**
+     * Initialize the key events occurring in the scenario
+     */
+    void InitKeyEvents();
 
-  /**
-   * Initialize Unified Command center assets and personnel
-   */
-  void InitializeUC ();
+    /**
+     * Initialize the nodes and their mobility
+     */
+    void InitNodesAndMobility();
 
-  /**
-   * Initialize SWAT teams assets and personnel
-   */
-  void InitializeSwatTeams ();
+    /**
+     * Pointer to the scenario definition
+     */
+    Ptr<PscScenarioDefinition> m_scenarioDefinition;
 
-  /**
-   * Initialize Task Force assets and personnel
-   */
-  void InitializeTaskForce ();
+    /**
+     * Move a node to the given position starting at the given time, then wait
+     * for the given amount of time.
+     *
+     * \param waypointMm The way point mobility model associated with the node
+     * \param t The time to start moving
+     * \param pos The destination
+     * \param waitTime Time to wait at the given position
+     * \return The time the node should start moving after waiting
+     */
+    double AddWayPoint(Ptr<WaypointMobilityModel> waypointMm,
+                       double t,
+                       Vector pos,
+                       double waitTime);
 
-  /**
-   * Initialize Fire and EMS asssets and personnel
-   */
-  void InitializeFireEms ();
+    /**
+     * Initialize Unified Command center assets and personnel
+     */
+    void InitializeUC();
 
-  /**
-   * Initialize the Helicopter
-   */
-  void InitializeHelicopter ();
+    /**
+     * Initialize SWAT teams assets and personnel
+     */
+    void InitializeSwatTeams();
 
-  /**
-   * Initialize school and traffic cameras
-   */
-  void InitializeSchoolAndTrafficCameras ();
+    /**
+     * Initialize Task Force assets and personnel
+     */
+    void InitializeTaskForce();
 
-  /**
-   * Initialize the offender node
-   */
-  void InitializeOffender ();
+    /**
+     * Initialize Fire and EMS asssets and personnel
+     */
+    void InitializeFireEms();
 
-  Ptr<UniformRandomVariable> m_uniformRandomVariable; ///< Provides uniform random variables.
+    /**
+     * Initialize the Helicopter
+     */
+    void InitializeHelicopter();
 
-  bool m_createClassrooms; ///< Indicates if classrooms should be created
+    /**
+     * Initialize school and traffic cameras
+     */
+    void InitializeSchoolAndTrafficCameras();
+
+    /**
+     * Initialize the offender node
+     */
+    void InitializeOffender();
+
+    Ptr<UniformRandomVariable> m_uniformRandomVariable; ///< Provides uniform random variables.
+
+    bool m_createClassrooms; ///< Indicates if classrooms should be created
 
 }; // class PscScenarioHelper
 

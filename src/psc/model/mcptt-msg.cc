@@ -29,58 +29,58 @@
  * employees is not subject to copyright protection within the United States.
  */
 
+#include "mcptt-msg.h"
+
 #include <ns3/header.h>
 #include <ns3/log.h>
 #include <ns3/simple-ref-count.h>
 #include <ns3/type-id.h>
 
-#include "mcptt-msg.h"
+namespace ns3
+{
 
-namespace ns3 {
+NS_LOG_COMPONENT_DEFINE("McpttMsg");
 
-NS_LOG_COMPONENT_DEFINE ("McpttMsg");
+namespace psc
+{
 
-namespace psc {
-
-NS_OBJECT_ENSURE_REGISTERED (McpttMsg);
+NS_OBJECT_ENSURE_REGISTERED(McpttMsg);
 
 TypeId
 McpttMsg::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::psc::McpttMsg")
-    .SetParent<Header> ()
-  ;
+    static TypeId tid = TypeId("ns3::psc::McpttMsg").SetParent<Header>();
 
-  return tid;
+    return tid;
 }
 
 McpttMsg::~McpttMsg()
-{}
+{
+}
 
 TypeId
 McpttMsg::GetInstanceTypeId() const
 {
-  return McpttMsg::GetTypeId ();
+    return McpttMsg::GetTypeId();
 }
 
 bool
-McpttMsg::IsA (const TypeId& type) const
+McpttMsg::IsA(const TypeId& type) const
 {
-  NS_LOG_FUNCTION (this << type);
+    NS_LOG_FUNCTION(this << type);
 
-  TypeId myType = GetInstanceTypeId ();
+    TypeId myType = GetInstanceTypeId();
 
-  bool isA = (myType == type || myType.IsChildOf (type));
+    bool isA = (myType == type || myType.IsChildOf(type));
 
-  return isA;
+    return isA;
 }
 
 McpttMsg::McpttMsg()
     : Header()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 } // namespace psc
 } // namespace ns3
-

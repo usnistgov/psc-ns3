@@ -32,6 +32,8 @@
 #ifndef MCPTT_PUSHER_H
 #define MCPTT_PUSHER_H
 
+#include "mcptt-ptt-app.h"
+
 #include <ns3/event-id.h>
 #include <ns3/nstime.h>
 #include <ns3/object.h>
@@ -39,13 +41,14 @@
 #include <ns3/random-variable-stream.h>
 #include <ns3/traced-value.h>
 #include <ns3/type-id.h>
+
 #include <set>
 
-#include "mcptt-ptt-app.h"
+namespace ns3
+{
 
-namespace ns3 {
-
-namespace psc {
+namespace psc
+{
 
 /**
  * \ingroup mcptt
@@ -57,131 +60,133 @@ namespace psc {
  */
 class McpttPusher : public Object
 {
-public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId (void);
-  /**
-   * \brief Creates an instance of the McpttPusher class.
-   */
-  McpttPusher (void);
-  /**
-   * \brief The destructor of the McpttPusher class.
-   */
-  virtual ~McpttPusher (void);
-  /**
-   * \brief Indicates whether or not the pusher is in the "push" state.
-   * \returns True, if the pusher is pushing, or false otherwise.
-   */
-  virtual bool IsPushing (void) const;
-  /**
-   * Pushes the PTT app's button and enters the pushed state.
-   */
-  virtual void Push (void);
-  /**
-   * Enter the pushed state based on a callback.
-   */
-  virtual void NotifyPushed (void);
-  /**
-   * Releases the PTT app's button and enters the released state.
-   */
-  virtual void Release (void);
-  /**
-   * Enter the released state based on a callback.
-   */
-  virtual void NotifyReleased (void);
-  /**
-   * Schedules when the pusher will perform a push, based on random variable.
-   * This method will return false if there is already a scheduled push event.
-   * \return true if schedule was successful, false if not
-   */
-  virtual bool SchedulePush (void);
-  /**
-   * Schedules a specific delay after which the pusher will perform a push.
-   * This method will return false if there is already a scheduled push event.
-   * \param delay The amount of time from now that the pusher will perform the push.
-   * \return true if schedule was successful, false if not
-   */
-  virtual bool SchedulePush (const Time& delay);
-  /**
-   * Cancels any pending push event
-   * This method will return false if there was not a scheduled push event.
-   * \return true if cancel was successful, false if not
-   */
-  virtual bool CancelPush (void);
-  /**
-   * Schedules when the pusher will perform a release.
-   * This method will return false if there is already a scheduled release event.
-   * \return true if schedule was successful, false if not
-   */
-  virtual bool ScheduleRelease (void);
-  /**
-   * Schedules a specific delay after which the pusher will perform a release.
-   * This method will return false if there is already a scheduled release event.
-   * \param delay The amount of time from now that the pusher will perform the release.
-   * \return true if schedule was successful, false if not
-   */
-  virtual bool ScheduleRelease (const Time& delay);
-  /**
-   * Cancels any pending release event
-   * This method will return false if there was not a scheduled release event.
-   * \return true if cancel was successful, false if not
-   */
-  virtual bool CancelRelease (void);
-  /**
-   * \brief Starts pushing and releasing the PTT app's button.
-   */
-  virtual void Start (void);
-  /**
-   * \brief Stops pushing and releasing the PTT app's button.
-   * This method may be called multiple times consecutively without side effect.
-   */
-  virtual void Stop (void);
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId(void);
+    /**
+     * \brief Creates an instance of the McpttPusher class.
+     */
+    McpttPusher(void);
+    /**
+     * \brief The destructor of the McpttPusher class.
+     */
+    virtual ~McpttPusher(void);
+    /**
+     * \brief Indicates whether or not the pusher is in the "push" state.
+     * \returns True, if the pusher is pushing, or false otherwise.
+     */
+    virtual bool IsPushing(void) const;
+    /**
+     * Pushes the PTT app's button and enters the pushed state.
+     */
+    virtual void Push(void);
+    /**
+     * Enter the pushed state based on a callback.
+     */
+    virtual void NotifyPushed(void);
+    /**
+     * Releases the PTT app's button and enters the released state.
+     */
+    virtual void Release(void);
+    /**
+     * Enter the released state based on a callback.
+     */
+    virtual void NotifyReleased(void);
+    /**
+     * Schedules when the pusher will perform a push, based on random variable.
+     * This method will return false if there is already a scheduled push event.
+     * \return true if schedule was successful, false if not
+     */
+    virtual bool SchedulePush(void);
+    /**
+     * Schedules a specific delay after which the pusher will perform a push.
+     * This method will return false if there is already a scheduled push event.
+     * \param delay The amount of time from now that the pusher will perform the push.
+     * \return true if schedule was successful, false if not
+     */
+    virtual bool SchedulePush(const Time& delay);
+    /**
+     * Cancels any pending push event
+     * This method will return false if there was not a scheduled push event.
+     * \return true if cancel was successful, false if not
+     */
+    virtual bool CancelPush(void);
+    /**
+     * Schedules when the pusher will perform a release.
+     * This method will return false if there is already a scheduled release event.
+     * \return true if schedule was successful, false if not
+     */
+    virtual bool ScheduleRelease(void);
+    /**
+     * Schedules a specific delay after which the pusher will perform a release.
+     * This method will return false if there is already a scheduled release event.
+     * \param delay The amount of time from now that the pusher will perform the release.
+     * \return true if schedule was successful, false if not
+     */
+    virtual bool ScheduleRelease(const Time& delay);
+    /**
+     * Cancels any pending release event
+     * This method will return false if there was not a scheduled release event.
+     * \return true if cancel was successful, false if not
+     */
+    virtual bool CancelRelease(void);
+    /**
+     * \brief Starts pushing and releasing the PTT app's button.
+     */
+    virtual void Start(void);
+    /**
+     * \brief Stops pushing and releasing the PTT app's button.
+     * This method may be called multiple times consecutively without side effect.
+     */
+    virtual void Stop(void);
 
-protected:
-  /**
-   * \brief Disposes of the McpttPttApp instance.
-   */
-  virtual void DoDispose (void);
+  protected:
+    /**
+     * \brief Disposes of the McpttPttApp instance.
+     */
+    virtual void DoDispose(void);
 
-private:
-  /**
-   * The flag that indicates if the button should automatically be pushed/released.
-   */
-  bool m_automatic;
-  Ptr<RandomVariableStream> m_pttIatVariable; //!< The random variable used for automatic pushes.
-  Ptr<RandomVariableStream> m_pttDurationVariable; //!< The random variable used for automatic releases.
-  Ptr<McpttPttApp> m_pttApp; //!< A pointer to the PTT app.
-  TracedValue <bool> m_pushing; //!< A flag used to indicate if the pusher is in the "pushing" state.
-  EventId m_pushEvent; //!< EventId of most recently scheduled push event
-  EventId m_releaseEvent; //!< EventId of most recently scheduled release event
-  TracedCallback<uint32_t, Time> m_pttIatTrace; //!< The interarrival time trace.
-  TracedCallback<uint32_t, Time> m_pttDurationTrace; //!< The duration trace.
+  private:
+    /**
+     * The flag that indicates if the button should automatically be pushed/released.
+     */
+    bool m_automatic;
+    Ptr<RandomVariableStream> m_pttIatVariable; //!< The random variable used for automatic pushes.
+    Ptr<RandomVariableStream>
+        m_pttDurationVariable; //!< The random variable used for automatic releases.
+    Ptr<McpttPttApp> m_pttApp; //!< A pointer to the PTT app.
+    TracedValue<bool>
+        m_pushing;          //!< A flag used to indicate if the pusher is in the "pushing" state.
+    EventId m_pushEvent;    //!< EventId of most recently scheduled push event
+    EventId m_releaseEvent; //!< EventId of most recently scheduled release event
+    TracedCallback<uint32_t, Time> m_pttIatTrace;      //!< The interarrival time trace.
+    TracedCallback<uint32_t, Time> m_pttDurationTrace; //!< The duration trace.
 
-public:
-  /**
-   * \brief Gets the object with the button to push.
-   * \return The object with the button to push.
-   */
-  virtual Ptr<McpttPttApp> GetPttApp (void) const;
-  /**
-   * Sets the object with the button to push.
-   * \param pttApp The object with the button to push.
-   */
-  virtual void SetPttApp (Ptr<McpttPttApp> pttApp);
+  public:
+    /**
+     * \brief Gets the object with the button to push.
+     * \return The object with the button to push.
+     */
+    virtual Ptr<McpttPttApp> GetPttApp(void) const;
+    /**
+     * Sets the object with the button to push.
+     * \param pttApp The object with the button to push.
+     */
+    virtual void SetPttApp(Ptr<McpttPttApp> pttApp);
 
-protected:
-  /**
-   * \brief Sets the flag that indicates if the object is in the "push" state.
-   * \param pushing The flag.
-   */
-  virtual void SetPushing (bool pushing);
-  /**
-   * \brief Cancels all push-release events.
-   */
-  virtual void CancelEvents (void);
+  protected:
+    /**
+     * \brief Sets the flag that indicates if the object is in the "push" state.
+     * \param pushing The flag.
+     */
+    virtual void SetPushing(bool pushing);
+    /**
+     * \brief Cancels all push-release events.
+     */
+    virtual void CancelEvents(void);
 };
 
 } // namespace psc

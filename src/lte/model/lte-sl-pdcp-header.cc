@@ -33,7 +33,7 @@
  * subject to copyright protection within the United States.
  */
 
-#include "ns3/lte-sl-pdcp-header.h"
+#include "lte-sl-pdcp-header.h"
 
 #include "ns3/log.h"
 

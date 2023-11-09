@@ -29,148 +29,153 @@
  * employees is not subject to copyright protection within the United States.
  */
 
-#include <ns3/log.h>
-#include <ns3/object.h>
-#include <ns3/type-id.h>
-#include <ns3/uinteger.h>
-#include <ns3/sip-header.h>
-
-#include "mcptt-server-app.h"
-#include "mcptt-server-call.h"
-#include "mcptt-on-network-floor-arbitrator.h"
-
 #include "mcptt-server-call-machine.h"
 
-namespace ns3 {
+#include "mcptt-on-network-floor-arbitrator.h"
+#include "mcptt-server-app.h"
+#include "mcptt-server-call.h"
 
-NS_LOG_COMPONENT_DEFINE ("McpttServerCallMachine");
+#include <ns3/log.h>
+#include <ns3/object.h>
+#include <ns3/sip-header.h>
+#include <ns3/type-id.h>
+#include <ns3/uinteger.h>
 
-namespace psc {
+namespace ns3
+{
+
+NS_LOG_COMPONENT_DEFINE("McpttServerCallMachine");
+
+namespace psc
+{
 
 /** McpttServerCallMachine - begin **/
-NS_OBJECT_ENSURE_REGISTERED (McpttServerCallMachine);
+NS_OBJECT_ENSURE_REGISTERED(McpttServerCallMachine);
 
 TypeId
 McpttServerCallMachine::GetTypeId()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+    NS_LOG_FUNCTION_NOARGS();
 
-  static TypeId tid = TypeId ("ns3::psc::McpttServerCallMachine")
-    .SetParent<Object> ()
-  ;
+    static TypeId tid = TypeId("ns3::psc::McpttServerCallMachine").SetParent<Object>();
 
-  return tid;
+    return tid;
 }
 
 McpttServerCallMachine::McpttServerCallMachine()
     : Object()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 McpttServerCallMachine::~McpttServerCallMachine()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 TypeId
 McpttServerCallMachine::GetInstanceTypeId() const
 {
-  return McpttServerCallMachine::GetTypeId ();
+    return McpttServerCallMachine::GetTypeId();
 }
+
 /** McpttServerCallMachine - end **/
 
 /** McpttServerCallMachineGrp - begin **/
-NS_OBJECT_ENSURE_REGISTERED (McpttServerCallMachineGrp);
+NS_OBJECT_ENSURE_REGISTERED(McpttServerCallMachineGrp);
 
 TypeId
 McpttServerCallMachineGrp::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::psc::McpttServerCallMachineGrp")
-    .SetParent<McpttServerCallMachine> ()
-    .AddAttribute ("GroupId",
-                   "The group ID of the call.",
-                   UintegerValue (0),
-                   MakeUintegerAccessor (&McpttServerCallMachineGrp::SetGrpId),
-                   MakeUintegerChecker<uint32_t> ())
-  ;
+    static TypeId tid =
+        TypeId("ns3::psc::McpttServerCallMachineGrp")
+            .SetParent<McpttServerCallMachine>()
+            .AddAttribute("GroupId",
+                          "The group ID of the call.",
+                          UintegerValue(0),
+                          MakeUintegerAccessor(&McpttServerCallMachineGrp::SetGrpId),
+                          MakeUintegerChecker<uint32_t>());
 
-  return tid;
+    return tid;
 }
 
 McpttServerCallMachineGrp::McpttServerCallMachineGrp()
     : McpttServerCallMachine()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 McpttServerCallMachineGrp::~McpttServerCallMachineGrp()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 TypeId
 McpttServerCallMachineGrp::GetInstanceTypeId() const
 {
-  return McpttServerCallMachineGrp::GetTypeId ();
+    return McpttServerCallMachineGrp::GetTypeId();
 }
 
 bool
-McpttServerCallMachineGrp::IsGrpCall (uint32_t grpId) const
+McpttServerCallMachineGrp::IsGrpCall(uint32_t grpId) const
 {
-  NS_LOG_FUNCTION (this << grpId);
+    NS_LOG_FUNCTION(this << grpId);
 
-  bool isGrpCall = true;
-  McpttCallMsgFieldGrpId myGrpIdField = GetGrpId ();
-  uint32_t myGrpId = myGrpIdField.GetGrpId ();
+    bool isGrpCall = true;
+    McpttCallMsgFieldGrpId myGrpIdField = GetGrpId();
+    uint32_t myGrpId = myGrpIdField.GetGrpId();
 
-  if (grpId > 0)
+    if (grpId > 0)
     {
-      isGrpCall = (myGrpId == grpId);
+        isGrpCall = (myGrpId == grpId);
     }
 
-  return isGrpCall;
+    return isGrpCall;
 }
 
 bool
-McpttServerCallMachineGrp::IsPrivateCall (uint32_t userId) const
+McpttServerCallMachineGrp::IsPrivateCall(uint32_t userId) const
 {
-  return false;
+    return false;
 }
+
 /** McpttServerCallMachineGrp - end **/
 
 /** McpttServerCallMachineNull - begin **/
-NS_OBJECT_ENSURE_REGISTERED (McpttServerCallMachineNull);
+NS_OBJECT_ENSURE_REGISTERED(McpttServerCallMachineNull);
 
 McpttEntityId
 McpttServerCallMachineNull::GetNullStateId()
 {
-  static McpttEntityId stateId = McpttEntityId (0, "Null");
+    static McpttEntityId stateId = McpttEntityId(0, "Null");
 
-  return stateId;
+    return stateId;
 }
 
 TypeId
 McpttServerCallMachineNull::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::psc::McpttServerCallMachineNull")
-    .SetParent<McpttServerCallMachine> ()
-    .AddConstructor<McpttServerCallMachineNull> ()
-    .AddAttribute ("FloorPort", "The port to use for floor control messages.",
-                   UintegerValue (49150),
-                   MakeUintegerAccessor (&McpttServerCallMachineNull::m_floorPort),
-                   MakeUintegerChecker<uint16_t> ())
-    .AddAttribute ("MediaPort", "The port to use for media messages.",
-                   UintegerValue (49151),
-                   MakeUintegerAccessor (&McpttServerCallMachineNull::m_mediaPort),
-                   MakeUintegerChecker<uint16_t> ())
-    .AddAttribute ("CallType", "The call type to use for this call machine.",
-                   UintegerValue (McpttCallMsgFieldCallType::BASIC_GROUP),
-                   MakeUintegerAccessor (&McpttServerCallMachineNull::m_callType),
-                   MakeUintegerChecker<uint8_t> ())
-  ;
+    static TypeId tid =
+        TypeId("ns3::psc::McpttServerCallMachineNull")
+            .SetParent<McpttServerCallMachine>()
+            .AddConstructor<McpttServerCallMachineNull>()
+            .AddAttribute("FloorPort",
+                          "The port to use for floor control messages.",
+                          UintegerValue(49150),
+                          MakeUintegerAccessor(&McpttServerCallMachineNull::m_floorPort),
+                          MakeUintegerChecker<uint16_t>())
+            .AddAttribute("MediaPort",
+                          "The port to use for media messages.",
+                          UintegerValue(49151),
+                          MakeUintegerAccessor(&McpttServerCallMachineNull::m_mediaPort),
+                          MakeUintegerChecker<uint16_t>())
+            .AddAttribute("CallType",
+                          "The call type to use for this call machine.",
+                          UintegerValue(McpttCallMsgFieldCallType::BASIC_GROUP),
+                          MakeUintegerAccessor(&McpttServerCallMachineNull::m_callType),
+                          MakeUintegerChecker<uint8_t>());
 
-  return tid;
+    return tid;
 }
 
 McpttServerCallMachineNull::McpttServerCallMachineNull()
@@ -178,187 +183,187 @@ McpttServerCallMachineNull::McpttServerCallMachineNull()
       m_serverCall(nullptr),
       m_userId(0)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 McpttServerCallMachineNull::~McpttServerCallMachineNull()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
 McpttServerCallMachineNull::AcceptCall()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
 McpttServerCallMachineNull::BeginEmergAlert()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
 McpttServerCallMachineNull::CancelEmergAlert()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
 McpttServerCallMachineNull::DowngradeCallType()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 uint32_t
 McpttServerCallMachineNull::GetCallerUserId() const
 {
-  return 0;
+    return 0;
 }
 
 McpttCallMsgFieldCallId
 McpttServerCallMachineNull::GetCallId() const
 {
-  return McpttCallMsgFieldCallId ();
+    return McpttCallMsgFieldCallId();
 }
 
 McpttCallMsgFieldCallType
 McpttServerCallMachineNull::GetCallType() const
 {
-  McpttCallMsgFieldCallType callTypeField;
-  callTypeField.SetType (m_callType);
+    McpttCallMsgFieldCallType callTypeField;
+    callTypeField.SetType(m_callType);
 
-  return callTypeField;
+    return callTypeField;
 }
 
 void
-McpttServerCallMachineNull::SetUserId (uint32_t userId)
+McpttServerCallMachineNull::SetUserId(uint32_t userId)
 {
-  m_userId = userId;
+    m_userId = userId;
 }
 
 uint32_t
 McpttServerCallMachineNull::GetUserId() const
 {
-  return m_userId;
+    return m_userId;
 }
 
 TypeId
 McpttServerCallMachineNull::GetInstanceTypeId() const
 {
-  return McpttServerCallMachineNull::GetTypeId ();
+    return McpttServerCallMachineNull::GetTypeId();
 }
 
 Ptr<McpttServerCall>
 McpttServerCallMachineNull::GetServerCall() const
 {
-  return m_serverCall;
+    return m_serverCall;
 }
 
 McpttEntityId
 McpttServerCallMachineNull::GetStateId() const
 {
-  return McpttServerCallMachineNull::GetNullStateId ();
+    return McpttServerCallMachineNull::GetNullStateId();
 }
 
 bool
 McpttServerCallMachineNull::IsCallOngoing() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return true;
+    return true;
 }
 
 bool
-McpttServerCallMachineNull::IsGrpCall (uint32_t grpId) const
+McpttServerCallMachineNull::IsGrpCall(uint32_t grpId) const
 {
-  NS_LOG_FUNCTION (this << grpId);
+    NS_LOG_FUNCTION(this << grpId);
 
-  return false;
+    return false;
 }
 
 bool
-McpttServerCallMachineNull::IsPrivateCall (uint32_t userId) const
+McpttServerCallMachineNull::IsPrivateCall(uint32_t userId) const
 {
-  NS_LOG_FUNCTION (this << userId);
+    NS_LOG_FUNCTION(this << userId);
 
-  return false;
+    return false;
 }
 
 void
-McpttServerCallMachineNull::ReceiveCallPacket (Ptr<Packet> pkt, const sip::SipHeader& hdr)
+McpttServerCallMachineNull::ReceiveCallPacket(Ptr<Packet> pkt, const sip::SipHeader& hdr)
 {
-  NS_LOG_FUNCTION (this << pkt << hdr);
+    NS_LOG_FUNCTION(this << pkt << hdr);
 }
 
 void
-McpttServerCallMachineNull::Receive (const McpttMediaMsg& msg)
+McpttServerCallMachineNull::Receive(const McpttMediaMsg& msg)
 {
-  NS_LOG_FUNCTION (this << &msg);
+    NS_LOG_FUNCTION(this << &msg);
 }
 
 void
 McpttServerCallMachineNull::RejectCall()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
-McpttServerCallMachineNull::SetNewCallCb (const Callback<void, uint16_t>  newCallCb)
+McpttServerCallMachineNull::SetNewCallCb(const Callback<void, uint16_t> newCallCb)
 {
-  NS_LOG_FUNCTION (this << &newCallCb);
+    NS_LOG_FUNCTION(this << &newCallCb);
 }
 
 void
-McpttServerCallMachineNull::SetServerCall (Ptr<McpttServerCall> call)
+McpttServerCallMachineNull::SetServerCall(Ptr<McpttServerCall> call)
 {
-  NS_LOG_FUNCTION (this << call);
+    NS_LOG_FUNCTION(this << call);
 
-  m_serverCall = call;
+    m_serverCall = call;
 }
 
 void
 McpttServerCallMachineNull::Start()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  Ptr<McpttServerCall> call = GetServerCall ();
-  Ptr<McpttServerApp> serverApp = call->GetOwner ();
+    Ptr<McpttServerCall> call = GetServerCall();
+    Ptr<McpttServerApp> serverApp = call->GetOwner();
 
-  Ptr<McpttOnNetworkFloorArbitrator> arbitrator = call->GetArbitrator ();
-  arbitrator->Start ();
+    Ptr<McpttOnNetworkFloorArbitrator> arbitrator = call->GetArbitrator();
+    arbitrator->Start();
 }
 
 void
 McpttServerCallMachineNull::Stop()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  Ptr<McpttServerCall> call = GetServerCall ();
+    Ptr<McpttServerCall> call = GetServerCall();
 
-  Ptr<McpttOnNetworkFloorArbitrator> arbitrator = call->GetArbitrator ();
+    Ptr<McpttOnNetworkFloorArbitrator> arbitrator = call->GetArbitrator();
 
-  arbitrator->Stop ();
+    arbitrator->Stop();
 }
 
 void
-McpttServerCallMachineNull::UpgradeCallType (uint8_t callType)
+McpttServerCallMachineNull::UpgradeCallType(uint8_t callType)
 {
-  NS_LOG_FUNCTION (this << (uint32_t)callType);
-  m_callType = callType;
+    NS_LOG_FUNCTION(this << (uint32_t)callType);
+    m_callType = callType;
 }
 
 void
 McpttServerCallMachineNull::DoDispose()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  m_serverCall = nullptr;
+    m_serverCall = nullptr;
 
-  McpttServerCallMachine::DoDispose ();
+    McpttServerCallMachine::DoDispose();
 }
+
 /** McpttServerCallMachineNull - end **/
 
 } // namespace psc
 } // namespace ns3
-

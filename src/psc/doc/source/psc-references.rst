@@ -21,7 +21,7 @@
 .. [NIST2019] Gamboa, S., Thanigaivel, R. and Rouil, R.,
    `"System Level Evaluation of UE-to-Network Relays in D2D-enabled LTE Networks"
    <https://www.nist.gov/publications/system-level-evaluation-ue-network-relays-d2d-enabled-lte-networks/>`_,
-   in Proceedings of the 2019 IEEE 24th International Workshop on Computer 
+   in Proceedings of the 2019 IEEE 24th International Workshop on Computer
    Aided Modeling and Design of Communication Links and Networks,
    11-13 September 2019, Limassol (Cyprus).
 
@@ -33,7 +33,7 @@
 .. [NIST2021] Garey, W., Henderson, T.R., Sun, Y., Rouil, R. and Gamboa, S.,
     `"Modeling MCPTT and User Behavior in ns-3"
     <https://www.nist.gov/publications/modeling-mcptt-and-user-behavior-ns-3/>`_,
-    in Proceedings of the 11th International Conference on Simulation and Modeling Methodologies, 
+    in Proceedings of the 11th International Conference on Simulation and Modeling Methodologies,
     Technologies and Applications (Simultech 2021),
     7-9 July 2021, Paris (France).
 

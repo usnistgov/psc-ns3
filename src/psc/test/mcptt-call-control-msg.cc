@@ -29,89 +29,91 @@
  * employees is not subject to copyright protection within the United States.
  */
 
+#include <ns3/core-module.h>
+#include <ns3/mcptt-call-msg-field.h>
+#include <ns3/mcptt-call-msg.h>
+#include <ns3/network-module.h>
+
 #include <sstream>
 #include <string>
 
-#include <ns3/core-module.h>
-#include <ns3/network-module.h>
+namespace ns3
+{
 
-#include <ns3/mcptt-call-msg.h>
-#include <ns3/mcptt-call-msg-field.h>
+NS_LOG_COMPONENT_DEFINE("McpttCallControlMsgTest");
 
-namespace ns3 {
-
-NS_LOG_COMPONENT_DEFINE ("McpttCallControlMsgTest");
-
-namespace psc {
-namespace tests {
+namespace psc
+{
+namespace tests
+{
 
 class McpttCallMsgGrpProbeTest : public TestCase
 {
-public:
-  McpttCallMsgGrpProbeTest();
-  void DoRun() override;
+  public:
+    McpttCallMsgGrpProbeTest();
+    void DoRun() override;
 };
 
 class McpttCallMsgGrpAnnounTest : public TestCase
 {
-public:
-  McpttCallMsgGrpAnnounTest();
-  void DoRun() override;
+  public:
+    McpttCallMsgGrpAnnounTest();
+    void DoRun() override;
 };
 
 class McpttCallMsgGrpAcceptTest : public TestCase
 {
-public:
-  McpttCallMsgGrpAcceptTest();
-  void DoRun() override;
+  public:
+    McpttCallMsgGrpAcceptTest();
+    void DoRun() override;
 };
 
 class McpttCallMsgGrpImmPerilEndTest : public TestCase
 {
-public:
-  McpttCallMsgGrpImmPerilEndTest();
-  void DoRun() override;
+  public:
+    McpttCallMsgGrpImmPerilEndTest();
+    void DoRun() override;
 };
 
 class McpttCallMsgGrpEmergEndTest : public TestCase
 {
-public:
-  McpttCallMsgGrpEmergEndTest();
-  void DoRun() override;
+  public:
+    McpttCallMsgGrpEmergEndTest();
+    void DoRun() override;
 };
 
 class McpttCallMsgGrpEmergAlertTest : public TestCase
 {
-public:
-  McpttCallMsgGrpEmergAlertTest();
-  void DoRun() override;
+  public:
+    McpttCallMsgGrpEmergAlertTest();
+    void DoRun() override;
 };
 
 class McpttCallMsgGrpEmergAlertAckTest : public TestCase
 {
-public:
-  McpttCallMsgGrpEmergAlertAckTest();
-  void DoRun() override;
+  public:
+    McpttCallMsgGrpEmergAlertAckTest();
+    void DoRun() override;
 };
 
 class McpttCallMsgGrpEmergAlertCancelTest : public TestCase
 {
-public:
-  McpttCallMsgGrpEmergAlertCancelTest();
-  void DoRun() override;
+  public:
+    McpttCallMsgGrpEmergAlertCancelTest();
+    void DoRun() override;
 };
 
 class McpttCallMsgGrpEmergAlertCancelAckTest : public TestCase
 {
-public:
-  McpttCallMsgGrpEmergAlertCancelAckTest();
-  void DoRun() override;
+  public:
+    McpttCallMsgGrpEmergAlertCancelAckTest();
+    void DoRun() override;
 };
 
 class McpttCallControlMsgTestSuite : public TestSuite
 {
-public:
-  McpttCallControlMsgTestSuite();
+  public:
+    McpttCallControlMsgTestSuite();
 };
 
 /***************************************************************
@@ -122,407 +124,434 @@ static McpttCallControlMsgTestSuite suite;
 
 McpttCallMsgGrpProbeTest::McpttCallMsgGrpProbeTest()
     : TestCase("GROUP CALL PROBE")
-{}
+{
+}
 
 void
 McpttCallMsgGrpProbeTest::DoRun()
 {
-  McpttCallMsgFieldGrpId grpId = McpttCallMsgFieldGrpId ();
-  grpId.SetGrpId (10);
+    McpttCallMsgFieldGrpId grpId = McpttCallMsgFieldGrpId();
+    grpId.SetGrpId(10);
 
-  McpttCallMsgGrpProbe dstMsg;
-  McpttCallMsgGrpProbe srcMsg;
-  srcMsg.SetGrpId (grpId);
+    McpttCallMsgGrpProbe dstMsg;
+    McpttCallMsgGrpProbe srcMsg;
+    srcMsg.SetGrpId(grpId);
 
-  std::stringstream dstStr;
-  std::stringstream srcStr;
+    std::stringstream dstStr;
+    std::stringstream srcStr;
 
-  Ptr<Packet> p = Create<Packet> ();
-  p->AddHeader (srcMsg);
-  p->RemoveHeader (dstMsg);
+    Ptr<Packet> p = Create<Packet>();
+    p->AddHeader(srcMsg);
+    p->RemoveHeader(dstMsg);
 
-  dstMsg.Print (dstStr);
-  srcMsg.Print (srcStr);
+    dstMsg.Print(dstStr);
+    srcMsg.Print(srcStr);
 
-  NS_LOG_LOGIC ("Serialized  : " << srcStr.str ());
-  NS_LOG_LOGIC ("Deserialized: " << dstStr.str ());
+    NS_LOG_LOGIC("Serialized  : " << srcStr.str());
+    NS_LOG_LOGIC("Deserialized: " << dstStr.str());
 
-  NS_TEST_ASSERT_MSG_EQ ((dstStr.str () == srcStr.str ()), true, "The serialized and deserialized messages do not match.");
+    NS_TEST_ASSERT_MSG_EQ((dstStr.str() == srcStr.str()),
+                          true,
+                          "The serialized and deserialized messages do not match.");
 }
 
 McpttCallMsgGrpAnnounTest::McpttCallMsgGrpAnnounTest()
     : TestCase("GROUP CALL ANNOUNCEMENT")
-{}
+{
+}
 
 void
 McpttCallMsgGrpAnnounTest::DoRun()
 {
-  McpttCallMsgFieldCallId callId;
-  callId.SetCallId (12);
+    McpttCallMsgFieldCallId callId;
+    callId.SetCallId(12);
 
-  McpttCallMsgFieldCallType callType;
-  callType.SetType (McpttCallMsgFieldCallType::EMERGENCY_GROUP);
+    McpttCallMsgFieldCallType callType;
+    callType.SetType(McpttCallMsgFieldCallType::EMERGENCY_GROUP);
 
-  bool confirmMode = false;
+    bool confirmMode = false;
 
-  McpttCallMsgFieldGrpId grpId;
-  grpId.SetGrpId (13);
+    McpttCallMsgFieldGrpId grpId;
+    grpId.SetGrpId(13);
 
-  McpttCallMsgFieldLastChgTime lastChgTime;
-  lastChgTime.SetTime (Seconds (4));
+    McpttCallMsgFieldLastChgTime lastChgTime;
+    lastChgTime.SetTime(Seconds(4));
 
-  McpttCallMsgFieldUserId lastChgUserId;
-  lastChgUserId.SetId (15);
+    McpttCallMsgFieldUserId lastChgUserId;
+    lastChgUserId.SetId(15);
 
-  McpttCallMsgFieldUserId origUserId;
-  origUserId.SetId (16);
+    McpttCallMsgFieldUserId origUserId;
+    origUserId.SetId(16);
 
-  bool probeResp = true;
+    bool probeResp = true;
 
-  McpttCallMsgFieldRefreshInterval refInt;
-  refInt.SetInterval (1000);
+    McpttCallMsgFieldRefreshInterval refInt;
+    refInt.SetInterval(1000);
 
-  McpttCallMsgFieldSdp sdp;
-  sdp.SetFloorPort (17);
-  sdp.SetSpeechPort (18);
-  sdp.SetGrpAddr (Ipv4Address ("129.6.142.230"));
-  sdp.SetOrigAddr (Ipv4Address ("192.168.1.1"));
+    McpttCallMsgFieldSdp sdp;
+    sdp.SetFloorPort(17);
+    sdp.SetSpeechPort(18);
+    sdp.SetGrpAddr(Ipv4Address("129.6.142.230"));
+    sdp.SetOrigAddr(Ipv4Address("192.168.1.1"));
 
-  McpttCallMsgFieldStartTime startTime;
-  startTime.SetTime (Seconds (1));
+    McpttCallMsgFieldStartTime startTime;
+    startTime.SetTime(Seconds(1));
 
-  McpttCallMsgGrpAnnoun dstMsg;
-  McpttCallMsgGrpAnnoun srcMsg;
-  srcMsg.SetCallId (callId);
-  srcMsg.SetCallType (callType);
-  srcMsg.SetConfirmMode (confirmMode);
-  srcMsg.SetGrpId (grpId);
-  srcMsg.SetLastChgTime (lastChgTime);
-  srcMsg.SetLastChgUserId (lastChgUserId);
-  srcMsg.SetOrigId (origUserId);
-  srcMsg.SetProbeResp (probeResp);
-  srcMsg.SetRefInt (refInt);
-  srcMsg.SetSdp (sdp);
-  srcMsg.SetStartTime (startTime);
+    McpttCallMsgGrpAnnoun dstMsg;
+    McpttCallMsgGrpAnnoun srcMsg;
+    srcMsg.SetCallId(callId);
+    srcMsg.SetCallType(callType);
+    srcMsg.SetConfirmMode(confirmMode);
+    srcMsg.SetGrpId(grpId);
+    srcMsg.SetLastChgTime(lastChgTime);
+    srcMsg.SetLastChgUserId(lastChgUserId);
+    srcMsg.SetOrigId(origUserId);
+    srcMsg.SetProbeResp(probeResp);
+    srcMsg.SetRefInt(refInt);
+    srcMsg.SetSdp(sdp);
+    srcMsg.SetStartTime(startTime);
 
-  std::stringstream dstStr;
-  std::stringstream srcStr;
+    std::stringstream dstStr;
+    std::stringstream srcStr;
 
-  Ptr<Packet> p = Create<Packet> ();
-  p->AddHeader (srcMsg);
-  p->RemoveHeader (dstMsg);
+    Ptr<Packet> p = Create<Packet>();
+    p->AddHeader(srcMsg);
+    p->RemoveHeader(dstMsg);
 
-  dstMsg.Print (dstStr);
-  srcMsg.Print (srcStr);
+    dstMsg.Print(dstStr);
+    srcMsg.Print(srcStr);
 
-  NS_LOG_LOGIC ("Serialized  : " << srcStr.str ());
-  NS_LOG_LOGIC ("Deserialized: " << dstStr.str ());
+    NS_LOG_LOGIC("Serialized  : " << srcStr.str());
+    NS_LOG_LOGIC("Deserialized: " << dstStr.str());
 
-  NS_TEST_ASSERT_MSG_EQ ((dstStr.str () == srcStr.str ()), true, "The serialized and deserialized messages do not match.");
+    NS_TEST_ASSERT_MSG_EQ((dstStr.str() == srcStr.str()),
+                          true,
+                          "The serialized and deserialized messages do not match.");
 }
 
 McpttCallMsgGrpAcceptTest::McpttCallMsgGrpAcceptTest()
     : TestCase("GROUP CALL ACCEPT")
-{}
+{
+}
 
 void
 McpttCallMsgGrpAcceptTest::DoRun()
 {
-  McpttCallMsgFieldCallId callId;
-  callId.SetCallId (2);
+    McpttCallMsgFieldCallId callId;
+    callId.SetCallId(2);
 
-  McpttCallMsgFieldCallType callType;
-  callType.SetType (McpttCallMsgFieldCallType::PRIVATE);
+    McpttCallMsgFieldCallType callType;
+    callType.SetType(McpttCallMsgFieldCallType::PRIVATE);
 
-  McpttCallMsgFieldGrpId grpId;
-  grpId.SetGrpId (101);
+    McpttCallMsgFieldGrpId grpId;
+    grpId.SetGrpId(101);
 
-  McpttCallMsgFieldUserId userId;
-  userId.SetId (11);
+    McpttCallMsgFieldUserId userId;
+    userId.SetId(11);
 
-  McpttCallMsgGrpAccept dstMsg;
-  McpttCallMsgGrpAccept srcMsg;
-  srcMsg.SetCallId (callId);
-  srcMsg.SetCallType (callType);
-  srcMsg.SetGrpId (grpId);
-  srcMsg.SetUserId (userId);
+    McpttCallMsgGrpAccept dstMsg;
+    McpttCallMsgGrpAccept srcMsg;
+    srcMsg.SetCallId(callId);
+    srcMsg.SetCallType(callType);
+    srcMsg.SetGrpId(grpId);
+    srcMsg.SetUserId(userId);
 
-  std::stringstream dstStr;
-  std::stringstream srcStr;
+    std::stringstream dstStr;
+    std::stringstream srcStr;
 
-  Ptr<Packet> p = Create<Packet> ();
-  p->AddHeader (srcMsg);
-  p->RemoveHeader (dstMsg);
+    Ptr<Packet> p = Create<Packet>();
+    p->AddHeader(srcMsg);
+    p->RemoveHeader(dstMsg);
 
-  dstMsg.Print (dstStr);
-  srcMsg.Print (srcStr);
+    dstMsg.Print(dstStr);
+    srcMsg.Print(srcStr);
 
-  NS_LOG_LOGIC ("Serialized  : " << srcStr.str ());
-  NS_LOG_LOGIC ("Deserialized: " << dstStr.str ());
+    NS_LOG_LOGIC("Serialized  : " << srcStr.str());
+    NS_LOG_LOGIC("Deserialized: " << dstStr.str());
 
-  NS_TEST_ASSERT_MSG_EQ ((dstStr.str () == srcStr.str ()), true, "The serialized and deserialized messages do not match.");
+    NS_TEST_ASSERT_MSG_EQ((dstStr.str() == srcStr.str()),
+                          true,
+                          "The serialized and deserialized messages do not match.");
 }
 
 McpttCallMsgGrpImmPerilEndTest::McpttCallMsgGrpImmPerilEndTest()
     : TestCase("GROUP CALL IMMINENT PERIL END")
-{}
+{
+}
 
 void
 McpttCallMsgGrpImmPerilEndTest::DoRun()
 {
-  McpttCallMsgFieldCallId callId;
-  callId.SetCallId (5);
+    McpttCallMsgFieldCallId callId;
+    callId.SetCallId(5);
 
-  McpttCallMsgFieldGrpId grpId;
-  grpId.SetGrpId (6);
+    McpttCallMsgFieldGrpId grpId;
+    grpId.SetGrpId(6);
 
-  McpttCallMsgFieldLastChgTime lastChgTime;
-  lastChgTime.SetTime (Seconds (3));
+    McpttCallMsgFieldLastChgTime lastChgTime;
+    lastChgTime.SetTime(Seconds(3));
 
-  McpttCallMsgFieldUserId lastChgUserId;
-  lastChgUserId.SetId (7);
+    McpttCallMsgFieldUserId lastChgUserId;
+    lastChgUserId.SetId(7);
 
-  McpttCallMsgFieldUserId userId;
-  userId.SetId (8);
+    McpttCallMsgFieldUserId userId;
+    userId.SetId(8);
 
-  McpttCallMsgGrpImmPerilEnd dstMsg;
-  McpttCallMsgGrpImmPerilEnd srcMsg;
-  srcMsg.SetCallId (callId);
-  srcMsg.SetGrpId (grpId);
-  srcMsg.SetLastChgTime (lastChgTime);
-  srcMsg.SetLastChgUserId (lastChgUserId);
-  srcMsg.SetUserId (userId);
+    McpttCallMsgGrpImmPerilEnd dstMsg;
+    McpttCallMsgGrpImmPerilEnd srcMsg;
+    srcMsg.SetCallId(callId);
+    srcMsg.SetGrpId(grpId);
+    srcMsg.SetLastChgTime(lastChgTime);
+    srcMsg.SetLastChgUserId(lastChgUserId);
+    srcMsg.SetUserId(userId);
 
-  std::stringstream dstStr;
-  std::stringstream srcStr;
+    std::stringstream dstStr;
+    std::stringstream srcStr;
 
-  Ptr<Packet> p = Create<Packet> ();
-  p->AddHeader (srcMsg);
-  p->RemoveHeader (dstMsg);
+    Ptr<Packet> p = Create<Packet>();
+    p->AddHeader(srcMsg);
+    p->RemoveHeader(dstMsg);
 
-  dstMsg.Print (dstStr);
-  srcMsg.Print (srcStr);
+    dstMsg.Print(dstStr);
+    srcMsg.Print(srcStr);
 
-  NS_LOG_LOGIC ("Serialized  : " << srcStr.str ());
-  NS_LOG_LOGIC ("Deserialized: " << dstStr.str ());
+    NS_LOG_LOGIC("Serialized  : " << srcStr.str());
+    NS_LOG_LOGIC("Deserialized: " << dstStr.str());
 
-  NS_TEST_ASSERT_MSG_EQ ((dstStr.str () == srcStr.str ()), true, "The serialized and deserialized messages do not match.");
+    NS_TEST_ASSERT_MSG_EQ((dstStr.str() == srcStr.str()),
+                          true,
+                          "The serialized and deserialized messages do not match.");
 }
 
 McpttCallMsgGrpEmergEndTest::McpttCallMsgGrpEmergEndTest()
     : TestCase("GROUP CALL EMERGENCY END")
-{}
+{
+}
 
 void
 McpttCallMsgGrpEmergEndTest::DoRun()
 {
-  McpttCallMsgFieldCallId callId;
-  callId.SetCallId (5);
+    McpttCallMsgFieldCallId callId;
+    callId.SetCallId(5);
 
-  McpttCallMsgFieldGrpId grpId;
-  grpId.SetGrpId (6);
+    McpttCallMsgFieldGrpId grpId;
+    grpId.SetGrpId(6);
 
-  McpttCallMsgFieldLastChgTime lastChgTime;
-  lastChgTime.SetTime (Seconds (3));
+    McpttCallMsgFieldLastChgTime lastChgTime;
+    lastChgTime.SetTime(Seconds(3));
 
-  McpttCallMsgFieldUserId lastChgUserId;
-  lastChgUserId.SetId (7);
+    McpttCallMsgFieldUserId lastChgUserId;
+    lastChgUserId.SetId(7);
 
-  McpttCallMsgFieldUserId userId;
-  userId.SetId (8);
+    McpttCallMsgFieldUserId userId;
+    userId.SetId(8);
 
-  McpttCallMsgGrpEmergEnd dstMsg;
-  McpttCallMsgGrpEmergEnd srcMsg;
-  srcMsg.SetCallId (callId);
-  srcMsg.SetGrpId (grpId);
-  srcMsg.SetLastChgTime (lastChgTime);
-  srcMsg.SetLastChgUserId (lastChgUserId);
-  srcMsg.SetUserId (userId);
+    McpttCallMsgGrpEmergEnd dstMsg;
+    McpttCallMsgGrpEmergEnd srcMsg;
+    srcMsg.SetCallId(callId);
+    srcMsg.SetGrpId(grpId);
+    srcMsg.SetLastChgTime(lastChgTime);
+    srcMsg.SetLastChgUserId(lastChgUserId);
+    srcMsg.SetUserId(userId);
 
-  std::stringstream dstStr;
-  std::stringstream srcStr;
+    std::stringstream dstStr;
+    std::stringstream srcStr;
 
-  Ptr<Packet> p = Create<Packet> ();
-  p->AddHeader (srcMsg);
-  p->RemoveHeader (dstMsg);
+    Ptr<Packet> p = Create<Packet>();
+    p->AddHeader(srcMsg);
+    p->RemoveHeader(dstMsg);
 
-  dstMsg.Print (dstStr);
-  srcMsg.Print (srcStr);
+    dstMsg.Print(dstStr);
+    srcMsg.Print(srcStr);
 
-  NS_LOG_LOGIC ("Serialized  : " << srcStr.str ());
-  NS_LOG_LOGIC ("Deserialized: " << dstStr.str ());
+    NS_LOG_LOGIC("Serialized  : " << srcStr.str());
+    NS_LOG_LOGIC("Deserialized: " << dstStr.str());
 
-  NS_TEST_ASSERT_MSG_EQ ((dstStr.str () == srcStr.str ()), true, "The serialized and deserialized messages do not match.");
+    NS_TEST_ASSERT_MSG_EQ((dstStr.str() == srcStr.str()),
+                          true,
+                          "The serialized and deserialized messages do not match.");
 }
 
 McpttCallMsgGrpEmergAlertTest::McpttCallMsgGrpEmergAlertTest()
     : TestCase("GROUP CALL EMERGENCY ALERT")
-{}
+{
+}
 
 void
 McpttCallMsgGrpEmergAlertTest::DoRun()
 {
-  McpttCallMsgFieldGrpId grpId;
-  grpId.SetGrpId (1);
+    McpttCallMsgFieldGrpId grpId;
+    grpId.SetGrpId(1);
 
-  McpttCallMsgFieldOrgName orgName;
-  orgName.SetName ("NIST");
+    McpttCallMsgFieldOrgName orgName;
+    orgName.SetName("NIST");
 
-  McpttCallMsgFieldUserId userId;
-  userId.SetId (2);
+    McpttCallMsgFieldUserId userId;
+    userId.SetId(2);
 
-  McpttCallMsgFieldUserLoc userLoc;
-  userLoc.SetLoc (Vector (1.0, 2.0, 3.0));
+    McpttCallMsgFieldUserLoc userLoc;
+    userLoc.SetLoc(Vector(1.0, 2.0, 3.0));
 
-  McpttCallMsgGrpEmergAlert dstMsg;
-  McpttCallMsgGrpEmergAlert srcMsg;
-  srcMsg.SetGrpId (grpId);
-  srcMsg.SetOrgName (orgName);
-  srcMsg.SetUserId (userId);
-  srcMsg.SetUserLoc (userLoc);
+    McpttCallMsgGrpEmergAlert dstMsg;
+    McpttCallMsgGrpEmergAlert srcMsg;
+    srcMsg.SetGrpId(grpId);
+    srcMsg.SetOrgName(orgName);
+    srcMsg.SetUserId(userId);
+    srcMsg.SetUserLoc(userLoc);
 
-  std::stringstream dstStr;
-  std::stringstream srcStr;
+    std::stringstream dstStr;
+    std::stringstream srcStr;
 
-  Ptr<Packet> p = Create<Packet> ();
-  p->AddHeader (srcMsg);
-  p->RemoveHeader (dstMsg);
+    Ptr<Packet> p = Create<Packet>();
+    p->AddHeader(srcMsg);
+    p->RemoveHeader(dstMsg);
 
-  dstMsg.Print (dstStr);
-  srcMsg.Print (srcStr);
+    dstMsg.Print(dstStr);
+    srcMsg.Print(srcStr);
 
-  NS_LOG_LOGIC ("Serialized  : " << srcStr.str ());
-  NS_LOG_LOGIC ("Deserialized: " << dstStr.str ());
+    NS_LOG_LOGIC("Serialized  : " << srcStr.str());
+    NS_LOG_LOGIC("Deserialized: " << dstStr.str());
 
-  NS_TEST_ASSERT_MSG_EQ ((dstStr.str () == srcStr.str ()), true, "The serialized and deserialized messages do not match.");
+    NS_TEST_ASSERT_MSG_EQ((dstStr.str() == srcStr.str()),
+                          true,
+                          "The serialized and deserialized messages do not match.");
 }
 
 McpttCallMsgGrpEmergAlertAckTest::McpttCallMsgGrpEmergAlertAckTest()
     : TestCase("GROUP CALL EMERGENCY ALERT ACK")
-{}
+{
+}
 
 void
 McpttCallMsgGrpEmergAlertAckTest::DoRun()
 {
-  McpttCallMsgFieldGrpId grpId;
-  grpId.SetGrpId (95);
+    McpttCallMsgFieldGrpId grpId;
+    grpId.SetGrpId(95);
 
-  McpttCallMsgFieldUserId origId;
-  origId.SetId (96);
+    McpttCallMsgFieldUserId origId;
+    origId.SetId(96);
 
-  McpttCallMsgFieldUserId sendingId;
-  sendingId.SetId (97);
+    McpttCallMsgFieldUserId sendingId;
+    sendingId.SetId(97);
 
-  McpttCallMsgGrpEmergAlertAck dstMsg;
-  McpttCallMsgGrpEmergAlertAck srcMsg;
-  srcMsg.SetGrpId (grpId);
-  srcMsg.SetOrigId (origId);
-  srcMsg.SetSendingId (sendingId);
+    McpttCallMsgGrpEmergAlertAck dstMsg;
+    McpttCallMsgGrpEmergAlertAck srcMsg;
+    srcMsg.SetGrpId(grpId);
+    srcMsg.SetOrigId(origId);
+    srcMsg.SetSendingId(sendingId);
 
-  std::stringstream dstStr;
-  std::stringstream srcStr;
+    std::stringstream dstStr;
+    std::stringstream srcStr;
 
-  Ptr<Packet> p = Create<Packet> ();
-  p->AddHeader (srcMsg);
-  p->RemoveHeader (dstMsg);
+    Ptr<Packet> p = Create<Packet>();
+    p->AddHeader(srcMsg);
+    p->RemoveHeader(dstMsg);
 
-  dstMsg.Print (dstStr);
-  srcMsg.Print (srcStr);
+    dstMsg.Print(dstStr);
+    srcMsg.Print(srcStr);
 
-  NS_LOG_LOGIC ("Serialized  : " << srcStr.str ());
-  NS_LOG_LOGIC ("Deserialized: " << dstStr.str ());
+    NS_LOG_LOGIC("Serialized  : " << srcStr.str());
+    NS_LOG_LOGIC("Deserialized: " << dstStr.str());
 
-  NS_TEST_ASSERT_MSG_EQ ((dstStr.str () == srcStr.str ()), true, "The serialized and deserialized messages do not match.");
+    NS_TEST_ASSERT_MSG_EQ((dstStr.str() == srcStr.str()),
+                          true,
+                          "The serialized and deserialized messages do not match.");
 }
 
 McpttCallMsgGrpEmergAlertCancelTest::McpttCallMsgGrpEmergAlertCancelTest()
     : TestCase("GROUP CALL EMERGENCY ALERT CANCEL")
-{}
+{
+}
 
 void
 McpttCallMsgGrpEmergAlertCancelTest::DoRun()
 {
-  McpttCallMsgFieldGrpId grpId;
-  grpId.SetGrpId (95);
+    McpttCallMsgFieldGrpId grpId;
+    grpId.SetGrpId(95);
 
-  McpttCallMsgFieldUserId origId;
-  origId.SetId (96);
+    McpttCallMsgFieldUserId origId;
+    origId.SetId(96);
 
-  McpttCallMsgFieldUserId sendingId;
-  sendingId.SetId (97);
+    McpttCallMsgFieldUserId sendingId;
+    sendingId.SetId(97);
 
-  McpttCallMsgGrpEmergAlertCancel dstMsg;
-  McpttCallMsgGrpEmergAlertCancel srcMsg;
-  srcMsg.SetGrpId (grpId);
-  srcMsg.SetOrigId (origId);
-  srcMsg.SetSendingId (sendingId);
+    McpttCallMsgGrpEmergAlertCancel dstMsg;
+    McpttCallMsgGrpEmergAlertCancel srcMsg;
+    srcMsg.SetGrpId(grpId);
+    srcMsg.SetOrigId(origId);
+    srcMsg.SetSendingId(sendingId);
 
-  std::stringstream dstStr;
-  std::stringstream srcStr;
+    std::stringstream dstStr;
+    std::stringstream srcStr;
 
-  Ptr<Packet> p = Create<Packet> ();
-  p->AddHeader (srcMsg);
-  p->RemoveHeader (dstMsg);
+    Ptr<Packet> p = Create<Packet>();
+    p->AddHeader(srcMsg);
+    p->RemoveHeader(dstMsg);
 
-  dstMsg.Print (dstStr);
-  srcMsg.Print (srcStr);
+    dstMsg.Print(dstStr);
+    srcMsg.Print(srcStr);
 
-  NS_LOG_LOGIC ("Serialized  : " << srcStr.str ());
-  NS_LOG_LOGIC ("Deserialized: " << dstStr.str ());
+    NS_LOG_LOGIC("Serialized  : " << srcStr.str());
+    NS_LOG_LOGIC("Deserialized: " << dstStr.str());
 
-  NS_TEST_ASSERT_MSG_EQ ((dstStr.str () == srcStr.str ()), true, "The serialized and deserialized messages do not match.");
+    NS_TEST_ASSERT_MSG_EQ((dstStr.str() == srcStr.str()),
+                          true,
+                          "The serialized and deserialized messages do not match.");
 }
 
 McpttCallMsgGrpEmergAlertCancelAckTest::McpttCallMsgGrpEmergAlertCancelAckTest()
     : TestCase("GROUP CALL EMERGENCY ALERT CANCEL ACK")
-{}
+{
+}
 
 void
 McpttCallMsgGrpEmergAlertCancelAckTest::DoRun()
 {
-  McpttCallMsgFieldGrpId grpId;
-  grpId.SetGrpId (95);
+    McpttCallMsgFieldGrpId grpId;
+    grpId.SetGrpId(95);
 
-  McpttCallMsgFieldUserId origId;
-  origId.SetId (96);
+    McpttCallMsgFieldUserId origId;
+    origId.SetId(96);
 
-  McpttCallMsgFieldUserId sendingId;
-  sendingId.SetId (97);
+    McpttCallMsgFieldUserId sendingId;
+    sendingId.SetId(97);
 
-  McpttCallMsgGrpEmergAlertCancelAck dstMsg;
-  McpttCallMsgGrpEmergAlertCancelAck srcMsg;
-  srcMsg.SetGrpId (grpId);
-  srcMsg.SetOrigId (origId);
-  srcMsg.SetSendingId (sendingId);
+    McpttCallMsgGrpEmergAlertCancelAck dstMsg;
+    McpttCallMsgGrpEmergAlertCancelAck srcMsg;
+    srcMsg.SetGrpId(grpId);
+    srcMsg.SetOrigId(origId);
+    srcMsg.SetSendingId(sendingId);
 
-  std::stringstream dstStr;
-  std::stringstream srcStr;
+    std::stringstream dstStr;
+    std::stringstream srcStr;
 
-  Ptr<Packet> p = Create<Packet> ();
-  p->AddHeader (srcMsg);
-  p->RemoveHeader (dstMsg);
+    Ptr<Packet> p = Create<Packet>();
+    p->AddHeader(srcMsg);
+    p->RemoveHeader(dstMsg);
 
-  dstMsg.Print (dstStr);
-  srcMsg.Print (srcStr);
+    dstMsg.Print(dstStr);
+    srcMsg.Print(srcStr);
 
-  NS_LOG_LOGIC ("Serialized  : " << srcStr.str ());
-  NS_LOG_LOGIC ("Deserialized: " << dstStr.str ());
+    NS_LOG_LOGIC("Serialized  : " << srcStr.str());
+    NS_LOG_LOGIC("Deserialized: " << dstStr.str());
 
-  NS_TEST_ASSERT_MSG_EQ ((dstStr.str () == srcStr.str ()), true, "The serialized and deserialized messages do not match.");
+    NS_TEST_ASSERT_MSG_EQ((dstStr.str() == srcStr.str()),
+                          true,
+                          "The serialized and deserialized messages do not match.");
 }
 
 McpttCallControlMsgTestSuite::McpttCallControlMsgTestSuite()
     : TestSuite("mcptt-call-control-messages", TestSuite::UNIT)
 {
-  AddTestCase (new McpttCallMsgGrpProbeTest (), TestCase::QUICK);
-  AddTestCase (new McpttCallMsgGrpAnnounTest (), TestCase::QUICK);
-  AddTestCase (new McpttCallMsgGrpAcceptTest (), TestCase::QUICK);
-  AddTestCase (new McpttCallMsgGrpImmPerilEndTest (), TestCase::QUICK);
-  AddTestCase (new McpttCallMsgGrpEmergEndTest (), TestCase::QUICK);
-  AddTestCase (new McpttCallMsgGrpEmergAlertTest (), TestCase::QUICK);
-  AddTestCase (new McpttCallMsgGrpEmergAlertAckTest (), TestCase::QUICK);
-  AddTestCase (new McpttCallMsgGrpEmergAlertCancelTest (), TestCase::QUICK);
-  AddTestCase (new McpttCallMsgGrpEmergAlertCancelAckTest (), TestCase::QUICK);
+    AddTestCase(new McpttCallMsgGrpProbeTest(), TestCase::QUICK);
+    AddTestCase(new McpttCallMsgGrpAnnounTest(), TestCase::QUICK);
+    AddTestCase(new McpttCallMsgGrpAcceptTest(), TestCase::QUICK);
+    AddTestCase(new McpttCallMsgGrpImmPerilEndTest(), TestCase::QUICK);
+    AddTestCase(new McpttCallMsgGrpEmergEndTest(), TestCase::QUICK);
+    AddTestCase(new McpttCallMsgGrpEmergAlertTest(), TestCase::QUICK);
+    AddTestCase(new McpttCallMsgGrpEmergAlertAckTest(), TestCase::QUICK);
+    AddTestCase(new McpttCallMsgGrpEmergAlertCancelTest(), TestCase::QUICK);
+    AddTestCase(new McpttCallMsgGrpEmergAlertCancelAckTest(), TestCase::QUICK);
 }
 
 } // namespace tests

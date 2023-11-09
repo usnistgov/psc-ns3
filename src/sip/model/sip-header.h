@@ -55,9 +55,11 @@
 #include <ns3/ptr.h>
 #include <ns3/type-id.h>
 
-namespace ns3 {
+namespace ns3
+{
 
-namespace sip {
+namespace sip
+{
 
 /**
  * \ingroup sip
@@ -75,90 +77,77 @@ namespace sip {
  */
 class SipHeader : public Header
 {
-public:
-  /**
-   * \brief Construct a null header
-   */
-  SipHeader ();
-  /**
-   * \brief Destructor
-   */
-  virtual ~SipHeader ();
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId (void);
+  public:
+    /**
+     * \brief Construct a null header
+     */
+    SipHeader();
+    /**
+     * \brief Destructor
+     */
+    virtual ~SipHeader();
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId(void);
 
-  enum SipMessageType
-  {
-    SIP_REQUEST = 0,
-    SIP_RESPONSE = 1,
-    SIP_INVALID = 2
-  };
-  enum SipMethod
-  {
-    INVITE = 0,
-    BYE = 1,
-    ACK = 2,
-    CANCEL = 3,
-    INVALID_METHOD = 4
-  };
+    enum SipMessageType
+    {
+        SIP_REQUEST = 0,
+        SIP_RESPONSE = 1,
+        SIP_INVALID = 2
+    };
 
-  // These eight methods need doxygen
-  void SetMessageType (SipMessageType messageType);
-  SipMessageType GetMessageType (void) const;
-  std::string GetMessageTypeName (void) const;
+    enum SipMethod
+    {
+        INVITE = 0,
+        BYE = 1,
+        ACK = 2,
+        CANCEL = 3,
+        INVALID_METHOD = 4
+    };
 
-  void SetMethod (SipMethod method);
-  SipMethod GetMethod (void) const;
-  std::string GetMethodName (void) const;
+    // These eight methods need doxygen
+    void SetMessageType(SipMessageType messageType);
+    SipMessageType GetMessageType(void) const;
+    std::string GetMessageTypeName(void) const;
 
-  void SetStatusCode (uint16_t statusCode);
-  uint16_t GetStatusCode (void) const;
+    void SetMethod(SipMethod method);
+    SipMethod GetMethod(void) const;
+    std::string GetMethodName(void) const;
 
-  // Will eventually convert this to a string URI but for now MCPTT uses int
-  void SetRequestUri (uint32_t requestUri);
-  uint32_t GetRequestUri (void) const;
+    void SetStatusCode(uint16_t statusCode);
+    uint16_t GetStatusCode(void) const;
 
-  void SetFrom (uint32_t from);
-  uint32_t GetFrom (void) const;
+    // Will eventually convert this to a string URI but for now MCPTT uses int
+    void SetRequestUri(uint32_t requestUri);
+    uint32_t GetRequestUri(void) const;
 
-  void SetTo (uint32_t from);
-  uint32_t GetTo (void) const;
+    void SetFrom(uint32_t from);
+    uint32_t GetFrom(void) const;
 
-  void SetCallId (uint16_t callId);
-  uint16_t GetCallId (void) const;
+    void SetTo(uint32_t from);
+    uint32_t GetTo(void) const;
 
-  // Documented in ns3::Header class
-  virtual TypeId GetInstanceTypeId (void) const;
-  virtual void Print (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize (void) const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+    void SetCallId(uint16_t callId);
+    uint16_t GetCallId(void) const;
 
-private:
-  uint8_t m_messageType {
-    SIP_INVALID
-  };
-  uint8_t m_method {
-    INVALID_METHOD
-  };
-  uint16_t m_statusCode {
-    0xFFFF
-  };
-  uint32_t m_requestUri {
-    0xFFFFFFFF
-  };
-  uint32_t m_from {
-    0xFFFFFFFF
-  };
-  uint32_t m_to {
-    0xFFFFFFFF
-  };
-  uint16_t m_callId {
-    0xFFFF
-  };
+    // Documented in ns3::Header class
+    virtual TypeId GetInstanceTypeId(void) const;
+    virtual void Print(std::ostream& os) const;
+    virtual uint32_t GetSerializedSize(void) const;
+    virtual void Serialize(Buffer::Iterator start) const;
+    virtual uint32_t Deserialize(Buffer::Iterator start);
+
+  private:
+    uint8_t m_messageType{SIP_INVALID};
+    uint8_t m_method{INVALID_METHOD};
+    uint16_t m_statusCode{0xFFFF};
+    uint32_t m_requestUri{0xFFFFFFFF};
+    uint32_t m_from{0xFFFFFFFF};
+    uint32_t m_to{0xFFFFFFFF};
+    uint16_t m_callId{0xFFFF};
 };
 
 } // namespace sip

@@ -44,14 +44,14 @@ trap "kill 0" EXIT #If you kill this process, it will kill all childs too (e.g.,
 #    E.g., using the command:                                                 #
 #       $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:`pwd`/build/lib             #
 # 2. Copy the scenario file (camad-2019-discovery.cc) to the 'scratch' folder #
-# 3. Copy this script to the ns3 root folder                                  #  
+# 3. Copy this script to the ns3 root folder                                  #
 #                                                                             #
 # Running the evaluation:                                                     #
 # 1. Set the number of trials/run per set you desire to run by modifying the  #
 # 'endRun' parameter below (CAMAD 2019 -> endRun=100)                         #
 # 2. Save                                                                     #
 # 3. From the ns-3 root folder run the script with the evaluation number as   #
-# argument                                                                    #                                
+# argument                                                                    #
 #    E.g.                                                                     #
 #       $ ./camad-2019-discovery.sh 3                                         #
 #                                                                             #
@@ -66,7 +66,7 @@ scenario="camad-2019-discovery"
 
 startRun=1
 endRun=20
-#endRun=100 
+#endRun=100
 
 nThreads=20
 
@@ -75,7 +75,7 @@ function RunEvaluation {
   evalNumber=$1
 
   #Evals CAMAD 2019 paper
-  #Common parameters 
+  #Common parameters
   simTime="40" #s
   txProbArray="100 75 50 25" #Transmission probability  (4 values)
   ntArray="5" #Number of subframes per period
@@ -83,7 +83,7 @@ function RunEvaluation {
   modelArray="A B" #(2 values)
 
   if [ "$evalNumber" -eq 1 ];then
-    ###Eval 1: 6 Relay UEs and variable number of Remote UEs (4 * 2 * 11 = 88 sets)### 
+    ###Eval 1: 6 Relay UEs and variable number of Remote UEs (4 * 2 * 11 = 88 sets)###
     nyArray="6" #Number of relays
     nxArray="1 2 4 6 8 10 12 14 16 18 20" #Number of remotes (11 values)
     outputDirBase="output_camad-2019-discovery-6Relays"
@@ -92,17 +92,17 @@ function RunEvaluation {
     nyArray="1 2 4 6 8 10 12 14 16 18 20" #Number of relays (11 values)
     nxArray="6" #Number of remotes
     outputDirBase="output_camad-2019-discovery-6Remotes"
-  elif [ "$evalNumber" -eq 3 ];then 
+  elif [ "$evalNumber" -eq 3 ];then
     ###Eval 3: Short evaluation with reduced number of sets (2 * 2 * 3 = 24 sets)###
     txProbArray="100 50" #Transmission probability (2 values)
     nyArray="1 2 6" #Number of relays (3 values)
     nxArray="6" #Number of remotes (1 value)
     outputDirBase="output_camad-2019-discovery_Example"
-  else 
+  else
     echo "ERROR! Invalid evaluation number"
     exit
   fi
-  
+
   #Running the evaluation
   mkdir -p $outputDirBase
 
@@ -113,34 +113,34 @@ function RunEvaluation {
       for nf in $nfArray
       do
         for ny in $nyArray
-        do     
+        do
           setBaseForNy="set_txProb-${txProb}_nt-${nt}_nf-${nf}_ny-${ny}"
           for nx in $nxArray
-          do        
+          do
             setBaseForCompareModels="set_txProb-${txProb}_nt-${nt}_nf-${nf}_ny-${ny}_nx-${nx}"
             for model in $modelArray
-            do         
+            do
               outputDirSet="${outputDirBase}/set_txProb-${txProb}_nt-${nt}_nf-${nf}_ny-${ny}_nx-${nx}_model-${model}"
               mkdir -p $outputDirSet
-              
-              parameters="--simTime=${simTime} --txProb=${txProb} --nSubframes=${nt} --discPrbNum=${nf} --nRelayUes=${ny} --nRemoteUes=${nx} --discModel=${model}" 
-              
+
+              parameters="--simTime=${simTime} --txProb=${txProb} --nSubframes=${nt} --discPrbNum=${nf} --nRelayUes=${ny} --nRemoteUes=${nx} --discModel=${model}"
+
               RunSet $outputDirSet "$parameters" #&
-              
+
               wait
-              
+
               ProcessSet $outputDirSet $ny $nx $simTime #&
 
             done #for model in $modelArray
-                                   
+
             wait
-            
+
           done #for nx in $nxArray
-         
-        done #for ny in $nyArray  
-      
+
+        done #for ny in $nyArray
+
       done #for nf in $nfArray
-      
+
     done #for nt in $ntArray
 
   done #for txProb in $txProbArray
@@ -152,7 +152,7 @@ function RunEvaluation {
 
   nxRealArray=( $nxArray )
   nxLenght=${#nxRealArray[@]}
-  if [ "$nxLenght" -gt 1 ];then      
+  if [ "$nxLenght" -gt 1 ];then
     ###All txProb and Models for a given Ny, depending on nx
     for nt in $ntArray
       do
@@ -168,20 +168,20 @@ function RunEvaluation {
             for model in $modelArray
             do
               for txProb in $txProbArray
-              do       
+              do
                 setBaseForNy="set_txProb-${txProb}_nt-${nt}_nf-${nf}_ny-${ny}"
                 echo -e "nx\tMean\tCI" > ${outputDirBase}/${setBaseForNy}_${timeMetric}_CI_model${model}.txt
                 for nx in $nxArray
-                do 
+                do
                   awk -v nx=$nx '{print nx"\t"$0; }' ${outputDirBase}/${setBaseForNy}_nx-${nx}_model-${model}/${timeMetric}_CI.txt >> ${outputDirBase}/${setBaseForNy}_${timeMetric}_CI_model${model}.txt
-                done                  
+                done
                 stringToPlotForNy=" $stringToPlotForNy \"${outputDirBase}/${setBaseForNy}_${timeMetric}_CI_model${model}.txt\" using 1:2:3 with yerr lc $lc ps 2 title \"Model ${model} - txProb ${txProb}\", '' using 1:2 with lines lc $lc dt $dt notitle,"
-                            
-                lc=$(($lc+1))                                   
+
+                lc=$(($lc+1))
               done #for txProb in $txProbArray
               dt=$(($dt-1))
             done #for model in $modelArray
-            echo "reset 
+            echo "reset
                   set terminal pngcairo nocrop enhanced size 1280,800 font 'Helvetica,16
                   set output \"${outputDirBase}/set_ny-${ny}_${timeMetric}_CI.png\"
                   set title \" ${timeMetric} \n Ny = ${ny} Relays \" noenhanced
@@ -192,9 +192,9 @@ function RunEvaluation {
                   set logscale y 10
                   set key outside right center
                   plot $stringToPlotForNy " | gnuplot
-           
-            
-          done #for ny in $nyArray  
+
+
+          done #for ny in $nyArray
         done #for timeMetric in $allTimeMetrics
 
         lc=1
@@ -207,19 +207,19 @@ function RunEvaluation {
             for model in $modelArray
             do
               for txProb in $txProbArray
-              do       
+              do
                 setBaseForNy="set_txProb-${txProb}_nt-${nt}_nf-${nf}_ny-${ny}"
                 echo -e "nx\tMean\tCI" > ${outputDirBase}/${setBaseForNy}_${numTxMetric}_CI_model${model}.txt
                 for nx in $nxArray
-                do 
+                do
                   awk -v nx=$nx '{print nx"\t"$0; }' ${outputDirBase}/${setBaseForNy}_nx-${nx}_model-${model}/${numTxMetric}_CI.txt >> ${outputDirBase}/${setBaseForNy}_${numTxMetric}_CI_model${model}.txt
-                done    
+                done
                 stringToPlotForNy=" $stringToPlotForNy \"${outputDirBase}/${setBaseForNy}_${numTxMetric}_CI_model${model}.txt\" using 1:2:3 with yerr lc $lc ps 2 title \"Model ${model} - txProb ${txProb}\", '' using 1:2 with lines lc $lc dt $dt notitle,"
                 lc=$(($lc+1))
               done #for txProb in $txProbArray
               dt=$(($dt-1))
             done #for model in $modelArray
-            echo "reset 
+            echo "reset
                   set terminal pngcairo nocrop enhanced size 1280,800 font 'Helvetica,16
                   set output \"${outputDirBase}/set_ny-${ny}_${numTxMetric}_CI.png\"
                   set title \" ${numTxMetric} \n Ny = ${ny} Relays \" noenhanced
@@ -229,13 +229,13 @@ function RunEvaluation {
                   set yrange [0:]
                   set key outside right center
                   plot $stringToPlotForNy " | gnuplot
-                             
-          done #for ny in $nyArray  
-        done #for numTxMetric in $allNumTxMetrics        
+
+          done #for ny in $nyArray
+        done #for numTxMetric in $allNumTxMetrics
       done #for nf in $nfArray
     done #for nt in $ntArray
     ###END All txProb and Models for a given Ny, depending on nx
-   
+
   fi #if [ "$nxLenght" -gt 1 ];then
 
 
@@ -263,18 +263,18 @@ function RunEvaluation {
                 setBase="set_txProb-${txProb}_nt-${nt}_nf-${nf}"
                 echo -e "ny\tMean\tCI" > ${outputDirBase}/${setBase}_nx-${nx}_${timeMetric}_CI_model${model}.txt
                 for ny in $nyArray
-                do 
+                do
                   awk -v ny=$ny '{print ny"\t"$0; }' ${outputDirBase}/${setBase}_ny-${ny}_nx-${nx}_model-${model}/${timeMetric}_CI.txt >> ${outputDirBase}/${setBase}_nx-${nx}_${timeMetric}_CI_model${model}.txt
                 done
-                        
+
                 stringToPlotForNx=" $stringToPlotForNx \"${outputDirBase}/${setBase}_nx-${nx}_${timeMetric}_CI_model${model}.txt\" using 1:2:3 with yerr lc $lc ps 2 title \"Model ${model} - txProb ${txProb}\", '' using 1:2 with lines lc $lc dt $dt notitle,"
-                          
+
                 lc=$(($lc+1))
 
               done #for txProb in $txProbArray
               dt=$(($dt-1))
             done #for model in $modelArray
-            echo "reset 
+            echo "reset
                   set terminal pngcairo nocrop enhanced size 1280,800 font 'Helvetica,16
                   set output \"${outputDirBase}/set_nx-${nx}_${timeMetric}_CI.png\"
                   set title \" ${timeMetric} \n Nx = ${nx} Remotes \" noenhanced
@@ -284,9 +284,9 @@ function RunEvaluation {
                   set yrange [1:]
                   set logscale y 10
                   set key outside right center
-                  plot $stringToPlotForNx " | gnuplot   
-                  
-          done #for nx in $nxArray  
+                  plot $stringToPlotForNx " | gnuplot
+
+          done #for nx in $nxArray
         done #for timeMetric in $allTimeMetrics
 
         lc=1
@@ -299,11 +299,11 @@ function RunEvaluation {
             for model in $modelArray
             do
               for txProb in $txProbArray
-              do       
+              do
                 setBase="set_txProb-${txProb}_nt-${nt}_nf-${nf}"
                 echo -e "ny\tMean\tCI" > ${outputDirBase}/${setBase}_nx-${nx}_${numTxMetric}_CI_model${model}.txt
                 for ny in $nyArray
-                do 
+                do
                   awk -v ny=$ny '{print ny"\t"$0; }' ${outputDirBase}/${setBase}_ny-${ny}_nx-${nx}_model-${model}/${numTxMetric}_CI.txt >> ${outputDirBase}/${setBase}_nx-${nx}_${numTxMetric}_CI_model${model}.txt
                 done
 
@@ -312,7 +312,7 @@ function RunEvaluation {
               done #for txProb in $txProbArray
               dt=$(($dt-1))
             done #for model in $modelArray
-            echo "reset 
+            echo "reset
                   set terminal pngcairo nocrop enhanced size 1280,800 font 'Helvetica,16
                   set output \"${outputDirBase}/set_nx-${nx}_${numTxMetric}_CI.png\"
                   set title \" ${numTxMetric} \n Nx = ${nx} Remotes \" noenhanced
@@ -322,8 +322,8 @@ function RunEvaluation {
                   set yrange [0:]
                   set key outside right center
                   plot $stringToPlotForNx " | gnuplot
-                            
-          done #for nx in $nxArray  
+
+          done #for nx in $nxArray
         done #for numTxMetric in $allNumTxMetrics
 
       done #for nf in $nfArray
@@ -337,29 +337,29 @@ function RunEvaluation {
 function RunSet {
   outputDirSet=$1
   parameters=$2
-  echo -e "Running Set: $outputDirSet" 
+  echo -e "Running Set: $outputDirSet"
   for ((runN=$startRun; runN<=$endRun; runN++))
-  do  
+  do
     outputDir="${outputDirSet}/run${runN}"
     mkdir -p $outputDir
     cd $outputDir
     simParameters="$parameters --RngRun=${runN}"
 
-    echo -e "Running Trial: $outputDir" 
-    echo -e "outputDir: $outputDir \n simParameters: $simParameters" > info.txt 
-    
+    echo -e "Running Trial: $outputDir"
+    echo -e "outputDir: $outputDir \n simParameters: $simParameters" > info.txt
+
     #Run the simulation
     ../../../build/scratch/$scenario $simParameters &
 
     n=$(($runN % $nThreads))
     if [ "$n" -eq 0 ];then
-	     wait
+         wait
     fi
- 
+
     cd ../../.. #ns3/baseDir/SetDir/RunDir   Important!
 
   done # for ((runN=$startRun; runN<=$endRun; runN++))
-} #function RunSet 
+} #function RunSet
 
 function ProcessSet {
 
@@ -369,57 +369,57 @@ function ProcessSet {
   simTime=$4
 
   sep="/set_"
-  setParamsString="${outputDirSet#*$sep}"  
-  echo -e "Processing Set: $outputDirSet ny: $ny nx: $nx" 
- 
+  setParamsString="${outputDirSet#*$sep}"
+  echo -e "Processing Set: $outputDirSet ny: $ny nx: $nx"
+
   #Obtain run metrics
   for ((runN=$startRun; runN<=$endRun; runN++))
-  do  
+  do
     outputDir="${outputDirSet}/run${runN}"
 
     cd $outputDir
-    
+
     randomRelayId=`awk -v runN=$runN -v ny=$ny 'BEGIN{srand(runN);}{}END{print (1 + int(rand()*ny)); }' info.txt`
     randomRemoteId=`awk -v runN=$runN -v ny=$ny -v nx=$nx 'BEGIN{srand(runN);}{}END{print (ny+1 + int(rand()*nx)); }' info.txt`
 
-    echo -e "Processing Trial: $outputDir randomRelayId: $randomRelayId randomRemoteId: $randomRemoteId" 
+    echo -e "Processing Trial: $outputDir randomRelayId: $randomRelayId randomRemoteId: $randomRemoteId"
 
 
-       
-    #Time for All Remote UEs to discover All Relay UEs	-		1 value
+
+    #Time for All Remote UEs to discover All Relay UEs  -       1 value
     awk -v  nx=$nx 'END{ if (FNR == (nx + 1)){ print $4"\t"$5;} else {print "nan\tnan";}}' TimesEachRemoteDiscoversAllRelays.txt > TimeAllRemotesDiscoverAllRelays.txt
-   
-    # The column $15 of SlDchMacStats.txt is the 'ContentType', which is 
-    # equal to '4' for discovery messages sent by the relays 
-    #(i.e., RelayAnnouncements and RelayResponses) 
-    
+
+    # The column $15 of SlDchMacStats.txt is the 'ContentType', which is
+    # equal to '4' for discovery messages sent by the relays
+    #(i.e., RelayAnnouncements and RelayResponses)
+
     ### Number of discovery messages transmited by all relays in simulation time
     startEvalTime=4000 # (ms) remotesStartTime
     endEvalTime=$(($simTime*1000))
     awk -v startEvalTime=$startEvalTime -v endEvalTime=$endEvalTime 'BEGIN {count=0; evalPeriodLength=endEvalTime-startEvalTime; }
       {if ($1 != "Time") {if ($1 >= startEvalTime && $1 <= endEvalTime && $15 == 4) { count+=1;} else if ($1 > endEvalTime){exit;} } }
       END {print evalPeriodLength"\t"count;}' SlDchMacStats.txt > NumberOfDiscoveryMessagesSentByAllRelays.txt
-      
+
     n=$(($runN % $nThreads))
     if [ "$n" -eq 0 ];then
        wait
     fi
-    
+
     cd ../../.. #ns3/baseDir/SetDir/RunDir   Important!
 
   done #  for ((runN=$startRun; runN<=$endRun; runN++))
-  
+
   #Obtain set metrics
-  
+
   #### Time metrics ####
   allTimeMetrics="TimeAllRemotesDiscoverAllRelays"
-  
+
   for timeMetric in $allTimeMetrics
   do
     #### Number of Periods ($2) #####
     #Gathering all the data
     awk '{print $2;}' ${outputDirSet}/run*/${timeMetric}.txt | sort -n > "${outputDirSet}/${timeMetric}_AllData.txt"
-  
+
     #Mean and 95% Confidence interval
     awk 'BEGIN{sum=0; count=0; sumForStd=0; }
     {
@@ -428,39 +428,39 @@ function ProcessSet {
       }
     }END{
       if (count > 0 ){
-        mean=sum/count; 
+        mean=sum/count;
         for (i in values) {
-          delta=values[i]-mean; 
-          sumForStd+=(delta^2); 
+          delta=values[i]-mean;
+          sumForStd+=(delta^2);
         }
-        stdev = sqrt(sumForStd/count); 
+        stdev = sqrt(sumForStd/count);
         ci = 1.96 * (stdev/(sqrt (count)));
         #print mean, stdev;
         print mean"\t"ci;
-      } 
+      }
       else {
         print "nan\tnan";
       }
     }'  "${outputDirSet}/${timeMetric}_AllData.txt" | sort -g > "${outputDirSet}/${timeMetric}_CI.txt"
-    
-    
+
+
     #Cleaning
-    rm "${outputDirSet}/${timeMetric}_AllData.txt" 
-    
+    rm "${outputDirSet}/${timeMetric}_AllData.txt"
+
   done # for timeMetric in $allTimeMetrics
-   
-   
+
+
   #### Number of Transmissions metrics ####
   allNumTxMetrics="NumberOfDiscoveryMessagesSentByAllRelays"
 
- 
+
   for numTxMetric in $allNumTxMetrics
   do
 
     #### Number of Transmissions ($2) #####
     #Gathering all the data
     awk '{print $2;}' ${outputDirSet}/run*/${numTxMetric}.txt | sort -n > "${outputDirSet}/${numTxMetric}_AllData.txt"
-  
+
     #Mean and 95% Confidence interval
     awk 'BEGIN{sum=0; count=0; sumForStd=0; }
     {
@@ -469,27 +469,27 @@ function ProcessSet {
       }
     }END{
       if (count > 0 ){
-        mean=sum/count; 
+        mean=sum/count;
         for (i in values) {
-          delta=values[i]-mean; 
-          sumForStd+=(delta^2); 
+          delta=values[i]-mean;
+          sumForStd+=(delta^2);
         }
-        stdev = sqrt(sumForStd/count); 
+        stdev = sqrt(sumForStd/count);
         ci = 1.96 * (stdev/(sqrt (count)));
         #print mean, stdev;
         print mean"\t"ci;
-      } 
+      }
       else {
         print "nan\tnan";
       }
     }'  "${outputDirSet}/${numTxMetric}_AllData.txt" | sort -g > "${outputDirSet}/${numTxMetric}_CI.txt"
-    
-    
+
+
     #Cleaning
-    rm "${outputDirSet}/${numTxMetric}_AllData.txt" 
-    
+    rm "${outputDirSet}/${numTxMetric}_AllData.txt"
+
   done #for numTxMetric in $allNumTxMetrics
-  
+
 } #function ProcessSet
 
 

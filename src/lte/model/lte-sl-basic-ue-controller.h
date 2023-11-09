@@ -36,15 +36,15 @@
 #ifndef LTE_SL_BASIC_UE_CONTROLLER_H
 #define LTE_SL_BASIC_UE_CONTROLLER_H
 
+#include "lte-sl-ue-controller.h"
 #include "lte-sl-ue-ctrl-sap.h"
+#include "lte-sl-ue-net-device.h"
+#include "lte-ue-net-device.h"
 
 #include "ns3/internet-module.h"
 #include "ns3/random-variable-stream.h"
 #include "ns3/traffic-control-module.h"
 #include <ns3/lte-sidelink-helper.h>
-#include <ns3/lte-sl-ue-controller.h>
-#include <ns3/lte-sl-ue-net-device.h>
-#include <ns3/lte-ue-net-device.h>
 
 namespace ns3
 {
@@ -90,7 +90,7 @@ class LteSlBasicUeController : public LteSlUeController
                                    // having a selected Relay UE
         MAX_SDRSRP_NO_RESELECTION, // Maximum SD-RSRP selection among valid Relay UEs only if not
                                    // having a selected Relay UE
-        MAX_SDRSRP // Maximum SD-RSRP selection among valid Relay UEs every time
+        MAX_SDRSRP                 // Maximum SD-RSRP selection among valid Relay UEs every time
     };
 
     /// Pc5 connection status
@@ -128,26 +128,26 @@ class LteSlBasicUeController : public LteSlUeController
 
     // inherited from LteSlUeController
     void DoRecvRelayServiceDiscovery(uint32_t serviceCode,
-                                             uint64_t announcerInfo,
-                                             uint32_t proseRelayUeId,
-                                             uint8_t statusIndicator) override;
+                                     uint64_t announcerInfo,
+                                     uint32_t proseRelayUeId,
+                                     uint8_t statusIndicator) override;
     void DoPc5ConnectionStarted(uint32_t peerUeId,
-                                        uint32_t selfUeId,
-                                        LteSlUeRrc::RelayRole role) override;
+                                uint32_t selfUeId,
+                                LteSlUeRrc::RelayRole role) override;
     void DoPc5SecuredEstablished(uint32_t remoteUeId,
-                                         uint32_t selfUeId,
-                                         LteSlUeRrc::RelayRole role) override;
+                                 uint32_t selfUeId,
+                                 LteSlUeRrc::RelayRole role) override;
     void DoPc5ConnectionTerminated(uint32_t remoteUeId,
-                                           uint32_t selfUeId,
-                                           LteSlUeRrc::RelayRole role) override;
+                                   uint32_t selfUeId,
+                                   LteSlUeRrc::RelayRole role) override;
     void DoPc5ConnectionAborted(uint32_t peerUeId,
-                                        uint32_t selfUeId,
-                                        LteSlUeRrc::RelayRole role,
-                                        LteSlO2oCommParams::UeO2ORejectReason reason) override;
+                                uint32_t selfUeId,
+                                LteSlUeRrc::RelayRole role,
+                                LteSlO2oCommParams::UeO2ORejectReason reason) override;
     void DoRecvRemoteUeReport(uint64_t localImsi, uint32_t peerUeId, uint64_t remoteImsi) override;
     uint64_t DoRelayUeSelection(std::map<uint64_t, double> validRelays,
-                                        uint32_t serviceCode,
-                                        uint64_t currentRelayId) override;
+                                uint32_t serviceCode,
+                                uint64_t currentRelayId) override;
 
     /** The UE netdevice to access different layers of the UE stack */
     Ptr<LteUeNetDevice> m_netDevice;

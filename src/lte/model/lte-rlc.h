@@ -202,9 +202,9 @@ class LteRlc : public Object // SimpleRefCount<LteRlc>
     uint16_t m_rnti; ///< RNTI
     uint8_t m_lcid;  ///< LCID
     uint16_t m_packetDelayBudgetMs{
-        UINT16_MAX}; //!< the packet delay budget in ms of the corresponding logical channel
-    uint32_t m_srcL2Id;        ///< Source L2 ID (24 bits)
-    uint32_t m_dstL2Id;        ///< Destination L2 ID (24 bits)
+        UINT16_MAX};    //!< the packet delay budget in ms of the corresponding logical channel
+    uint32_t m_srcL2Id; ///< Source L2 ID (24 bits)
+    uint32_t m_dstL2Id; ///< Destination L2 ID (24 bits)
     ChannelType m_channelType; ///< The logical channel type.
 
     /**

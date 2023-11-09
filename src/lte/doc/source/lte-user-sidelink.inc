@@ -114,7 +114,7 @@ simulation time and the output of NS logs of the specified classes by using the
 corresponding command line variables in the simulation script. For example, a
 user can run the simulation as follows::
 
-./waf --run "lte-sl-in-covrg-comm-mode1 --simTime=7 --enableNsLogs=false"
+./ns3 run "lte-sl-in-covrg-comm-mode1 --simTime=7 --enableNsLogs=false"
 
 The simulation time is in seconds. Moreover, this example can support IPv6
 instead of the default IPv4 if the ``--useIPv6`` command-line argument
@@ -129,109 +129,108 @@ Configuration of LTE and Sidelink default parameters
 The simulation script begins with the configuration of the parameters of the
 Sidelink scheduler as follows.
  
-* Configure the Sidelink scheduler : ::
+* Configure the Sidelink scheduler: ::
 
-   Config::SetDefault ("ns3::RrSlFfMacScheduler::Itrp", UintegerValue (0));
-   Config::SetDefault ("ns3::RrSlFfMacScheduler::SlGrantSize", UintegerValue (5));
+   Config::SetDefault("ns3::RrSlFfMacScheduler::Itrp", UintegerValue(0));
+   Config::SetDefault("ns3::RrSlFfMacScheduler::SlGrantSize", UintegerValue(5));
 
 The ``ns3::RrSlFfMacScheduler`` is a very simple round robin scheduler, which
 uses a fixed TRP index value and number of RBs to be allocated to a UE.
 
-   
-* Configure the frequency and the bandwidth : ::
+* Configure the frequency and the bandwidth: ::
 
-   Config::SetDefault ("ns3::LteEnbNetDevice::DlEarfcn", UintegerValue (100));
-   Config::SetDefault ("ns3::LteUeNetDevice::DlEarfcn", UintegerValue (100));
-   Config::SetDefault ("ns3::LteEnbNetDevice::UlEarfcn", UintegerValue (18100));
-   Config::SetDefault ("ns3::LteEnbNetDevice::DlBandwidth", UintegerValue (50));
-   Config::SetDefault ("ns3::LteEnbNetDevice::UlBandwidth", UintegerValue (50));
+   Config::SetDefault("ns3::LteEnbNetDevice::DlEarfcn", UintegerValue(100));
+   Config::SetDefault("ns3::LteUeNetDevice::DlEarfcn", UintegerValue(100));
+   Config::SetDefault("ns3::LteEnbNetDevice::UlEarfcn", UintegerValue(18100));
+   Config::SetDefault("ns3::LteEnbNetDevice::DlBandwidth", UintegerValue(50));
+   Config::SetDefault("ns3::LteEnbNetDevice::UlBandwidth", UintegerValue(50));
 
 We use the LTE Band 1 for both LTE and Sidelink communication.
 
-* Configure the error models : ::
+* Configure the error models: ::
    
    // For PSSCH
-   Config::SetDefault ("ns3::LteSpectrumPhy::SlDataErrorModelEnabled",
-                                                        BooleanValue (true));
+   Config::SetDefault("ns3::LteSpectrumPhy::SlDataErrorModelEnabled",
+                                                        BooleanValue(true));
 
    // For PSCCH
-   Config::SetDefault ("ns3::LteSpectrumPhy::SlCtrlErrorModelEnabled",
-                                                        BooleanValue (true));
+   Config::SetDefault("ns3::LteSpectrumPhy::SlCtrlErrorModelEnabled",
+                                                        BooleanValue(true));
 
-   Config::SetDefault ("ns3::LteSpectrumPhy::DropRbOnCollisionEnabled",
-							BooleanValue (false));
+   Config::SetDefault("ns3::LteSpectrumPhy::DropRbOnCollisionEnabled",
+							BooleanValue(false));
 
-* Configure the transmit power of the eNB and the UEs : ::
+* Configure the transmit power of the eNB and the UEs: ::
 
-   Config::SetDefault ("ns3::LteUePhy::TxPower", DoubleValue (23.0));
-   Config::SetDefault ("ns3::LteEnbPhy::TxPower", DoubleValue (30.0));
+   Config::SetDefault("ns3::LteUePhy::TxPower", DoubleValue(23.0));
+   Config::SetDefault("ns3::LteEnbPhy::TxPower", DoubleValue(30.0));
 
 The powers configured are in dBm.
 
 Topology configuration
 ----------------------
 
-* Instantiating LTE, EPC and Sidelink helpers : ::
+* Instantiating LTE, EPC and Sidelink helpers: ::
 
-   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
-   Ptr<PointToPointEpcHelper>  epcHelper = CreateObject<PointToPointEpcHelper> ();
-   lteHelper->SetEpcHelper (epcHelper);
+   Ptr<LteHelper> lteHelper = CreateObject<LteHelper>();
+   Ptr<PointToPointEpcHelper> epcHelper = CreateObject<PointToPointEpcHelper>();
+   lteHelper->SetEpcHelper(epcHelper);
 
-   Ptr<LteSidelinkHelper> proseHelper = CreateObject<LteSidelinkHelper> ();
-   proseHelper->SetLteHelper (lteHelper);
+   Ptr<LteSidelinkHelper> proseHelper = CreateObject<LteSidelinkHelper>();
+   proseHelper->SetLteHelper(lteHelper);
 
-* Configuring the pathloss model : ::
+* Configuring the pathloss model: ::
 
-   lteHelper->SetAttribute ("PathlossModel", 
-				StringValue ("ns3::Cost231PropagationLossModel"));
+   lteHelper->SetAttribute("PathlossModel", 
+				StringValue("ns3::Cost231PropagationLossModel"));
 
-* Enabling the Sidelink : ::
+* Enabling the Sidelink: ::
    
-   lteHelper->SetAttribute ("UseSidelink", BooleanValue (true));
+   lteHelper->SetAttribute("UseSidelink", BooleanValue(true));
 
 **Note : Attribute ``UseSidelink`` must be set before installing the UE devices.**
 
-* Configuring the scheduler : ::
+* Configuring the scheduler: ::
 
-   lteHelper->SetSchedulerType ("ns3::RrSlFfMacScheduler");
+   lteHelper->SetSchedulerType("ns3::RrSlFfMacScheduler");
 
-* Creating the eNB and UE nodes and setting their mobility : ::
+* Creating the eNB and UE nodes and setting their mobility: ::
 
    NodeContainer enbNode;
-   enbNode.Create (1);
+   enbNode.Create(1);
    NodeContainer ueNodes;
-   ueNodes.Create (2);
+   ueNodes.Create(2);
 
    Ptr<ListPositionAllocator> positionAllocEnb = 
-					CreateObject<ListPositionAllocator> ();
-   positionAllocEnb->Add (Vector (0.0, 0.0, 30.0));
+					CreateObject<ListPositionAllocator>();
+   positionAllocEnb->Add (Vector(0.0, 0.0, 30.0));
    Ptr<ListPositionAllocator> positionAllocUe1 = 
-					CreateObject<ListPositionAllocator> ();
-   positionAllocUe1->Add (Vector (10.0, 0.0, 1.5));
+					CreateObject<ListPositionAllocator>();
+   positionAllocUe1->Add (Vector(10.0, 0.0, 1.5));
    Ptr<ListPositionAllocator> positionAllocUe2 = 
-					CreateObject<ListPositionAllocator> ();
-   positionAllocUe2->Add (Vector (-10.0, 0.0, 1.5));
+					CreateObject<ListPositionAllocator>();
+   positionAllocUe2->Add (Vector(-10.0, 0.0, 1.5));
 
    //Install mobility
    MobilityHelper mobilityeNodeB;
-   mobilityeNodeB.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
-   mobilityeNodeB.SetPositionAllocator (positionAllocEnb);
-   mobilityeNodeB.Install (enbNode);
+   mobilityeNodeB.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+   mobilityeNodeB.SetPositionAllocator(positionAllocEnb);
+   mobilityeNodeB.Install(enbNode);
 
    MobilityHelper mobilityUe1;
-   mobilityUe1.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
-   mobilityUe1.SetPositionAllocator (positionAllocUe1);
-   mobilityUe1.Install (ueNodes.Get (0));
+   mobilityUe1.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+   mobilityUe1.SetPositionAllocator(positionAllocUe1);
+   mobilityUe1.Install(ueNodes.Get(0));
 
    MobilityHelper mobilityUe2;
-   mobilityUe2.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
-   mobilityUe2.SetPositionAllocator (positionAllocUe2);
-   mobilityUe2.Install (ueNodes.Get (1));
+   mobilityUe2.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+   mobilityUe2.SetPositionAllocator(positionAllocUe2);
+   mobilityUe2.Install(ueNodes.Get(1));
 
-* Installing LTE devices to the nodes : ::
+* Installing LTE devices to the nodes: ::
 
-   NetDeviceContainer enbDevs = lteHelper->InstallEnbDevice (enbNode);
-   NetDeviceContainer ueDevs = lteHelper->InstallUeDevice (ueNodes);
+   NetDeviceContainer enbDevs = lteHelper->InstallEnbDevice(enbNode);
+   NetDeviceContainer ueDevs = lteHelper->InstallUeDevice(ueNodes);
 
 Sidelink pool configuration
 ---------------------------
@@ -265,7 +264,7 @@ done by using the ``LteSlPreconfigPoolFactory`` in the following manner, ::
    pool.scheduled.mcs = 16;
    //resource pool
    LteSlResourcePoolFactory pfactory;
-   pfactory.SetHaveUeSelectedResourceConfig (false); //since we want eNB to schedule
+   pfactory.SetHaveUeSelectedResourceConfig(false); //since we want eNB to schedule
 
    //Control
    pfactory.SetControlPeriod("sf40");
@@ -275,12 +274,12 @@ done by using the ``LteSlPreconfigPoolFactory`` in the following manner, ::
    pfactory.SetControlPrbStart(0);
    pfactory.SetControlPrbEnd(49);
 
-   pool.scheduled.commTxConfig = pfactory.CreatePool ();
+   pool.scheduled.commTxConfig = pfactory.CreatePool();
 
    uint32_t groupL2Address = 255;
 
-   enbSidelinkConfiguration->AddPreconfiguredDedicatedPool (groupL2Address, pool);
-   lteHelper->InstallSidelinkConfiguration (enbDevs, enbSidelinkConfiguration);
+   enbSidelinkConfiguration->AddPreconfiguredDedicatedPool(groupL2Address, pool);
+   lteHelper->InstallSidelinkConfiguration(enbDevs, enbSidelinkConfiguration);
 
 The resources for data are computed by the scheduler on the basis of the
 scheduler's attributes configured in the start of this simulation script and
@@ -293,66 +292,66 @@ message from the eNB, as shown in Figures :ref:`fig-lte-sl-in-coverage-tx`
 and :ref:`fig-lte-sl-in-coverage-rx`::
 
   //pre-configuration for the UEs
-  Ptr<LteSlUeRrc> ueSidelinkConfiguration = CreateObject<LteSlUeRrc> ();
-  ueSidelinkConfiguration->SetSlEnabled (true);
+  Ptr<LteSlUeRrc> ueSidelinkConfiguration = CreateObject<LteSlUeRrc>();
+  ueSidelinkConfiguration->SetSlEnabled(true);
   LteRrcSap::SlPreconfiguration preconfiguration;
-  ueSidelinkConfiguration->SetSlPreconfiguration (preconfiguration);
-  lteHelper->InstallSidelinkConfiguration (ueDevs, ueSidelinkConfiguration);
+  ueSidelinkConfiguration->SetSlPreconfiguration(preconfiguration);
+  lteHelper->InstallSidelinkConfiguration(ueDevs, ueSidelinkConfiguration);
 
 IP configuration
 ----------------
 
-* Installing the IP stack on the UEs and assigning IP address : ::
+* Installing the IP stack on the UEs and assigning IP address: ::
 
    //Install the IP stack on the UEs and assign IP address
    InternetStackHelper internet;
-   internet.Install (ueNodes);
+   internet.Install(ueNodes);
    Ipv4InterfaceContainer ueIpIface;
-   ueIpIface = epcHelper->AssignUeIpv4Address (NetDeviceContainer (ueDevs));
+   ueIpIface = epcHelper->AssignUeIpv4Address(NetDeviceContainer(ueDevs));
 
    // set the default gateway for the UE
    Ipv4StaticRoutingHelper ipv4RoutingHelper;
-   for (uint32_t u = 0; u < ueNodes.GetN (); ++u)
+   for (uint32_t u = 0; u < ueNodes.GetN(); ++u)
      {
-       Ptr<Node> ueNode = ueNodes.Get (u);
+       Ptr<Node> ueNode = ueNodes.Get(u);
        // Set the default gateway for the UE
        Ptr<Ipv4StaticRouting> ueStaticRouting = 
-                ipv4RoutingHelper.GetStaticRouting (ueNode->GetObject<Ipv4> ());
-       ueStaticRouting->SetDefaultRoute (epcHelper->GetUeDefaultGatewayAddress (),
+                ipv4RoutingHelper.GetStaticRouting(ueNode->GetObject<Ipv4>());
+       ueStaticRouting->SetDefaultRoute(epcHelper->GetUeDefaultGatewayAddress(),
 								1);
      }
 
 The above configuration is similar to any usual LTE example with EPC. 
 
-* Attaching the UEs to the eNB : ::
+* Attaching the UEs to the eNB: ::
 
-   lteHelper->Attach (ueDevs);
+   lteHelper->Attach(ueDevs);
 
 Application configuration
 -------------------------
 
 * Installing applications and activating Sidelink radio bearers. Note that
   two configuration options (IPv4 and IPv6) are supported; we only document
-  below the IPv4 path through the code : ::
+  below the IPv4 path through the code: ::
 
-   Ipv4Address groupAddress4 ("225.0.0.0"); //use multicast address as destination
+   Ipv4Address groupAddress4("225.0.0.0"); //use multicast address as destination
    ...
-   remoteAddress = InetSocketAddress (groupAddress4, 8000);
-   localAddress = InetSocketAddress (Ipv4Address::GetAny (), 8000);
+   remoteAddress = InetSocketAddress(groupAddress4, 8000);
+   localAddress = InetSocketAddress(Ipv4Address::GetAny(), 8000);
    ...
    OnOffHelper sidelinkClient("ns3::UdpSocketFactory", remoteAddress);
-   sidelinkClient.SetConstantRate (DataRate ("16kb/s"), 200);
+   sidelinkClient.SetConstantRate(DataRate("16kb/s"), 200);
 
-   ApplicationContainer clientApps = sidelinkClient.Install (ueNodes.Get (0));
+   ApplicationContainer clientApps = sidelinkClient.Install(ueNodes.Get(0));
    //onoff application will send the first packet at :
    //(2.9 (App Start Time) + (1600 (Pkt size in bits) / 16000 (Data rate)) = 3.0 sec
-   clientApps.Start (slBearersActivationTime + Seconds (0.9));
-   clientApps.Stop (simTime - slBearersActivationTime + Seconds (1.0));
+   clientApps.Start(slBearersActivationTime + Seconds(0.9));
+   clientApps.Stop(simTime - slBearersActivationTime + Seconds(1.0));
 
    ApplicationContainer serverApps;
-   PacketSinkHelper sidelinkSink ("ns3::UdpSocketFactory", localAddress);
-   serverApps = sidelinkSink.Install (ueNodes.Get (1));
-   serverApps.Start(Seconds (2.0));
+   PacketSinkHelper sidelinkSink("ns3::UdpSocketFactory", localAddress);
+   serverApps = sidelinkSink.Install(ueNodes.Get (1));
+   serverApps.Start(Seconds(2.0));
 
 In this example, an "OnOff" application is installed in the UE 1, which sends a
 200 byte packet with the constant bit rate of 16 kb/s. On the other hand, the UE
@@ -362,9 +361,9 @@ The Sidelink radio bearers are activated by calling the ``ActivateSidelinkBearer
 method of ``LteSidelinkHelper`` as follows: ::
 
    //Set Sidelink bearers
-   Ptr<LteSlTft> tft = Create<LteSlTft> (LteSlTft::BIDIRECTIONAL, 
+   Ptr<LteSlTft> tft = Create<LteSlTft>(LteSlTft::BIDIRECTIONAL, 
                                                      groupAddress4, groupL2Address);
-   proseHelper->ActivateSidelinkBearer (Seconds (2.0), ueDevs, tft);
+   proseHelper->ActivateSidelinkBearer(Seconds(2.0), ueDevs, tft);
 
 The ``ActivateSidelinkBearer`` method takes the following three parameters as input,
 
@@ -383,17 +382,17 @@ initializing its following parameters,
 
     #. Sidelink layer 2 group address (used as Sidelink layer 2 group id)
 
-* Activating the Sidelink traces : ::
+* Activating the Sidelink traces: ::
 
-   lteHelper->EnableSlPscchMacTraces ();
-   lteHelper->EnableSlPsschMacTraces ();
+   lteHelper->EnableSlPscchMacTraces();
+   lteHelper->EnableSlPsschMacTraces();
 
-   lteHelper->EnableSlTxPhyTraces ();
-   lteHelper->EnableSlRxPhyTraces ();
-   lteHelper->EnableSlPscchRxPhyTraces ();
+   lteHelper->EnableSlTxPhyTraces();
+   lteHelper->EnableSlRxPhyTraces();
+   lteHelper->EnableSlPscchRxPhyTraces();
 
 The above code will enable all the Sidelink related traces. We note that, the
-user can also use the classical function "LteHelper::EnableTraces ()", but this
+user can also use the classical function "LteHelper::EnableTraces()", but this
 will also output the LTE traces.
 
 Upon the completion of the simulation, the following trace files can be found in
@@ -457,7 +456,7 @@ example also has the same application, therefore, in the following, we will
 discuss only those configurations, which are MODE 2 specific. A user can run the
 simulation as follows::
 
-./waf --run "lte-sl-in-covrg-comm-mode2 --simTime=7 --enableNsLogs=false"
+./ns3 run "lte-sl-in-covrg-comm-mode2 --simTime=7 --enableNsLogs=false"
 
 The simulation time is in seconds. Similarly, this example supports IPv6 as
 an option if the ``--useIPv6`` argument is provided.
@@ -467,34 +466,34 @@ an option if the ``--useIPv6`` argument is provided.
 Configuration of LTE and Sidelink default parameters
 ----------------------------------------------------
 
-* Configuring parameters for PSSCH resource selection : ::
+* Configuring parameters for PSSCH resource selection: ::
   
    // Fixed MCS and the number of RBs
-   Config::SetDefault ("ns3::LteUeMac::SlGrantMcs", UintegerValue (16));
-   Config::SetDefault ("ns3::LteUeMac::SlGrantSize", UintegerValue (5));
+   Config::SetDefault("ns3::LteUeMac::SlGrantMcs", UintegerValue(16));
+   Config::SetDefault("ns3::LteUeMac::SlGrantSize", UintegerValue(5));
 
    // For selecting subframe indicator bitmap
-   Config::SetDefault ("ns3::LteUeMac::Ktrp", UintegerValue (1));
+   Config::SetDefault("ns3::LteUeMac::Ktrp", UintegerValue(1));
    //use default Trp index of 0 
-   Config::SetDefault ("ns3::LteUeMac::UseSetTrp", BooleanValue (true));
+   Config::SetDefault("ns3::LteUeMac::UseSetTrp", BooleanValue(true));
 
 The above parameters of ``LteUeMac`` class enable the UE to select the time
 (i.e., frame/subframe) and the frequency (i.e., RBs) resources autonomously. If
 the attribute "UseSetTrp" is false, a UE will select the TRP index randomly from
 the range of values depending on the KTRP value [TS36213]_.
 
-* Configure the error models : ::
+* Configure the error models: ::
 
    // For PSSCH
-   Config::SetDefault ("ns3::LteSpectrumPhy::SlDataErrorModelEnabled",
-                                                        BooleanValue (true));
+   Config::SetDefault("ns3::LteSpectrumPhy::SlDataErrorModelEnabled",
+                                                        BooleanValue(true));
 
    // For PSCCH
-   Config::SetDefault ("ns3::LteSpectrumPhy::SlCtrlErrorModelEnabled",
-                                                        BooleanValue (true));
+   Config::SetDefault("ns3::LteSpectrumPhy::SlCtrlErrorModelEnabled",
+                                                        BooleanValue(true));
   
-   Config::SetDefault ("ns3::LteSpectrumPhy::DropRbOnCollisionEnabled", 
-							BooleanValue (false));
+   Config::SetDefault("ns3::LteSpectrumPhy::DropRbOnCollisionEnabled", 
+							BooleanValue(false));
 
 Along with the error model configuration, by setting the "DropRbOnCollisionEnabled"
 attribute, all the TBs collided in time and frequency are dropped. This attribute
@@ -566,7 +565,7 @@ logs of the specified classes by using the corresponding command line variables
 in the simulation script. For example, a user can run the simulation as
 follows::
 
-./waf --run "lte-sl-out-of-covrg-comm --simTime=7 --enableNsLogs=false"
+./ns3 run "lte-sl-out-of-covrg-comm --simTime=7 --enableNsLogs=false"
 
 The simulation time is in seconds, and ``--useIPv6`` can be used to run
 the example with IPv6 instead of IPv4.
@@ -576,23 +575,23 @@ the example with IPv6 instead of IPv4.
 Configuration of LTE and Sidelink default parameters
 ----------------------------------------------------
 
-* Configuring parameters for PSSCH resource selection : ::
+* Configuring parameters for PSSCH resource selection: ::
   
    // Fixed MCS and the number of RBs
-   Config::SetDefault ("ns3::LteUeMac::SlGrantMcs", UintegerValue (16));
-   Config::SetDefault ("ns3::LteUeMac::SlGrantSize", UintegerValue (5));
+   Config::SetDefault("ns3::LteUeMac::SlGrantMcs", UintegerValue(16));
+   Config::SetDefault("ns3::LteUeMac::SlGrantSize", UintegerValue(5));
 
    // For selecting subframe indicator bitmap
-   Config::SetDefault ("ns3::LteUeMac::Ktrp", UintegerValue (1));
+   Config::SetDefault("ns3::LteUeMac::Ktrp", UintegerValue(1));
    //use default Trp index of 0 
-   Config::SetDefault ("ns3::LteUeMac::UseSetTrp", BooleanValue (true));
+   Config::SetDefault("ns3::LteUeMac::UseSetTrp", BooleanValue(true));
 
 The above parameters of ``LteUeMac`` class enable the UE to select the time
 (i.e., frame/subframe) and the frequency (i.e., RBs) resources autonomously. If
 the attribute "UseSetTrp" is false, a UE will select the TRP index randomly from
 the range of values depending on the KTRP value [TS36213]_.
 
-* Configure the frequency : ::
+* Configure the frequency: ::
 
    uint32_t ulEarfcn = 18100;
    uint16_t ulBandwidth = 50;
@@ -606,18 +605,18 @@ the range of values depending on the KTRP value [TS36213]_.
   model and the Sidelink pool. Similar, to the previous simple examples, we use
   the LTE Band 1 for Sidelink communication.
 
-* Configure the error models : ::
+* Configure the error models: ::
 
    // For PSSCH
-   Config::SetDefault ("ns3::LteSpectrumPhy::SlDataErrorModelEnabled",
-                                                        BooleanValue (true));
+   Config::SetDefault("ns3::LteSpectrumPhy::SlDataErrorModelEnabled",
+                                                        BooleanValue(true));
 
    // For PSCCH
-   Config::SetDefault ("ns3::LteSpectrumPhy::SlCtrlErrorModelEnabled",
-                                                        BooleanValue (true));
+   Config::SetDefault("ns3::LteSpectrumPhy::SlCtrlErrorModelEnabled",
+                                                        BooleanValue(true));
   
-   Config::SetDefault ("ns3::LteSpectrumPhy::DropRbOnCollisionEnabled", 
-							BooleanValue (false));
+   Config::SetDefault("ns3::LteSpectrumPhy::DropRbOnCollisionEnabled", 
+							BooleanValue(false));
 
 Along with the error model configuration, by setting the
 "DropRbOnCollisionEnabled" attribute all the TBs collided in time and frequency
@@ -626,27 +625,27 @@ to study the impact of collisions in MODE 2. In this example, this attribute has
 no impact as only one UE is acting as a transmitter. It is included just to make
 the users aware of this attribute.
 
-* Configure the transmit power for the UEs : ::
+* Configure the transmit power for the UEs: ::
 
-   Config::SetDefault ("ns3::LteUePhy::TxPower", DoubleValue (23.0));
+   Config::SetDefault("ns3::LteUePhy::TxPower", DoubleValue(23.0));
 
 The power configured is in dBm.
 
 Topology configuration
 ----------------------
 
-* Instantiating LTE, EPC and Sidelink helpers : ::
+* Instantiating LTE, EPC and Sidelink helpers: ::
 
-   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
-   Ptr<PointToPointEpcHelper>  epcHelper = CreateObject<PointToPointEpcHelper> ();
-   lteHelper->SetEpcHelper (epcHelper);
+   Ptr<LteHelper> lteHelper = CreateObject<LteHelper>();
+   Ptr<PointToPointEpcHelper> epcHelper = CreateObject<PointToPointEpcHelper>();
+   lteHelper->SetEpcHelper(epcHelper);
 
-   Ptr<LteSidelinkHelper> proseHelper = CreateObject<LteSidelinkHelper> ();
-   proseHelper->SetLteHelper (lteHelper);
+   Ptr<LteSidelinkHelper> proseHelper = CreateObject<LteSidelinkHelper>();
+   proseHelper->SetLteHelper(lteHelper);
 
-* Enabling the Sidelink : ::
+* Enabling the Sidelink: ::
    
-   lteHelper->SetAttribute ("UseSidelink", BooleanValue (true));
+   lteHelper->SetAttribute("UseSidelink", BooleanValue(true));
 
 **Note : Attribute ``UseSidelink`` must be set before installing the UE devices.**
 
@@ -654,28 +653,28 @@ Topology configuration
 
    (1)
 
-     lteHelper->SetAttribute ("PathlossModel", 
-                              StringValue ("ns3::Cost231PropagationLossModel"));
+     lteHelper->SetAttribute("PathlossModel", 
+                             StringValue("ns3::Cost231PropagationLossModel"));
 
    (2)
 
-     lteHelper->Initialize ();
+     lteHelper->Initialize();
 
    (3)
 
-     double ulFreq = LteSpectrumValueHelper::GetCarrierFrequency (ulEarfcn); //18100
+     double ulFreq = LteSpectrumValueHelper::GetCarrierFrequency(ulEarfcn); //18100
      NS_LOG_LOGIC ("UL freq: " << ulFreq);
-     Ptr<Object> uplinkPathlossModel = lteHelper->GetUplinkPathlossModel ();
+     Ptr<Object> uplinkPathlossModel = lteHelper->GetUplinkPathlossModel();
      Ptr<PropagationLossModel> lossModel = uplinkPathlossModel->
-                                             GetObject<PropagationLossModel> ();
+                                             GetObject<PropagationLossModel>();
      NS_ABORT_MSG_IF (lossModel == NULL, "No PathLossModel");
      bool ulFreqOk = uplinkPathlossModel->
-                       SetAttributeFailSafe ("Frequency", DoubleValue (ulFreq));
+                       SetAttributeFailSafe("Frequency", DoubleValue(ulFreq));
 
      if (!ulFreqOk)
-       {
-       NS_LOG_WARN ("UL propagation model does not have a Frequency attribute");
-       }
+     {
+         NS_LOG_WARN ("UL propagation model does not have a Frequency attribute");
+     }
 
 
 The use of eNB nodes can be bypassed by using the above commands strictly in the
@@ -686,32 +685,32 @@ The commands in step 3 are to properly configure the frequency attribute of the
 pathloss model used, which is normally done in ``InstallSingleEnb`` method of
 ``LteHelper``.
 
-* Creating the UE nodes and setting their mobility : ::
+* Creating the UE nodes and setting their mobility: ::
 
    NodeContainer ueNodes;
-   ueNodes.Create (2);
+   ueNodes.Create(2);
 
    Ptr<ListPositionAllocator> positionAllocUe1 = 
-					CreateObject<ListPositionAllocator> ();
-   positionAllocUe1->Add (Vector (0.0, 0.0, 1.5));
+					CreateObject<ListPositionAllocator>();
+   positionAllocUe1->Add(Vector(0.0, 0.0, 1.5));
    Ptr<ListPositionAllocator> positionAllocUe2 = 
-					CreateObject<ListPositionAllocator> ();
-   positionAllocUe2->Add (Vector (20.0, 0.0, 1.5));
+					CreateObject<ListPositionAllocator>();
+   positionAllocUe2->Add (Vector(20.0, 0.0, 1.5));
 
    //Install mobility
    MobilityHelper mobilityUe1;
-   mobilityUe1.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
-   mobilityUe1.SetPositionAllocator (positionAllocUe1);
-   mobilityUe1.Install (ueNodes.Get (0));
+   mobilityUe1.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+   mobilityUe1.SetPositionAllocator(positionAllocUe1);
+   mobilityUe1.Install(ueNodes.Get(0));
 
    MobilityHelper mobilityUe2;
-   mobilityUe2.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
-   mobilityUe2.SetPositionAllocator (positionAllocUe2);
-   mobilityUe2.Install (ueNodes.Get (1));
+   mobilityUe2.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+   mobilityUe2.SetPositionAllocator(positionAllocUe2);
+   mobilityUe2.Install(ueNodes.Get(1));
 
-* Installing LTE devices to the nodes : ::
+* Installing LTE devices to the nodes: ::
 
-   NetDeviceContainer ueDevs = lteHelper->InstallUeDevice (ueNodes);
+   NetDeviceContainer ueDevs = lteHelper->InstallUeDevice(ueNodes);
 
 Sidelink pool configuration
 ---------------------------
@@ -723,8 +722,8 @@ responsible for holding this per-configured pool configuration. The pool
 configuration starts by setting a flag in ``LteSlUeRrc`` as an indication that
 the Sidelink is enabled. It is configured as follows::
 
- Ptr<LteSlUeRrc> ueSidelinkConfiguration = CreateObject<LteSlUeRrc> ();
- ueSidelinkConfiguration->SetSlEnabled (true);
+ Ptr<LteSlUeRrc> ueSidelinkConfiguration = CreateObject<LteSlUeRrc>();
+ ueSidelinkConfiguration->SetSlEnabled(true);
 
 For configuring Sidelink communication pre-configured pool parameters, the IE
 "SL-Preconfiguration" defined in the standard [TS36331]_ is converted into a C++
@@ -756,9 +755,9 @@ communication pool parameters. The pool configuration is done by using the
   pfactory.SetDataPrbStart(0);
   pfactory.SetDataPrbEnd(49);
 
-  preconfiguration.preconfigComm.pools[0] = pfactory.CreatePool ();
+  preconfiguration.preconfigComm.pools[0] = pfactory.CreatePool();
 
-  ueSidelinkConfiguration->SetSlPreconfiguration (preconfiguration);
+  ueSidelinkConfiguration->SetSlPreconfiguration(preconfiguration);
   lteHelper->InstallSidelinkConfiguration (ueDevs, ueSidelinkConfiguration);
 
 In addition to the subframe indicator bitmap specified by KTRP and iTRP, Mode 2
@@ -772,47 +771,47 @@ IP configuration
 ----------------
 
 * Installing the IP stack on the UEs and assigning IP addresses (IPv4
-  code statements shown below) : ::
+  code statements shown below): ::
 
    InternetStackHelper internet;
-   internet.Install (ueNodes);
+   internet.Install(ueNodes);
    uint32_t groupL2Address = 255;
-   Ipv4Address groupAddress4 ("225.0.0.0");//use multicast address as destination
-   remoteAddress = InetSocketAddress (groupAddress4, 8000);
-   localAddress = InetSocketAddress (Ipv4Address::GetAny (), 8000);
+   Ipv4Address groupAddress4("225.0.0.0");//use multicast address as destination
+   remoteAddress = InetSocketAddress(groupAddress4, 8000);
+   localAddress = InetSocketAddress(Ipv4Address::GetAny(), 8000);
    ...
    Ipv4InterfaceContainer ueIpIface;
-   ueIpIface = epcHelper->AssignUeIpv4Address (NetDeviceContainer (ueDevs));
+   ueIpIface = epcHelper->AssignUeIpv4Address(NetDeviceContainer(ueDevs));
    Ipv4StaticRoutingHelper ipv4RoutingHelper;
-   for (uint32_t u = 0; u < ueNodes.GetN (); ++u)
+   for (uint32_t u = 0; u < ueNodes.GetN(); ++u)
      {
-       Ptr<Node> ueNode = ueNodes.Get (u);
+       Ptr<Node> ueNode = ueNodes.Get(u);
        // Set the default gateway for the UE
        Ptr<Ipv4StaticRouting> ueStaticRouting = 
-                ipv4RoutingHelper.GetStaticRouting (ueNode->GetObject<Ipv4> ());
+                ipv4RoutingHelper.GetStaticRouting(ueNode->GetObject<Ipv4>());
        ueStaticRouting->SetDefaultRoute 
-                                  (epcHelper->GetUeDefaultGatewayAddress (), 1);
+                                  (epcHelper->GetUeDefaultGatewayAddress(), 1);
      }
   
 Application configuration
 -------------------------
 
-* Installing applications and activating Sidelink radio bearers : ::
+* Installing applications and activating Sidelink radio bearers: ::
 
    //Set Application in the UEs
    OnOffHelper sidelinkClient("ns3::UdpSocketFactory", remoteAddress);
-   sidelinkClient.SetConstantRate (DataRate ("16kb/s"), 200);
+   sidelinkClient.SetConstantRate(DataRate("16kb/s"), 200);
 
-   ApplicationContainer clientApps = sidelinkClient.Install (ueNodes.Get (0));
+   ApplicationContainer clientApps = sidelinkClient.Install(ueNodes.Get(0));
    //onoff application will send the first packet at :
    //(2.9 (App Start Time) + (1600 (Pkt size in bits) / 16000 (Data rate)) = 3.0 sec
-   clientApps.Start (slBearersActivationTime + Seconds (0.9));
-   clientApps.Stop (simTime - slBearersActivationTime + Seconds (1.0));
+   clientApps.Start(slBearersActivationTime + Seconds(0.9));
+   clientApps.Stop(simTime - slBearersActivationTime + Seconds(1.0));
 
    ApplicationContainer serverApps;
-   PacketSinkHelper sidelinkSink ("ns3::UdpSocketFactory", localAddress);
-   serverApps = sidelinkSink.Install (ueNodes.Get (1));
-   serverApps.Start(Seconds (2.0));
+   PacketSinkHelper sidelinkSink("ns3::UdpSocketFactory", localAddress);
+   serverApps = sidelinkSink.Install(ueNodes.Get(1));
+   serverApps.Start(Seconds(2.0));
 
 In this example, an "OnOff" application is installed in the UE 1, which sends a
 200 byte packet with the constant bit rate of 16 kb/s. On the other hand, the UE
@@ -822,9 +821,9 @@ The Sidelink radio bearers are activated by calling the
 ``ActivateSidelinkBearer`` method of ``LteSidelinkHelper`` as follows: ::
 
    //Set Sidelink bearers
-   Ptr<LteSlTft> tft = Create<LteSlTft> (LteSlTft::BIDIRECTIONAL,
-                                                 groupAddress4, groupL2Address);
-   proseHelper->ActivateSidelinkBearer (Seconds (2.0), ueDevs, tft);
+   Ptr<LteSlTft> tft = Create<LteSlTft>(LteSlTft::BIDIRECTIONAL,
+                                                groupAddress4, groupL2Address);
+   proseHelper->ActivateSidelinkBearer(Seconds(2.0), ueDevs, tft);
 
 The ``ActivateSidelinkBearer`` method takes the following three parameters as input,
 
@@ -843,14 +842,14 @@ initializing its following parameters,
 
     #. Sidelink layer 2 group address (used as Sidelink layer 2 group id)
 
-* Activating the Sidelink traces : ::
+* Activating the Sidelink traces: ::
 
-   lteHelper->EnableSlPscchMacTraces ();
-   lteHelper->EnableSlPsschMacTraces ();
+   lteHelper->EnableSlPscchMacTraces();
+   lteHelper->EnableSlPsschMacTraces();
 
-   lteHelper->EnableSlTxPhyTraces ();
-   lteHelper->EnableSlRxPhyTraces ();
-   lteHelper->EnableSlPscchRxPhyTraces ();
+   lteHelper->EnableSlTxPhyTraces();
+   lteHelper->EnableSlRxPhyTraces();
+   lteHelper->EnableSlPscchRxPhyTraces();
 
 The above code will enable all the Sidelink related traces.
 
@@ -935,43 +934,43 @@ configured NS logs by using the corresponding command line variables in the
 simulation script. 
 For example, a user can run the simulation as follows::
 
-./waf --run "lte-sl-in-covrg-relay --simTime=10 --enableNsLogs=false"
+./ns3 run "lte-sl-in-covrg-relay --simTime=10 --enableNsLogs=false"
 
 .. highlight:: none
 
 Configuration of LTE and Sidelink default parameters
 ----------------------------------------------------
 
-* Configuring parameters for PSSCH resource selection : ::
+* Configuring parameters for PSSCH resource selection: ::
   
    // Fixed MCS and the number of RBs
-   Config::SetDefault ("ns3::LteUeMac::SlGrantMcs", UintegerValue (16));
-   Config::SetDefault ("ns3::LteUeMac::SlGrantSize", UintegerValue (5));
+   Config::SetDefault("ns3::LteUeMac::SlGrantMcs", UintegerValue(16));
+   Config::SetDefault("ns3::LteUeMac::SlGrantSize", UintegerValue(5));
 
    // For selecting subframe indicator bitmap
-   Config::SetDefault ("ns3::LteUeMac::Ktrp", UintegerValue (1));
+   Config::SetDefault("ns3::LteUeMac::Ktrp", UintegerValue(1));
    //use default Trp index of 0 
-   Config::SetDefault ("ns3::LteUeMac::UseSetTrp", BooleanValue (false));
+   Config::SetDefault("ns3::LteUeMac::UseSetTrp", BooleanValue(false));
 
 The scenario uses MODE 2 for the Sidelink communication, where the UEs 
 select the resources autonomously from a pool specified by the eNB through
 ``RrcConnectionReconfiguration`` message. The configuration
 here is similar to the one in the lte-sl-in-covrg-comm-mode2 scenario. 
 
-* Configure the frequency and the bandwidth : ::
+* Configure the frequency and the bandwidth: ::
 
-   Config::SetDefault ("ns3::LteEnbNetDevice::DlEarfcn", UintegerValue (100));
-   Config::SetDefault ("ns3::LteUeNetDevice::DlEarfcn", UintegerValue (100));
-   Config::SetDefault ("ns3::LteEnbNetDevice::UlEarfcn", UintegerValue (18100));
-   Config::SetDefault ("ns3::LteEnbNetDevice::DlBandwidth", UintegerValue (50));
-   Config::SetDefault ("ns3::LteEnbNetDevice::UlBandwidth", UintegerValue (50));
+   Config::SetDefault("ns3::LteEnbNetDevice::DlEarfcn", UintegerValue(100));
+   Config::SetDefault("ns3::LteUeNetDevice::DlEarfcn", UintegerValue(100));
+   Config::SetDefault("ns3::LteEnbNetDevice::UlEarfcn", UintegerValue(18100));
+   Config::SetDefault("ns3::LteEnbNetDevice::DlBandwidth", UintegerValue(50));
+   Config::SetDefault("ns3::LteEnbNetDevice::UlBandwidth", UintegerValue(50));
 
 We use the LTE Band 1 for both LTE and Sidelink communication.
 
-* Reduce frequency of Downlink CQI report to allow for sidelink transmissions : ::
+* Reduce frequency of Downlink CQI report to allow for sidelink transmissions: ::
 
-   Config::SetDefault ("ns3::LteUePhy::DownlinkCqiPeriodicity", 
-			TimeValue (MilliSeconds (79)));
+   Config::SetDefault("ns3::LteUePhy::DownlinkCqiPeriodicity", 
+			TimeValue(MilliSeconds(79)));
 
 The Downlink CQI report is sent in the Uplink. In this implementation, the 
 Sidelink uses the same spectrum as the Uplink and Uplink transmissions have
@@ -980,12 +979,12 @@ the Downlink CQI report to avoid too frequent Sidelink transmission drops.
 Setting the attribute value to 79 ms in the scenario script results in a 
 periodicity of 80 ms in simulation time.   
 
-* Configure the transmission power of the Radio Access Network nodes : ::
+* Configure the transmission power of the Radio Access Network nodes: ::
 
    // Set the UEs power in dBm
-   Config::SetDefault ("ns3::LteUePhy::TxPower", DoubleValue (23.0));
+   Config::SetDefault("ns3::LteUePhy::TxPower", DoubleValue(23.0));
    // Set the eNBs power in dBm
-   Config::SetDefault ("ns3::LteEnbPhy::TxPower", DoubleValue (30.0));
+   Config::SetDefault("ns3::LteEnbPhy::TxPower", DoubleValue(30.0));
 
 
 Topology configuration
@@ -993,16 +992,16 @@ Topology configuration
 
 * Instantiating LTE, EPC and Sidelink helpers and connecting them: ::
 
-   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
-   Ptr<PointToPointEpcHelper>  epcHelper = CreateObject<PointToPointEpcHelper> ();
-   lteHelper->SetEpcHelper (epcHelper);
-   Ptr<LteSidelinkHelper> proseHelper = CreateObject<LteSidelinkHelper> ();
-   proseHelper->SetLteHelper (lteHelper);
+   Ptr<LteHelper> lteHelper = CreateObject<LteHelper>();
+   Ptr<PointToPointEpcHelper> epcHelper = CreateObject<PointToPointEpcHelper>();
+   lteHelper->SetEpcHelper(epcHelper);
+   Ptr<LteSidelinkHelper> proseHelper = CreateObject<LteSidelinkHelper>();
+   proseHelper->SetLteHelper(lteHelper);
 
-* Configuring the Sidelink UE Controller : ::
+* Configuring the Sidelink UE Controller: ::
 
-   Config::SetDefault ("ns3::LteSlBasicUeController::ProseHelper", 
-				   PointerValue (proseHelper));
+   Config::SetDefault("ns3::LteSlBasicUeController::ProseHelper", 
+				   PointerValue(proseHelper));
 
 As described in the :ref:`sec-lte-sl-rrc` section, the Sidelink UE controller 
 was created to provide a framework for the implementation of custom 
@@ -1011,65 +1010,65 @@ the model is the ``LteSlBasicUeController``, which uses the instance of
 ``LteSidelinkHelper`` in the scenario to perform some of its tasks and must be 
 connected to it using the attribute system as shown above. 
 
-* Configuring the pathloss model : ::
+* Configuring the pathloss model: ::
 
-   lteHelper->SetAttribute ("PathlossModel", 
-				StringValue ("ns3::Hybrid3gppPropagationLossModel"));
+   lteHelper->SetAttribute("PathlossModel", 
+				StringValue("ns3::Hybrid3gppPropagationLossModel"));
 
-* Enabling the Sidelink : ::
+* Enabling the Sidelink: ::
    
-   lteHelper->SetAttribute ("UseSidelink", BooleanValue (true));
+   lteHelper->SetAttribute("UseSidelink", BooleanValue (true));
 
-* Creating the Remote Host and the Internet : ::
+* Creating the Remote Host and the Internet: ::
 
-   Ptr<Node> pgw = epcHelper->GetPgwNode ();
+   Ptr<Node> pgw = epcHelper->GetPgwNode();
    // Create a single RemoteHost
    NodeContainer remoteHostContainer;
-   remoteHostContainer.Create (1);
-   Ptr<Node> remoteHost = remoteHostContainer.Get (0);
+   remoteHostContainer.Create(1);
+   Ptr<Node> remoteHost = remoteHostContainer.Get(0);
    InternetStackHelper internet;
-   internet.Install (remoteHostContainer);
+   internet.Install(remoteHostContainer);
    // Create the Internet
    PointToPointHelper p2ph;
-   p2ph.SetDeviceAttribute ("DataRate", DataRateValue (DataRate ("100Gb/s")));
-   p2ph.SetDeviceAttribute ("Mtu", UintegerValue (1500));
-   p2ph.SetChannelAttribute ("Delay", TimeValue (Seconds (0.010)));
-   NetDeviceContainer internetDevices = p2ph.Install (pgw, remoteHost);
+   p2ph.SetDeviceAttribute("DataRate", DataRateValue(DataRate("100Gb/s")));
+   p2ph.SetDeviceAttribute("Mtu", UintegerValue(1500));
+   p2ph.SetChannelAttribute("Delay", TimeValue(Seconds (0.010)));
+   NetDeviceContainer internetDevices = p2ph.Install(pgw, remoteHost);
 
 
-* Creating the eNB and UE nodes and setting their position and mobility : ::
+* Creating the eNB and UE nodes and setting their position and mobility: ::
 
    NodeContainer enbNode;
-   enbNode.Create (1);
+   enbNode.Create(1);
    NodeContainer ueNodes;
-   ueNodes.Create (2);
+   ueNodes.Create(2);
    Ptr<ListPositionAllocator> positionAllocEnb = 
-					CreateObject<ListPositionAllocator> ();
-   positionAllocEnb->Add (Vector (0.0, 0.0, 30.0));
+					CreateObject<ListPositionAllocator>();
+   positionAllocEnb->Add(Vector(0.0, 0.0, 30.0));
    Ptr<ListPositionAllocator> positionAllocUe1 = 
-					CreateObject<ListPositionAllocator> ();
-   positionAllocUe1->Add (Vector (10.0, 0.0, 1.5));
+					CreateObject<ListPositionAllocator>();
+   positionAllocUe1->Add(Vector(10.0, 0.0, 1.5));
    Ptr<ListPositionAllocator> positionAllocUe2 = 
-					CreateObject<ListPositionAllocator> ();
-   positionAllocUe2->Add (Vector (-10.0, 0.0, 1.5));
+					CreateObject<ListPositionAllocator>();
+   positionAllocUe2->Add(Vector(-10.0, 0.0, 1.5));
    //Install mobility
    MobilityHelper mobilityeNodeB;
-   mobilityeNodeB.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
-   mobilityeNodeB.SetPositionAllocator (positionAllocEnb);
-   mobilityeNodeB.Install (enbNode);
+   mobilityeNodeB.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+   mobilityeNodeB.SetPositionAllocator(positionAllocEnb);
+   mobilityeNodeB.Install(enbNode);
    MobilityHelper mobilityUe1;
-   mobilityUe1.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
-   mobilityUe1.SetPositionAllocator (positionAllocUe1);
-   mobilityUe1.Install (ueNodes.Get (0));
+   mobilityUe1.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+   mobilityUe1.SetPositionAllocator(positionAllocUe1);
+   mobilityUe1.Install (ueNodes.Get(0));
    MobilityHelper mobilityUe2;
-   mobilityUe2.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
-   mobilityUe2.SetPositionAllocator (positionAllocUe2);
-   mobilityUe2.Install (ueNodes.Get (1));
+   mobilityUe2.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+   mobilityUe2.SetPositionAllocator(positionAllocUe2);
+   mobilityUe2.Install (ueNodes.Get(1));
 
-* Installing LTE devices to the nodes : ::
+* Installing LTE devices to the nodes: ::
 
-   NetDeviceContainer enbDevs = lteHelper->InstallEnbDevice (enbNode);
-   NetDeviceContainer ueDevs = lteHelper->InstallUeDevice (ueNodes);
+   NetDeviceContainer enbDevs = lteHelper->InstallEnbDevice(enbNode);
+   NetDeviceContainer ueDevs = lteHelper->InstallUeDevice(ueNodes);
 
 
 Sidelink pool configuration
@@ -1081,35 +1080,35 @@ as mentioned in :ref:`sec-lte-sl-rrc`. The pool configuration starts by
 setting a flag in ``LteSlEnbRrc`` as an indication that the Sidelink is 
 enabled and it is configured as follows::
 
-   Ptr<LteSlEnbRrc> enbSidelinkConfiguration = CreateObject<LteSlEnbRrc> ();
-   enbSidelinkConfiguration->SetSlEnabled (true);
+   Ptr<LteSlEnbRrc> enbSidelinkConfiguration = CreateObject<LteSlEnbRrc>();
+   enbSidelinkConfiguration->SetSlEnabled(true);
 
-* Configure Sidelink communication pool : ::
+* Configure Sidelink communication pool: ::
 
-   enbSidelinkConfiguration->SetDefaultPool (
-			proseHelper->GetDefaultSlCommTxResourcesSetupUeSelected ());
+   enbSidelinkConfiguration->SetDefaultPool(
+			proseHelper->GetDefaultSlCommTxResourcesSetupUeSelected());
 
 The above code uses the Sidelink helper to obtain a Mode 2 (UE_SELECTED) 
 Sidelink communication pool configured with default values, which is set
 as the default pool to be used by all the UEs attached to the eNB. 
 
-* Enable Sidelink discovery : ::
+* Enable Sidelink discovery: ::
 
-   enbSidelinkConfiguration->SetDiscEnabled (true);
+   enbSidelinkConfiguration->SetDiscEnabled(true);
 
-* Configure Sidelink discovery pool : ::
+* Configure Sidelink discovery pool: ::
 
-   enbSidelinkConfiguration->AddDiscPool (
-			proseHelper->GetDefaultSlDiscTxResourcesSetupUeSelected ());
+   enbSidelinkConfiguration->AddDiscPool(
+			proseHelper->GetDefaultSlDiscTxResourcesSetupUeSelected());
 
 Similarly to the communication pool, the Sidelink helper is used to obtain a 
 Sidelink discovery pool configured with default values, which is then installed
 as the discovery pool to be used by all the UEs attached to the eNB. 
 
-* Configure UE-to-Network Relay selection parameters : ::
+* Configure UE-to-Network Relay selection parameters: ::
 
-   enbSidelinkConfiguration->SetDiscConfigRelay (
-			proseHelper->GetDefaultSib19DiscConfigRelay ());
+   enbSidelinkConfiguration->SetDiscConfigRelay(
+			proseHelper->GetDefaultSib19DiscConfigRelay());
 
 The parameters for UE-to-Network Relay (re)selection are broadcasted in the 
 SIB19 to the UEs attached to the eNB. These parameters must be configured in the 
@@ -1118,67 +1117,64 @@ scenario when using UE-to-Network Relay, as they are required by the
 Sidelink helper is used to obtain a default configuration for those parameters,
 which are then installed in the eNB Sidelink configuration. 
 
-* Install Sidelink configuration on the eNB : ::
+* Install Sidelink configuration on the eNB: ::
 
-   lteHelper->InstallSidelinkConfiguration (enbDevs, enbSidelinkConfiguration);
+   lteHelper->InstallSidelinkConfiguration(enbDevs, enbSidelinkConfiguration);
 
-* Configure and install Sidelink preconfiguration on the UEs : ::
+* Configure and install Sidelink preconfiguration on the UEs: ::
 
-   Ptr<LteSlUeRrc> ueSidelinkConfiguration = CreateObject<LteSlUeRrc> ();
-   ueSidelinkConfiguration->SetSlEnabled (true);
+   Ptr<LteSlUeRrc> ueSidelinkConfiguration = CreateObject<LteSlUeRrc>();
+   ueSidelinkConfiguration->SetSlEnabled(true);
    LteRrcSap::SlPreconfiguration preconfiguration;
-   ueSidelinkConfiguration->SetSlPreconfiguration (preconfiguration);
-   ueSidelinkConfiguration->SetDiscEnabled (true);
+   ueSidelinkConfiguration->SetSlPreconfiguration(preconfiguration);
+   ueSidelinkConfiguration->SetDiscEnabled(true);
    uint8_t nTxResources = 3;
-   ueSidelinkConfiguration->SetDiscTxResources (nTxResources);
-   ueSidelinkConfiguration->SetDiscInterFreq (enbDevs.Get (0)->GetObject<LteEnbNetDevice> ()->GetUlEarfcn ());
-   lteHelper->InstallSidelinkConfiguration (ueDevs, ueSidelinkConfiguration);
+   ueSidelinkConfiguration->SetDiscTxResources(nTxResources);
+   ueSidelinkConfiguration->SetDiscInterFreq(enbDevs.Get(0)->GetObject<LteEnbNetDevice>()->GetUlEarfcn());
+   lteHelper->InstallSidelinkConfiguration(ueDevs, ueSidelinkConfiguration);
  
 IP configuration
 ----------------
 
 * Installing the IP stack on the UEs and assigning IP address (**Please note 
   that the UE-to-Network Relay functionality only supports IPv6 
-  configuration**) : ::
+  configuration**): ::
 
-   //Install the IP stack on the UEs and assign network IP addresses
-   internet.Install (ueNodes);
-   Ipv6InterfaceContainer ueIpIface;
-   ueIpIface = epcHelper->AssignUeIpv6Address (NetDeviceContainer (ueDevs));
+    // Install the IP stack on the UEs and assign network IP addresses
+    internet.Install(ueNodes);
+    Ipv6InterfaceContainer ueIpIface;
+    ueIpIface = epcHelper->AssignUeIpv6Address(NetDeviceContainer(ueDevs));
 
-   //Set the default gateway for the UEs
-   Ipv6StaticRoutingHelper Ipv6RoutingHelper;
-   for (uint32_t u = 0; u < ueNodes.GetN (); ++u)
+    // Set the default gateway for the UEs
+    Ipv6StaticRoutingHelper Ipv6RoutingHelper;
+    for (uint32_t u = 0; u < ueNodes.GetN(); ++u)
     {
-      Ptr<Node> ueNode = ueNodes.Get (u);
-      // Set the default gateway for the UE
-      Ptr<Ipv6StaticRouting> ueStaticRouting = 
-	  	Ipv6RoutingHelper.GetStaticRouting (ueNode->GetObject<Ipv6> ());
-      ueStaticRouting->SetDefaultRoute (epcHelper->GetUeDefaultGatewayAddress6 (),
-					  1);
+        Ptr<Node> ueNode = ueNodes.Get(u);
+        // Set the default gateway for the UE
+        Ptr<Ipv6StaticRouting> ueStaticRouting =
+            Ipv6RoutingHelper.GetStaticRouting(ueNode->GetObject<Ipv6>());
+        ueStaticRouting->SetDefaultRoute(epcHelper->GetUeDefaultGatewayAddress6(), 1);
     }
+ 
+    // Configure IP for the nodes in the Internet (PGW and RemoteHost)
+    Ipv6AddressHelper ipv6h;
+    ipv6h.SetBase(Ipv6Address("6001:db80::"), Ipv6Prefix(64));
+    Ipv6InterfaceContainer internetIpIfaces = ipv6h.Assign(internetDevices);
+    internetIpIfaces.SetForwarding(0, true);
+    internetIpIfaces.SetDefaultRouteInAllNodes(0);
 
-   //Configure IP for the nodes in the Internet (PGW and RemoteHost)
-   Ipv6AddressHelper ipv6h;
-   ipv6h.SetBase (Ipv6Address ("6001:db80::"), Ipv6Prefix (64));
-   Ipv6InterfaceContainer internetIpIfaces = ipv6h.Assign (internetDevices);
-   internetIpIfaces.SetForwarding (0, true);
-   internetIpIfaces.SetDefaultRouteInAllNodes (0);
+    // Set route for the Remote Host to join the LTE network nodes
+    Ipv6StaticRoutingHelper ipv6RoutingHelper;
+    Ptr<Ipv6StaticRouting> remoteHostStaticRouting =
+        ipv6RoutingHelper.GetStaticRouting(remoteHost->GetObject<Ipv6>());
+    remoteHostStaticRouting
+        ->AddNetworkRouteTo("7777:f000::", Ipv6Prefix(60), internetIpIfaces.GetAddress(0, 1), 1, 0);
 
-   //Set route for the Remote Host to join the LTE network nodes
-   Ipv6StaticRoutingHelper ipv6RoutingHelper;
-   Ptr<Ipv6StaticRouting> remoteHostStaticRouting = 
-   	ipv6RoutingHelper.GetStaticRouting (remoteHost->GetObject<Ipv6> ());
-   remoteHostStaticRouting->AddNetworkRouteTo ("7777:f000::", Ipv6Prefix (60),
-   				internetIpIfaces.GetAddress (0, 1), 1, 0);
-											   
+    //Configure UE-to-Network Relay network
+    proseHelper->SetIpv6BaseForRelayCommunication("7777:f00e::", Ipv6Prefix(60));
 
-   //Configure UE-to-Network Relay network
-   proseHelper->SetIpv6BaseForRelayCommunication ("7777:f00e::", Ipv6Prefix (60));
-
-   //Configure route between PGW and UE-to-Network Relay network
-   proseHelper->ConfigurePgwToUeToNetworkRelayRoute (pgw);
-
+    //Configure route between PGW and UE-to-Network Relay network
+    proseHelper->ConfigurePgwToUeToNetworkRelayRoute(pgw);
 
 The above configuration is similar to any usual LTE example with EPC and IPv6, 
 except the two last commands, which are used to configure the UE-to-Network 
@@ -1187,33 +1183,33 @@ In this example, this route will be used for the packets from the Remote Host
 towards the Remote UE once connected to the Relay UE. 
   
 
-* Attaching the UEs to the eNB : ::
+* Attaching the UEs to the eNB: ::
 
-   lteHelper->Attach (ueDevs);
+   lteHelper->Attach(ueDevs);
  
 Application configuration
 -------------------------
 
-* Installing applications : :: 
+* Installing applications: :: 
 
-   // interface 0 is localhost, 1 is the p2p device
-   Ipv6Address remoteHostAddr = internetIpIfaces.GetAddress (1, 1);
-   uint16_t echoPort = 8000;
+    // interface 0 is localhost, 1 is the p2p device
+    Ipv6Address remoteHostAddr = internetIpIfaces.GetAddress(1, 1);
+    uint16_t echoPort = 8000;
 
-   //Set echo server in the remote host
-   UdpEchoServerHelper echoServer (echoPort);
-   ApplicationContainer serverApps = echoServer.Install (remoteHost);
-   serverApps.Start (Seconds (1.0));
-   serverApps.Stop (Seconds (10.0));
-
-   //Set echo client in the remote UEs
-   UdpEchoClientHelper echoClient (remoteHostAddr, echoPort);
-   echoClient.SetAttribute ("MaxPackets", UintegerValue (20));
-   echoClient.SetAttribute ("Interval", TimeValue (Seconds (0.5)));
-   echoClient.SetAttribute ("PacketSize", UintegerValue (200));
-   ApplicationContainer clientApps = echoClient.Install (ueNodes.Get (1));
-   clientApps.Start (Seconds (2.0));
-   clientApps.Stop (Seconds (10.0));
+    // Set echo server in the remote host
+    UdpEchoServerHelper echoServer(echoPort);
+    ApplicationContainer serverApps = echoServer.Install(remoteHost);
+    serverApps.Start(Seconds(1.0));
+    serverApps.Stop(Seconds(10.0));
+    
+    // Set echo client in the remote UEs
+    UdpEchoClientHelper echoClient(remoteHostAddr, echoPort);
+    echoClient.SetAttribute("MaxPackets", UintegerValue(20));
+    echoClient.SetAttribute("Interval", TimeValue(Seconds(0.5)));
+    echoClient.SetAttribute("PacketSize", UintegerValue(200));
+    ApplicationContainer clientApps = echoClient.Install(ueNodes.Get(1));
+    clientApps.Start(Seconds(2.0));
+    clientApps.Stop(Seconds(10.0));
 
 In this example, an ``UdpEchoClient`` application is installed on UE 2, i.e.,
 the Remote UE, and an ``UdpEchoServer`` application is installed on the Remote
@@ -1225,31 +1221,31 @@ upon reception.
 Service configuration
 ---------------------
 
-* Configure network bearer for UE-to-Network Relay packet routing : ::
+* Configure network bearer for UE-to-Network Relay packet routing: ::
 
    //Setup dedicated bearer for the Relay UE
-   Ptr<EpcTft> tft = Create<EpcTft> ();
+   Ptr<EpcTft> tft = Create<EpcTft>();
    EpcTft::PacketFilter dlpf;
-   dlpf.localIpv6Address = proseHelper->GetIpv6NetworkForRelayCommunication ();
-   dlpf.localIpv6Prefix = proseHelper->GetIpv6PrefixForRelayCommunication ();
-   tft->Add (dlpf);
-   EpsBearer bearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT);
-   lteHelper->ActivateDedicatedEpsBearer (ueDevs.Get (0), bearer, tft);
+   dlpf.localIpv6Address = proseHelper->GetIpv6NetworkForRelayCommunication();
+   dlpf.localIpv6Prefix = proseHelper->GetIpv6PrefixForRelayCommunication();
+   tft->Add(dlpf);
+   EpsBearer bearer(EpsBearer::NGBR_VIDEO_TCP_DEFAULT);
+   lteHelper->ActivateDedicatedEpsBearer(ueDevs.Get(0), bearer, tft);
 
 In the above code, we configure an EPS bearer for the Relay UE with a packet
 filter corresponding to the UE-to-Network Relay subnetwork. This will be used
 to support the routing of packet directed to the Remote UE towards the Relay 
 UE.  
 
-* Configure start of UE-to-Network Relay services : ::
+* Configure start of UE-to-Network Relay services: ::
 
    uint32_t serviceCode = 33;
-   Simulator::Schedule (Seconds (2.0), &LteSidelinkHelper::StartRelayService, 
-                            proseHelper, ueDevs.Get (0), serviceCode, 
+   Simulator::Schedule(Seconds(2.0), &LteSidelinkHelper::StartRelayService, 
+                            proseHelper, ueDevs.Get(0), serviceCode, 
                             LteSlUeRrc::ModelA, LteSlUeRrc::RelayUE);
 
-   Simulator::Schedule (Seconds (4.0), &LteSidelinkHelper::StartRelayService, 
-                            proseHelper, ueDevs.Get (1), serviceCode, 
+   Simulator::Schedule (Seconds(4.0), &LteSidelinkHelper::StartRelayService, 
+                            proseHelper, ueDevs.Get(1), serviceCode, 
                             LteSlUeRrc::ModelA, LteSlUeRrc::RemoteUE);
 
 
@@ -1538,10 +1534,10 @@ LTE configuration before digging into D2D examples.
 
 .. highlight:: none
 
-* Randomizing the frame and subframe number of the UEs : ::
+* Randomizing the frame and subframe number of the UEs: ::
 
-   Config::SetDefault ("ns3::LteUePhy::UeRandomInitialSubframeIndication",
-                                                          BooleanValue (unsyncSl));
+   Config::SetDefault("ns3::LteUePhy::UeRandomInitialSubframeIndication",
+                                                          BooleanValue(unsyncSl));
 
 As mentioned in the design documentation :ref:`sec-lte-sl-ue-phy-sync`, by
 default all the UEs are perfectly synchronized, i.e., all the UEs in a
@@ -1550,50 +1546,50 @@ with. Therefore, to simulate synchronization and to make every UE to pick a
 random frame and subframe number the attribute
 "UeRandomInitialSubframeIndication" should be set.
 
-* Instantiating ``LteSidelinkHelper`` and setting ``LteHelper`` : ::
+* Instantiating ``LteSidelinkHelper`` and setting ``LteHelper``: ::
 
-    Ptr<LteSidelinkHelper> proseHelper = CreateObject<LteSidelinkHelper> ();
-    proseHelper->SetLteHelper (lteHelper);
+    Ptr<LteSidelinkHelper> proseHelper = CreateObject<LteSidelinkHelper>();
+    proseHelper->SetLteHelper(lteHelper);
 
 * Instantiating ``Lte3gppHexGridEnbTopologyHelper`` and setting ``LteHelper`` ::
 
     Ptr<Lte3gppHexGridEnbTopologyHelper> topoHelper =
-                               CreateObject<Lte3gppHexGridEnbTopologyHelper> ();
-    topoHelper->SetLteHelper (lteHelper);
+                               CreateObject<Lte3gppHexGridEnbTopologyHelper>();
+    topoHelper->SetLteHelper(lteHelper);
 
-* Disabling the eNB for out-of-coverage scenario : ::
+* Disabling the eNB for out-of-coverage scenario: ::
 
-    lteHelper->DisableEnbPhy (true);
+    lteHelper->DisableEnbPhy(true);
 
 **Note : Call to disable eNB PHY should happen before installing the eNB devices**
 
-* Configure the parameters for hexagonal ring topology : ::
+* Configure the parameters for hexagonal ring topology: ::
 
-    topoHelper->SetNumRings (numRings); // 1 Ring
-    topoHelper->SetInterSiteDistance (isd); // 500 m
-    topoHelper->SetMinimumDistance (10); // in meter
-    topoHelper->SetSiteHeight (32); // in meter
+    topoHelper->SetNumRings(numRings); // 1 Ring
+    topoHelper->SetInterSiteDistance(isd); // 500 m
+    topoHelper->SetMinimumDistance(10); // in meter
+    topoHelper->SetSiteHeight(32); // in meter
 
 The code above will set the parameters to build 1 ring, i.e., 1 hexagonal site,
 which will have 500 meters of inter-site distance between the sites, if the
 number of rings is more than 1. The minimum distance between an eNB and the UEs
 is set to 10 m and the eNB is at the height of 32 m above the ground.
 
-* Creating eNB nodes : ::
+* Creating eNB nodes: ::
 
     NodeContainer sectorNodes;
-    sectorNodes.Create (topoHelper->GetNumNodes ());
+    sectorNodes.Create(topoHelper->GetNumNodes());
 
-Call to ``topoHelper->GetNumNodes ()`` will return 3, which in turns would
+Call to ``topoHelper->GetNumNodes()`` will return 3, which in turns would
 create 3 sector nodes, since, it requires 3 eNBs to cover one hexagon.
 
-* Fixing eNB mobility and installing eNB devices : ::
+* Fixing eNB mobility and installing eNB devices: ::
 
     MobilityHelper mobilityeNodeB;
-    mobilityeNodeB.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
-    mobilityeNodeB.Install (sectorNodes);
+    mobilityeNodeB.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+    mobilityeNodeB.Install(sectorNodes);
     NetDeviceContainer enbDevs = topoHelper->
-                                      SetPositionAndInstallEnbDevice (sectorNodes);
+                                      SetPositionAndInstallEnbDevice(sectorNodes);
 
 The call ``SetPositionAndInstallEnbDevice`` will compute the position of each
 site and the antenna orientation of each eNB. The antenna orientation of each
@@ -1606,26 +1602,26 @@ also to be noted that the use of antenna models, e.g.,
 function ``SetPositionAndInstallEnbDevice`` is also responsible to call
 ``InstallEnbDevice`` of ``LteHelper`` for each eNB in this scenario.
 
-* Creating UE nodes : ::
+* Creating UE nodes: ::
 
     NodeContainer ueResponders;
-    ueResponders.Create (ueRespondersPerSector * sectorNodes.GetN ());
+    ueResponders.Create(ueRespondersPerSector * sectorNodes.GetN());
 
 
 This will create 3 UE nodes in total, 1 for each sector of hexagonal site.
 
 * Enabling Sidelink ::
 
-    lteHelper->SetAttribute ("UseSidelink", BooleanValue (true));
+    lteHelper->SetAttribute("UseSidelink", BooleanValue(true));
 
 **Note : Attribute ``UseSidelink`` must be set before installing the UE devices.**
 
-* Fixing UE mobility and installing UE devices : ::
+* Fixing UE mobility and installing UE devices: ::
 
 
     MobilityHelper mobilityResponders;
-    mobilityResponders.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
-    topoHelper->DropUEsUniformlyPerSector (ueResponders);
+    mobilityResponders.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+    topoHelper->DropUEsUniformlyPerSector(ueResponders);
 
 This will place 1 UE per sector by choosing their position randomly with in the
 sector, taking into account the configured minimum eNB to UE distance of 10 m.
@@ -1633,14 +1629,14 @@ This will also install the UE devices by calling ``InstallUeDevice`` of
 ``LteHelper``. The installation of the IP stack and IP address assignment is
 done in a similar fashion as explain in lte-design:ref:`sec-evolved-packet-core`
 
-* Creating groups of UEs : ::
+* Creating groups of UEs: ::
 
-    double ulEarfcn = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ()->GetUlEarfcn ();
-    double ulBandwidth = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ()->
-                                                                   GetUlBandwidth ();
+    double ulEarfcn = enbDevs.Get(0)->GetObject<LteEnbNetDevice>()->GetUlEarfcn();
+    double ulBandwidth = enbDevs.Get(0)->GetObject<LteEnbNetDevice>()->
+                                                                   GetUlBandwidth();
 
-    std::vector < NetDeviceContainer > createdgroups;
-    createdgroups = proseHelper->AssociateForBroadcast (ueTxPower, ulEarfcn,
+    std::vector<NetDeviceContainer> createdgroups;
+    createdgroups = proseHelper->AssociateForBroadcast(ueTxPower, ulEarfcn,
                                                         ulBandwidth, ueRespondersDevs,
                                                         -112, numGroups,
                                                         LteSidelinkHelper::
@@ -1665,7 +1661,7 @@ install appropriate application in UE devices.
 Application configuration
 -------------------------
 
-* Installing applications and activating Sidelink radio bearers : ::
+* Installing applications and activating Sidelink radio bearers: ::
 
    **Note : Only IPV4 is supported at this stage**
 
@@ -1673,27 +1669,27 @@ Application configuration
 
     uint32_t groupL2Address = 0x00;
 
-    Ipv4AddressGenerator::Init (Ipv4Address ("225.0.0.0"), Ipv4Mask ("255.0.0.0"));
+    Ipv4AddressGenerator::Init(Ipv4Address("225.0.0.0"), Ipv4Mask("255.0.0.0"));
     Ipv4Address groupRespondersIpv4Address = Ipv4AddressGenerator::
-                                              NextAddress (Ipv4Mask ("255.0.0.0"));
+                                              NextAddress(Ipv4Mask("255.0.0.0"));
 
-    std::vector < NetDeviceContainer >::iterator gIt;
-    for (gIt = createdgroups.begin (); gIt != createdgroups.end (); gIt++)
+    std::vector <NetDeviceContainer>::iterator gIt;
+    for (gIt = createdgroups.begin(); gIt != createdgroups.end(); gIt++)
      {
       //Create sidelink bearers
       //Use Tx for the group transmitter and Rx for all the receivers
       //split Tx/Rx
-      NetDeviceContainer txUe ((*gIt).Get (0));
+      NetDeviceContainer txUe((*gIt).Get(0));
       NetDeviceContainer rxUes = proseHelper->
-                                          RemoveNetDevice ((*gIt), (*gIt).Get (0));
+                                          RemoveNetDevice((*gIt), (*gIt).Get(0));
       Ptr<LteSlTft> tft = Create<LteSlTft> (LteSlTft::TRANSMIT,
                                        groupRespondersIpv4Address, groupL2Address);
 
       //Sidelink bearer activation
-      proseHelper->ActivateSidelinkBearer (Seconds (1.0), txUe, tft);
+      proseHelper->ActivateSidelinkBearer (Seconds(1.0), txUe, tft);
       tft = Create<LteSlTft> 
                    (LteSlTft::RECEIVE, groupRespondersIpv4Address, groupL2Address);
-      proseHelper->ActivateSidelinkBearer (Seconds (1.0), rxUes, tft);
+      proseHelper->ActivateSidelinkBearer (Seconds(1.0), rxUes, tft);
 
         .
         .
@@ -1701,7 +1697,7 @@ Application configuration
 
       UdpEchoClientHelper echoClientHelper 
                                    (groupRespondersIpv4Address, grpEchoServerPort);
-      clientRespondersApps = echoClientHelper.Install ((*gIt).Get (0)->GetNode ());
+      clientRespondersApps = echoClientHelper.Install((*gIt).Get(0)->GetNode());
 
         .
         .
@@ -1709,15 +1705,15 @@ Application configuration
 
       groupL2Address++;
       groupRespondersIpv4Address = Ipv4AddressGenerator::
-                                              NextAddress (Ipv4Mask ("255.0.0.0"));
+                                              NextAddress (Ipv4Mask("255.0.0.0"));
      }
 
    // Server Application :
 
-      PacketSinkHelper clientPacketSinkHelper ("ns3::UdpSocketFactory",
-                               InetSocketAddress (Ipv4Address::GetAny (), echoPort));
+      PacketSinkHelper clientPacketSinkHelper("ns3::UdpSocketFactory",
+                               InetSocketAddress (Ipv4Address::GetAny(), echoPort));
       ApplicationContainer clientRespondersSrvApps = 
-                                       clientPacketSinkHelper.Install (ueResponders);
+                                       clientPacketSinkHelper.Install(ueResponders);
 
 
 In the previous step we obtained the vector ``createdgroups``, containing a
@@ -1746,8 +1742,8 @@ responsible for holding this per-configured pool configuration. The pool
 configuration starts by setting a flag in ``LteSlUeRrc`` as an indication that
 the Sidelink is enabled. It is configured as follows::
 
- Ptr<LteSlUeRrc> ueSidelinkConfiguration = CreateObject<LteSlUeRrc> ();
- ueSidelinkConfiguration->SetSlEnabled (true);
+ Ptr<LteSlUeRrc> ueSidelinkConfiguration = CreateObject<LteSlUeRrc>();
+ ueSidelinkConfiguration->SetSlEnabled(true);
 
 For configuring Sidelink pre-configured pool parameters, the IE
 "SL-Preconfiguration" defined in the standard [TS36331]_ is converted into a C++
@@ -1765,7 +1761,7 @@ pool parameters for control, data and synchronization in the following manner,
  //control
  preconfiguration.preconfigComm.pools[0].scCpLen.cplen = LteRrcSap::SlCpLen::NORMAL;
  preconfiguration.preconfigComm.pools[0].scPeriod.period = LteRrcSap::
-                                                       PeriodAsEnum (slPeriod).period;
+                                                       PeriodAsEnum(slPeriod).period;
  preconfiguration.preconfigComm.pools[0].scTfResourceConfig.prbNum = pscchRbs;
  preconfiguration.preconfigComm.pools[0].scTfResourceConfig.prbStart = 3;
  preconfiguration.preconfigComm.pools[0].scTfResourceConfig.prbEnd = 46;
@@ -1780,7 +1776,7 @@ pool parameters for control, data and synchronization in the following manner,
                                                              SlHoppingConfigComm::ns4;
  preconfiguration.preconfigComm.pools[0].dataHoppingConfig.rbOffset = 0;
 
- preconfiguration.preconfigComm.pools[0].trptSubset.subset = std::bitset<3> (0x7);
+ preconfiguration.preconfigComm.pools[0].trptSubset.subset = std::bitset<3>(0x7);
  preconfiguration.preconfigComm.pools[0].dataTfResourceConfig.prbNum = 25;
  preconfiguration.preconfigComm.pools[0].dataTfResourceConfig.prbStart = 0;
  preconfiguration.preconfigComm.pools[0].dataTfResourceConfig.prbEnd = 49;
@@ -1808,14 +1804,14 @@ pool parameters for control, data and synchronization in the following manner,
 Finally, the configured pool is stored in ``LteSlUeRrc`` class by calling
 ``SetSlPreconfiguration`` function ::
 
- ueSidelinkConfiguration->SetSlPreconfiguration (preconfiguration);
+ ueSidelinkConfiguration->SetSlPreconfiguration(preconfiguration);
 
 Then, by calling the ``InstallSidelinkConfiguration`` method of ``LteHelper``
 class it configures the ``LteUeRrc`` attribute named "SidelinkConfiguration" of
 a UE, which is nothing but a pointer to the ``LteSlUeRrc`` object used to
 configure the pool::
 
- lteHelper->InstallSidelinkConfiguration (ueRespondersDevs, ueSidelinkConfiguration);
+ lteHelper->InstallSidelinkConfiguratio (ueRespondersDevs, ueSidelinkConfiguration);
 
 This interaction of classes to populate the Sidelink pool is also depicted in
 :ref:`fig-lte-sl-pool-config`.
@@ -1833,11 +1829,11 @@ done as follows, ::
  LteSlPreconfigPoolFactory pfactory;
 
  //Control
- pfactory.SetControlPrbStart (3);
- pfactory.SetControlPrbEnd (46);
+ pfactory.SetControlPrbStart(3);
+ pfactory.SetControlPrbEnd(46);
 
  //Data
- pfactory.SetDataOffset (pscchLength);
+ pfactory.SetDataOffset(pscchLength);
 
  //Synchronization
  preconfiguration.preconfigSync.syncOffsetIndicator1 = 18;
@@ -1847,11 +1843,11 @@ done as follows, ::
  preconfiguration.preconfigSync.syncRefMinHyst = syncRefMinHyst;
  preconfiguration.preconfigSync.filterCoefficient = filterCoefficient;
 
- preconfiguration.preconfigComm.pools[0] = pfactory.CreatePool ();
+ preconfiguration.preconfigComm.pools[0] = pfactory.CreatePool();
 
- ueSidelinkConfiguration->SetSlPreconfiguration (preconfiguration);
+ ueSidelinkConfiguration->SetSlPreconfiguration(preconfiguration);
 
- lteHelper->InstallSidelinkConfiguration (ueRespondersDevs, ueSidelinkConfiguration);
+ lteHelper->InstallSidelinkConfiguration(ueRespondersDevs, ueSidelinkConfiguration);
 
 
 Upon the completion of the simulation, the information related to the topology
@@ -2128,7 +2124,7 @@ The first Sidelink related configuration in this example is to enable the Sideli
 
 * Enabling Sidelink ::
 
-   lteHelper->SetAttribute ("UseSidelink", BooleanValue (true));
+   lteHelper->SetAttribute("UseSidelink", BooleanValue(true));
 
 **Note : Attribute ``UseSidelink`` must be set before installing the UE devices.**
 
@@ -2137,7 +2133,7 @@ The first Sidelink related configuration in this example is to enable the Sideli
    (1)
 
      lteHelper->SetAttribute ("PathlossModel", 
-                            StringValue ("ns3::FriisPropagationLossModel"));
+                            StringValue("ns3::FriisPropagationLossModel"));
 
    (2)
 
@@ -2145,18 +2141,18 @@ The first Sidelink related configuration in this example is to enable the Sideli
 
    (3)
 
-     double ulFreq = LteSpectrumValueHelper::GetCarrierFrequency (23330);
-     NS_LOG_LOGIC ("UL freq: " << ulFreq);
-     Ptr<Object> uplinkPathlossModel = lteHelper->GetUplinkPathlossModel ();
+     double ulFreq = LteSpectrumValueHelper::GetCarrierFrequency(23330);
+     NS_LOG_LOGIC("UL freq: " << ulFreq);
+     Ptr<Object> uplinkPathlossModel = lteHelper->GetUplinkPathlossModel();
      Ptr<PropagationLossModel> lossModel = uplinkPathlossModel->
-                                    GetObject<PropagationLossModel> ();
+                                    GetObject<PropagationLossModel>();
      NS_ABORT_MSG_IF (lossModel == NULL, "No PathLossModel");
      bool ulFreqOk = uplinkPathlossModel->
-            SetAttributeFailSafe ("Frequency", DoubleValue (ulFreq));
+            SetAttributeFailSafe("Frequency", DoubleValue(ulFreq));
 
      if (!ulFreqOk)
        {
-         NS_LOG_WARN ("UL propagation model does not have a Frequency attribute");
+         NS_LOG_WARN("UL propagation model does not have a Frequency attribute");
        }
 
 
@@ -2168,32 +2164,32 @@ The commands in step 3 are to properly configure the frequency attribute of the
 pathloss model used, which is normally done in ``InstallSingleEnb`` method of
 ``LteHelper``.
 
-* Creating the UE node, fixing their mobility, and installing UE devices : ::
+* Creating the UE node, fixing their mobility, and installing UE devices: ::
 
    NodeContainer ues;
-   ues.Create (nbUes);
+   ues.Create(nbUes);
 
    //Position of the nodes
    Ptr<ListPositionAllocator> positionAllocUe = 
-                            CreateObject<ListPositionAllocator> ();
+                            CreateObject<ListPositionAllocator>();
 
-   for (uint32_t u = 0; u < ues.GetN (); ++u)
-     {
-       Ptr<UniformRandomVariable> rand = CreateObject<UniformRandomVariable> ();
-       double x = rand->GetValue (-100,100);
-       double y = rand->GetValue (-100,100);
+   for (uint32_t u = 0; u < ues.GetN(); ++u)
+   {
+       Ptr<UniformRandomVariable> rand = CreateObject<UniformRandomVariable>();
+       double x = rand->GetValue(-100,100);
+       double y = rand->GetValue(-100,100);
        double z = 1.5;
-       positionAllocUe->Add (Vector (x, y, z));
-     }
+       positionAllocUe->Add(Vector(x, y, z));
+   }
 
    // Install mobility
 
    MobilityHelper mobilityUe;
-   mobilityUe.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
-   mobilityUe.SetPositionAllocator (positionAllocUe);
-   mobilityUe.Install (ues);
+   mobilityUe.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+   mobilityUe.SetPositionAllocator(positionAllocUe);
+   mobilityUe.Install(ues);
 
-   NetDeviceContainer ueDevs = lteHelper->InstallUeDevice (ues);
+   NetDeviceContainer ueDevs = lteHelper->InstallUeDevice(ues);
 
 The above commands will simply create 10 UEs and position each UE at a random
 location in an area of 100 m x 100 m. The UE devices are installed in a usual
@@ -2202,36 +2198,40 @@ way by calling ``InstallUeDevice`` of ``LteHelper`` class.
 Service configuration
 ---------------------
 
-* Configuring discovery applications and starting the discovery process : ::
+* Configuring discovery applications and starting the discovery process: ::
 
-   std::map<Ptr<NetDevice>, std::list<uint32_t> > announceApps;
-   std::map<Ptr<NetDevice>, std::list<uint32_t> > monitorApps;
-   for (uint32_t i = 1; i <= nbUes; ++i)
-     {
-       announceApps[ueDevs.Get (i - 1)].push_back ((uint32_t)i);
-       for (uint32_t j = 1; j <= nbUes; ++j)
-         {
-           if (i != j)
-             {
-               monitorApps[ueDevs.Get (i - 1)].push_back ((uint32_t)j);
-             }
-         }
-     }
+    std::map<Ptr<NetDevice>, std::list<uint32_t>> announceApps;
+    std::map<Ptr<NetDevice>, std::list<uint32_t>> monitorApps;
+    for (uint32_t i = 1; i <= nbUes; ++i)
+    {
+        announceApps[ueDevs.Get(i - 1)].push_back((uint32_t)i);
+        for (uint32_t j = 1; j <= nbUes; ++j)
+        {
+            if (i != j)
+            {
+                monitorApps[ueDevs.Get(i - 1)].push_back((uint32_t)j);
+            }
+        }
+    }
 
+    for (uint32_t i = 0; i < nbUes; ++i)
+    {
+        // true for announce
+        Simulator::Schedule(Seconds(2.0),
+                            &SlStartDiscovery,
+                            lteHelper,
+                            ueDevs.Get(i),
+                            announceApps.find(ueDevs.Get(i))->second,
+                            true);
 
-
-   for (uint32_t i = 0; i < nbUes; ++i)
-     {
-       // true for announce
-       Simulator::Schedule (Seconds (2.0), &SlStartDiscovery, 
-                            lteHelper, ueDevs.Get (i),
-                            announceApps.find (ueDevs.Get (i))->second, true);
-
-       // false for monitor
-       Simulator::Schedule (Seconds (2.0), &SlStartDiscovery, 
-                            lteHelper, ueDevs.Get (i),
-                            monitorApps.find (ueDevs.Get (i))->second, false);
-     }
+        // false for monitor
+        Simulator::Schedule(Seconds(2.0),
+                            &SlStartDiscovery,
+                            lteHelper,
+                            ueDevs.Get(i),
+                            monitorApps.find(ueDevs.Get(i))->second,
+                            false);
+    }
 
 Given the broadcast nature of the discovery process, the applications are
 configured such that each UE will be able to transmit discovery messages with
@@ -2287,9 +2287,9 @@ discovery pool parameters in the following way, ::
  preconfiguration.preconfigDisc.pools[0].txParameters.txProbability = 
                               SidelinkDiscResourcePool::TxProbabilityFromInt (txProb);
 
- NS_LOG_INFO ("Install Sidelink discovery configuration in the UEs...");
- ueSidelinkConfiguration->SetSlPreconfiguration (preconfiguration);
- lteHelper->InstallSidelinkConfiguration (ueDevs, ueSidelinkConfiguration);
+ NS_LOG_INFO("Install Sidelink discovery configuration in the UEs...");
+ ueSidelinkConfiguration->SetSlPreconfiguration(preconfiguration);
+ lteHelper->InstallSidelinkConfiguration(ueDevs, ueSidelinkConfiguration);
 
 Alternatively, the discovery pool configuration can also be done in a
 semi-automatic way by using the ``LteSlDiscResourcePoolFactory``. This would
@@ -2302,12 +2302,12 @@ be done as follows, ::
  preconfiguration.preconfigComm.nbPools = 1;
 
  LteSlDiscPreconfigPoolFactory pfactory;
- pfactory.SetDiscPrbEnd (49);
+ pfactory.SetDiscPrbEnd(49);
 
- preconfiguration.preconfigDisc.pools[0] = pfactory.CreatePool ();
+ preconfiguration.preconfigDisc.pools[0] = pfactory.CreatePool();
 
- ueSidelinkConfiguration->SetSlPreconfiguration (preconfiguration);
- lteHelper->InstallSidelinkConfiguration (ueDevs, ueSidelinkConfiguration);
+ ueSidelinkConfiguration->SetSlPreconfiguration(preconfiguration);
+ lteHelper->InstallSidelinkConfiguration(ueDevs, ueSidelinkConfiguration);
 
 
 Upon the completion of the simulation a user can find the following files

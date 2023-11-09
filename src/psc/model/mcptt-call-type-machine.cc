@@ -29,54 +29,53 @@
  * employees is not subject to copyright protection within the United States.
  */
 
-#include <ns3/log.h>
-#include <ns3/object.h>
-#include <ns3/type-id.h>
+#include "mcptt-call-type-machine.h"
 
 #include "mcptt-call-msg-field.h"
 #include "mcptt-entity-id.h"
 
-#include "mcptt-call-type-machine.h"
+#include <ns3/log.h>
+#include <ns3/object.h>
+#include <ns3/type-id.h>
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("McpttCallTypeMachine");
+NS_LOG_COMPONENT_DEFINE("McpttCallTypeMachine");
 
-namespace psc {
+namespace psc
+{
 
-NS_OBJECT_ENSURE_REGISTERED (McpttCallTypeMachine);
+NS_OBJECT_ENSURE_REGISTERED(McpttCallTypeMachine);
 
 TypeId
 McpttCallTypeMachine::GetTypeId()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+    NS_LOG_FUNCTION_NOARGS();
 
-  static TypeId tid = TypeId ("ns3::psc::McpttCallTypeMachine")
-    .SetParent<Object> ()
-  ;
+    static TypeId tid = TypeId("ns3::psc::McpttCallTypeMachine").SetParent<Object>();
 
-  return tid;
+    return tid;
 }
 
 McpttCallTypeMachine::McpttCallTypeMachine()
     : Object()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 McpttCallTypeMachine::~McpttCallTypeMachine()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 TypeId
 McpttCallTypeMachine::GetInstanceTypeId() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return McpttCallTypeMachine::GetTypeId ();
+    return McpttCallTypeMachine::GetTypeId();
 }
 
 } // namespace psc
 } // namespace ns3
-

@@ -32,15 +32,17 @@
 #ifndef MCPTT_MEDIA_MSG_H
 #define MCPTT_MEDIA_MSG_H
 
-#include <ns3/type-id.h>
-#include <ns3/nstime.h>
-
 #include "mcptt-msg.h"
 #include "mcptt-rtp-header.h"
 
-namespace ns3 {
+#include <ns3/nstime.h>
+#include <ns3/type-id.h>
 
-namespace psc {
+namespace ns3
+{
+
+namespace psc
+{
 
 class McpttFloorMsgSink;
 class McpttCallMachinePrivate;
@@ -63,132 +65,131 @@ class McpttCallMachinePrivate;
  */
 class McpttMediaMsg : public McpttMsg
 {
-public:
-  /**
-   * Gets the type ID of the McpttMediaMsg class.
-   * \returns The type ID.
-   */
-  static TypeId GetTypeId (void);
-  /**
-   * Creates an instance of the McpttMediaMsg class.
-   */
-  McpttMediaMsg (void);
-  /**
-   * Creates an instance of the McpttMediaMsg class.
-   * \param header The header of the message.
-   */
-  McpttMediaMsg (const McpttRtpHeader& header);
-  /**
-   * Creates an instance of the McpttMediaMsg class.
-   * \param payloadSize The number of bytes to include in the payload.
-   */
-  McpttMediaMsg (uint16_t payloadSize);
-  /**
-   * Creates an instance of the McpttMediaMsg class.
-   * \param header The header of the message.
-   * \param payloadSize The number of bytes to include in the payload.
-   */
-  McpttMediaMsg (const McpttRtpHeader& header, uint16_t payloadSize);
-  /**
-   * Creates an instance of the McpttMediaMsg class.
-   * \param header The header of the message.
-   * \param payloadSize The number of bytes to include in the payload.
-   * \param talkSpurtStart Talk spurt start time
-   */
-  McpttMediaMsg (const McpttRtpHeader& header, uint16_t payloadSize, Time talkSpurtStart);
-  /**
-   * The destructor of the McpttMediaMsg class.
-   */
-  virtual ~McpttMediaMsg (void);
-  /**
-   * Reads the contents of the message from the byte stream.
-   * \param start The buffer to read from.
-   * \returns The number of bytes that were read.
-   */
-  virtual uint32_t Deserialize (Buffer::Iterator start);
-  /**
-   * Gets the type ID of this McpttFloorMsg instance.
-   * \returns The type ID.
-   */
-  virtual TypeId GetInstanceTypeId (void) const;
-  /**
-   * Gets the SSRC of this message.
-   * \returns The SSRC.
-   */
-  virtual uint32_t GetSsrc (void) const;
-  /**
-   * Gets the size (in bytes) of the message when it is serialized.
-   * \returns The size (in bytes).
-   */
-  virtual uint32_t GetSerializedSize (void) const;
-  /**
-   * Prints the contents of the header to the given output stream.
-   * \param os The output stream to write to.
-   */
-  virtual void Print (std::ostream& os) const;
-  /**
-   * Writes the contents of the message to the byte stream.
-   * \param start The byte stream to write to.
-   */
-  virtual void Serialize (Buffer::Iterator start) const;
-  /**
-   * Sets the SSRC of the media message.
-   * \param ssrc The SSRC.
-   */
-  virtual void SetSsrc (const uint32_t ssrc);
-  /**
-   * Visits the given privat call machine.
-   * \param callMachine The private call machine to visit.
-   */
-  virtual void Visit (McpttCallMachinePrivate& callMachine) const;
-  /**
-   * Visits the given floor machine.
-   * \param floorMachine The floor machine to visit.
-   */
-  virtual void Visit (McpttFloorMsgSink& floorMachine) const;
+  public:
+    /**
+     * Gets the type ID of the McpttMediaMsg class.
+     * \returns The type ID.
+     */
+    static TypeId GetTypeId(void);
+    /**
+     * Creates an instance of the McpttMediaMsg class.
+     */
+    McpttMediaMsg(void);
+    /**
+     * Creates an instance of the McpttMediaMsg class.
+     * \param header The header of the message.
+     */
+    McpttMediaMsg(const McpttRtpHeader& header);
+    /**
+     * Creates an instance of the McpttMediaMsg class.
+     * \param payloadSize The number of bytes to include in the payload.
+     */
+    McpttMediaMsg(uint16_t payloadSize);
+    /**
+     * Creates an instance of the McpttMediaMsg class.
+     * \param header The header of the message.
+     * \param payloadSize The number of bytes to include in the payload.
+     */
+    McpttMediaMsg(const McpttRtpHeader& header, uint16_t payloadSize);
+    /**
+     * Creates an instance of the McpttMediaMsg class.
+     * \param header The header of the message.
+     * \param payloadSize The number of bytes to include in the payload.
+     * \param talkSpurtStart Talk spurt start time
+     */
+    McpttMediaMsg(const McpttRtpHeader& header, uint16_t payloadSize, Time talkSpurtStart);
+    /**
+     * The destructor of the McpttMediaMsg class.
+     */
+    virtual ~McpttMediaMsg(void);
+    /**
+     * Reads the contents of the message from the byte stream.
+     * \param start The buffer to read from.
+     * \returns The number of bytes that were read.
+     */
+    virtual uint32_t Deserialize(Buffer::Iterator start);
+    /**
+     * Gets the type ID of this McpttFloorMsg instance.
+     * \returns The type ID.
+     */
+    virtual TypeId GetInstanceTypeId(void) const;
+    /**
+     * Gets the SSRC of this message.
+     * \returns The SSRC.
+     */
+    virtual uint32_t GetSsrc(void) const;
+    /**
+     * Gets the size (in bytes) of the message when it is serialized.
+     * \returns The size (in bytes).
+     */
+    virtual uint32_t GetSerializedSize(void) const;
+    /**
+     * Prints the contents of the header to the given output stream.
+     * \param os The output stream to write to.
+     */
+    virtual void Print(std::ostream& os) const;
+    /**
+     * Writes the contents of the message to the byte stream.
+     * \param start The byte stream to write to.
+     */
+    virtual void Serialize(Buffer::Iterator start) const;
+    /**
+     * Sets the SSRC of the media message.
+     * \param ssrc The SSRC.
+     */
+    virtual void SetSsrc(const uint32_t ssrc);
+    /**
+     * Visits the given privat call machine.
+     * \param callMachine The private call machine to visit.
+     */
+    virtual void Visit(McpttCallMachinePrivate& callMachine) const;
+    /**
+     * Visits the given floor machine.
+     * \param floorMachine The floor machine to visit.
+     */
+    virtual void Visit(McpttFloorMsgSink& floorMachine) const;
 
-private:
-  McpttRtpHeader m_header; //!< The header of the message.
-  uint16_t m_payloadSize; //!< The size (in bytes) of the payload of the message.
-  Time m_talkSpurtStart; //!< Start of talk spurt
+  private:
+    McpttRtpHeader m_header; //!< The header of the message.
+    uint16_t m_payloadSize;  //!< The size (in bytes) of the payload of the message.
+    Time m_talkSpurtStart;   //!< Start of talk spurt
 
-public:
-  /**
-   * Gets the header of the message.
-   * \returns The header of the message.
-   */
-  virtual McpttRtpHeader GetHeader (void) const;
-  /**
-   * Gets the size (in bytes) of the payload.
-   * \returns The size (in bytes).
-   */
-  virtual uint16_t GetPayloadSize (void) const;
-  /**
-   * Gets the time of the talk spurt start, if set (will return zero if unset)
-   * \returns The stored value of the talk spurt start time
-   */
-  virtual Time GetTalkSpurtStart (void) const;
-  /**
-   * Sets the header of the message.
-   * \param header The header of the message.
-   */
-  virtual void SetHeader (const McpttRtpHeader& header);
-  /**
-   * Sets the size (in bytes) of the payload.
-   * \param payloadSize The size (in bytes).
-   *
-   * Payload size must be at least two bytes.
-   */
-  virtual void SetPayloadSize (uint16_t payloadSize);
-  /**
-   * Sets the time of the talk spurt start
-   * \param talkSpurtStart Talk spurt start time
-   */
-  virtual void SetTalkSpurtStart (Time talkSpurtStart);
+  public:
+    /**
+     * Gets the header of the message.
+     * \returns The header of the message.
+     */
+    virtual McpttRtpHeader GetHeader(void) const;
+    /**
+     * Gets the size (in bytes) of the payload.
+     * \returns The size (in bytes).
+     */
+    virtual uint16_t GetPayloadSize(void) const;
+    /**
+     * Gets the time of the talk spurt start, if set (will return zero if unset)
+     * \returns The stored value of the talk spurt start time
+     */
+    virtual Time GetTalkSpurtStart(void) const;
+    /**
+     * Sets the header of the message.
+     * \param header The header of the message.
+     */
+    virtual void SetHeader(const McpttRtpHeader& header);
+    /**
+     * Sets the size (in bytes) of the payload.
+     * \param payloadSize The size (in bytes).
+     *
+     * Payload size must be at least two bytes.
+     */
+    virtual void SetPayloadSize(uint16_t payloadSize);
+    /**
+     * Sets the time of the talk spurt start
+     * \param talkSpurtStart Talk spurt start time
+     */
+    virtual void SetTalkSpurtStart(Time talkSpurtStart);
 };
 
 } // namespace psc
 } // namespace ns3
 
 #endif // MCPTT_MEDIA_H
-

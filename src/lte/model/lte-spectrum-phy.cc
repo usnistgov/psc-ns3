@@ -39,8 +39,8 @@
 #include <ns3/log.h>
 #include <ns3/node.h>
 #include <ns3/object-factory.h>
-#include <ns3/ptr.h>
 #include <ns3/pointer.h>
+#include <ns3/ptr.h>
 #include <ns3/simulator.h>
 #include <ns3/trace-source-accessor.h>
 
@@ -2647,7 +2647,7 @@ LteSpectrumPhy::RxSlPsdch(std::vector<uint32_t> pktIndexes)
             // If the TB is not corrupt and has not been decoded before, we indicate it decoded and
             // consider its reception successful.
             //**NOTE** If the TB is not corrupt and was previously decoded; it means that we have
-            //already reported the TB reception to the PHY, therefore, we do not report it again.
+            // already reported the TB reception to the PHY, therefore, we do not report it again.
 
             if (!(*itTbDisc).second.corrupt &&
                 !m_slHarqPhyModule->IsDiscTbPrevDecoded((*itTbDisc).first.m_rnti,
@@ -2858,9 +2858,7 @@ LteSpectrumPhy::RxSlPsbch(std::vector<uint32_t> pktIndexes)
         }
     }
 
-    for (auto it = sortedControlMessages.begin();
-         it != sortedControlMessages.end();
-         it++)
+    for (auto it = sortedControlMessages.begin(); it != sortedControlMessages.end(); it++)
     {
         uint32_t pktIndex = (*it).index;
 

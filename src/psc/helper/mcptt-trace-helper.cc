@@ -29,151 +29,232 @@
  * employees is not subject to copyright protection within the United States.
  */
 
-#include <string>
-#include <iomanip>
+#include "mcptt-trace-helper.h"
+
+#include "mcptt-msg-stats.h"
+#include "mcptt-state-machine-stats.h"
 
 #include <ns3/callback.h>
 #include <ns3/config.h>
 #include <ns3/log.h>
-#include <ns3/ptr.h>
 #include <ns3/mcptt-media-msg.h>
-#include "mcptt-msg-stats.h"
-#include "mcptt-state-machine-stats.h"
-#include "mcptt-trace-helper.h"
+#include <ns3/ptr.h>
 
-namespace ns3 {
+#include <iomanip>
+#include <string>
 
-NS_LOG_COMPONENT_DEFINE ("McpttTraceHelper");
+namespace ns3
+{
 
-namespace psc {
+NS_LOG_COMPONENT_DEFINE("McpttTraceHelper");
+
+namespace psc
+{
 
 TypeId
 McpttTraceHelper::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::psc::McpttTraceHelper")
-    .SetParent<Object> ()
-    .AddConstructor<McpttTraceHelper>()
-    .AddTraceSource ("AccessTimeTrace",
-                     "Outputs an access time trace sample",
-                     MakeTraceSourceAccessor (&McpttTraceHelper::m_accessTimeTrace),
-                     "ns3::psc::McpttTraceHelper::AccessTimeTracedCallback")
-    .AddTraceSource ("MouthToEarLatencyTrace",
-                     "Outputs a mouth-to-ear latency trace sample",
-                     MakeTraceSourceAccessor (&McpttTraceHelper::m_mouthToEarLatencyTrace),
-                     "ns3::psc::McpttTraceHelper::MouthToEarLatencyTracedCallback")
-  ;
-  return tid;
+    static TypeId tid =
+        TypeId("ns3::psc::McpttTraceHelper")
+            .SetParent<Object>()
+            .AddConstructor<McpttTraceHelper>()
+            .AddTraceSource("AccessTimeTrace",
+                            "Outputs an access time trace sample",
+                            MakeTraceSourceAccessor(&McpttTraceHelper::m_accessTimeTrace),
+                            "ns3::psc::McpttTraceHelper::AccessTimeTracedCallback")
+            .AddTraceSource("MouthToEarLatencyTrace",
+                            "Outputs a mouth-to-ear latency trace sample",
+                            MakeTraceSourceAccessor(&McpttTraceHelper::m_mouthToEarLatencyTrace),
+                            "ns3::psc::McpttTraceHelper::MouthToEarLatencyTracedCallback");
+    return tid;
 }
 
 McpttTraceHelper::McpttTraceHelper()
     : m_msgTracer(nullptr),
       m_stateMachineTracer(nullptr)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-McpttTraceHelper::~McpttTraceHelper ()
+McpttTraceHelper::~McpttTraceHelper()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  if (m_mouthToEarLatencyTraceFile.is_open ())
+    if (m_mouthToEarLatencyTraceFile.is_open())
     {
-      m_mouthToEarLatencyTraceFile.close ();
+        m_mouthToEarLatencyTraceFile.close();
     }
 
-  if (m_accessTimeTraceFile.is_open ())
+    if (m_accessTimeTraceFile.is_open())
     {
-      m_accessTimeTraceFile.close ();
+        m_accessTimeTraceFile.close();
     }
 }
 
 void
 McpttTraceHelper::EnableMsgTraces()
 {
-  NS_LOG_FUNCTION (this);
-  if (!m_msgTracer)
+    NS_LOG_FUNCTION(this);
+    if (!m_msgTracer)
     {
-      m_msgTracer = CreateObject<McpttMsgStats> ();
-      Config::ConnectWithoutContextFailSafe ("/NodeList/*/ApplicationList/*/$ns3::psc::McpttPttApp/RxTrace", MakeCallback (&McpttMsgStats::ReceiveRxTrace, m_msgTracer));
-      Config::ConnectWithoutContextFailSafe ("/NodeList/*/ApplicationList/*/$ns3::psc::McpttPttApp/TxTrace", MakeCallback (&McpttMsgStats::ReceiveTxTrace, m_msgTracer));
-      Config::ConnectWithoutContextFailSafe ("/NodeList/*/ApplicationList/*/$ns3::psc::McpttServerApp/RxTrace", MakeCallback (&McpttMsgStats::ReceiveRxTrace, m_msgTracer));
-      Config::ConnectWithoutContextFailSafe ("/NodeList/*/ApplicationList/*/$ns3::psc::McpttServerApp/TxTrace", MakeCallback (&McpttMsgStats::ReceiveTxTrace, m_msgTracer));
+        m_msgTracer = CreateObject<McpttMsgStats>();
+        Config::ConnectWithoutContextFailSafe(
+            "/NodeList/*/ApplicationList/*/$ns3::psc::McpttPttApp/RxTrace",
+            MakeCallback(&McpttMsgStats::ReceiveRxTrace, m_msgTracer));
+        Config::ConnectWithoutContextFailSafe(
+            "/NodeList/*/ApplicationList/*/$ns3::psc::McpttPttApp/TxTrace",
+            MakeCallback(&McpttMsgStats::ReceiveTxTrace, m_msgTracer));
+        Config::ConnectWithoutContextFailSafe(
+            "/NodeList/*/ApplicationList/*/$ns3::psc::McpttServerApp/RxTrace",
+            MakeCallback(&McpttMsgStats::ReceiveRxTrace, m_msgTracer));
+        Config::ConnectWithoutContextFailSafe(
+            "/NodeList/*/ApplicationList/*/$ns3::psc::McpttServerApp/TxTrace",
+            MakeCallback(&McpttMsgStats::ReceiveTxTrace, m_msgTracer));
     }
 }
 
 void
 McpttTraceHelper::DisableMsgTraces()
 {
-  NS_LOG_FUNCTION (this);
-  if (m_msgTracer != nullptr)
+    NS_LOG_FUNCTION(this);
+    if (m_msgTracer != nullptr)
     {
-      Config::DisconnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::psc::McpttPttApp/RxTrace", MakeCallback (&McpttMsgStats::ReceiveRxTrace, m_msgTracer));
-      Config::DisconnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::psc::McpttPttApp/TxTrace", MakeCallback (&McpttMsgStats::ReceiveTxTrace, m_msgTracer));
-      Config::DisconnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::psc::McpttServerApp/RxTrace", MakeCallback (&McpttMsgStats::ReceiveRxTrace, m_msgTracer));
-      Config::DisconnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::psc::McpttServerApp/TxTrace", MakeCallback (&McpttMsgStats::ReceiveTxTrace, m_msgTracer));
+        Config::DisconnectWithoutContext(
+            "/NodeList/*/ApplicationList/*/$ns3::psc::McpttPttApp/RxTrace",
+            MakeCallback(&McpttMsgStats::ReceiveRxTrace, m_msgTracer));
+        Config::DisconnectWithoutContext(
+            "/NodeList/*/ApplicationList/*/$ns3::psc::McpttPttApp/TxTrace",
+            MakeCallback(&McpttMsgStats::ReceiveTxTrace, m_msgTracer));
+        Config::DisconnectWithoutContext(
+            "/NodeList/*/ApplicationList/*/$ns3::psc::McpttServerApp/RxTrace",
+            MakeCallback(&McpttMsgStats::ReceiveRxTrace, m_msgTracer));
+        Config::DisconnectWithoutContext(
+            "/NodeList/*/ApplicationList/*/$ns3::psc::McpttServerApp/TxTrace",
+            MakeCallback(&McpttMsgStats::ReceiveTxTrace, m_msgTracer));
     }
 }
 
 void
 McpttTraceHelper::EnableStateMachineTraces()
 {
-  NS_LOG_FUNCTION (this);
-  if (!m_stateMachineTracer)
+    NS_LOG_FUNCTION(this);
+    if (!m_stateMachineTracer)
     {
-      m_stateMachineTracer = CreateObject<McpttStateMachineStats> ();
-      Config::ConnectWithoutContextFailSafe ("/NodeList/*/ApplicationList/*/$ns3::psc::McpttPttApp/Calls/*/CallMachine/StateChangeTrace", MakeCallback (&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
-      Config::ConnectWithoutContextFailSafe ("/NodeList/*/ApplicationList/*/$ns3::psc::McpttPttApp/Calls/*/CallMachine/CallTypeMachine/StateChangeTrace", MakeCallback (&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
-      Config::ConnectWithoutContextFailSafe ("/NodeList/*/ApplicationList/*/$ns3::psc::McpttPttApp/Calls/*/CallMachine/EmergAlertMachine/StateChangeTrace", MakeCallback (&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
-      Config::ConnectWithoutContextFailSafe ("/NodeList/*/ApplicationList/*/$ns3::psc::McpttPttApp/Calls/*/FloorMachine/StateChangeTrace", MakeCallback (&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
-      Config::ConnectWithoutContextFailSafe ("/NodeList/*/ApplicationList/*/$ns3::psc::McpttServerApp/Calls/*/FloorArbitrator/StateChangeTrace", MakeCallback (&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
-      Config::ConnectWithoutContextFailSafe ("/NodeList/*/ApplicationList/*/$ns3::psc::McpttServerApp/Calls/*/FloorArbitrator/FloorParticipants/*/StateChangeTrace", MakeCallback (&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
-      Config::ConnectWithoutContextFailSafe ("/NodeList/*/ApplicationList/*/$ns3::psc::McpttServerApp/Calls/*/FloorArbitrator/DualFloorControl/StateChangeTrace", MakeCallback (&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
-      Config::ConnectWithoutContextFailSafe ("/NodeList/*/ApplicationList/*/$ns3::psc::McpttServerApp/Calls/*/CallMachine/StateChangeTrace", MakeCallback (&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
+        m_stateMachineTracer = CreateObject<McpttStateMachineStats>();
+        Config::ConnectWithoutContextFailSafe(
+            "/NodeList/*/ApplicationList/*/$ns3::psc::McpttPttApp/Calls/*/CallMachine/"
+            "StateChangeTrace",
+            MakeCallback(&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
+        Config::ConnectWithoutContextFailSafe(
+            "/NodeList/*/ApplicationList/*/$ns3::psc::McpttPttApp/Calls/*/CallMachine/"
+            "CallTypeMachine/StateChangeTrace",
+            MakeCallback(&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
+        Config::ConnectWithoutContextFailSafe(
+            "/NodeList/*/ApplicationList/*/$ns3::psc::McpttPttApp/Calls/*/CallMachine/"
+            "EmergAlertMachine/StateChangeTrace",
+            MakeCallback(&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
+        Config::ConnectWithoutContextFailSafe(
+            "/NodeList/*/ApplicationList/*/$ns3::psc::McpttPttApp/Calls/*/FloorMachine/"
+            "StateChangeTrace",
+            MakeCallback(&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
+        Config::ConnectWithoutContextFailSafe(
+            "/NodeList/*/ApplicationList/*/$ns3::psc::McpttServerApp/Calls/*/FloorArbitrator/"
+            "StateChangeTrace",
+            MakeCallback(&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
+        Config::ConnectWithoutContextFailSafe(
+            "/NodeList/*/ApplicationList/*/$ns3::psc::McpttServerApp/Calls/*/FloorArbitrator/"
+            "FloorParticipants/*/StateChangeTrace",
+            MakeCallback(&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
+        Config::ConnectWithoutContextFailSafe(
+            "/NodeList/*/ApplicationList/*/$ns3::psc::McpttServerApp/Calls/*/FloorArbitrator/"
+            "DualFloorControl/StateChangeTrace",
+            MakeCallback(&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
+        Config::ConnectWithoutContextFailSafe(
+            "/NodeList/*/ApplicationList/*/$ns3::psc::McpttServerApp/Calls/*/CallMachine/"
+            "StateChangeTrace",
+            MakeCallback(&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
     }
 }
 
 void
 McpttTraceHelper::DisableStateMachineTraces()
 {
-  NS_LOG_FUNCTION (this);
-  if (m_stateMachineTracer != nullptr)
+    NS_LOG_FUNCTION(this);
+    if (m_stateMachineTracer != nullptr)
     {
-      Config::DisconnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::psc::McpttPttApp/Calls/*/CallMachine/StateChangeTrace", MakeCallback (&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
-      Config::DisconnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::psc::McpttPttApp/Calls/*/CallMachine/CallTypeMachine/StateChangeTrace", MakeCallback (&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
-      Config::DisconnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::psc::McpttPttApp/Calls/*/CallMachine/EmergAlertMachine/StateChangeTrace", MakeCallback (&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
-      Config::DisconnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::psc::McpttPttApp/Calls/*/FloorMachine/StateChangeTrace", MakeCallback (&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
-      Config::DisconnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::psc::McpttServerApp/Calls/*/FloorArbitrator/StateChangeTrace", MakeCallback (&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
-      Config::DisconnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::psc::McpttServerApp/Calls/*/FloorArbitrator/FloorParticipants/*/StateChangeTrace", MakeCallback (&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
-      Config::DisconnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::psc::McpttServerApp/Calls/*/FloorArbitrator/DualFloorControl/StateChangeTrace", MakeCallback (&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
-      Config::DisconnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::psc::McpttServerApp/Calls/*/CallMachine/StateChangeTrace", MakeCallback (&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
+        Config::DisconnectWithoutContext(
+            "/NodeList/*/ApplicationList/*/$ns3::psc::McpttPttApp/Calls/*/CallMachine/"
+            "StateChangeTrace",
+            MakeCallback(&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
+        Config::DisconnectWithoutContext(
+            "/NodeList/*/ApplicationList/*/$ns3::psc::McpttPttApp/Calls/*/CallMachine/"
+            "CallTypeMachine/StateChangeTrace",
+            MakeCallback(&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
+        Config::DisconnectWithoutContext(
+            "/NodeList/*/ApplicationList/*/$ns3::psc::McpttPttApp/Calls/*/CallMachine/"
+            "EmergAlertMachine/StateChangeTrace",
+            MakeCallback(&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
+        Config::DisconnectWithoutContext(
+            "/NodeList/*/ApplicationList/*/$ns3::psc::McpttPttApp/Calls/*/FloorMachine/"
+            "StateChangeTrace",
+            MakeCallback(&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
+        Config::DisconnectWithoutContext(
+            "/NodeList/*/ApplicationList/*/$ns3::psc::McpttServerApp/Calls/*/FloorArbitrator/"
+            "StateChangeTrace",
+            MakeCallback(&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
+        Config::DisconnectWithoutContext(
+            "/NodeList/*/ApplicationList/*/$ns3::psc::McpttServerApp/Calls/*/FloorArbitrator/"
+            "FloorParticipants/*/StateChangeTrace",
+            MakeCallback(&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
+        Config::DisconnectWithoutContext(
+            "/NodeList/*/ApplicationList/*/$ns3::psc::McpttServerApp/Calls/*/FloorArbitrator/"
+            "DualFloorControl/StateChangeTrace",
+            MakeCallback(&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
+        Config::DisconnectWithoutContext(
+            "/NodeList/*/ApplicationList/*/$ns3::psc::McpttServerApp/Calls/*/CallMachine/"
+            "StateChangeTrace",
+            MakeCallback(&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
     }
 }
 
 void
-McpttTraceHelper::TraceMcpttMediaMsg (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType)
+McpttTraceHelper::TraceMcpttMediaMsg(Ptr<const Application> app,
+                                     uint16_t callId,
+                                     Ptr<const Packet> pkt,
+                                     const TypeId& headerType)
 {
-  NS_LOG_FUNCTION (this << app << callId << pkt << headerType);
-  if (headerType == McpttMediaMsg::GetTypeId ())
+    NS_LOG_FUNCTION(this << app << callId << pkt << headerType);
+    if (headerType == McpttMediaMsg::GetTypeId())
     {
-      McpttMediaMsg msg;
-      pkt->PeekHeader (msg);
-      std::pair<uint32_t, uint16_t> key = std::make_pair (app->GetNode ()->GetId (), callId);
-      Time talkSpurtStart = msg.GetTalkSpurtStart ();
-      uint32_t ssrc = msg.GetSsrc ();
-      auto it = m_mouthToEarLatencyMap.find (key);
-      if (it == m_mouthToEarLatencyMap.end ())
+        McpttMediaMsg msg;
+        pkt->PeekHeader(msg);
+        std::pair<uint32_t, uint16_t> key = std::make_pair(app->GetNode()->GetId(), callId);
+        Time talkSpurtStart = msg.GetTalkSpurtStart();
+        uint32_t ssrc = msg.GetSsrc();
+        auto it = m_mouthToEarLatencyMap.find(key);
+        if (it == m_mouthToEarLatencyMap.end())
         {
-          m_mouthToEarLatencyMap.insert (std::make_pair (key, talkSpurtStart));
-          NS_LOG_DEBUG ("First talk spurt for node: " << app->GetNode ()->GetId () << " callId " << callId);
-          RecordMouthToEarLatency (Simulator::Now (), ssrc, app->GetNode ()->GetId (), callId, Simulator::Now () - talkSpurtStart);
+            m_mouthToEarLatencyMap.insert(std::make_pair(key, talkSpurtStart));
+            NS_LOG_DEBUG("First talk spurt for node: " << app->GetNode()->GetId() << " callId "
+                                                       << callId);
+            RecordMouthToEarLatency(Simulator::Now(),
+                                    ssrc,
+                                    app->GetNode()->GetId(),
+                                    callId,
+                                    Simulator::Now() - talkSpurtStart);
         }
-      else
+        else
         {
-          if (it->second < talkSpurtStart)
+            if (it->second < talkSpurtStart)
             {
-              it->second = talkSpurtStart;
-              NS_LOG_DEBUG ("New talk spurt for node: " << app->GetNode ()->GetId () << " callId " << callId);
-              RecordMouthToEarLatency (Simulator::Now (), ssrc, app->GetNode ()->GetId (), callId, Simulator::Now () - talkSpurtStart);
+                it->second = talkSpurtStart;
+                NS_LOG_DEBUG("New talk spurt for node: " << app->GetNode()->GetId() << " callId "
+                                                         << callId);
+                RecordMouthToEarLatency(Simulator::Now(),
+                                        ssrc,
+                                        app->GetNode()->GetId(),
+                                        callId,
+                                        Simulator::Now() - talkSpurtStart);
             }
         }
     }
@@ -182,40 +263,43 @@ McpttTraceHelper::TraceMcpttMediaMsg (Ptr<const Application> app, uint16_t callI
 void
 McpttTraceHelper::EnableMouthToEarLatencyTrace()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  Config::ConnectWithoutContextFailSafe ("/NodeList/*/ApplicationList/*/$ns3::psc::McpttPttApp/RxTrace", MakeCallback (&McpttTraceHelper::TraceMcpttMediaMsg, this));
+    Config::ConnectWithoutContextFailSafe(
+        "/NodeList/*/ApplicationList/*/$ns3::psc::McpttPttApp/RxTrace",
+        MakeCallback(&McpttTraceHelper::TraceMcpttMediaMsg, this));
 }
 
 void
-McpttTraceHelper::EnableMouthToEarLatencyTrace (std::string filename)
+McpttTraceHelper::EnableMouthToEarLatencyTrace(std::string filename)
 {
-  NS_LOG_FUNCTION (this << filename);
+    NS_LOG_FUNCTION(this << filename);
 
-  if (! m_mouthToEarLatencyTraceFile.is_open ())
+    if (!m_mouthToEarLatencyTraceFile.is_open())
     {
-      m_mouthToEarLatencyTraceFile.open (filename.c_str ());
-      m_mouthToEarLatencyTraceFile << "#";
-      m_mouthToEarLatencyTraceFile << std::setw (9) << "time(s)";
-      m_mouthToEarLatencyTraceFile << std::setw (5) << "ssrc";
-      m_mouthToEarLatencyTraceFile << std::setw (7) << "nodeid";
-      m_mouthToEarLatencyTraceFile << std::setw (7) << "callid";
-      m_mouthToEarLatencyTraceFile << " latency(s)" << std::endl;
+        m_mouthToEarLatencyTraceFile.open(filename.c_str());
+        m_mouthToEarLatencyTraceFile << "#";
+        m_mouthToEarLatencyTraceFile << std::setw(9) << "time(s)";
+        m_mouthToEarLatencyTraceFile << std::setw(5) << "ssrc";
+        m_mouthToEarLatencyTraceFile << std::setw(7) << "nodeid";
+        m_mouthToEarLatencyTraceFile << std::setw(7) << "callid";
+        m_mouthToEarLatencyTraceFile << " latency(s)" << std::endl;
     }
 
-  EnableMouthToEarLatencyTrace ();
+    EnableMouthToEarLatencyTrace();
 }
 
 void
 McpttTraceHelper::DisableMouthToEarLatencyTrace()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  Config::DisconnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::psc::McpttPttApp/RxTrace", MakeCallback (&McpttTraceHelper::TraceMcpttMediaMsg, this));
+    Config::DisconnectWithoutContext("/NodeList/*/ApplicationList/*/$ns3::psc::McpttPttApp/RxTrace",
+                                     MakeCallback(&McpttTraceHelper::TraceMcpttMediaMsg, this));
 
-  if (m_mouthToEarLatencyTraceFile.is_open ())
+    if (m_mouthToEarLatencyTraceFile.is_open())
     {
-      m_mouthToEarLatencyTraceFile.close ();
+        m_mouthToEarLatencyTraceFile.close();
     }
 }
 
@@ -233,127 +317,188 @@ McpttTraceHelper::DisableMouthToEarLatencyTrace()
 // Queued -> PTT button released : Abandoned ('A')
 //
 void
-McpttTraceHelper::TraceEventsForAccessTime (uint32_t userId, uint16_t callId, const std::string& selected, const char* description)
+McpttTraceHelper::TraceEventsForAccessTime(uint32_t userId,
+                                           uint16_t callId,
+                                           const std::string& selected,
+                                           const char* description)
 {
-  NS_LOG_FUNCTION (userId << callId << selected << description);
+    NS_LOG_FUNCTION(userId << callId << selected << description);
 
-  std::pair<uint32_t, uint16_t> key = std::make_pair (userId, callId);
-  auto it = m_accessTimeMap.find (key);
-  if (it == m_accessTimeMap.end ())
+    std::pair<uint32_t, uint16_t> key = std::make_pair(userId, callId);
+    auto it = m_accessTimeMap.find(key);
+    if (it == m_accessTimeMap.end())
     {
-      if (strcmp (description, McpttCallMachine::CALL_INITIATED) == 0)
+        if (strcmp(description, McpttCallMachine::CALL_INITIATED) == 0)
         {
-          std::pair<Time, std::string> item = std::make_pair (Simulator::Now (), description);
-          m_accessTimeMap.insert (std::make_pair (key, item));
-          return;
+            std::pair<Time, std::string> item = std::make_pair(Simulator::Now(), description);
+            m_accessTimeMap.insert(std::make_pair(key, item));
+            return;
         }
-      else
+        else
         {
-          NS_LOG_DEBUG ("Event key not found for " << userId  << " " << callId);
-          return;
+            NS_LOG_DEBUG("Event key not found for " << userId << " " << callId);
+            return;
         }
     }
-  if (it->second.second == "'U: pending Request'"
-      || it->second.second == "'O: pending request'")
+    if (it->second.second == "'U: pending Request'" || it->second.second == "'O: pending request'")
     {
-      if (strcmp (description, McpttFloorParticipant::RECEIVED_FLOOR_DENY) == 0)
+        if (strcmp(description, McpttFloorParticipant::RECEIVED_FLOOR_DENY) == 0)
         {
-          NS_LOG_DEBUG ("pending request, received event RECEIVED_FLOOR_DENY " << userId << " " << callId);
-          RecordAccessTime (Simulator::Now (), userId, callId, "D", Simulator::Now () - it->second.first);
-          m_accessTimeMap.erase (key);
-          return;
+            NS_LOG_DEBUG("pending request, received event RECEIVED_FLOOR_DENY " << userId << " "
+                                                                                << callId);
+            RecordAccessTime(Simulator::Now(),
+                             userId,
+                             callId,
+                             "D",
+                             Simulator::Now() - it->second.first);
+            m_accessTimeMap.erase(key);
+            return;
         }
-      else if (strcmp (description, McpttFloorParticipant::RECEIVED_FLOOR_REVOKED) == 0)
+        else if (strcmp(description, McpttFloorParticipant::RECEIVED_FLOOR_REVOKED) == 0)
         {
-          NS_LOG_DEBUG ("pending request, received event RECEIVED_FLOOR_REVOKED " << userId << " " << callId);
-          RecordAccessTime (Simulator::Now (), userId, callId, "F", Simulator::Now () - it->second.first);
-          m_accessTimeMap.erase (key);
-          return;
+            NS_LOG_DEBUG("pending request, received event RECEIVED_FLOOR_REVOKED " << userId << " "
+                                                                                   << callId);
+            RecordAccessTime(Simulator::Now(),
+                             userId,
+                             callId,
+                             "F",
+                             Simulator::Now() - it->second.first);
+            m_accessTimeMap.erase(key);
+            return;
         }
-      else if (strcmp (description, McpttFloorParticipant::TIMER_T101_EXPIRED_N_TIMES) == 0)
+        else if (strcmp(description, McpttFloorParticipant::TIMER_T101_EXPIRED_N_TIMES) == 0)
         {
-          NS_LOG_DEBUG ("pending request, received event TIMER_T101_EXPIRED_N_TIMES " << userId << " " << callId);
-          RecordAccessTime (Simulator::Now (), userId, callId, "F", Simulator::Now () - it->second.first);
-          m_accessTimeMap.erase (key);
-          return;
+            NS_LOG_DEBUG("pending request, received event TIMER_T101_EXPIRED_N_TIMES "
+                         << userId << " " << callId);
+            RecordAccessTime(Simulator::Now(),
+                             userId,
+                             callId,
+                             "F",
+                             Simulator::Now() - it->second.first);
+            m_accessTimeMap.erase(key);
+            return;
         }
-      else if (strcmp (description, McpttFloorParticipant::PTT_BUTTON_RELEASED) == 0)
+        else if (strcmp(description, McpttFloorParticipant::PTT_BUTTON_RELEASED) == 0)
         {
-          NS_LOG_DEBUG ("pending request, received event PTT_BUTTON_RELEASED " << userId << " " << callId);
-          RecordAccessTime (Simulator::Now (), userId, callId, "A", Simulator::Now () - it->second.first);
-          m_accessTimeMap.erase (key);
-          return;
+            NS_LOG_DEBUG("pending request, received event PTT_BUTTON_RELEASED " << userId << " "
+                                                                                << callId);
+            RecordAccessTime(Simulator::Now(),
+                             userId,
+                             callId,
+                             "A",
+                             Simulator::Now() - it->second.first);
+            m_accessTimeMap.erase(key);
+            return;
         }
     }
-  else if (it->second.second == "'U: queued'"
-           || it->second.second == "'O: queued'")
+    else if (it->second.second == "'U: queued'" || it->second.second == "'O: queued'")
     {
-      if (strcmp (description, McpttFloorParticipant::RECEIVED_FLOOR_GRANTED) == 0)
+        if (strcmp(description, McpttFloorParticipant::RECEIVED_FLOOR_GRANTED) == 0)
         {
-          NS_LOG_DEBUG ("queued, received event RECEIVED_FLOOR_GRANTED " << userId << " " << callId);
-          RecordAccessTime (Simulator::Now (), userId, callId, "Q", Simulator::Now () - it->second.first);
-          m_accessTimeMap.erase (key);
-          return;
+            NS_LOG_DEBUG("queued, received event RECEIVED_FLOOR_GRANTED " << userId << " "
+                                                                          << callId);
+            RecordAccessTime(Simulator::Now(),
+                             userId,
+                             callId,
+                             "Q",
+                             Simulator::Now() - it->second.first);
+            m_accessTimeMap.erase(key);
+            return;
         }
-      else if (strcmp (description, McpttFloorParticipant::RECEIVED_FLOOR_DENY) == 0)
+        else if (strcmp(description, McpttFloorParticipant::RECEIVED_FLOOR_DENY) == 0)
         {
-          NS_LOG_DEBUG ("queued, received event RECEIVED_FLOOR_DENY " << userId << " " << callId);
-          RecordAccessTime (Simulator::Now (), userId, callId, "D", Simulator::Now () - it->second.first);
-          m_accessTimeMap.erase (key);
-          return;
+            NS_LOG_DEBUG("queued, received event RECEIVED_FLOOR_DENY " << userId << " " << callId);
+            RecordAccessTime(Simulator::Now(),
+                             userId,
+                             callId,
+                             "D",
+                             Simulator::Now() - it->second.first);
+            m_accessTimeMap.erase(key);
+            return;
         }
-      else if (strcmp (description, McpttFloorParticipant::RECEIVED_FLOOR_REVOKED) == 0)
+        else if (strcmp(description, McpttFloorParticipant::RECEIVED_FLOOR_REVOKED) == 0)
         {
-          NS_LOG_DEBUG ("queued, received event RECEIVED_FLOOR_REVOKED " << userId << " " << callId);
-          RecordAccessTime (Simulator::Now (), userId, callId, "F", Simulator::Now () - it->second.first);
-          m_accessTimeMap.erase (key);
-          return;
+            NS_LOG_DEBUG("queued, received event RECEIVED_FLOOR_REVOKED " << userId << " "
+                                                                          << callId);
+            RecordAccessTime(Simulator::Now(),
+                             userId,
+                             callId,
+                             "F",
+                             Simulator::Now() - it->second.first);
+            m_accessTimeMap.erase(key);
+            return;
         }
-      else if (strcmp (description, McpttFloorParticipant::RECEIVED_FLOOR_IDLE) == 0)
+        else if (strcmp(description, McpttFloorParticipant::RECEIVED_FLOOR_IDLE) == 0)
         {
-          NS_LOG_DEBUG ("queued, received event RECEIVED_FLOOR_IDLE " << userId << " " << callId);
-          RecordAccessTime (Simulator::Now (), userId, callId, "F", Simulator::Now () - it->second.first);
-          m_accessTimeMap.erase (key);
-          return;
+            NS_LOG_DEBUG("queued, received event RECEIVED_FLOOR_IDLE " << userId << " " << callId);
+            RecordAccessTime(Simulator::Now(),
+                             userId,
+                             callId,
+                             "F",
+                             Simulator::Now() - it->second.first);
+            m_accessTimeMap.erase(key);
+            return;
         }
-      else if (strcmp (description, McpttFloorParticipant::TIMER_T101_EXPIRED_N_TIMES) == 0)
+        else if (strcmp(description, McpttFloorParticipant::TIMER_T101_EXPIRED_N_TIMES) == 0)
         {
-          NS_LOG_DEBUG ("queued, received event TIMER_T101_EXPIRED_N_TIMES " << userId << " " << callId);
-          RecordAccessTime (Simulator::Now (), userId, callId, "F", Simulator::Now () - it->second.first);
-          m_accessTimeMap.erase (key);
-          return;
+            NS_LOG_DEBUG("queued, received event TIMER_T101_EXPIRED_N_TIMES " << userId << " "
+                                                                              << callId);
+            RecordAccessTime(Simulator::Now(),
+                             userId,
+                             callId,
+                             "F",
+                             Simulator::Now() - it->second.first);
+            m_accessTimeMap.erase(key);
+            return;
         }
-      else if (strcmp (description, McpttFloorParticipant::TIMER_T204_EXPIRED_N_TIMES) == 0)
+        else if (strcmp(description, McpttFloorParticipant::TIMER_T204_EXPIRED_N_TIMES) == 0)
         {
-          NS_LOG_DEBUG ("queued, received event TIMER_T204_EXPIRED_N_TIMES " << userId << " " << callId);
-          RecordAccessTime (Simulator::Now (), userId, callId, "F", Simulator::Now () - it->second.first);
-          m_accessTimeMap.erase (key);
-          return;
+            NS_LOG_DEBUG("queued, received event TIMER_T204_EXPIRED_N_TIMES " << userId << " "
+                                                                              << callId);
+            RecordAccessTime(Simulator::Now(),
+                             userId,
+                             callId,
+                             "F",
+                             Simulator::Now() - it->second.first);
+            m_accessTimeMap.erase(key);
+            return;
         }
-      else if (strcmp (description, McpttFloorParticipant::TIMER_T203_EXPIRED) == 0)
+        else if (strcmp(description, McpttFloorParticipant::TIMER_T203_EXPIRED) == 0)
         {
-          NS_LOG_DEBUG ("queued, received event TIMER_T203_EXPIRED " << userId << " " << callId);
-          RecordAccessTime (Simulator::Now (), userId, callId, "F", Simulator::Now () - it->second.first);
-          m_accessTimeMap.erase (key);
-          return;
+            NS_LOG_DEBUG("queued, received event TIMER_T203_EXPIRED " << userId << " " << callId);
+            RecordAccessTime(Simulator::Now(),
+                             userId,
+                             callId,
+                             "F",
+                             Simulator::Now() - it->second.first);
+            m_accessTimeMap.erase(key);
+            return;
         }
-      else if (strcmp (description, McpttFloorParticipant::TIMER_T233_EXPIRED) == 0)
+        else if (strcmp(description, McpttFloorParticipant::TIMER_T233_EXPIRED) == 0)
         {
-          NS_LOG_DEBUG ("queued, received event TIMER_T233_EXPIRED " << userId << " " << callId);
-          RecordAccessTime (Simulator::Now (), userId, callId, "F", Simulator::Now () - it->second.first);
-          m_accessTimeMap.erase (key);
-          return;
+            NS_LOG_DEBUG("queued, received event TIMER_T233_EXPIRED " << userId << " " << callId);
+            RecordAccessTime(Simulator::Now(),
+                             userId,
+                             callId,
+                             "F",
+                             Simulator::Now() - it->second.first);
+            m_accessTimeMap.erase(key);
+            return;
         }
-      else if (strcmp (description, McpttFloorParticipant::TIMER_T132_EXPIRED) == 0)
+        else if (strcmp(description, McpttFloorParticipant::TIMER_T132_EXPIRED) == 0)
         {
-          NS_FATAL_ERROR ("Floor should have been previously granted and entry removed");
+            NS_FATAL_ERROR("Floor should have been previously granted and entry removed");
         }
-      else if (strcmp (description, McpttFloorParticipant::PTT_BUTTON_RELEASED) == 0)
+        else if (strcmp(description, McpttFloorParticipant::PTT_BUTTON_RELEASED) == 0)
         {
-          NS_LOG_DEBUG ("queued, received event PTT_BUTTON_RELEASED " << userId << " " << callId);
-          RecordAccessTime (Simulator::Now (), userId, callId, "A", Simulator::Now () - it->second.first);
-          m_accessTimeMap.erase (key);
-          return;
+            NS_LOG_DEBUG("queued, received event PTT_BUTTON_RELEASED " << userId << " " << callId);
+            RecordAccessTime(Simulator::Now(),
+                             userId,
+                             callId,
+                             "A",
+                             Simulator::Now() - it->second.first);
+            m_accessTimeMap.erase(key);
+            return;
         }
     }
 }
@@ -375,138 +520,145 @@ McpttTraceHelper::TraceEventsForAccessTime (uint32_t userId, uint16_t callId, co
 // Section 6.2.4.2.2 (NOTE) is not traced for access time
 //
 void
-McpttTraceHelper::TraceStatesForAccessTime (uint32_t userId, uint16_t callId, const std::string& selected, const std::string& typeId, const std::string& oldStateName, const std::string& newStateName)
+McpttTraceHelper::TraceStatesForAccessTime(uint32_t userId,
+                                           uint16_t callId,
+                                           const std::string& selected,
+                                           const std::string& typeId,
+                                           const std::string& oldStateName,
+                                           const std::string& newStateName)
 {
-  NS_LOG_FUNCTION (userId << callId << selected << typeId << oldStateName << newStateName);
+    NS_LOG_FUNCTION(userId << callId << selected << typeId << oldStateName << newStateName);
 
-  // Note: 'selected' field is not used by this method
-  std::pair<uint32_t, uint16_t> key = std::make_pair (userId, callId);
-  auto it = m_accessTimeMap.find (key);
-  if (it == m_accessTimeMap.end ())
+    // Note: 'selected' field is not used by this method
+    std::pair<uint32_t, uint16_t> key = std::make_pair(userId, callId);
+    auto it = m_accessTimeMap.find(key);
+    if (it == m_accessTimeMap.end())
     {
-      if ((oldStateName == "'Start-stop'"
-           || oldStateName == "'U: has no permission'"
-           || oldStateName == "'O: has no permission'"
-           || oldStateName == "'O: silence'"
-           || oldStateName == "'O: queued'")
-          && (newStateName == "'U: pending Request'"
-              || newStateName == "'O: pending request'"))
+        if ((oldStateName == "'Start-stop'" || oldStateName == "'U: has no permission'" ||
+             oldStateName == "'O: has no permission'" || oldStateName == "'O: silence'" ||
+             oldStateName == "'O: queued'") &&
+            (newStateName == "'U: pending Request'" || newStateName == "'O: pending request'"))
         {
-          std::pair<Time, std::string> item = std::make_pair (Simulator::Now (), newStateName);
-          m_accessTimeMap.insert (std::make_pair (key, item));
+            std::pair<Time, std::string> item = std::make_pair(Simulator::Now(), newStateName);
+            m_accessTimeMap.insert(std::make_pair(key, item));
         }
-      else if (oldStateName == "'Start-stop'"
-               && newStateName == "'U: has permission'")
+        else if (oldStateName == "'Start-stop'" && newStateName == "'U: has permission'")
         {
-          NS_LOG_DEBUG ("start stop, received event CALL_ORIGINATOR " << userId << " " << callId);
-          RecordAccessTime (Simulator::Now (), userId, callId, "I", Seconds (0));
+            NS_LOG_DEBUG("start stop, received event CALL_ORIGINATOR " << userId << " " << callId);
+            RecordAccessTime(Simulator::Now(), userId, callId, "I", Seconds(0));
         }
-      return;
+        return;
     }
 
-  if (it->second.second == McpttCallMachine::CALL_INITIATED)
+    if (it->second.second == McpttCallMachine::CALL_INITIATED)
     {
-      if (oldStateName == "'Start-stop'"
-          && newStateName == "'O: has permission'")
+        if (oldStateName == "'Start-stop'" && newStateName == "'O: has permission'")
         {
-          NS_LOG_DEBUG ("start stop, received event CALL_ORIGINATOR " << userId << " " << callId);
-          RecordAccessTime (Simulator::Now (), userId, callId, "I", Simulator::Now () - it->second.first);
-          m_accessTimeMap.erase (key);
-          return;
+            NS_LOG_DEBUG("start stop, received event CALL_ORIGINATOR " << userId << " " << callId);
+            RecordAccessTime(Simulator::Now(),
+                             userId,
+                             callId,
+                             "I",
+                             Simulator::Now() - it->second.first);
+            m_accessTimeMap.erase(key);
+            return;
         }
-      else
+        else
         {
-          NS_LOG_DEBUG ("call initiated, received event CALL_ORIGINATOR " << userId << " " << callId);
-          RecordAccessTime (Simulator::Now (), userId, callId, "F", Simulator::Now () - it->second.first);
-          m_accessTimeMap.erase (key);
-          return;
+            NS_LOG_DEBUG("call initiated, received event CALL_ORIGINATOR " << userId << " "
+                                                                           << callId);
+            RecordAccessTime(Simulator::Now(),
+                             userId,
+                             callId,
+                             "F",
+                             Simulator::Now() - it->second.first);
+            m_accessTimeMap.erase(key);
+            return;
         }
     }
-  else if (it->second.second == "'U: pending Request'"
-      || it->second.second == "'O: pending request'")
+    else if (it->second.second == "'U: pending Request'" ||
+             it->second.second == "'O: pending request'")
     {
-      if (newStateName == "'U: has permission'"
-          || newStateName == "'O: has permission'")
+        if (newStateName == "'U: has permission'" || newStateName == "'O: has permission'")
         {
-          RecordAccessTime (Simulator::Now (), userId, callId, "I", Simulator::Now () - it->second.first);
-          m_accessTimeMap.erase (key);
-          return;
+            RecordAccessTime(Simulator::Now(),
+                             userId,
+                             callId,
+                             "I",
+                             Simulator::Now() - it->second.first);
+            m_accessTimeMap.erase(key);
+            return;
         }
-      else if (newStateName == "'U: queued'"
-               || newStateName == "'O: queued'")
+        else if (newStateName == "'U: queued'" || newStateName == "'O: queued'")
         {
-          it->second.second = newStateName;
-          return;
+            it->second.second = newStateName;
+            return;
         }
-      else if (newStateName == "'U: has no permission'"
-               || newStateName == "'O: has no permission'")
+        else if (newStateName == "'U: has no permission'" ||
+                 newStateName == "'O: has no permission'")
         {
-          // Transition can either be due to Floor Deny or T101 expiry
-          // Both cases are handled by the event trace, which should
-          // catch them before this state transition and erase the entry
-          NS_FATAL_ERROR ("Invalid transition to U: has no permission");
+            // Transition can either be due to Floor Deny or T101 expiry
+            // Both cases are handled by the event trace, which should
+            // catch them before this state transition and erase the entry
+            NS_FATAL_ERROR("Invalid transition to U: has no permission");
         }
-      else if (newStateName == "'U: pending release'"
-               || newStateName == "'O: silence'")
+        else if (newStateName == "'U: pending release'" || newStateName == "'O: silence'")
         {
-          // Transition can either be due to Floor Revoke or PTT button release
-          // Both cases are handled by the event trace, which should
-          // catch them before this state transition and erase the entry
-          // However, end of call may trigger this also, so just erase here
-          m_accessTimeMap.erase (key);
-          return;
+            // Transition can either be due to Floor Revoke or PTT button release
+            // Both cases are handled by the event trace, which should
+            // catch them before this state transition and erase the entry
+            // However, end of call may trigger this also, so just erase here
+            m_accessTimeMap.erase(key);
+            return;
         }
-      else if (newStateName == "'Releasing'" || newStateName == "'Start-stop'")
+        else if (newStateName == "'Releasing'" || newStateName == "'Start-stop'")
         {
-          // No such transitions listed in TS 24.380 Figure 6.2.4.1-1
-          // However, end of call may trigger this also, so just erase here
-          m_accessTimeMap.erase (key);
-          return; 
+            // No such transitions listed in TS 24.380 Figure 6.2.4.1-1
+            // However, end of call may trigger this also, so just erase here
+            m_accessTimeMap.erase(key);
+            return;
         }
-      else
+        else
         {
-          // Unknown state transition
-          NS_FATAL_ERROR ("Unknown state transition from U:  pending request");
+            // Unknown state transition
+            NS_FATAL_ERROR("Unknown state transition from U:  pending request");
         }
     }
-  else if (it->second.second == "'U: queued'"
-      || it->second.second == "'O: queued'")
+    else if (it->second.second == "'U: queued'" || it->second.second == "'O: queued'")
     {
-      if (newStateName == "'U: has permission'"
-          || newStateName == "'O: has permission'")
+        if (newStateName == "'U: has permission'" || newStateName == "'O: has permission'")
         {
-          NS_FATAL_ERROR ("This transition should be traced as an event");
+            NS_FATAL_ERROR("This transition should be traced as an event");
         }
-      else if (newStateName == "'U: has no permission'"
-               || newStateName == "'O: has no permission'")
+        else if (newStateName == "'U: has no permission'" ||
+                 newStateName == "'O: has no permission'")
         {
-          // Transition can either be due to Floor Deny or Floor Idle or
-          // T132 expiry
-          // These cases are handled by the event trace, which should
-          // catch them before this state transition and erase the entry
-          NS_FATAL_ERROR ("Invalid transition to U: has no permission");
+            // Transition can either be due to Floor Deny or Floor Idle or
+            // T132 expiry
+            // These cases are handled by the event trace, which should
+            // catch them before this state transition and erase the entry
+            NS_FATAL_ERROR("Invalid transition to U: has no permission");
         }
-      else if (newStateName == "'U: pending release'"
-               || newStateName == "'O: silence'")
+        else if (newStateName == "'U: pending release'" || newStateName == "'O: silence'")
         {
-          // Transition can either be due to T104 expiry or PTT button release
-          // Both cases are handled by the event trace, which should
-          // catch them before this state transition and erase the entry
-          // However, end of call may trigger this also, so just erase here
-          m_accessTimeMap.erase (key);
-          return;
+            // Transition can either be due to T104 expiry or PTT button release
+            // Both cases are handled by the event trace, which should
+            // catch them before this state transition and erase the entry
+            // However, end of call may trigger this also, so just erase here
+            m_accessTimeMap.erase(key);
+            return;
         }
-      else if (newStateName == "'Releasing'" || newStateName == "'Start-stop'")
+        else if (newStateName == "'Releasing'" || newStateName == "'Start-stop'")
         {
-          // No such transitions listed in TS 24.380 Figure 6.2.4.1-1
-          // However, end of call may trigger this also, so just erase here
-          m_accessTimeMap.erase (key);
-          return;
+            // No such transitions listed in TS 24.380 Figure 6.2.4.1-1
+            // However, end of call may trigger this also, so just erase here
+            m_accessTimeMap.erase(key);
+            return;
         }
-      else
+        else
         {
-          // Unknown state transition
-          NS_FATAL_ERROR ("Unknown state transition from U:  queued");
+            // Unknown state transition
+            NS_FATAL_ERROR("Unknown state transition from U:  queued");
         }
     }
 }
@@ -514,88 +666,106 @@ McpttTraceHelper::TraceStatesForAccessTime (uint32_t userId, uint16_t callId, co
 void
 McpttTraceHelper::EnableAccessTimeTrace()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  Config::ConnectWithoutContextFailSafe ("/NodeList/*/ApplicationList/*/$ns3::psc::McpttPttApp/Calls/*/FloorMachine/StateChangeTrace", MakeCallback (&McpttTraceHelper::TraceStatesForAccessTime, this));
-  Config::ConnectWithoutContextFailSafe ("/NodeList/*/ApplicationList/*/$ns3::psc::McpttPttApp/EventTrace", MakeCallback (&McpttTraceHelper::TraceEventsForAccessTime, this));
+    Config::ConnectWithoutContextFailSafe(
+        "/NodeList/*/ApplicationList/*/$ns3::psc::McpttPttApp/Calls/*/FloorMachine/"
+        "StateChangeTrace",
+        MakeCallback(&McpttTraceHelper::TraceStatesForAccessTime, this));
+    Config::ConnectWithoutContextFailSafe(
+        "/NodeList/*/ApplicationList/*/$ns3::psc::McpttPttApp/EventTrace",
+        MakeCallback(&McpttTraceHelper::TraceEventsForAccessTime, this));
 }
 
 void
-McpttTraceHelper::EnableAccessTimeTrace (std::string filename)
+McpttTraceHelper::EnableAccessTimeTrace(std::string filename)
 {
-  NS_LOG_FUNCTION (this << filename);
+    NS_LOG_FUNCTION(this << filename);
 
-  if (! m_accessTimeTraceFile.is_open ())
+    if (!m_accessTimeTraceFile.is_open())
     {
-      m_accessTimeTraceFile.open (filename.c_str ());
-      m_accessTimeTraceFile << "#";
-      m_accessTimeTraceFile << std::setw (9) << "time(s)";
-      m_accessTimeTraceFile << std::setw (7) << "userid";
-      m_accessTimeTraceFile << std::setw (7) << "callid";
-      m_accessTimeTraceFile << std::setw (7) << "result";
-      m_accessTimeTraceFile << " latency(s)" << std::endl;
+        m_accessTimeTraceFile.open(filename.c_str());
+        m_accessTimeTraceFile << "#";
+        m_accessTimeTraceFile << std::setw(9) << "time(s)";
+        m_accessTimeTraceFile << std::setw(7) << "userid";
+        m_accessTimeTraceFile << std::setw(7) << "callid";
+        m_accessTimeTraceFile << std::setw(7) << "result";
+        m_accessTimeTraceFile << " latency(s)" << std::endl;
     }
 
-  EnableAccessTimeTrace ();
+    EnableAccessTimeTrace();
 }
 
 void
 McpttTraceHelper::DisableAccessTimeTrace()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  Config::DisconnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::psc::McpttPttApp/Calls/*/FloorMachine/StateChangeTrace", MakeCallback (&McpttTraceHelper::TraceStatesForAccessTime, this));
-  Config::DisconnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::psc::McpttPttApp/EventTrace", MakeCallback (&McpttTraceHelper::TraceEventsForAccessTime, this));
+    Config::DisconnectWithoutContext(
+        "/NodeList/*/ApplicationList/*/$ns3::psc::McpttPttApp/Calls/*/FloorMachine/"
+        "StateChangeTrace",
+        MakeCallback(&McpttTraceHelper::TraceStatesForAccessTime, this));
+    Config::DisconnectWithoutContext(
+        "/NodeList/*/ApplicationList/*/$ns3::psc::McpttPttApp/EventTrace",
+        MakeCallback(&McpttTraceHelper::TraceEventsForAccessTime, this));
 
-  if (m_accessTimeTraceFile.is_open ())
+    if (m_accessTimeTraceFile.is_open())
     {
-      m_accessTimeTraceFile.close ();
+        m_accessTimeTraceFile.close();
     }
 }
 
 void
 McpttTraceHelper::DoDispose()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  m_msgTracer = nullptr;
-  m_stateMachineTracer = nullptr;
+    m_msgTracer = nullptr;
+    m_stateMachineTracer = nullptr;
 }
 
 void
-McpttTraceHelper::RecordAccessTime (Time ts, uint32_t userId, uint16_t callId, std::string result, Time latency)
+McpttTraceHelper::RecordAccessTime(Time ts,
+                                   uint32_t userId,
+                                   uint16_t callId,
+                                   std::string result,
+                                   Time latency)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  if (m_accessTimeTraceFile.is_open ())
+    if (m_accessTimeTraceFile.is_open())
     {
-      m_accessTimeTraceFile << std::fixed << std::setw (10) << ts.GetSeconds ();
-      m_accessTimeTraceFile << std::setw (7) << userId;
-      m_accessTimeTraceFile << std::setw (7) << callId;
-      m_accessTimeTraceFile << std::setw (6) << result;
-      m_accessTimeTraceFile << std::fixed << std::setw (11) << latency.GetSeconds () << std::endl;
+        m_accessTimeTraceFile << std::fixed << std::setw(10) << ts.GetSeconds();
+        m_accessTimeTraceFile << std::setw(7) << userId;
+        m_accessTimeTraceFile << std::setw(7) << callId;
+        m_accessTimeTraceFile << std::setw(6) << result;
+        m_accessTimeTraceFile << std::fixed << std::setw(11) << latency.GetSeconds() << std::endl;
     }
 
-  m_accessTimeTrace (ts, userId, callId, result, latency);
+    m_accessTimeTrace(ts, userId, callId, result, latency);
 }
 
 void
-McpttTraceHelper::RecordMouthToEarLatency (Time ts, uint32_t ssrc, uint64_t nodeId, uint16_t callId, Time latency)
+McpttTraceHelper::RecordMouthToEarLatency(Time ts,
+                                          uint32_t ssrc,
+                                          uint64_t nodeId,
+                                          uint16_t callId,
+                                          Time latency)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  if (m_mouthToEarLatencyTraceFile.is_open ())
+    if (m_mouthToEarLatencyTraceFile.is_open())
     {
-      m_mouthToEarLatencyTraceFile << std::fixed << std::setw (10) << ts.GetSeconds ();
-      m_mouthToEarLatencyTraceFile << std::setw (5) << ssrc;
-      m_mouthToEarLatencyTraceFile << std::setw (7) << nodeId;
-      m_mouthToEarLatencyTraceFile << std::setw (7) << callId;
-      m_mouthToEarLatencyTraceFile << std::fixed << std::setw (11) << latency.GetSeconds () << std::endl;
+        m_mouthToEarLatencyTraceFile << std::fixed << std::setw(10) << ts.GetSeconds();
+        m_mouthToEarLatencyTraceFile << std::setw(5) << ssrc;
+        m_mouthToEarLatencyTraceFile << std::setw(7) << nodeId;
+        m_mouthToEarLatencyTraceFile << std::setw(7) << callId;
+        m_mouthToEarLatencyTraceFile << std::fixed << std::setw(11) << latency.GetSeconds()
+                                     << std::endl;
     }
 
-  m_mouthToEarLatencyTrace (ts, ssrc, nodeId, callId, latency);
+    m_mouthToEarLatencyTrace(ts, ssrc, nodeId, callId, latency);
 }
 
 } // namespace psc
 } // namespace ns3
-

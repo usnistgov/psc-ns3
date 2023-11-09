@@ -29,24 +29,28 @@
  * employees is not subject to copyright protection within the United States.
  */
 
-#include <ns3/config.h>
+#include "mcptt-test-case-config.h"
+
+#include "mcptt-test-call.h"
+
 #include <ns3/application-container.h>
-#include <ns3/core-module.h>
 #include <ns3/config-store.h>
+#include <ns3/config.h>
+#include <ns3/core-module.h>
 #include <ns3/csma-module.h>
 #include <ns3/internet-module.h>
-#include <ns3/mcptt-helper.h>
 #include <ns3/mcptt-call-machine.h>
 #include <ns3/mcptt-floor-participant.h>
+#include <ns3/mcptt-helper.h>
 #include <ns3/mobility-helper.h>
 #include <ns3/network-module.h>
 
-#include "mcptt-test-case-config.h"
-#include "mcptt-test-call.h"
-
-namespace ns3 {
-namespace psc {
-namespace tests {
+namespace ns3
+{
+namespace psc
+{
+namespace tests
+{
 
 McpttTestCaseConfig::McpttTestCaseConfig()
     : m_appCount(2),
@@ -55,182 +59,197 @@ McpttTestCaseConfig::McpttTestCaseConfig()
       m_floorTid(McpttFloorParticipantNull::GetTypeId()),
       m_start(Seconds(2)),
       m_stop(Seconds(20))
-{ }
+{
+}
 
-McpttTestCaseConfig::McpttTestCaseConfig (const uint32_t& appCount, const TypeId& appTid, const TypeId& callTid, const TypeId& floorTid, const Time& start, const Time& stop)
-  : m_appCount (appCount),
-    m_appTid (appTid),
-    m_callTid (callTid),
-    m_floorTid (floorTid),
-    m_start (start),
-    m_stop (stop)
-{ }
+McpttTestCaseConfig::McpttTestCaseConfig(const uint32_t& appCount,
+                                         const TypeId& appTid,
+                                         const TypeId& callTid,
+                                         const TypeId& floorTid,
+                                         const Time& start,
+                                         const Time& stop)
+    : m_appCount(appCount),
+      m_appTid(appTid),
+      m_callTid(callTid),
+      m_floorTid(floorTid),
+      m_start(start),
+      m_stop(stop)
+{
+}
 
 McpttTestCaseConfig::~McpttTestCaseConfig()
-{ }
+{
+}
 
 ApplicationContainer
 McpttTestCaseConfig::Configure()
 {
-  uint32_t appCount = GetAppCount ();
-  TypeId appTid = GetAppTid ();
-  TypeId callTid = GetCallTid ();
-  TypeId floorTid = GetFloorTid ();
-  Time start = GetStart ();
-  Time stop = GetStop ();
+    uint32_t appCount = GetAppCount();
+    TypeId appTid = GetAppTid();
+    TypeId callTid = GetCallTid();
+    TypeId floorTid = GetFloorTid();
+    Time start = GetStart();
+    Time stop = GetStop();
 
-  Config::Reset ();
+    Config::Reset();
 
-  NodeContainer nodes;
-  nodes.Create (appCount);
+    NodeContainer nodes;
+    nodes.Create(appCount);
 
+    MobilityHelper mobility;
+    mobility.SetPositionAllocator("ns3::GridPositionAllocator",
+                                  "MinX",
+                                  DoubleValue(0.0),
+                                  "MinY",
+                                  DoubleValue(0.0),
+                                  "DeltaX",
+                                  DoubleValue(5.0),
+                                  "DeltaY",
+                                  DoubleValue(5.0),
+                                  "GridWidth",
+                                  UintegerValue(2),
+                                  "LayoutType",
+                                  StringValue("RowFirst"));
+    mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+    mobility.Install(nodes);
 
-  MobilityHelper mobility;
-  mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
-                                 "MinX", DoubleValue (0.0),
-                                 "MinY", DoubleValue (0.0),
-                                 "DeltaX", DoubleValue (5.0),
-                                 "DeltaY", DoubleValue (5.0),
-                                 "GridWidth", UintegerValue (2),
-                                 "LayoutType", StringValue ("RowFirst"));
-  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
-  mobility.Install (nodes);
+    CsmaHelper csma;
+    csma.SetChannelAttribute("DataRate", StringValue("100Mbps"));
+    csma.SetChannelAttribute("Delay", TimeValue(Seconds(0.05193)));
 
-  CsmaHelper csma;
-  csma.SetChannelAttribute ("DataRate", StringValue ("100Mbps"));
-  csma.SetChannelAttribute ("Delay", TimeValue (Seconds (0.05193)));
+    NetDeviceContainer csmaDevices;
+    csmaDevices = csma.Install(nodes);
 
-  NetDeviceContainer csmaDevices;
-  csmaDevices = csma.Install (nodes);
+    InternetStackHelper stack;
+    stack.Install(nodes);
 
-  InternetStackHelper stack;
-  stack.Install (nodes);
+    Ipv4AddressHelper address;
+    address.SetBase("10.1.1.0", "255.255.255.0");
+    Ipv4InterfaceContainer csmaInterfaces;
+    csmaInterfaces = address.Assign(csmaDevices);
 
-  Ipv4AddressHelper address;
-  address.SetBase ("10.1.1.0", "255.255.255.0");
-  Ipv4InterfaceContainer csmaInterfaces;
-  csmaInterfaces = address.Assign (csmaDevices);
+    ApplicationContainer clientApps;
+    McpttHelper mcpttHelper;
+    mcpttHelper.SetPttApp(appTid.GetName());
 
-  ApplicationContainer clientApps;
-  McpttHelper mcpttHelper;
-  mcpttHelper.SetPttApp (appTid.GetName ());
+    clientApps.Add(mcpttHelper.Install(nodes));
 
-  clientApps.Add (mcpttHelper.Install (nodes));
+    ObjectFactory callFac;
+    callFac.SetTypeId(callTid);
 
-  ObjectFactory callFac;
-  callFac.SetTypeId (callTid);
+    ObjectFactory floorFac;
+    floorFac.SetTypeId(floorTid);
 
-  ObjectFactory floorFac;
-  floorFac.SetTypeId (floorTid);
-
-  uint16_t callId = 0;
-  for (uint32_t idx = 0; idx < clientApps.GetN (); idx++)
+    uint16_t callId = 0;
+    for (uint32_t idx = 0; idx < clientApps.GetN(); idx++)
     {
-      Ptr<McpttPttApp> app = DynamicCast<McpttPttApp, Application> (clientApps.Get (idx));
-      Ptr<McpttTestCall> call = CreateTestCall (callFac, floorFac, callId);
-      app->AddCall (call);
-      app->SelectCall (0);
-      app->GetSelectedCall ()->SetAttribute ("PeerAddress", AddressValue (Ipv4Address ("255.255.255.255")));
+        Ptr<McpttPttApp> app = DynamicCast<McpttPttApp, Application>(clientApps.Get(idx));
+        Ptr<McpttTestCall> call = CreateTestCall(callFac, floorFac, callId);
+        app->AddCall(call);
+        app->SelectCall(0);
+        app->GetSelectedCall()->SetAttribute("PeerAddress",
+                                             AddressValue(Ipv4Address("255.255.255.255")));
     }
 
-  clientApps.Start (start);
-  clientApps.Stop (stop);
+    clientApps.Start(start);
+    clientApps.Stop(stop);
 
-  Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
+    Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 
-  return clientApps;
+    return clientApps;
 }
 
 uint32_t
 McpttTestCaseConfig::GetAppCount() const
 {
-  return m_appCount;
+    return m_appCount;
 }
 
 TypeId
 McpttTestCaseConfig::GetAppTid() const
 {
-  return m_appTid;
+    return m_appTid;
 }
 
 TypeId
 McpttTestCaseConfig::GetCallTid() const
 {
-  return m_callTid;
+    return m_callTid;
 }
 
 TypeId
 McpttTestCaseConfig::GetFloorTid() const
 {
-  return m_floorTid;
+    return m_floorTid;
 }
 
 Time
 McpttTestCaseConfig::GetStart() const
 {
-  return m_start;
+    return m_start;
 }
 
 Time
 McpttTestCaseConfig::GetStop() const
 {
-  return m_stop;
+    return m_stop;
 }
 
 void
-McpttTestCaseConfig::SetAppCount (const uint32_t& appCount)
+McpttTestCaseConfig::SetAppCount(const uint32_t& appCount)
 {
-  m_appCount = appCount;
+    m_appCount = appCount;
 }
 
 void
-McpttTestCaseConfig::SetAppTid (const TypeId& appTid)
+McpttTestCaseConfig::SetAppTid(const TypeId& appTid)
 {
-  m_appTid = appTid;
+    m_appTid = appTid;
 }
 
 void
-McpttTestCaseConfig::SetCallTid (const TypeId& callTid)
+McpttTestCaseConfig::SetCallTid(const TypeId& callTid)
 {
-  m_callTid = callTid;
+    m_callTid = callTid;
 }
 
 void
-McpttTestCaseConfig::SetFloorTid (const TypeId& floorTid)
+McpttTestCaseConfig::SetFloorTid(const TypeId& floorTid)
 {
-  m_floorTid = floorTid;
+    m_floorTid = floorTid;
 }
 
 void
-McpttTestCaseConfig::SetStart (const Time& start)
+McpttTestCaseConfig::SetStart(const Time& start)
 {
-  m_start = start;
+    m_start = start;
 }
 
 void
-McpttTestCaseConfig::SetStop (const Time& stop)
+McpttTestCaseConfig::SetStop(const Time& stop)
 {
-  m_stop = stop;
+    m_stop = stop;
 }
 
 Ptr<McpttTestCall>
-McpttTestCaseConfig::CreateTestCall (ObjectFactory& callFac, ObjectFactory& floorFac, uint16_t callId) const
+McpttTestCaseConfig::CreateTestCall(ObjectFactory& callFac,
+                                    ObjectFactory& floorFac,
+                                    uint16_t callId) const
 {
-  Ptr<McpttTestCall> call = CreateObject<McpttTestCall> (McpttCall::NetworkCallType::OFF_NETWORK);
-  Ptr<McpttChannel> floorChannel = CreateObject<McpttChannel> ();
-  Ptr<McpttChannel> mediaChannel = CreateObject<McpttChannel> ();
-  Ptr<McpttCallMachine> callMachine = callFac.Create<McpttCallMachine> ();
-  Ptr<McpttFloorParticipant> floorMachine = floorFac.Create<McpttFloorParticipant> ();
+    Ptr<McpttTestCall> call = CreateObject<McpttTestCall>(McpttCall::NetworkCallType::OFF_NETWORK);
+    Ptr<McpttChannel> floorChannel = CreateObject<McpttChannel>();
+    Ptr<McpttChannel> mediaChannel = CreateObject<McpttChannel>();
+    Ptr<McpttCallMachine> callMachine = callFac.Create<McpttCallMachine>();
+    Ptr<McpttFloorParticipant> floorMachine = floorFac.Create<McpttFloorParticipant>();
 
-  call->SetCallMachine (callMachine);
-  call->SetFloorChannel (floorChannel);
-  call->SetFloorMachine (floorMachine);
-  call->SetMediaChannel (mediaChannel);
-  call->SetCallId (callId);
-  return call;
+    call->SetCallMachine(callMachine);
+    call->SetFloorChannel(floorChannel);
+    call->SetFloorMachine(floorMachine);
+    call->SetMediaChannel(mediaChannel);
+    call->SetCallId(callId);
+    return call;
 }
 
 } // namespace tests
 } // namespace psc
 } // namespace ns3
-

@@ -36,13 +36,14 @@
 #ifndef LTE_SIDELINK_HELPER_H
 #define LTE_SIDELINK_HELPER_H
 
+#include "lte-3gpp-hex-grid-enb-topology-helper.h"
+#include "lte-helper.h"
+#include "sidelink-rsrp-calculator.h"
+
 #include <ns3/ipv6-address-helper.h>
-#include <ns3/lte-3gpp-hex-grid-enb-topology-helper.h>
-#include <ns3/lte-helper.h>
 #include <ns3/lte-spectrum-value-helper.h>
 #include <ns3/lte-ue-net-device.h>
 #include <ns3/output-stream-wrapper.h>
-#include <ns3/sidelink-rsrp-calculator.h>
 
 #include <map>
 

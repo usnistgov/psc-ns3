@@ -29,203 +29,215 @@
  * employees is not subject to copyright protection within the United States.
  */
 
-#include <ns3/log.h>
-#include <ns3/ipv4-address.h>
-#include <ns3/pointer.h>
-#include <ns3/uinteger.h>
-#include <ns3/object-map.h>
-#include <ns3/sip-header.h>
-#include <ns3/sip-proxy.h>
-
-#include "mcptt-on-network-floor-arbitrator.h"
-#include "mcptt-server-call.h"
-#include "mcptt-call-msg.h"
-#include "mcptt-server-call-machine.h"
-#include "mcptt-channel.h"
-
 #include "mcptt-server-app.h"
 
-namespace ns3 {
+#include "mcptt-call-msg.h"
+#include "mcptt-channel.h"
+#include "mcptt-on-network-floor-arbitrator.h"
+#include "mcptt-server-call-machine.h"
+#include "mcptt-server-call.h"
 
-NS_LOG_COMPONENT_DEFINE ("McpttServerApp");
+#include <ns3/ipv4-address.h>
+#include <ns3/log.h>
+#include <ns3/object-map.h>
+#include <ns3/pointer.h>
+#include <ns3/sip-header.h>
+#include <ns3/sip-proxy.h>
+#include <ns3/uinteger.h>
 
-namespace psc {
+namespace ns3
+{
 
-NS_OBJECT_ENSURE_REGISTERED (McpttServerApp);
+NS_LOG_COMPONENT_DEFINE("McpttServerApp");
+
+namespace psc
+{
+
+NS_OBJECT_ENSURE_REGISTERED(McpttServerApp);
 
 uint16_t McpttServerApp::s_callId = 1;
 
 TypeId
 McpttServerApp::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::psc::McpttServerApp")
-    .SetParent<Application> ()
-    .AddConstructor<McpttServerApp>()
-    .AddAttribute ("CallPort", "The port that the application will use for call control messages.",
-                   UintegerValue (5060), // standard SIP call control port
-                   MakeUintegerAccessor (&McpttServerApp::m_callPort),
-                   MakeUintegerChecker<uint16_t> ())
-    .AddAttribute ("Calls", "The map of all calls created during the simulation.",
-                   ObjectMapValue (),
-                   MakeObjectMapAccessor (&McpttServerApp::m_calls),
-                   MakeObjectMapChecker<McpttServerCall> ())
-    .AddAttribute ("LocalAddress", "The local address of the server.",
-                   AddressValue (Ipv4Address::GetAny ()),
-                   MakeAddressAccessor (&McpttServerApp::m_localAddress),
-                   MakeAddressChecker ())
-    .AddAttribute ("PeerAddress", "The peer address of the server.",
-                   AddressValue (Ipv4Address::GetAny ()),
-                   MakeAddressAccessor (&McpttServerApp::m_peerAddress),
-                   MakeAddressChecker ())
-    .AddTraceSource ("RxTrace", "The trace for capturing received messages",
-                     MakeTraceSourceAccessor (&McpttServerApp::m_rxTrace),
-                     "ns3::psc::McpttServerApp::RxTrace")
-    .AddTraceSource ("TxTrace", "The trace for capturing sent messages",
-                     MakeTraceSourceAccessor (&McpttServerApp::m_txTrace),
-                     "ns3::psc::McpttServerApp::TxTrace")
-  ;
+    static TypeId tid =
+        TypeId("ns3::psc::McpttServerApp")
+            .SetParent<Application>()
+            .AddConstructor<McpttServerApp>()
+            .AddAttribute("CallPort",
+                          "The port that the application will use for call control messages.",
+                          UintegerValue(5060), // standard SIP call control port
+                          MakeUintegerAccessor(&McpttServerApp::m_callPort),
+                          MakeUintegerChecker<uint16_t>())
+            .AddAttribute("Calls",
+                          "The map of all calls created during the simulation.",
+                          ObjectMapValue(),
+                          MakeObjectMapAccessor(&McpttServerApp::m_calls),
+                          MakeObjectMapChecker<McpttServerCall>())
+            .AddAttribute("LocalAddress",
+                          "The local address of the server.",
+                          AddressValue(Ipv4Address::GetAny()),
+                          MakeAddressAccessor(&McpttServerApp::m_localAddress),
+                          MakeAddressChecker())
+            .AddAttribute("PeerAddress",
+                          "The peer address of the server.",
+                          AddressValue(Ipv4Address::GetAny()),
+                          MakeAddressAccessor(&McpttServerApp::m_peerAddress),
+                          MakeAddressChecker())
+            .AddTraceSource("RxTrace",
+                            "The trace for capturing received messages",
+                            MakeTraceSourceAccessor(&McpttServerApp::m_rxTrace),
+                            "ns3::psc::McpttServerApp::RxTrace")
+            .AddTraceSource("TxTrace",
+                            "The trace for capturing sent messages",
+                            MakeTraceSourceAccessor(&McpttServerApp::m_txTrace),
+                            "ns3::psc::McpttServerApp::TxTrace");
 
-  return tid;
+    return tid;
 }
 
 McpttServerApp::McpttServerApp()
     : Application(),
       m_callChannel(nullptr)
 {
-  NS_LOG_FUNCTION (this);
-  m_sipProxy = CreateObject<sip::SipProxy> ();
+    NS_LOG_FUNCTION(this);
+    m_sipProxy = CreateObject<sip::SipProxy>();
 }
 
 McpttServerApp::~McpttServerApp()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 Ptr<sip::SipProxy>
 McpttServerApp::GetSipProxy() const
 {
-  return m_sipProxy;
+    return m_sipProxy;
 }
 
 uint16_t
 McpttServerApp::AllocateCallId()
 {
-  return s_callId++;
+    return s_callId++;
 }
 
 void
-McpttServerApp::AddCall (Ptr<McpttServerCall> call)
+McpttServerApp::AddCall(Ptr<McpttServerCall> call)
 {
-  NS_LOG_FUNCTION (this);
-  NS_ABORT_MSG_IF (call->GetCallId () > s_callId, "CallID out of range");
-  NS_LOG_DEBUG ("Inserting call with callId " << call->GetCallId () << " to list");
-  call->SetOwner (this);
-  m_calls.insert ({call->GetCallId (), call});
+    NS_LOG_FUNCTION(this);
+    NS_ABORT_MSG_IF(call->GetCallId() > s_callId, "CallID out of range");
+    NS_LOG_DEBUG("Inserting call with callId " << call->GetCallId() << " to list");
+    call->SetOwner(this);
+    m_calls.insert({call->GetCallId(), call});
 }
 
 Ptr<McpttServerCall>
-McpttServerApp::GetCall (uint16_t callId)
+McpttServerApp::GetCall(uint16_t callId)
 {
-  NS_LOG_FUNCTION (this);
-  Ptr<McpttServerCall> call = nullptr;
-  auto it = m_calls.find(callId);
-  if (it != m_calls.end ())
+    NS_LOG_FUNCTION(this);
+    Ptr<McpttServerCall> call = nullptr;
+    auto it = m_calls.find(callId);
+    if (it != m_calls.end())
     {
-      call = it->second;
+        call = it->second;
     }
-  return call;
+    return call;
 }
 
 void
 McpttServerApp::DoDispose()
 {
-  NS_LOG_FUNCTION (this);
-  for (auto it = m_calls.begin (); it != m_calls.end (); it++)
+    NS_LOG_FUNCTION(this);
+    for (auto it = m_calls.begin(); it != m_calls.end(); it++)
     {
-      it->second->Dispose ();
+        it->second->Dispose();
     }
-  m_calls.clear ();
-  if (m_callChannel)
+    m_calls.clear();
+    if (m_callChannel)
     {
-      m_callChannel->Dispose ();
-      m_callChannel = nullptr;
+        m_callChannel->Dispose();
+        m_callChannel = nullptr;
     }
-  m_sipProxy->Dispose ();
-  m_sipProxy = nullptr;
-  Object::DoDispose ();
+    m_sipProxy->Dispose();
+    m_sipProxy = nullptr;
+    Object::DoDispose();
 }
 
 void
-McpttServerApp::TraceMessageReceive (uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType)
+McpttServerApp::TraceMessageReceive(uint16_t callId,
+                                    Ptr<const Packet> pkt,
+                                    const TypeId& headerType)
 {
-  m_rxTrace (this, callId, pkt, headerType);
+    m_rxTrace(this, callId, pkt, headerType);
 }
 
 void
 McpttServerApp::StartApplication()
 {
-  NS_LOG_FUNCTION (this);
-  m_callChannel = CreateObject<McpttChannel> ();
-  // Set the McpttChan object to deliver incoming packets to SipProxy::Receive
-  m_callChannel->SetRxPktCb (MakeCallback (&sip::SipProxy::Receive, m_sipProxy));
-  NS_LOG_DEBUG ("Open socket for incoming call control on port " << m_callPort);
-  m_callChannel->Open (GetNode (), m_callPort, m_localAddress, m_peerAddress);
-  for (auto it = m_calls.begin (); it != m_calls.end (); it++)
+    NS_LOG_FUNCTION(this);
+    m_callChannel = CreateObject<McpttChannel>();
+    // Set the McpttChan object to deliver incoming packets to SipProxy::Receive
+    m_callChannel->SetRxPktCb(MakeCallback(&sip::SipProxy::Receive, m_sipProxy));
+    NS_LOG_DEBUG("Open socket for incoming call control on port " << m_callPort);
+    m_callChannel->Open(GetNode(), m_callPort, m_localAddress, m_peerAddress);
+    for (auto it = m_calls.begin(); it != m_calls.end(); it++)
     {
-      NS_LOG_DEBUG ("Starting call for id " << it->first);
-      it->second->GetCallMachine ()->Start ();
-      // Set the SipProxy to deliver received packets back to
-      // McpttServerCall::ReceiveSipMessage and events to
-      // McpttServerCall::ReceiveSipEvent
-      m_sipProxy->SetCallbacks (it->first, MakeCallback (&McpttServerCall::ReceiveSipMessage, it->second), MakeCallback (&McpttServerCall::ReceiveSipEvent, it->second));
+        NS_LOG_DEBUG("Starting call for id " << it->first);
+        it->second->GetCallMachine()->Start();
+        // Set the SipProxy to deliver received packets back to
+        // McpttServerCall::ReceiveSipMessage and events to
+        // McpttServerCall::ReceiveSipEvent
+        m_sipProxy->SetCallbacks(it->first,
+                                 MakeCallback(&McpttServerCall::ReceiveSipMessage, it->second),
+                                 MakeCallback(&McpttServerCall::ReceiveSipEvent, it->second));
     }
-  m_isRunning = true;
+    m_isRunning = true;
 }
 
 void
 McpttServerApp::StopApplication()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  for (auto it = m_calls.begin (); it != m_calls.end (); it++)
+    for (auto it = m_calls.begin(); it != m_calls.end(); it++)
     {
-      NS_LOG_DEBUG ("Stopping call for id " << it->first);
-      it->second->GetCallMachine ()->Stop ();
+        NS_LOG_DEBUG("Stopping call for id " << it->first);
+        it->second->GetCallMachine()->Stop();
     }
-  m_isRunning = false;
+    m_isRunning = false;
 }
 
 void
-McpttServerApp::SendCallControlPacket (Ptr<Packet> pkt, const Address& toAddr)
+McpttServerApp::SendCallControlPacket(Ptr<Packet> pkt, const Address& toAddr)
 {
-  NS_LOG_FUNCTION (this << pkt << toAddr);
-  m_callChannel->SendTo (pkt, 0, toAddr);
+    NS_LOG_FUNCTION(this << pkt << toAddr);
+    m_callChannel->SendTo(pkt, 0, toAddr);
 }
 
 void
-McpttServerApp::TraceMessageSend (uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType)
+McpttServerApp::TraceMessageSend(uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType)
 {
-  m_txTrace (this, callId, pkt, headerType);
+    m_txTrace(this, callId, pkt, headerType);
 }
 
 Address
 McpttServerApp::GetLocalAddress() const
 {
-  return m_localAddress;
+    return m_localAddress;
 }
 
 void
-McpttServerApp::SetLocalAddress (const Address& localAddress)
+McpttServerApp::SetLocalAddress(const Address& localAddress)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  m_localAddress = localAddress;
+    m_localAddress = localAddress;
 }
 
 bool
 McpttServerApp::IsRunning() const
 {
-  return m_isRunning;
+    return m_isRunning;
 }
 
 } // namespace psc

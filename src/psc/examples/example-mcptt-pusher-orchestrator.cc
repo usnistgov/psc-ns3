@@ -29,16 +29,16 @@
  * employees is not subject to copyright protection within the United States.
  */
 
-#include "ns3/core-module.h"
-#include "ns3/network-module.h"
 #include "ns3/applications-module.h"
+#include "ns3/core-module.h"
 #include "ns3/internet-module.h"
 #include "ns3/mobility-module.h"
+#include "ns3/network-module.h"
 #include "ns3/psc-module.h"
 #include "ns3/wifi-module.h"
 
-#include <iostream>
 #include <fstream>
+#include <iostream>
 
 using namespace ns3;
 using namespace psc;
@@ -82,7 +82,7 @@ using namespace psc;
  *
  */
 
-NS_LOG_COMPONENT_DEFINE ("ExampleMcpttPusherOrchestrator");
+NS_LOG_COMPONENT_DEFINE("ExampleMcpttPusherOrchestrator");
 
 bool s_trace = false;
 bool s_verbose = false;
@@ -90,232 +90,266 @@ double s_totalSpurtTime = 0.0;
 uint32_t s_totalPtts = 0;
 uint32_t s_totalContentions = 0;
 double s_totalSessionDurationTime = 0.0;
-std::map<std::string, Ptr<OutputStreamWrapper> > s_fileStreams;
+std::map<std::string, Ptr<OutputStreamWrapper>> s_fileStreams;
 std::map<std::string, Time> s_eventSpans;
 
 // Associates a state change with a means of identification.
 class StateTracker : public SimpleRefCount<StateTracker>
 {
-public:
-  StateTracker ();
-  ~StateTracker ();
-  void Trigger (bool oldState, bool newState);
+  public:
+    StateTracker();
+    ~StateTracker();
+    void Trigger(bool oldState, bool newState);
 
-private:
-  uint32_t m_id;
-  std::string m_name;
-  Callback<void, StateTracker&, bool, bool> m_destination;
+  private:
+    uint32_t m_id;
+    std::string m_name;
+    Callback<void, StateTracker&, bool, bool> m_destination;
 
-public:
-  uint32_t GetId() const;
-  std::string GetName() const;
-  void SetDestination (const Callback<void, StateTracker&, bool, bool>& destination);
-  void SetId (const uint32_t id);
-  void SetName (const std::string& name);
+  public:
+    uint32_t GetId() const;
+    std::string GetName() const;
+    void SetDestination(const Callback<void, StateTracker&, bool, bool>& destination);
+    void SetId(const uint32_t id);
+    void SetName(const std::string& name);
 };
 
-void PttDurationCallback (uint32_t userId, Time duration);
-void PttIatCallback (uint32_t userId, Time iat);
-void ContentionPttDurationCallback (uint32_t userId, Time duration);
-void ContentionPttIatCallback (uint32_t userId, Time iat);
-void SessionDurationCallback (Time duration);
-void SessionIatCallback (Time iat);
-void PusherStateCallback (StateTracker&, bool oldState, bool newState);
-void SessionStateCallback (bool oldState, bool newState);
+void PttDurationCallback(uint32_t userId, Time duration);
+void PttIatCallback(uint32_t userId, Time iat);
+void ContentionPttDurationCallback(uint32_t userId, Time duration);
+void ContentionPttIatCallback(uint32_t userId, Time iat);
+void SessionDurationCallback(Time duration);
+void SessionIatCallback(Time iat);
+void PusherStateCallback(StateTracker&, bool oldState, bool newState);
+void SessionStateCallback(bool oldState, bool newState);
 
-int main (int argc, char *argv[])
+int
+main(int argc, char* argv[])
 {
-  uint32_t appCount = 2;
-  DataRate dataRate = DataRate ("24kb/s");
-  TypeId floorTid = McpttFloorParticipant::GetTypeId ();
-  double maxX = 5.0;
-  double maxY = 5.0;
-  uint32_t msgSize = 60; //60 + RTP header = 60 + 12 = 72
-  Time startTime = Seconds (2.0);
-  Time stopTime = Seconds (62.0);
-  double vaf = 1.0;
-  double cp = 0.0;
-  double saf = 0.5;
-  TypeId socketFacTid = UdpSocketFactory::GetTypeId ();
-  auto peerAddress = Ipv4Address("255.255.255.255");
+    uint32_t appCount = 2;
+    DataRate dataRate = DataRate("24kb/s");
+    TypeId floorTid = McpttFloorParticipant::GetTypeId();
+    double maxX = 5.0;
+    double maxY = 5.0;
+    uint32_t msgSize = 60; // 60 + RTP header = 60 + 12 = 72
+    Time startTime = Seconds(2.0);
+    Time stopTime = Seconds(62.0);
+    double vaf = 1.0;
+    double cp = 0.0;
+    double saf = 0.5;
+    TypeId socketFacTid = UdpSocketFactory::GetTypeId();
+    auto peerAddress = Ipv4Address("255.255.255.255");
 
-  CommandLine cmd;
-  cmd.AddValue ("trace", "Enable traces.", s_trace);
-  cmd.AddValue ("users", "Number of users to include in the group.", appCount);
-  cmd.AddValue ("data-rate", "The data rate at which media will be sent at.", dataRate);
-  cmd.AddValue ("max-x", "The largest x-coordinate that a UE can have.", maxX);
-  cmd.AddValue ("max-y", "The largest y-coordinate that a UE can have.", maxY);
-  cmd.AddValue ("media-size", "The size (in bytes) of the media packets that will be sent.", msgSize);
-  cmd.AddValue ("start-time", "The number of seconds into the simulation that the applications should start.", startTime);
-  cmd.AddValue ("stop-time", "The number of seconds into the simulation that the applications should stop.", stopTime);
-  cmd.AddValue ("vaf", "The voice activity factor to use for the orchestrator.", vaf);
-  cmd.AddValue ("cp", "The probability of contention.", cp);
-  cmd.AddValue ("saf", "The voice activity factor to use for the orchestrator.", saf);
-  cmd.AddValue ("verbose", "Whether or not to print out PTT duration and PTT IAT information.", s_verbose);
-  cmd.Parse (argc, argv);
+    CommandLine cmd;
+    cmd.AddValue("trace", "Enable traces.", s_trace);
+    cmd.AddValue("users", "Number of users to include in the group.", appCount);
+    cmd.AddValue("data-rate", "The data rate at which media will be sent at.", dataRate);
+    cmd.AddValue("max-x", "The largest x-coordinate that a UE can have.", maxX);
+    cmd.AddValue("max-y", "The largest y-coordinate that a UE can have.", maxY);
+    cmd.AddValue("media-size",
+                 "The size (in bytes) of the media packets that will be sent.",
+                 msgSize);
+    cmd.AddValue("start-time",
+                 "The number of seconds into the simulation that the applications should start.",
+                 startTime);
+    cmd.AddValue("stop-time",
+                 "The number of seconds into the simulation that the applications should stop.",
+                 stopTime);
+    cmd.AddValue("vaf", "The voice activity factor to use for the orchestrator.", vaf);
+    cmd.AddValue("cp", "The probability of contention.", cp);
+    cmd.AddValue("saf", "The voice activity factor to use for the orchestrator.", saf);
+    cmd.AddValue("verbose",
+                 "Whether or not to print out PTT duration and PTT IAT information.",
+                 s_verbose);
+    cmd.Parse(argc, argv);
 
-  Config::SetDefault ("ns3::psc::McpttMsgStats::CallControl", BooleanValue (false));
+    Config::SetDefault("ns3::psc::McpttMsgStats::CallControl", BooleanValue(false));
 
-  NodeContainer nodes;
-  nodes.Create (appCount);
+    NodeContainer nodes;
+    nodes.Create(appCount);
 
-  WifiHelper wifi;
-  wifi.SetStandard (WIFI_STANDARD_80211g); //2.4Ghz
-  wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
-                                "DataMode", StringValue ("ErpOfdmRate6Mbps"));
+    WifiHelper wifi;
+    wifi.SetStandard(WIFI_STANDARD_80211g); // 2.4Ghz
+    wifi.SetRemoteStationManager("ns3::ConstantRateWifiManager",
+                                 "DataMode",
+                                 StringValue("ErpOfdmRate6Mbps"));
 
-  WifiMacHelper wifiMac;
-  YansWifiPhyHelper wifiPhy;
-  YansWifiChannelHelper wifiChannel;
-  wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
-  wifiChannel.AddPropagationLoss ("ns3::FriisPropagationLossModel",
-                                  "Frequency", DoubleValue (2.407e9)); //2.4Ghz
+    WifiMacHelper wifiMac;
+    YansWifiPhyHelper wifiPhy;
+    YansWifiChannelHelper wifiChannel;
+    wifiChannel.SetPropagationDelay("ns3::ConstantSpeedPropagationDelayModel");
+    wifiChannel.AddPropagationLoss("ns3::FriisPropagationLossModel",
+                                   "Frequency",
+                                   DoubleValue(2.407e9)); // 2.4Ghz
 
-  wifiMac.SetType ("ns3::AdhocWifiMac");
+    wifiMac.SetType("ns3::AdhocWifiMac");
 
-  YansWifiPhyHelper phy = wifiPhy;
-  phy.SetChannel (wifiChannel.Create ());
+    YansWifiPhyHelper phy = wifiPhy;
+    phy.SetChannel(wifiChannel.Create());
 
-  WifiMacHelper mac = wifiMac;
-  NetDeviceContainer devices = wifi.Install (phy, mac, nodes);
+    WifiMacHelper mac = wifiMac;
+    NetDeviceContainer devices = wifi.Install(phy, mac, nodes);
 
-  NS_LOG_INFO ("Building physical topology...");
-  Ptr<RandomBoxPositionAllocator> rndBoxPosAllocator = CreateObject <RandomBoxPositionAllocator> ();
-  rndBoxPosAllocator->SetX (CreateObjectWithAttributes<UniformRandomVariable> ("Min", DoubleValue (0.0), "Max", DoubleValue (maxX)));
-  rndBoxPosAllocator->SetY (CreateObjectWithAttributes<UniformRandomVariable> ("Min", DoubleValue (0.0), "Max", DoubleValue (maxY)));
-  rndBoxPosAllocator->SetZ (CreateObjectWithAttributes<ConstantRandomVariable> ("Constant", DoubleValue (1.5)));
-  rndBoxPosAllocator->AssignStreams (1);
+    NS_LOG_INFO("Building physical topology...");
+    Ptr<RandomBoxPositionAllocator> rndBoxPosAllocator = CreateObject<RandomBoxPositionAllocator>();
+    rndBoxPosAllocator->SetX(CreateObjectWithAttributes<UniformRandomVariable>("Min",
+                                                                               DoubleValue(0.0),
+                                                                               "Max",
+                                                                               DoubleValue(maxX)));
+    rndBoxPosAllocator->SetY(CreateObjectWithAttributes<UniformRandomVariable>("Min",
+                                                                               DoubleValue(0.0),
+                                                                               "Max",
+                                                                               DoubleValue(maxY)));
+    rndBoxPosAllocator->SetZ(
+        CreateObjectWithAttributes<ConstantRandomVariable>("Constant", DoubleValue(1.5)));
+    rndBoxPosAllocator->AssignStreams(1);
 
-  Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
-  for (uint32_t count = 0; count < appCount; count++)
+    Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator>();
+    for (uint32_t count = 0; count < appCount; count++)
     {
-      Vector position = rndBoxPosAllocator->GetNext ();
+        Vector position = rndBoxPosAllocator->GetNext();
 
-      NS_LOG_INFO ("UE " << (count + 1) << " located at " << position << ".");
+        NS_LOG_INFO("UE " << (count + 1) << " located at " << position << ".");
 
-      positionAlloc->Add (position);
+        positionAlloc->Add(position);
     }
 
-  MobilityHelper mobility;
-  mobility.SetPositionAllocator (positionAlloc);
-  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
-  mobility.Install (nodes);
+    MobilityHelper mobility;
+    mobility.SetPositionAllocator(positionAlloc);
+    mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+    mobility.Install(nodes);
 
-  NS_LOG_INFO ("Installing internet stack on all nodes...");
-  InternetStackHelper internet;
-  internet.Install (nodes);
+    NS_LOG_INFO("Installing internet stack on all nodes...");
+    InternetStackHelper internet;
+    internet.Install(nodes);
 
-  NS_LOG_INFO ("Assigning IP addresses to each net device...");
-  Ipv4AddressHelper ipv4;
-  ipv4.SetBase ("10.1.1.0", "255.255.255.0");
-  Ipv4InterfaceContainer i = ipv4.Assign (devices);
+    NS_LOG_INFO("Assigning IP addresses to each net device...");
+    Ipv4AddressHelper ipv4;
+    ipv4.SetBase("10.1.1.0", "255.255.255.0");
+    Ipv4InterfaceContainer i = ipv4.Assign(devices);
 
-  NS_LOG_INFO ("Creating applications...");
-  ApplicationContainer clientApps;
-  McpttHelper mcpttHelper;
-  mcpttHelper.SetPttApp ("ns3::psc::McpttPttApp",
-                         "PushOnStart", BooleanValue (true));
-  mcpttHelper.SetMediaSrc ("ns3::psc::McpttMediaSrc",
-                           "Bytes", UintegerValue (msgSize),
-                           "DataRate", DataRateValue (dataRate));
-  mcpttHelper.SetPusher ("ns3::psc::McpttPusher",
-                         "Automatic", BooleanValue (false));
+    NS_LOG_INFO("Creating applications...");
+    ApplicationContainer clientApps;
+    McpttHelper mcpttHelper;
+    mcpttHelper.SetPttApp("ns3::psc::McpttPttApp", "PushOnStart", BooleanValue(true));
+    mcpttHelper.SetMediaSrc("ns3::psc::McpttMediaSrc",
+                            "Bytes",
+                            UintegerValue(msgSize),
+                            "DataRate",
+                            DataRateValue(dataRate));
+    mcpttHelper.SetPusher("ns3::psc::McpttPusher", "Automatic", BooleanValue(false));
 
-  clientApps.Add (mcpttHelper.Install (nodes));
-  clientApps.Start (startTime);
-  clientApps.Stop (stopTime);
+    clientApps.Add(mcpttHelper.Install(nodes));
+    clientApps.Start(startTime);
+    clientApps.Stop(stopTime);
 
-  McpttCallHelper callHelper;
-  callHelper.ConfigureOffNetworkBasicGrpCall (clientApps, peerAddress, appCount);
+    McpttCallHelper callHelper;
+    callHelper.ConfigureOffNetworkBasicGrpCall(clientApps, peerAddress, appCount);
 
-  Ptr<McpttPusherOrchestratorInterface> orchestrator = nullptr;
-  Ptr<McpttPusherOrchestratorSpurtCdf> spurtOrchestrator = CreateObject<McpttPusherOrchestratorSpurtCdf> ();
-  spurtOrchestrator->SetAttribute ("ActivityFactor", DoubleValue (vaf));
-  spurtOrchestrator->TraceConnectWithoutContext ("PttDurationTrace", MakeCallback (&PttDurationCallback));
-  spurtOrchestrator->TraceConnectWithoutContext ("PttInterarrivalTimeTrace", MakeCallback (&PttIatCallback));
-  orchestrator = spurtOrchestrator;
+    Ptr<McpttPusherOrchestratorInterface> orchestrator = nullptr;
+    Ptr<McpttPusherOrchestratorSpurtCdf> spurtOrchestrator =
+        CreateObject<McpttPusherOrchestratorSpurtCdf>();
+    spurtOrchestrator->SetAttribute("ActivityFactor", DoubleValue(vaf));
+    spurtOrchestrator->TraceConnectWithoutContext("PttDurationTrace",
+                                                  MakeCallback(&PttDurationCallback));
+    spurtOrchestrator->TraceConnectWithoutContext("PttInterarrivalTimeTrace",
+                                                  MakeCallback(&PttIatCallback));
+    orchestrator = spurtOrchestrator;
 
-  Ptr<McpttPusherOrchestratorContention> contentionOrchestrator = CreateObject<McpttPusherOrchestratorContention> ();
-  contentionOrchestrator->SetAttribute ("ContentionProbability", DoubleValue (cp));
-  contentionOrchestrator->SetAttribute ("Orchestrator", PointerValue (orchestrator));
-  contentionOrchestrator->TraceConnectWithoutContext ("PttDurationTrace", MakeCallback (&ContentionPttDurationCallback));
-  contentionOrchestrator->TraceConnectWithoutContext ("PttInterarrivalTimeTrace", MakeCallback (&ContentionPttIatCallback));
-  orchestrator = contentionOrchestrator;
+    Ptr<McpttPusherOrchestratorContention> contentionOrchestrator =
+        CreateObject<McpttPusherOrchestratorContention>();
+    contentionOrchestrator->SetAttribute("ContentionProbability", DoubleValue(cp));
+    contentionOrchestrator->SetAttribute("Orchestrator", PointerValue(orchestrator));
+    contentionOrchestrator->TraceConnectWithoutContext(
+        "PttDurationTrace",
+        MakeCallback(&ContentionPttDurationCallback));
+    contentionOrchestrator->TraceConnectWithoutContext("PttInterarrivalTimeTrace",
+                                                       MakeCallback(&ContentionPttIatCallback));
+    orchestrator = contentionOrchestrator;
 
-  Ptr<McpttPusherOrchestratorSessionCdf> sessionOrchestrator = CreateObject<McpttPusherOrchestratorSessionCdf> ();
-  sessionOrchestrator->SetAttribute ("ActivityFactor", DoubleValue (saf));
-  sessionOrchestrator->SetAttribute ("Orchestrator", PointerValue (orchestrator));
-  sessionOrchestrator->TraceConnectWithoutContext ("SessionDurationTrace", MakeCallback (&SessionDurationCallback));
-  sessionOrchestrator->TraceConnectWithoutContext ("SessionInterarrivalTimeTrace", MakeCallback (&SessionIatCallback));
-  sessionOrchestrator->TraceConnectWithoutContext ("SessionState", MakeCallback (&SessionStateCallback));
-  orchestrator = sessionOrchestrator;
+    Ptr<McpttPusherOrchestratorSessionCdf> sessionOrchestrator =
+        CreateObject<McpttPusherOrchestratorSessionCdf>();
+    sessionOrchestrator->SetAttribute("ActivityFactor", DoubleValue(saf));
+    sessionOrchestrator->SetAttribute("Orchestrator", PointerValue(orchestrator));
+    sessionOrchestrator->TraceConnectWithoutContext("SessionDurationTrace",
+                                                    MakeCallback(&SessionDurationCallback));
+    sessionOrchestrator->TraceConnectWithoutContext("SessionInterarrivalTimeTrace",
+                                                    MakeCallback(&SessionIatCallback));
+    sessionOrchestrator->TraceConnectWithoutContext("SessionState",
+                                                    MakeCallback(&SessionStateCallback));
+    orchestrator = sessionOrchestrator;
 
-  orchestrator->StartAt (startTime);
-  orchestrator->StopAt (stopTime);
+    orchestrator->StartAt(startTime);
+    orchestrator->StopAt(stopTime);
 
-  mcpttHelper.AddPushersToOrchestrator (orchestrator, clientApps);
+    mcpttHelper.AddPushersToOrchestrator(orchestrator, clientApps);
 
-  std::stringstream ss;
-  AsciiTraceHelper asciiTraceHelper;
-  Ptr<OutputStreamWrapper> stream = nullptr;
-  ss.str (std::string ());
+    std::stringstream ss;
+    AsciiTraceHelper asciiTraceHelper;
+    Ptr<OutputStreamWrapper> stream = nullptr;
+    ss.str(std::string());
 
-  if (s_trace)
+    if (s_trace)
     {
-      ss << "session-state.csv";
-      stream = asciiTraceHelper.CreateFileStream (ss.str ());
-      s_fileStreams["session"] = stream;
-      *stream->GetStream () << "Session" << std::endl;
-      *stream->GetStream () << Seconds (0).GetSeconds () << " " << "inactive" << " " << 2 << std::endl;
+        ss << "session-state.csv";
+        stream = asciiTraceHelper.CreateFileStream(ss.str());
+        s_fileStreams["session"] = stream;
+        *stream->GetStream() << "Session" << std::endl;
+        *stream->GetStream() << Seconds(0).GetSeconds() << " "
+                             << "inactive"
+                             << " " << 2 << std::endl;
 
-      ss.str (std::string ());
-      ss << "contention-state.csv";
-      stream = asciiTraceHelper.CreateFileStream (ss.str ());
-      s_fileStreams["contention"] = stream;
-      *stream->GetStream () << "Contention" << std::endl;
+        ss.str(std::string());
+        ss << "contention-state.csv";
+        stream = asciiTraceHelper.CreateFileStream(ss.str());
+        s_fileStreams["contention"] = stream;
+        *stream->GetStream() << "Contention" << std::endl;
     }
 
-  std::vector<Ptr<StateTracker> > stateTrackers;
-  for (uint32_t appIdx = 0; appIdx < clientApps.GetN (); appIdx++)
+    std::vector<Ptr<StateTracker>> stateTrackers;
+    for (uint32_t appIdx = 0; appIdx < clientApps.GetN(); appIdx++)
     {
-      ss.str (std::string ());
-      uint32_t pusherId = appIdx + 1;
-      ss << "pusher-" << pusherId;
+        ss.str(std::string());
+        uint32_t pusherId = appIdx + 1;
+        ss << "pusher-" << pusherId;
 
-      Ptr<StateTracker> tracker = Create<StateTracker> ();
-      tracker->SetId (pusherId);
-      tracker->SetName (ss.str ());
-      tracker->SetDestination (MakeCallback (&PusherStateCallback));
-      stateTrackers.push_back (tracker);
+        Ptr<StateTracker> tracker = Create<StateTracker>();
+        tracker->SetId(pusherId);
+        tracker->SetName(ss.str());
+        tracker->SetDestination(MakeCallback(&PusherStateCallback));
+        stateTrackers.push_back(tracker);
 
-      Ptr<McpttPusher> pusher = clientApps.Get (appIdx)->GetObject<McpttPttApp> ()->GetPusher ();
-      pusher->TraceConnectWithoutContext ("PushingState", MakeCallback (&StateTracker::Trigger, tracker));
+        Ptr<McpttPusher> pusher = clientApps.Get(appIdx)->GetObject<McpttPttApp>()->GetPusher();
+        pusher->TraceConnectWithoutContext("PushingState",
+                                           MakeCallback(&StateTracker::Trigger, tracker));
 
-      if (s_trace)
+        if (s_trace)
         {
-          ss.str (std::string ());
-          ss << "pusher-state-" << pusherId << ".csv";
-          stream = asciiTraceHelper.CreateFileStream (ss.str ());
-          s_fileStreams[tracker->GetName ()] = stream;
-          *stream->GetStream () << "\"Pusher " << pusherId << "\"" << std::endl;
-          *stream->GetStream () << Seconds (0).GetSeconds () << " " << "released" << " " << (2 * pusherId + 2) << std::endl;
+            ss.str(std::string());
+            ss << "pusher-state-" << pusherId << ".csv";
+            stream = asciiTraceHelper.CreateFileStream(ss.str());
+            s_fileStreams[tracker->GetName()] = stream;
+            *stream->GetStream() << "\"Pusher " << pusherId << "\"" << std::endl;
+            *stream->GetStream() << Seconds(0).GetSeconds() << " "
+                                 << "released"
+                                 << " " << (2 * pusherId + 2) << std::endl;
         }
     }
 
-  if (s_trace)
+    if (s_trace)
     {
-      NS_LOG_INFO ("Enabling MCPTT traces...");
-      Ptr<McpttTraceHelper> traceHelper = CreateObject<McpttTraceHelper> ();
-      traceHelper->EnableMsgTraces ();
-      traceHelper->EnableStateMachineTraces ();
+        NS_LOG_INFO("Enabling MCPTT traces...");
+        Ptr<McpttTraceHelper> traceHelper = CreateObject<McpttTraceHelper>();
+        traceHelper->EnableMsgTraces();
+        traceHelper->EnableStateMachineTraces();
     }
 
-  NS_LOG_INFO ("Starting simulation...");
-  Simulator::Stop (stopTime + Seconds (2));
-  Simulator::Run ();
-  Simulator::Destroy ();
+    NS_LOG_INFO("Starting simulation...");
+    Simulator::Stop(stopTime + Seconds(2));
+    Simulator::Run();
+    Simulator::Destroy();
 
-  if (s_trace)
+    if (s_trace)
     {
         for (auto it = stateTrackers.begin(); it != stateTrackers.end(); it++)
         {
@@ -337,91 +371,99 @@ int main (int argc, char *argv[])
         it->second = nullptr;
     }
 
-  if (s_verbose)
+    if (s_verbose)
     {
-      std::cout << "Talkspurt time = " << s_totalSpurtTime << " s (" << (s_totalSpurtTime / (stopTime - startTime).GetSeconds ()) * 100.0 << " %)" << std::endl;
-      std::cout << "Session time = " << s_totalSessionDurationTime << " s (" << (s_totalSessionDurationTime / (stopTime - startTime).GetSeconds ()) * 100.0 << " %)" << std::endl;
-      std::cout << "Contention = " << s_totalContentions << " (" << ((double)s_totalContentions / s_totalPtts) * 100.0 << " %)" << std::endl;
+        std::cout << "Talkspurt time = " << s_totalSpurtTime << " s ("
+                  << (s_totalSpurtTime / (stopTime - startTime).GetSeconds()) * 100.0 << " %)"
+                  << std::endl;
+        std::cout << "Session time = " << s_totalSessionDurationTime << " s ("
+                  << (s_totalSessionDurationTime / (stopTime - startTime).GetSeconds()) * 100.0
+                  << " %)" << std::endl;
+        std::cout << "Contention = " << s_totalContentions << " ("
+                  << ((double)s_totalContentions / s_totalPtts) * 100.0 << " %)" << std::endl;
     }
 
-  NS_LOG_INFO ("Done.");
+    NS_LOG_INFO("Done.");
 
-  return 0;
+    return 0;
 }
 
-StateTracker::StateTracker ()
+StateTracker::StateTracker()
 {
-  m_id = 0;
-  m_name = "";
-  m_destination = MakeNullCallback<void, StateTracker&, bool, bool> ();
+    m_id = 0;
+    m_name = "";
+    m_destination = MakeNullCallback<void, StateTracker&, bool, bool>();
 }
 
-StateTracker::~StateTracker ()
-{}
+StateTracker::~StateTracker()
+{
+}
 
 void
-StateTracker::Trigger (bool oldState, bool newState)
+StateTracker::Trigger(bool oldState, bool newState)
 {
-  if (!m_destination.IsNull ())
+    if (!m_destination.IsNull())
     {
-      m_destination (*this, oldState, newState);
+        m_destination(*this, oldState, newState);
     }
 }
 
 uint32_t
 StateTracker::GetId() const
 {
-  return m_id;
+    return m_id;
 }
 
 std::string
 StateTracker::GetName() const
 {
-  return m_name;
+    return m_name;
 }
 
 void
-StateTracker::SetDestination (const Callback<void, StateTracker&, bool, bool>& destination)
+StateTracker::SetDestination(const Callback<void, StateTracker&, bool, bool>& destination)
 {
-  m_destination = destination;
+    m_destination = destination;
 }
 
 void
-StateTracker::SetId (const uint32_t id)
+StateTracker::SetId(const uint32_t id)
 {
-  m_id = id;
+    m_id = id;
 }
 
 void
-StateTracker::SetName (const std::string& name)
+StateTracker::SetName(const std::string& name)
 {
-  m_name = name;
+    m_name = name;
 }
 
 void
-PttDurationCallback (uint32_t userId, Time duration)
+PttDurationCallback(uint32_t userId, Time duration)
 {
-  if (s_verbose)
+    if (s_verbose)
     {
-      std::cout << Simulator::Now ().GetSeconds () << "s - PTT Duration: " << duration.GetSeconds () << std::endl;
+        std::cout << Simulator::Now().GetSeconds() << "s - PTT Duration: " << duration.GetSeconds()
+                  << std::endl;
     }
 
-  s_totalPtts++;
+    s_totalPtts++;
 }
 
 void
-PttIatCallback (uint32_t userId, Time iat)
+PttIatCallback(uint32_t userId, Time iat)
 {
-  if (s_verbose)
+    if (s_verbose)
     {
-      std::cout << Simulator::Now ().GetSeconds () << "s - PTT IAT: " << iat.GetSeconds () << std::endl;
+        std::cout << Simulator::Now().GetSeconds() << "s - PTT IAT: " << iat.GetSeconds()
+                  << std::endl;
     }
 }
 
 void
-ContentionPttDurationCallback (uint32_t userId, Time duration)
+ContentionPttDurationCallback(uint32_t userId, Time duration)
 {
-  if (s_trace)
+    if (s_trace)
     {
         Ptr<OutputStreamWrapper> stream = nullptr;
         auto it = s_fileStreams.find("contention");
@@ -429,45 +471,49 @@ ContentionPttDurationCallback (uint32_t userId, Time duration)
         *stream->GetStream() << Simulator::Now().GetSeconds() << " contention " << 1 << std::endl;
     }
 
-  if (s_verbose)
+    if (s_verbose)
     {
-      std::cout << Simulator::Now ().GetSeconds () << "s - Contention PTT Duration: " << duration.GetSeconds () << std::endl;
+        std::cout << Simulator::Now().GetSeconds()
+                  << "s - Contention PTT Duration: " << duration.GetSeconds() << std::endl;
     }
 
-  s_totalContentions++;
+    s_totalContentions++;
 }
 
 void
-ContentionPttIatCallback (uint32_t userId, Time iat)
+ContentionPttIatCallback(uint32_t userId, Time iat)
 {
-  if (s_verbose)
+    if (s_verbose)
     {
-      std::cout << Simulator::Now ().GetSeconds () << "s - Contention PTT IAT: " << iat.GetSeconds () << std::endl;
-    }
-}
-
-void
-SessionDurationCallback (Time duration)
-{
-  if (s_verbose)
-    {
-      std::cout << Simulator::Now ().GetSeconds () << "s - Session Duration: " << duration.GetSeconds () << std::endl;
+        std::cout << Simulator::Now().GetSeconds() << "s - Contention PTT IAT: " << iat.GetSeconds()
+                  << std::endl;
     }
 }
 
 void
-SessionIatCallback (Time iat)
+SessionDurationCallback(Time duration)
 {
-  if (s_verbose)
+    if (s_verbose)
     {
-      std::cout << Simulator::Now ().GetSeconds () << "s - Session IAT: " << iat.GetSeconds () << std::endl;
+        std::cout << Simulator::Now().GetSeconds()
+                  << "s - Session Duration: " << duration.GetSeconds() << std::endl;
     }
 }
 
 void
-PusherStateCallback (StateTracker& stateId, bool oldState, bool newState)
+SessionIatCallback(Time iat)
 {
-  if (s_trace)
+    if (s_verbose)
+    {
+        std::cout << Simulator::Now().GetSeconds() << "s - Session IAT: " << iat.GetSeconds()
+                  << std::endl;
+    }
+}
+
+void
+PusherStateCallback(StateTracker& stateId, bool oldState, bool newState)
+{
+    if (s_trace)
     {
         Ptr<OutputStreamWrapper> stream = nullptr;
         auto it = s_fileStreams.find(stateId.GetName());
@@ -479,26 +525,27 @@ PusherStateCallback (StateTracker& stateId, bool oldState, bool newState)
                              << std::endl;
     }
 
-  if (s_verbose)
+    if (s_verbose)
     {
-      std::cout << Simulator::Now ().GetSeconds () << " Pusher " << stateId.GetId () << "'s state = " << (newState ? "pushed" : "released") << std::endl;
+        std::cout << Simulator::Now().GetSeconds() << " Pusher " << stateId.GetId()
+                  << "'s state = " << (newState ? "pushed" : "released") << std::endl;
     }
 
-  if (newState)
+    if (newState)
     {
-      s_eventSpans[stateId.GetName ()] = Simulator::Now ();
+        s_eventSpans[stateId.GetName()] = Simulator::Now();
     }
-  else if (s_eventSpans[stateId.GetName ()] != Seconds (0))
+    else if (s_eventSpans[stateId.GetName()] != Seconds(0))
     {
-      s_totalSpurtTime += (Simulator::Now () - s_eventSpans[stateId.GetName ()]).GetSeconds ();
-      s_eventSpans[stateId.GetName ()] = Seconds (0);
+        s_totalSpurtTime += (Simulator::Now() - s_eventSpans[stateId.GetName()]).GetSeconds();
+        s_eventSpans[stateId.GetName()] = Seconds(0);
     }
 }
 
 void
-SessionStateCallback (bool oldState, bool newState)
+SessionStateCallback(bool oldState, bool newState)
 {
-  if (s_trace)
+    if (s_trace)
     {
         Ptr<OutputStreamWrapper> stream = nullptr;
         auto it = s_fileStreams.find("session");
@@ -508,19 +555,19 @@ SessionStateCallback (bool oldState, bool newState)
                              << std::endl;
     }
 
-  if (s_verbose)
+    if (s_verbose)
     {
-      std::cout << Simulator::Now ().GetSeconds () << " Session = " << (newState ? "active" : "inactive") << std::endl;
+        std::cout << Simulator::Now().GetSeconds()
+                  << " Session = " << (newState ? "active" : "inactive") << std::endl;
     }
 
-  if (newState)
+    if (newState)
     {
-      s_eventSpans["session"] = Simulator::Now ();
+        s_eventSpans["session"] = Simulator::Now();
     }
-  else if (s_eventSpans["session"] != Seconds (0))
+    else if (s_eventSpans["session"] != Seconds(0))
     {
-      s_totalSessionDurationTime += (Simulator::Now () - s_eventSpans["session"]).GetSeconds ();
-      s_eventSpans["session"] = Seconds (0);
+        s_totalSessionDurationTime += (Simulator::Now() - s_eventSpans["session"]).GetSeconds();
+        s_eventSpans["session"] = Seconds(0);
     }
 }
-

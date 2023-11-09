@@ -33,374 +33,392 @@
  * subject to copyright protection within the United States.
  */
 
-#include "ns3/log.h"
-#include "ns3/double.h"
-#include "ns3/outdoor-to-outdoor-propagation-loss-model.h"
-#include "ns3/indoor-to-indoor-propagation-loss-model.h"
-#include "ns3/outdoor-to-indoor-propagation-loss-model.h"
-#include "ns3/urbanmacrocell-propagation-loss-model.h"
-#include "ns3/mobility-building-info.h"
-#include "ns3/enum.h"
-#include <ns3/boolean.h>
-#include "ns3/hybrid-3gpp-propagation-loss-model.h"
-#include "ns3/building-list.h"
+#include "hybrid-3gpp-propagation-loss-model.h"
+
+#include "building-list.h"
+#include "indoor-to-indoor-propagation-loss-model.h"
+#include "mobility-building-info.h"
+#include "outdoor-to-indoor-propagation-loss-model.h"
+#include "outdoor-to-outdoor-propagation-loss-model.h"
+#include "urbanmacrocell-propagation-loss-model.h"
+
 #include "ns3/buildings-helper.h"
+#include "ns3/double.h"
+#include "ns3/enum.h"
+#include "ns3/log.h"
+#include <ns3/boolean.h>
 
-NS_LOG_COMPONENT_DEFINE ("Hybrid3gppPropagationLossModel");
+NS_LOG_COMPONENT_DEFINE("Hybrid3gppPropagationLossModel");
 
-namespace ns3 {
-
-NS_OBJECT_ENSURE_REGISTERED (Hybrid3gppPropagationLossModel);
-
-
-Hybrid3gppPropagationLossModel::Hybrid3gppPropagationLossModel ()
+namespace ns3
 {
-  m_indoorToIndoor = CreateObject<IndoorToIndoorPropagationLossModel> ();
-  m_outdoorToOutdoor = CreateObject<OutdoorToOutdoorPropagationLossModel> ();
-  m_outdoorToIndoor = CreateObject<OutdoorToIndoorPropagationLossModel> ();
-  m_urbanMacroCell = CreateObject<UrbanMacroCellPropagationLossModel> ();
+
+NS_OBJECT_ENSURE_REGISTERED(Hybrid3gppPropagationLossModel);
+
+Hybrid3gppPropagationLossModel::Hybrid3gppPropagationLossModel()
+{
+    m_indoorToIndoor = CreateObject<IndoorToIndoorPropagationLossModel>();
+    m_outdoorToOutdoor = CreateObject<OutdoorToOutdoorPropagationLossModel>();
+    m_outdoorToIndoor = CreateObject<OutdoorToIndoorPropagationLossModel>();
+    m_urbanMacroCell = CreateObject<UrbanMacroCellPropagationLossModel>();
 }
 
-Hybrid3gppPropagationLossModel::~Hybrid3gppPropagationLossModel ()
+Hybrid3gppPropagationLossModel::~Hybrid3gppPropagationLossModel()
 {
 }
 
 TypeId
 Hybrid3gppPropagationLossModel::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::Hybrid3gppPropagationLossModel")
+    static TypeId tid =
+        TypeId("ns3::Hybrid3gppPropagationLossModel")
 
-    .SetParent<BuildingsPropagationLossModel> ()
-    .SetGroupName ("Buildings")
+            .SetParent<BuildingsPropagationLossModel>()
+            .SetGroupName("Buildings")
 
-    .AddConstructor<Hybrid3gppPropagationLossModel> ()
+            .AddConstructor<Hybrid3gppPropagationLossModel>()
 
-    .AddAttribute ("Frequency",
-                   "The propagation frequency in Hz",
-                   DoubleValue (2106e6),
-                   MakeDoubleAccessor (&Hybrid3gppPropagationLossModel::SetFrequency),
-                   MakeDoubleChecker<double> ())
-    .AddAttribute ("HeightThreshold",
-                   "If the height difference between Tx and Rx nodes is greater than this threshold in meters"
-                   "mark it as macro cell communication.",
-                   DoubleValue (5),
-                   MakeDoubleAccessor (&Hybrid3gppPropagationLossModel::SetHeightThreshold),
-                   MakeDoubleChecker<double> ())
-    .AddAttribute ("CacheLoss",
-                   "True, if the loss value should be cached. False otherwise"
-                   "This is used to cache the pathloss in wrap-around topology and to speed up"
-                   "pathloss computation in large static scenarios",
-                   BooleanValue (false),
-                   MakeBooleanAccessor (&Hybrid3gppPropagationLossModel::m_cacheLoss),
-                   MakeBooleanChecker ())
-    .AddAttribute ("ShadowingEnabled",
-                   "Activate or deactivate the shadowing computation",
-                   BooleanValue (false),
-                   MakeBooleanAccessor (&Hybrid3gppPropagationLossModel::EnableShadowing),
-                   MakeBooleanChecker ())
-    .AddTraceSource ("Hybrid3gppPathlossValue",
-                     "Pathloss value to trace",
-                     MakeTraceSourceAccessor (&Hybrid3gppPropagationLossModel::m_hybrid3gppPathlossTrace),
-                     "ns3::Hybrid3gppPropagationLossModel::Hybrid3gppPathlossValueTracedCallback")
+            .AddAttribute("Frequency",
+                          "The propagation frequency in Hz",
+                          DoubleValue(2106e6),
+                          MakeDoubleAccessor(&Hybrid3gppPropagationLossModel::SetFrequency),
+                          MakeDoubleChecker<double>())
+            .AddAttribute("HeightThreshold",
+                          "If the height difference between Tx and Rx nodes is greater than this "
+                          "threshold in meters"
+                          "mark it as macro cell communication.",
+                          DoubleValue(5),
+                          MakeDoubleAccessor(&Hybrid3gppPropagationLossModel::SetHeightThreshold),
+                          MakeDoubleChecker<double>())
+            .AddAttribute(
+                "CacheLoss",
+                "True, if the loss value should be cached. False otherwise"
+                "This is used to cache the pathloss in wrap-around topology and to speed up"
+                "pathloss computation in large static scenarios",
+                BooleanValue(false),
+                MakeBooleanAccessor(&Hybrid3gppPropagationLossModel::m_cacheLoss),
+                MakeBooleanChecker())
+            .AddAttribute("ShadowingEnabled",
+                          "Activate or deactivate the shadowing computation",
+                          BooleanValue(false),
+                          MakeBooleanAccessor(&Hybrid3gppPropagationLossModel::EnableShadowing),
+                          MakeBooleanChecker())
+            .AddTraceSource(
+                "Hybrid3gppPathlossValue",
+                "Pathloss value to trace",
+                MakeTraceSourceAccessor(&Hybrid3gppPropagationLossModel::m_hybrid3gppPathlossTrace),
+                "ns3::Hybrid3gppPropagationLossModel::Hybrid3gppPathlossValueTracedCallback")
 
-  ;
-  return tid;
+        ;
+    return tid;
 }
 
 void
-Hybrid3gppPropagationLossModel::SetFrequency (double freq)
+Hybrid3gppPropagationLossModel::SetFrequency(double freq)
 {
-  NS_LOG_FUNCTION (this);
-  m_indoorToIndoor->SetAttribute ("Frequency", DoubleValue (freq));
-  m_outdoorToOutdoor->SetAttribute ("Frequency", DoubleValue (freq));
-  m_outdoorToIndoor->SetAttribute ("Frequency", DoubleValue (freq));
-  m_urbanMacroCell->SetAttribute ("Frequency", DoubleValue (freq));
-  m_frequency = freq;
+    NS_LOG_FUNCTION(this);
+    m_indoorToIndoor->SetAttribute("Frequency", DoubleValue(freq));
+    m_outdoorToOutdoor->SetAttribute("Frequency", DoubleValue(freq));
+    m_outdoorToIndoor->SetAttribute("Frequency", DoubleValue(freq));
+    m_urbanMacroCell->SetAttribute("Frequency", DoubleValue(freq));
+    m_frequency = freq;
 }
 
 void
-Hybrid3gppPropagationLossModel::SetHeightThreshold (double threshold)
+Hybrid3gppPropagationLossModel::SetHeightThreshold(double threshold)
 {
-  NS_LOG_FUNCTION (this << threshold);
-  m_heightThreshold = threshold;
+    NS_LOG_FUNCTION(this << threshold);
+    m_heightThreshold = threshold;
 }
 
 void
-Hybrid3gppPropagationLossModel::EnableShadowing (bool enableShadowing)
+Hybrid3gppPropagationLossModel::EnableShadowing(bool enableShadowing)
 {
-  NS_LOG_FUNCTION (this << enableShadowing);
-  m_isShadowingEnabled = enableShadowing;
-  m_urbanMacroCell->EnableShadowing (enableShadowing);
+    NS_LOG_FUNCTION(this << enableShadowing);
+    m_isShadowingEnabled = enableShadowing;
+    m_urbanMacroCell->EnableShadowing(enableShadowing);
 }
-
 
 bool
-Hybrid3gppPropagationLossModel::IsMacroComm (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
+Hybrid3gppPropagationLossModel::IsMacroComm(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
 {
-  NS_LOG_FUNCTION (this);
-  double heightDiff = std::abs (a->GetPosition ().z - b->GetPosition ().z);
-  m_isMacroComm = (heightDiff > m_heightThreshold);
-  NS_LOG_DEBUG ("Height difference between a and b: " << heightDiff);
-  return m_isMacroComm;
+    NS_LOG_FUNCTION(this);
+    double heightDiff = std::abs(a->GetPosition().z - b->GetPosition().z);
+    m_isMacroComm = (heightDiff > m_heightThreshold);
+    NS_LOG_DEBUG("Height difference between a and b: " << heightDiff);
+    return m_isMacroComm;
 }
 
 double
-Hybrid3gppPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
+Hybrid3gppPropagationLossModel::GetLoss(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  NS_ABORT_MSG_IF ((a->GetPosition ().z < 0) || (b->GetPosition ().z < 0),
-                               "Hybrid3gppsPropagationLossModel does not support underground nodes (placed at z < 0)");
+    NS_ABORT_MSG_IF(
+        (a->GetPosition().z < 0) || (b->GetPosition().z < 0),
+        "Hybrid3gppsPropagationLossModel does not support underground nodes (placed at z < 0)");
 
+    // Check if loss value is cached
+    double loss = 0.0;
+    MobilityDuo couple;
+    couple.a = a;
+    couple.b = b;
+    auto it_a = m_lossMap.find(couple);
+    auto buildingsIt = BuildingList::Begin();
+    bool aIndoor = false;
+    bool bIndoor = false;
 
-  //Check if loss value is cached
-  double loss = 0.0;
-  MobilityDuo couple;
-  couple.a = a;
-  couple.b = b;
-  auto it_a = m_lossMap.find(couple);
-  auto buildingsIt = BuildingList::Begin();
-  bool aIndoor = false;
-  bool bIndoor = false;
-
-  if (it_a != m_lossMap.end ())
+    if (it_a != m_lossMap.end())
     {
-      loss = it_a->second;
+        loss = it_a->second;
     }
-  else
+    else
     {
-      couple.a = b;
-      couple.b = a;
-      auto it_b = m_lossMap.find(couple);
-      if (it_b != m_lossMap.end ())
+        couple.a = b;
+        couple.b = a;
+        auto it_b = m_lossMap.find(couple);
+        if (it_b != m_lossMap.end())
         {
-          loss = it_b->second;
+            loss = it_b->second;
         }
-      else
+        else
         {
-          if (buildingsIt != BuildingList::End ())
+            if (buildingsIt != BuildingList::End())
             {
-              // Get the MobilityBuildingInfo pointers
-              Ptr<MobilityBuildingInfo> a1 = a->GetObject<MobilityBuildingInfo> ();
-              Ptr<MobilityBuildingInfo> b1 = b->GetObject<MobilityBuildingInfo> ();
-              NS_ABORT_MSG_IF ((!a1 || !b1), "Hybrid3gppsPropagationLossModel only works with MobilityBuildingInfo");
-              Vector vA = a->GetVelocity ();
-              Vector vB = b->GetVelocity ();
-              bool isAStatic = (vA.x == 0.0 && vA.y == 0.0);
-              bool isBStatic = (vB.x == 0.0 && vB.y == 0.0);
-              if (!isAStatic)
+                // Get the MobilityBuildingInfo pointers
+                Ptr<MobilityBuildingInfo> a1 = a->GetObject<MobilityBuildingInfo>();
+                Ptr<MobilityBuildingInfo> b1 = b->GetObject<MobilityBuildingInfo>();
+                NS_ABORT_MSG_IF(
+                    (!a1 || !b1),
+                    "Hybrid3gppsPropagationLossModel only works with MobilityBuildingInfo");
+                Vector vA = a->GetVelocity();
+                Vector vB = b->GetVelocity();
+                bool isAStatic = (vA.x == 0.0 && vA.y == 0.0);
+                bool isBStatic = (vB.x == 0.0 && vB.y == 0.0);
+                if (!isAStatic)
                 {
-                  // To tackle a case, when there are buildings and nodes have mobility,
-                  // we update the info whether the node position falls inside or outside of any of the building.
-                  a1->MakeConsistent (a);
+                    // To tackle a case, when there are buildings and nodes have mobility,
+                    // we update the info whether the node position falls inside or outside of any
+                    // of the building.
+                    a1->MakeConsistent(a);
                 }
 
-              if (!isBStatic)
+                if (!isBStatic)
                 {
-                  // To tackle a case, when there are buildings and nodes have mobility,
-                  // we update the info whether the node position falls inside or outside of any of the building.
-                  b1->MakeConsistent (b);
+                    // To tackle a case, when there are buildings and nodes have mobility,
+                    // we update the info whether the node position falls inside or outside of any
+                    // of the building.
+                    b1->MakeConsistent(b);
                 }
 
-              aIndoor = a1->IsIndoor ();
-              bIndoor = b1->IsIndoor ();
+                aIndoor = a1->IsIndoor();
+                bIndoor = b1->IsIndoor();
             }
 
-          // Verify if it is a D2D communication (UE-UE) or LTE communication (eNB-UE)
-          // LTE
-          if (IsMacroComm (a,b))
+            // Verify if it is a D2D communication (UE-UE) or LTE communication (eNB-UE)
+            // LTE
+            if (IsMacroComm(a, b))
             {
-              NS_LOG_DEBUG ("LTE comm, Height difference between a and b is greater than the threshold. Threshold value: " << m_heightThreshold);
-              loss = UrbanMacroCell (a,b);
+                NS_LOG_DEBUG("LTE comm, Height difference between a and b is greater than the "
+                             "threshold. Threshold value: "
+                             << m_heightThreshold);
+                loss = UrbanMacroCell(a, b);
             }
-          //D2D
-          else
+            // D2D
+            else
             {
-              NS_LOG_DEBUG ("D2D comm, Height difference between a and b is less than the threshold. Threshold value: " << m_heightThreshold);
-              // Calculate the pathloss based on the position of the nodes (outdoor/indoor)
-              // a outdoor
-              if (!aIndoor)
+                NS_LOG_DEBUG("D2D comm, Height difference between a and b is less than the "
+                             "threshold. Threshold value: "
+                             << m_heightThreshold);
+                // Calculate the pathloss based on the position of the nodes (outdoor/indoor)
+                // a outdoor
+                if (!aIndoor)
                 {
-                  // b outdoor
-                  if (!bIndoor)
+                    // b outdoor
+                    if (!bIndoor)
                     {
-                      // Outdoor transmission
-                      loss = OutdoorToOutdoor (a, b);
-                      NS_LOG_INFO (this << " Outdoor to outdoor : " << loss);
+                        // Outdoor transmission
+                        loss = OutdoorToOutdoor(a, b);
+                        NS_LOG_INFO(this << " Outdoor to outdoor : " << loss);
                     }
 
-                  // b indoor
-                  else
+                    // b indoor
+                    else
                     {
-                      loss = OutdoorToIndoor (a, b);
-                      NS_LOG_INFO (this << " Outdoor to indoor : " << loss);
+                        loss = OutdoorToIndoor(a, b);
+                        NS_LOG_INFO(this << " Outdoor to indoor : " << loss);
                     }
                 }
 
-              // a is indoor
-              else
+                // a is indoor
+                else
                 {
-                  // b is indoor
-                  if (bIndoor)
+                    // b is indoor
+                    if (bIndoor)
                     {
-                      loss = IndoorToIndoor (a, b).first;
-                      NS_LOG_INFO (this << " Indoor to indoor : " << loss );
+                        loss = IndoorToIndoor(a, b).first;
+                        NS_LOG_INFO(this << " Indoor to indoor : " << loss);
                     }
 
-                  // b is outdoor
-                  else
+                    // b is outdoor
+                    else
                     {
-                      loss = OutdoorToIndoor (a, b);
-                      NS_LOG_INFO (this << " Outdoor to indoor : " << loss);
+                        loss = OutdoorToIndoor(a, b);
+                        NS_LOG_INFO(this << " Outdoor to indoor : " << loss);
                     }
                 }
             }
 
-          loss = std::max (loss, 0.0);
-          if (m_cacheLoss)
+            loss = std::max(loss, 0.0);
+            if (m_cacheLoss)
             {
-              m_lossMap[couple] = loss; //cache value
+                m_lossMap[couple] = loss; // cache value
             }
         }
     }
 
-  m_hybrid3gppPathlossTrace (loss, a->GetObject<Node> (), b->GetObject<Node> (), a->GetDistanceFrom (b), aIndoor, bIndoor);
-  NS_LOG_DEBUG ("size of m_lossMap : " << m_lossMap.size ());
+    m_hybrid3gppPathlossTrace(loss,
+                              a->GetObject<Node>(),
+                              b->GetObject<Node>(),
+                              a->GetDistanceFrom(b),
+                              aIndoor,
+                              bIndoor);
+    NS_LOG_DEBUG("size of m_lossMap : " << m_lossMap.size());
 
-  return loss;
+    return loss;
 }
 
-
 double
-Hybrid3gppPropagationLossModel::GetShadowing (Ptr<MobilityModel> a, Ptr<MobilityModel> b)
-const
+Hybrid3gppPropagationLossModel::GetShadowing(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
 {
-  NS_LOG_FUNCTION (this);
-  if (m_isShadowingEnabled)
+    NS_LOG_FUNCTION(this);
+    if (m_isShadowingEnabled)
     {
-      Ptr<MobilityBuildingInfo> a1 = a->GetObject <MobilityBuildingInfo> ();
-      Ptr<MobilityBuildingInfo> b1 = b->GetObject <MobilityBuildingInfo> ();
-      NS_ABORT_MSG_IF ((!a1 || !b1), "Hybrid3gppsPropagationLossModel only works with MobilityBuildingInfo");
+        Ptr<MobilityBuildingInfo> a1 = a->GetObject<MobilityBuildingInfo>();
+        Ptr<MobilityBuildingInfo> b1 = b->GetObject<MobilityBuildingInfo>();
+        NS_ABORT_MSG_IF((!a1 || !b1),
+                        "Hybrid3gppsPropagationLossModel only works with MobilityBuildingInfo");
 
-      auto ait = m_shadowingLossMap.find(a);
-      if (ait != m_shadowingLossMap.end ())
+        auto ait = m_shadowingLossMap.find(a);
+        if (ait != m_shadowingLossMap.end())
         {
             auto bit = ait->second.find(b);
             if (bit != ait->second.end())
             {
-              return (bit->second);
+                return (bit->second);
             }
-          else
+            else
             {
-              double sigma = EvaluateSigma (a1, b1);
-              // side effect: will create new entry
-              // sigma is standard deviation, not variance
-              double shadowingValue = m_randVariable->GetValue (0.0, (sigma * sigma));
-              ait->second[b] = shadowingValue;
-              m_shadowingLossMap[b][a] = shadowingValue;
-              return (shadowingValue);
+                double sigma = EvaluateSigma(a1, b1);
+                // side effect: will create new entry
+                // sigma is standard deviation, not variance
+                double shadowingValue = m_randVariable->GetValue(0.0, (sigma * sigma));
+                ait->second[b] = shadowingValue;
+                m_shadowingLossMap[b][a] = shadowingValue;
+                return (shadowingValue);
             }
         }
-      else
+        else
         {
-          double sigma = EvaluateSigma (a1, b1);
-          // side effect: will create new entries in both maps
-          // sigma is standard deviation, not variance
-          double shadowingValue = m_randVariable->GetValue (0.0, (sigma * sigma));
-          m_shadowingLossMap[a][b] = shadowingValue;
-          m_shadowingLossMap[b][a] = shadowingValue;
-          return (shadowingValue);
+            double sigma = EvaluateSigma(a1, b1);
+            // side effect: will create new entries in both maps
+            // sigma is standard deviation, not variance
+            double shadowingValue = m_randVariable->GetValue(0.0, (sigma * sigma));
+            m_shadowingLossMap[a][b] = shadowingValue;
+            m_shadowingLossMap[b][a] = shadowingValue;
+            return (shadowingValue);
         }
     }
 
-  return 0.0;
+    return 0.0;
 }
 
 double
-Hybrid3gppPropagationLossModel::EvaluateSigma (Ptr<MobilityBuildingInfo> a, Ptr<MobilityBuildingInfo> b) const
+Hybrid3gppPropagationLossModel::EvaluateSigma(Ptr<MobilityBuildingInfo> a,
+                                              Ptr<MobilityBuildingInfo> b) const
 {
-  NS_LOG_FUNCTION (this);
-  //LTE
-  if (m_isMacroComm)
+    NS_LOG_FUNCTION(this);
+    // LTE
+    if (m_isMacroComm)
     {
-      NS_LOG_DEBUG ("Evaluating shadowing for urban macro cell");
-      return m_urbanMacroCell->EvaluateSigma (a,b);
+        NS_LOG_DEBUG("Evaluating shadowing for urban macro cell");
+        return m_urbanMacroCell->EvaluateSigma(a, b);
     }
-  //D2D
-  else
+    // D2D
+    else
     {
-      NS_LOG_DEBUG ("Evaluating shadowing for D2D scenario");
-      if (!a->IsIndoor ())
+        NS_LOG_DEBUG("Evaluating shadowing for D2D scenario");
+        if (!a->IsIndoor())
         {
-          if (!b->IsIndoor ())
+            if (!b->IsIndoor())
             {
-              // Outdoor to outdoor
-              return 7;
+                // Outdoor to outdoor
+                return 7;
             }
-          else
+            else
             {
-              // Outdoor to indoor
-              return 7;
+                // Outdoor to indoor
+                return 7;
             }
         }
-      else
-      if (b->IsIndoor ())
+        else if (b->IsIndoor())
         {
-          if (a->GetBuilding () == b->GetBuilding ())
+            if (a->GetBuilding() == b->GetBuilding())
             {
-              if (IndoorToIndoor (a->GetObject<MobilityModel> (), b->GetObject<MobilityModel> ()).second)
+                if (IndoorToIndoor(a->GetObject<MobilityModel>(), b->GetObject<MobilityModel>())
+                        .second)
                 {
-                  // Indoor to indoor same building LOS
-                  return 3;
+                    // Indoor to indoor same building LOS
+                    return 3;
                 }
-              else
+                else
                 {
-                  // Indoor to indoor same building NLOS
-                  return 4;
+                    // Indoor to indoor same building NLOS
+                    return 4;
                 }
             }
-          else
+            else
             {
-              // Indoor to indoor different buildings
-              return 10;
+                // Indoor to indoor different buildings
+                return 10;
             }
         }
-      else
+        else
         {
-          // Outdoor to indoor
-          return 7;
+            // Outdoor to indoor
+            return 7;
         }
     }
 
-  return 0;
+    return 0;
 }
 
 std::pair<double, bool>
-Hybrid3gppPropagationLossModel::IndoorToIndoor (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
+Hybrid3gppPropagationLossModel::IndoorToIndoor(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
 {
-  NS_LOG_FUNCTION (this);
-  return m_indoorToIndoor->GetLoss (a, b);
+    NS_LOG_FUNCTION(this);
+    return m_indoorToIndoor->GetLoss(a, b);
 }
 
 double
-Hybrid3gppPropagationLossModel::OutdoorToOutdoor (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
+Hybrid3gppPropagationLossModel::OutdoorToOutdoor(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
 {
-  NS_LOG_FUNCTION (this);
-  return m_outdoorToOutdoor->GetLoss (a, b);
+    NS_LOG_FUNCTION(this);
+    return m_outdoorToOutdoor->GetLoss(a, b);
 }
 
 double
-Hybrid3gppPropagationLossModel::OutdoorToIndoor (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
+Hybrid3gppPropagationLossModel::OutdoorToIndoor(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
 {
-  NS_LOG_FUNCTION (this);
-  return m_outdoorToIndoor->GetLoss (a, b);
+    NS_LOG_FUNCTION(this);
+    return m_outdoorToIndoor->GetLoss(a, b);
 }
 
 double
-Hybrid3gppPropagationLossModel::UrbanMacroCell (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
+Hybrid3gppPropagationLossModel::UrbanMacroCell(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
 {
-  NS_LOG_FUNCTION (this);
-  return m_urbanMacroCell->GetLoss (a, b);
+    NS_LOG_FUNCTION(this);
+    return m_urbanMacroCell->GetLoss(a, b);
 }
 
 } // namespace ns3

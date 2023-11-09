@@ -32,18 +32,20 @@
 #ifndef MCPTT_OFF_NETWORK_FLOOR_PARTICIPANT_STATE_H
 #define MCPTT_OFF_NETWORK_FLOOR_PARTICIPANT_STATE_H
 
-#include <ns3/object.h>
-#include <ns3/ptr.h>
-#include <ns3/type-id.h>
-
 #include "mcptt-entity-id.h"
 #include "mcptt-floor-msg.h"
 #include "mcptt-floor-queue.h"
 #include "mcptt-media-msg.h"
 
-namespace ns3 {
+#include <ns3/object.h>
+#include <ns3/ptr.h>
+#include <ns3/type-id.h>
 
-namespace psc {
+namespace ns3
+{
+
+namespace psc
+{
 
 class McpttOffNetworkFloorParticipant;
 
@@ -84,697 +86,743 @@ class McpttOffNetworkFloorParticipant;
  *  - In this state the MCPTT client is waiting for a response to a queued
  *    request.
  */
-class McpttOffNetworkFloorParticipantState : public SimpleRefCount<McpttOffNetworkFloorParticipantState>
+class McpttOffNetworkFloorParticipantState
+    : public SimpleRefCount<McpttOffNetworkFloorParticipantState>
 {
-public:
-  /**
-   * \brief The destructor of the McpttOffNetworkFloorParticipantState class.
-   */
-  virtual ~McpttOffNetworkFloorParticipantState (void);
-  /**
-   * Accepts a grant.
-   * \param floorMachine The FSM.
-   */
-  virtual void AcceptGrant (McpttOffNetworkFloorParticipant& floorMachine) const;
-  /**
-   * Notifies the floor machine state that timer T201 has expired.
-   * \param floorMachine The FSM.
-   */
-  virtual void ExpiryOfT201 (McpttOffNetworkFloorParticipant& floorMachine) const;
-  /**
-   * Notifies the floor machine state that timer T203 has expired.
-   * \param floorMachine The FSM.
-   */
-  virtual void ExpiryOfT203 (McpttOffNetworkFloorParticipant& floorMachine) const;
-  /**
-   * Notifies the floor machine state that timer T204 has expired.
-   * \param floorMachine The FSM.
-   */
-  virtual void ExpiryOfT204 (McpttOffNetworkFloorParticipant& floorMachine) const;
-  /**
-   * Notifies the floor machine state that timer T205 has expired.
-   * \param floorMachine The FSM.
-   */
-  virtual void ExpiryOfT205 (McpttOffNetworkFloorParticipant& floorMachine) const;
-  /**
-   * Notifies the floor machine state that timer T206 has expired.
-   * \param floorMachine The FSM.
-   */
-  virtual void ExpiryOfT206 (McpttOffNetworkFloorParticipant& floorMachine) const;
-  /**
-   * Notifies the floor machine state that timer T207 has expired.
-   * \param floorMachine The FSM.
-   */
-  virtual void ExpiryOfT207 (McpttOffNetworkFloorParticipant& floorMachine) const;
-  /**
-   * Notifies the floor machine state that timer T230 has expired.
-   * \param floorMachine The FSM.
-   */
-  virtual void ExpiryOfT230 (McpttOffNetworkFloorParticipant& floorMachine) const;
-  /**
-   * Notifies the floor machine state that timer T233 has expired.
-   * \param floorMachine The FSM.
-   */
-  virtual void ExpiryOfT233 (McpttOffNetworkFloorParticipant& floorMachine) const;
-  /**
-   * Gets the ID of the machine state.
-   * \returns The ID of the state.
-   */
-  virtual McpttEntityId GetInstanceStateId (void) const;
-  /**
-   * Indicates whether or not this machine state has the floor.
-   * \param floorMachine The FSM.
-   * \returns True, if this state has the floor.
-   */
-  virtual bool HasFloor (const McpttOffNetworkFloorParticipant& floorMachine) const;
-  /**
-   * Notifies the floor machine state that the call was released.
-   * \param floorMachine The FSM.
-   */
-  virtual void ReceiveCallRelease (McpttOffNetworkFloorParticipant& floorMachine) const;
-  /**
-   * Receives a floor deny message.
-   * \param floorMachine The FSM.
-   * \param msg The received message.
-   */
-  virtual void ReceiveFloorDeny (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgDeny& msg) const;
-  /**
-   * Receives a floor granted message.
-   * \param floorMachine The FSM.
-   * \param msg The received message.
-   */
-  virtual void ReceiveFloorGranted (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgGranted& msg) const;
-  /**
-   * Receives Floor Queue Position Request message.
-   * \param floorMachine The FSM.
-   * \param msg The received message.
-   */
-  virtual void ReceiveFloorQueuePositionRequest (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgQueuePositionRequest& msg) const;
-  /**
-   * Receives a floor queue position info message.
-   * \param floorMachine The FSM.
-   * \param msg The received message.
-   */
-  virtual void ReceiveFloorQueuePositionInfo (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgQueuePositionInfo& msg) const;
-  /**
-   * Receives a floor release message.
-   * \param floorMachine The FSM.
-   * \param msg The received message.
-   */
-  virtual void ReceiveFloorRelease (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgRelease& msg) const;
-  /**
-   * Receives a floor request message.
-   * \param floorMachine The FSM.
-   * \param msg The received message.
-   */
-  virtual void ReceiveFloorRequest (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgRequest& msg) const;
-  /**
-   * Receives a floor taken message.
-   * \param floorMachine The FSM.
-   * \param msg The received message.
-   */
-  virtual void ReceiveFloorTaken (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgTaken& msg) const;
-  /**
-   * Receives a media message.
-   * \param floorMachine The FSM.
-   * \param msg The received message.
-   */
-  virtual void ReceiveMedia (McpttOffNetworkFloorParticipant& floorMachine, const McpttMediaMsg& msg) const;
-  /**
-   * Sends a floor queue position request message.
-   * \param floorMachine The FSM.
-   */
-  virtual void SendFloorQueuePositionRequest (McpttOffNetworkFloorParticipant& floorMachine) const;
-  /**
-   * Notifies the floor machine that media is ready to be sent.
-   * \param floorMachine The FSM.
-   * \param msg The media message to be sent.
-   */
-  virtual void MediaReady (McpttOffNetworkFloorParticipant& floorMachine, McpttMediaMsg& msg) const;
-  /**
-   * Releases a previously made request.
-   * \param floorMachine The FSM.
-   */
-  virtual void ReleaseRequest (McpttOffNetworkFloorParticipant& floorMachine) const;
-  /**
-   * Notifies the machine state that it has been selected.
-   * \param floorMachine The FSM.
-   */
-  virtual void Selected (McpttOffNetworkFloorParticipant& floorMachine) const;
-  /**
-   * Starts the floor machine state.
-   * \param floorMachine The FSM.
-   */
-  virtual void Start (McpttOffNetworkFloorParticipant& floorMachine) const;
-  /**
-   * Stops the floor machine state.
-   * \param floorMachine The FSM.
-   */
-  virtual void Stop (McpttOffNetworkFloorParticipant& floorMachine) const;
-  /**
-   * Notifies this machine state that the button has been pushed.
-   * \param floorMachine The FSM.
-   */
-  virtual void PttPush (McpttOffNetworkFloorParticipant& floorMachine) const;
-  /**
-   * Notifies this machine state that the button has been released.
-   * \param floorMachine The FSM.
-   */
-  virtual void PttRelease (McpttOffNetworkFloorParticipant& floorMachine) const;
-  /**
-   * Notifies the machine state that it has been unselected.
-   * \param floorMachine The FSM.
-   */
-  virtual void Unselected (McpttOffNetworkFloorParticipant& floorMachine) const;
+  public:
+    /**
+     * \brief The destructor of the McpttOffNetworkFloorParticipantState class.
+     */
+    virtual ~McpttOffNetworkFloorParticipantState(void);
+    /**
+     * Accepts a grant.
+     * \param floorMachine The FSM.
+     */
+    virtual void AcceptGrant(McpttOffNetworkFloorParticipant& floorMachine) const;
+    /**
+     * Notifies the floor machine state that timer T201 has expired.
+     * \param floorMachine The FSM.
+     */
+    virtual void ExpiryOfT201(McpttOffNetworkFloorParticipant& floorMachine) const;
+    /**
+     * Notifies the floor machine state that timer T203 has expired.
+     * \param floorMachine The FSM.
+     */
+    virtual void ExpiryOfT203(McpttOffNetworkFloorParticipant& floorMachine) const;
+    /**
+     * Notifies the floor machine state that timer T204 has expired.
+     * \param floorMachine The FSM.
+     */
+    virtual void ExpiryOfT204(McpttOffNetworkFloorParticipant& floorMachine) const;
+    /**
+     * Notifies the floor machine state that timer T205 has expired.
+     * \param floorMachine The FSM.
+     */
+    virtual void ExpiryOfT205(McpttOffNetworkFloorParticipant& floorMachine) const;
+    /**
+     * Notifies the floor machine state that timer T206 has expired.
+     * \param floorMachine The FSM.
+     */
+    virtual void ExpiryOfT206(McpttOffNetworkFloorParticipant& floorMachine) const;
+    /**
+     * Notifies the floor machine state that timer T207 has expired.
+     * \param floorMachine The FSM.
+     */
+    virtual void ExpiryOfT207(McpttOffNetworkFloorParticipant& floorMachine) const;
+    /**
+     * Notifies the floor machine state that timer T230 has expired.
+     * \param floorMachine The FSM.
+     */
+    virtual void ExpiryOfT230(McpttOffNetworkFloorParticipant& floorMachine) const;
+    /**
+     * Notifies the floor machine state that timer T233 has expired.
+     * \param floorMachine The FSM.
+     */
+    virtual void ExpiryOfT233(McpttOffNetworkFloorParticipant& floorMachine) const;
+    /**
+     * Gets the ID of the machine state.
+     * \returns The ID of the state.
+     */
+    virtual McpttEntityId GetInstanceStateId(void) const;
+    /**
+     * Indicates whether or not this machine state has the floor.
+     * \param floorMachine The FSM.
+     * \returns True, if this state has the floor.
+     */
+    virtual bool HasFloor(const McpttOffNetworkFloorParticipant& floorMachine) const;
+    /**
+     * Notifies the floor machine state that the call was released.
+     * \param floorMachine The FSM.
+     */
+    virtual void ReceiveCallRelease(McpttOffNetworkFloorParticipant& floorMachine) const;
+    /**
+     * Receives a floor deny message.
+     * \param floorMachine The FSM.
+     * \param msg The received message.
+     */
+    virtual void ReceiveFloorDeny(McpttOffNetworkFloorParticipant& floorMachine,
+                                  const McpttFloorMsgDeny& msg) const;
+    /**
+     * Receives a floor granted message.
+     * \param floorMachine The FSM.
+     * \param msg The received message.
+     */
+    virtual void ReceiveFloorGranted(McpttOffNetworkFloorParticipant& floorMachine,
+                                     const McpttFloorMsgGranted& msg) const;
+    /**
+     * Receives Floor Queue Position Request message.
+     * \param floorMachine The FSM.
+     * \param msg The received message.
+     */
+    virtual void ReceiveFloorQueuePositionRequest(
+        McpttOffNetworkFloorParticipant& floorMachine,
+        const McpttFloorMsgQueuePositionRequest& msg) const;
+    /**
+     * Receives a floor queue position info message.
+     * \param floorMachine The FSM.
+     * \param msg The received message.
+     */
+    virtual void ReceiveFloorQueuePositionInfo(McpttOffNetworkFloorParticipant& floorMachine,
+                                               const McpttFloorMsgQueuePositionInfo& msg) const;
+    /**
+     * Receives a floor release message.
+     * \param floorMachine The FSM.
+     * \param msg The received message.
+     */
+    virtual void ReceiveFloorRelease(McpttOffNetworkFloorParticipant& floorMachine,
+                                     const McpttFloorMsgRelease& msg) const;
+    /**
+     * Receives a floor request message.
+     * \param floorMachine The FSM.
+     * \param msg The received message.
+     */
+    virtual void ReceiveFloorRequest(McpttOffNetworkFloorParticipant& floorMachine,
+                                     const McpttFloorMsgRequest& msg) const;
+    /**
+     * Receives a floor taken message.
+     * \param floorMachine The FSM.
+     * \param msg The received message.
+     */
+    virtual void ReceiveFloorTaken(McpttOffNetworkFloorParticipant& floorMachine,
+                                   const McpttFloorMsgTaken& msg) const;
+    /**
+     * Receives a media message.
+     * \param floorMachine The FSM.
+     * \param msg The received message.
+     */
+    virtual void ReceiveMedia(McpttOffNetworkFloorParticipant& floorMachine,
+                              const McpttMediaMsg& msg) const;
+    /**
+     * Sends a floor queue position request message.
+     * \param floorMachine The FSM.
+     */
+    virtual void SendFloorQueuePositionRequest(McpttOffNetworkFloorParticipant& floorMachine) const;
+    /**
+     * Notifies the floor machine that media is ready to be sent.
+     * \param floorMachine The FSM.
+     * \param msg The media message to be sent.
+     */
+    virtual void MediaReady(McpttOffNetworkFloorParticipant& floorMachine,
+                            McpttMediaMsg& msg) const;
+    /**
+     * Releases a previously made request.
+     * \param floorMachine The FSM.
+     */
+    virtual void ReleaseRequest(McpttOffNetworkFloorParticipant& floorMachine) const;
+    /**
+     * Notifies the machine state that it has been selected.
+     * \param floorMachine The FSM.
+     */
+    virtual void Selected(McpttOffNetworkFloorParticipant& floorMachine) const;
+    /**
+     * Starts the floor machine state.
+     * \param floorMachine The FSM.
+     */
+    virtual void Start(McpttOffNetworkFloorParticipant& floorMachine) const;
+    /**
+     * Stops the floor machine state.
+     * \param floorMachine The FSM.
+     */
+    virtual void Stop(McpttOffNetworkFloorParticipant& floorMachine) const;
+    /**
+     * Notifies this machine state that the button has been pushed.
+     * \param floorMachine The FSM.
+     */
+    virtual void PttPush(McpttOffNetworkFloorParticipant& floorMachine) const;
+    /**
+     * Notifies this machine state that the button has been released.
+     * \param floorMachine The FSM.
+     */
+    virtual void PttRelease(McpttOffNetworkFloorParticipant& floorMachine) const;
+    /**
+     * Notifies the machine state that it has been unselected.
+     * \param floorMachine The FSM.
+     */
+    virtual void Unselected(McpttOffNetworkFloorParticipant& floorMachine) const;
 
-protected:
-  /**
-   * Creates an instance of the McpttOffNetworkFloorParticipantState class.
-   */
-  McpttOffNetworkFloorParticipantState (void);
+  protected:
+    /**
+     * Creates an instance of the McpttOffNetworkFloorParticipantState class.
+     */
+    McpttOffNetworkFloorParticipantState(void);
 };
+
 /**
  * Overloaded output operator for the McpttOffNetworkFloorParticipantState class.
  * \param os The output stream to write to.
  * \param state The state to write to the output stream.
  * \returns The output stream that was written to.
  */
-std::ostream& operator<< (std::ostream& os, const McpttOffNetworkFloorParticipantState& state);
+std::ostream& operator<<(std::ostream& os, const McpttOffNetworkFloorParticipantState& state);
+
 /**
  * \ingroup mcptt
  * \brief A class that represents the 'Start-stop' state.
  */
 class McpttOffNetworkFloorParticipantStateStartStop : public McpttOffNetworkFloorParticipantState
 {
-public:
-  /**
-   * Gets an instance of the McpttOffNetworkFloorParticipantStateStartStop.
-   * \returns An instance.
-   */
-  static Ptr<McpttOffNetworkFloorParticipantStateStartStop> GetInstance (void);
-  /**
-   * \brief Gets the ID of the state.
-   * \returns The ID of the state.
-   */
-  static McpttEntityId GetStateId (void);
-  /**
-   * \brief Creates an instance of the McpttOffNetworkFloorParticipantStateStartStop class.
-   */
-  McpttOffNetworkFloorParticipantStateStartStop (void);
-  /**
-   * \brief The destructor of the McpttOffNetworkFloorParticipantStateStartStop class.
-   */
-  virtual ~McpttOffNetworkFloorParticipantStateStartStop (void);
-  /**
-   * Gets the ID of the machine state.
-   * \returns The ID of the state.
-   */
-  virtual McpttEntityId GetInstanceStateId (void) const;
-  /**
-   * Receives a floor granted message.
-   * \param floorMachine The FSM.
-   * \param msg The received message.
-   */
-  virtual void ReceiveFloorGranted (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgGranted& msg) const;
-  /**
-   * Receives a floor taken message.
-   * \param floorMachine The FSM.
-   * \param msg The received message.
-   */
-  virtual void ReceiveFloorTaken (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgTaken& msg) const;
-  /**
-   * Receives a media message.
-   * \param floorMachine The FSM.
-   * \param msg The received message.
-   */
-  virtual void ReceiveMedia (McpttOffNetworkFloorParticipant& floorMachine, const McpttMediaMsg& msg) const;
-  /**
-   * Starts the floor machine state.
-   * \param floorMachine The FSM.
-   */
-  virtual void Start (McpttOffNetworkFloorParticipant& floorMachine) const;
-  /**
-   * Notifies this machine state that the button has been pushed.
-   * \param floorMachine The FSM.
-   */
-  virtual void PttPush (McpttOffNetworkFloorParticipant& floorMachine) const;
+  public:
+    /**
+     * Gets an instance of the McpttOffNetworkFloorParticipantStateStartStop.
+     * \returns An instance.
+     */
+    static Ptr<McpttOffNetworkFloorParticipantStateStartStop> GetInstance(void);
+    /**
+     * \brief Gets the ID of the state.
+     * \returns The ID of the state.
+     */
+    static McpttEntityId GetStateId(void);
+    /**
+     * \brief Creates an instance of the McpttOffNetworkFloorParticipantStateStartStop class.
+     */
+    McpttOffNetworkFloorParticipantStateStartStop(void);
+    /**
+     * \brief The destructor of the McpttOffNetworkFloorParticipantStateStartStop class.
+     */
+    virtual ~McpttOffNetworkFloorParticipantStateStartStop(void);
+    /**
+     * Gets the ID of the machine state.
+     * \returns The ID of the state.
+     */
+    virtual McpttEntityId GetInstanceStateId(void) const;
+    /**
+     * Receives a floor granted message.
+     * \param floorMachine The FSM.
+     * \param msg The received message.
+     */
+    virtual void ReceiveFloorGranted(McpttOffNetworkFloorParticipant& floorMachine,
+                                     const McpttFloorMsgGranted& msg) const;
+    /**
+     * Receives a floor taken message.
+     * \param floorMachine The FSM.
+     * \param msg The received message.
+     */
+    virtual void ReceiveFloorTaken(McpttOffNetworkFloorParticipant& floorMachine,
+                                   const McpttFloorMsgTaken& msg) const;
+    /**
+     * Receives a media message.
+     * \param floorMachine The FSM.
+     * \param msg The received message.
+     */
+    virtual void ReceiveMedia(McpttOffNetworkFloorParticipant& floorMachine,
+                              const McpttMediaMsg& msg) const;
+    /**
+     * Starts the floor machine state.
+     * \param floorMachine The FSM.
+     */
+    virtual void Start(McpttOffNetworkFloorParticipant& floorMachine) const;
+    /**
+     * Notifies this machine state that the button has been pushed.
+     * \param floorMachine The FSM.
+     */
+    virtual void PttPush(McpttOffNetworkFloorParticipant& floorMachine) const;
 };
+
 /**
  * \ingroup mcptt
  * \brief A class that represents the 'O: has no permission' state.
  */
 class McpttOffNetworkFloorParticipantStateNoPerm : public McpttOffNetworkFloorParticipantState
 {
-public:
-  /**
-   * Gets an instance of the McpttOffNetworkFloorParticipantStateNoPerm.
-   * \returns An instance.
-   */
-  static Ptr<McpttOffNetworkFloorParticipantStateNoPerm> GetInstance (void);
-  /**
-   * \brief Gets the ID of the state.
-   * \returns The ID of the state.
-   */
-  static McpttEntityId GetStateId (void);
-  /**
-   * Creates an instance of the McpttOffNetworkFloorParticipantStateNoPerm class.
-   */
-  McpttOffNetworkFloorParticipantStateNoPerm (void);
-  /**
-   * \brief The destructor of the McpttOffNetworkFloorParticipantStateNoPerm class.
-   */
-  virtual ~McpttOffNetworkFloorParticipantStateNoPerm (void);
-  /**
-   * Notifies the floor machine state that timer T203 has expired.
-   * \param floorMachine The FSM.
-   */
-  virtual void ExpiryOfT203 (McpttOffNetworkFloorParticipant& floorMachine) const;
-  /**
-   * Gets the ID of the machine state.
-   * \returns The ID of the state.
-   */
-  virtual McpttEntityId GetInstanceStateId (void) const;
-  /**
-   * Receives a floor granted message.
-   * \param floorMachine The FSM.
-   * \param msg The received message.
-   */
-  virtual void ReceiveFloorGranted (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgGranted& msg) const;
-  /**
-   * Receives a floor release message.
-   * \param floorMachine The FSM.
-   * \param msg The received message.
-   */
-  virtual void ReceiveFloorRelease (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgRelease& msg) const;
-  /**
-   * Receives a media message.
-   * \param floorMachine The FSM.
-   * \param msg The received message.
-   */
-  virtual void ReceiveMedia (McpttOffNetworkFloorParticipant& floorMachine, const McpttMediaMsg& msg) const;
-  /**
-   * Notifies the machine state that it has been selected.
-   * \param floorMachine The FSM.
-   */
-  virtual void Selected (McpttOffNetworkFloorParticipant& floorMachine) const;
-  /**
-   * Notifies this machine state that the button has been pushed.
-   * \param floorMachine The FSM.
-   */
-  virtual void PttPush (McpttOffNetworkFloorParticipant& floorMachine) const;
+  public:
+    /**
+     * Gets an instance of the McpttOffNetworkFloorParticipantStateNoPerm.
+     * \returns An instance.
+     */
+    static Ptr<McpttOffNetworkFloorParticipantStateNoPerm> GetInstance(void);
+    /**
+     * \brief Gets the ID of the state.
+     * \returns The ID of the state.
+     */
+    static McpttEntityId GetStateId(void);
+    /**
+     * Creates an instance of the McpttOffNetworkFloorParticipantStateNoPerm class.
+     */
+    McpttOffNetworkFloorParticipantStateNoPerm(void);
+    /**
+     * \brief The destructor of the McpttOffNetworkFloorParticipantStateNoPerm class.
+     */
+    virtual ~McpttOffNetworkFloorParticipantStateNoPerm(void);
+    /**
+     * Notifies the floor machine state that timer T203 has expired.
+     * \param floorMachine The FSM.
+     */
+    virtual void ExpiryOfT203(McpttOffNetworkFloorParticipant& floorMachine) const;
+    /**
+     * Gets the ID of the machine state.
+     * \returns The ID of the state.
+     */
+    virtual McpttEntityId GetInstanceStateId(void) const;
+    /**
+     * Receives a floor granted message.
+     * \param floorMachine The FSM.
+     * \param msg The received message.
+     */
+    virtual void ReceiveFloorGranted(McpttOffNetworkFloorParticipant& floorMachine,
+                                     const McpttFloorMsgGranted& msg) const;
+    /**
+     * Receives a floor release message.
+     * \param floorMachine The FSM.
+     * \param msg The received message.
+     */
+    virtual void ReceiveFloorRelease(McpttOffNetworkFloorParticipant& floorMachine,
+                                     const McpttFloorMsgRelease& msg) const;
+    /**
+     * Receives a media message.
+     * \param floorMachine The FSM.
+     * \param msg The received message.
+     */
+    virtual void ReceiveMedia(McpttOffNetworkFloorParticipant& floorMachine,
+                              const McpttMediaMsg& msg) const;
+    /**
+     * Notifies the machine state that it has been selected.
+     * \param floorMachine The FSM.
+     */
+    virtual void Selected(McpttOffNetworkFloorParticipant& floorMachine) const;
+    /**
+     * Notifies this machine state that the button has been pushed.
+     * \param floorMachine The FSM.
+     */
+    virtual void PttPush(McpttOffNetworkFloorParticipant& floorMachine) const;
 };
+
 /**
  * \ingroup mcptt
  * \brief A class that represents the 'O: has permission' state.
  */
 class McpttOffNetworkFloorParticipantStateHasPerm : public McpttOffNetworkFloorParticipantState
 {
-public:
-  /**
-   * Gets an instance of the McpttOffNetworkFloorParticipantStateHasPerm.
-   * \returns An instance.
-   */
-  static Ptr<McpttOffNetworkFloorParticipantStateHasPerm> GetInstance (void);
-  /**
-   * \brief Gets the ID of the state.
-   * \returns The ID of the state.
-   */
-  static McpttEntityId GetStateId (void);
-  /**
-   * \brief Creates an instance of the McpttOffNetworkFloorParticipantStateHasPerm class.
-   */
-  McpttOffNetworkFloorParticipantStateHasPerm (void);
-  /**
-   * \brief The destructor of the McpttOffNetworkFloorParticipantStateHasPerm class.
-   */
-  virtual ~McpttOffNetworkFloorParticipantStateHasPerm (void);
-  /**
-   * Notifies the floor machine state that timer T206 has expired.
-   * \param floorMachine The FSM.
-   */
-  virtual void ExpiryOfT206 (McpttOffNetworkFloorParticipant& floorMachine) const;
-  /**
-   * Notifies the floor machine state that timer T207 has expired.
-   * \param floorMachine The FSM.
-   */
-  virtual void ExpiryOfT207 (McpttOffNetworkFloorParticipant& floorMachine) const;
-  /**
-   * Gets the ID of the machine state.
-   * \returns The ID of the state.
-   */
-  virtual McpttEntityId GetInstanceStateId (void) const;
-  /**
-   * Indicates whether or not this machine state has the floor.
-   * \param floorMachine The FSM.
-   * \returns True, if this state has the floor.
-   */
-  virtual bool HasFloor (const McpttOffNetworkFloorParticipant& floorMachine) const;
-  /**
-   * Receives Floor Queue Position Request message.
-   * \param floorMachine The FSM.
-   * \param msg The received message.
-   */
-  virtual void ReceiveFloorQueuePositionRequest (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgQueuePositionRequest& msg) const;
-  /**
-   * Receives a floor release message.
-   * \param floorMachine The FSM.
-   * \param msg The received message.
-   */
-  virtual void ReceiveFloorRelease (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgRelease& msg) const;
-  /**
-   * Receives a floor request message.
-   * \param floorMachine The FSM.
-   * \param msg The received message.
-   */
-  virtual void ReceiveFloorRequest (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgRequest& msg) const;
-  /**
-   * Notifies the floor machine that media is ready to be sent.
-   * \param floorMachine The FSM.
-   * \param msg The received message
-   */
-  virtual void MediaReady (McpttOffNetworkFloorParticipant& floorMachine, McpttMediaMsg& msg) const;
-  /**
-   * Notifies the machine state that it has been selected.
-   * \param floorMachine The FSM.
-   */
-  virtual void Selected (McpttOffNetworkFloorParticipant& floorMachine) const;
-  /**
-   * Notifies this machine state that the button has been released.
-   * \param floorMachine The FSM.
-   */
-  virtual void PttRelease (McpttOffNetworkFloorParticipant& floorMachine) const;
-  /**
-   * Notifies the machine state that it has been unselected.
-   * \param floorMachine The FSM.
-   */
-  virtual void Unselected (McpttOffNetworkFloorParticipant& floorMachine) const;
+  public:
+    /**
+     * Gets an instance of the McpttOffNetworkFloorParticipantStateHasPerm.
+     * \returns An instance.
+     */
+    static Ptr<McpttOffNetworkFloorParticipantStateHasPerm> GetInstance(void);
+    /**
+     * \brief Gets the ID of the state.
+     * \returns The ID of the state.
+     */
+    static McpttEntityId GetStateId(void);
+    /**
+     * \brief Creates an instance of the McpttOffNetworkFloorParticipantStateHasPerm class.
+     */
+    McpttOffNetworkFloorParticipantStateHasPerm(void);
+    /**
+     * \brief The destructor of the McpttOffNetworkFloorParticipantStateHasPerm class.
+     */
+    virtual ~McpttOffNetworkFloorParticipantStateHasPerm(void);
+    /**
+     * Notifies the floor machine state that timer T206 has expired.
+     * \param floorMachine The FSM.
+     */
+    virtual void ExpiryOfT206(McpttOffNetworkFloorParticipant& floorMachine) const;
+    /**
+     * Notifies the floor machine state that timer T207 has expired.
+     * \param floorMachine The FSM.
+     */
+    virtual void ExpiryOfT207(McpttOffNetworkFloorParticipant& floorMachine) const;
+    /**
+     * Gets the ID of the machine state.
+     * \returns The ID of the state.
+     */
+    virtual McpttEntityId GetInstanceStateId(void) const;
+    /**
+     * Indicates whether or not this machine state has the floor.
+     * \param floorMachine The FSM.
+     * \returns True, if this state has the floor.
+     */
+    virtual bool HasFloor(const McpttOffNetworkFloorParticipant& floorMachine) const;
+    /**
+     * Receives Floor Queue Position Request message.
+     * \param floorMachine The FSM.
+     * \param msg The received message.
+     */
+    virtual void ReceiveFloorQueuePositionRequest(
+        McpttOffNetworkFloorParticipant& floorMachine,
+        const McpttFloorMsgQueuePositionRequest& msg) const;
+    /**
+     * Receives a floor release message.
+     * \param floorMachine The FSM.
+     * \param msg The received message.
+     */
+    virtual void ReceiveFloorRelease(McpttOffNetworkFloorParticipant& floorMachine,
+                                     const McpttFloorMsgRelease& msg) const;
+    /**
+     * Receives a floor request message.
+     * \param floorMachine The FSM.
+     * \param msg The received message.
+     */
+    virtual void ReceiveFloorRequest(McpttOffNetworkFloorParticipant& floorMachine,
+                                     const McpttFloorMsgRequest& msg) const;
+    /**
+     * Notifies the floor machine that media is ready to be sent.
+     * \param floorMachine The FSM.
+     * \param msg The received message
+     */
+    virtual void MediaReady(McpttOffNetworkFloorParticipant& floorMachine,
+                            McpttMediaMsg& msg) const;
+    /**
+     * Notifies the machine state that it has been selected.
+     * \param floorMachine The FSM.
+     */
+    virtual void Selected(McpttOffNetworkFloorParticipant& floorMachine) const;
+    /**
+     * Notifies this machine state that the button has been released.
+     * \param floorMachine The FSM.
+     */
+    virtual void PttRelease(McpttOffNetworkFloorParticipant& floorMachine) const;
+    /**
+     * Notifies the machine state that it has been unselected.
+     * \param floorMachine The FSM.
+     */
+    virtual void Unselected(McpttOffNetworkFloorParticipant& floorMachine) const;
 };
+
 /**
  * \ingroup mcptt
  * \brief A class that represents the 'O: pending granted' state.
  */
 class McpttOffNetworkFloorParticipantStatePendGrant : public McpttOffNetworkFloorParticipantState
 {
-public:
-  /**
-   * Gets an instance of the McpttOffNetworkFloorParticipantStatePendGrant.
-   * \returns An instance.
-   */
-  static Ptr<McpttOffNetworkFloorParticipantStatePendGrant> GetInstance (void);
-  /**
-   * \brief Gets the ID of the state.
-   * \returns The ID of the state.
-   */
-  static McpttEntityId GetStateId (void);
-  /**
-   * \brief Creates an instance of the McpttOffNetworkFloorParticipantStatePendGrant class.
-   */
-  McpttOffNetworkFloorParticipantStatePendGrant (void);
-  /**
-   * \brief The destructor of the McpttOffNetworkFloorParticipantStatePendGrant class.
-   */
-  virtual ~McpttOffNetworkFloorParticipantStatePendGrant (void);
-  /**
-   * Notifies the floor machine state that timer T205 has expired.
-   * \param floorMachine The FSM.
-   */
-  virtual void ExpiryOfT205 (McpttOffNetworkFloorParticipant& floorMachine) const;
-  /**
-   * Notifies the floor machine state that timer T233 has expired.
-   * \param floorMachine The FSM.
-   */
-  virtual void ExpiryOfT233 (McpttOffNetworkFloorParticipant& floorMachine) const;
-  /**
-   * Gets the ID of the machine state.
-   * \returns The ID of the state.
-   */
-  virtual McpttEntityId GetInstanceStateId (void) const;
-  /**
-   * Indicates whether or not this machine state has the floor.
-   * \param floorMachine The FSM.
-   * \returns True, if this state has the floor.
-   */
-  virtual bool HasFloor (const McpttOffNetworkFloorParticipant& floorMachine) const;
-  /**
-   * Receives a floor release message.
-   * \param floorMachine The FSM.
-   * \param msg The received message.
-   */
-  virtual void ReceiveFloorRelease (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgRelease& msg) const;
-  /**
-   * Receives a floor request message.
-   * \param floorMachine The FSM.
-   * \param msg The received message.
-   */
-  virtual void ReceiveFloorRequest (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgRequest& msg) const;
-  /**
-   * Receives a media message.
-   * \param floorMachine The FSM.
-   * \param msg The received message.
-   */
-  virtual void ReceiveMedia (McpttOffNetworkFloorParticipant& floorMachine, const McpttMediaMsg& msg) const;
-  /**
-   * Notifies the machine state that it has been unselected.
-   * \param floorMachine The FSM.
-   */
-  virtual void Unselected (McpttOffNetworkFloorParticipant& floorMachine) const;
+  public:
+    /**
+     * Gets an instance of the McpttOffNetworkFloorParticipantStatePendGrant.
+     * \returns An instance.
+     */
+    static Ptr<McpttOffNetworkFloorParticipantStatePendGrant> GetInstance(void);
+    /**
+     * \brief Gets the ID of the state.
+     * \returns The ID of the state.
+     */
+    static McpttEntityId GetStateId(void);
+    /**
+     * \brief Creates an instance of the McpttOffNetworkFloorParticipantStatePendGrant class.
+     */
+    McpttOffNetworkFloorParticipantStatePendGrant(void);
+    /**
+     * \brief The destructor of the McpttOffNetworkFloorParticipantStatePendGrant class.
+     */
+    virtual ~McpttOffNetworkFloorParticipantStatePendGrant(void);
+    /**
+     * Notifies the floor machine state that timer T205 has expired.
+     * \param floorMachine The FSM.
+     */
+    virtual void ExpiryOfT205(McpttOffNetworkFloorParticipant& floorMachine) const;
+    /**
+     * Notifies the floor machine state that timer T233 has expired.
+     * \param floorMachine The FSM.
+     */
+    virtual void ExpiryOfT233(McpttOffNetworkFloorParticipant& floorMachine) const;
+    /**
+     * Gets the ID of the machine state.
+     * \returns The ID of the state.
+     */
+    virtual McpttEntityId GetInstanceStateId(void) const;
+    /**
+     * Indicates whether or not this machine state has the floor.
+     * \param floorMachine The FSM.
+     * \returns True, if this state has the floor.
+     */
+    virtual bool HasFloor(const McpttOffNetworkFloorParticipant& floorMachine) const;
+    /**
+     * Receives a floor release message.
+     * \param floorMachine The FSM.
+     * \param msg The received message.
+     */
+    virtual void ReceiveFloorRelease(McpttOffNetworkFloorParticipant& floorMachine,
+                                     const McpttFloorMsgRelease& msg) const;
+    /**
+     * Receives a floor request message.
+     * \param floorMachine The FSM.
+     * \param msg The received message.
+     */
+    virtual void ReceiveFloorRequest(McpttOffNetworkFloorParticipant& floorMachine,
+                                     const McpttFloorMsgRequest& msg) const;
+    /**
+     * Receives a media message.
+     * \param floorMachine The FSM.
+     * \param msg The received message.
+     */
+    virtual void ReceiveMedia(McpttOffNetworkFloorParticipant& floorMachine,
+                              const McpttMediaMsg& msg) const;
+    /**
+     * Notifies the machine state that it has been unselected.
+     * \param floorMachine The FSM.
+     */
+    virtual void Unselected(McpttOffNetworkFloorParticipant& floorMachine) const;
 };
+
 /**
  * \ingroup mcptt
  * \brief A class that represents the 'O: pending request' state.
  */
 class McpttOffNetworkFloorParticipantStatePendReq : public McpttOffNetworkFloorParticipantState
 {
-public:
-  /**
-   * Gets an instance of the McpttOffNetworkFloorParticipantStatePendReq.
-   * \returns An instance.
-   */
-  static Ptr<McpttOffNetworkFloorParticipantStatePendReq> GetInstance (void);
-  /**
-   * \brief Gets the ID of the state.
-   * \returns The ID of the state.
-   */
-  static McpttEntityId GetStateId (void);
-  /**
-   * \brief Creates an instance of the McpttOffNetworkFloorParticipantStatePendReq class.
-   */
-  McpttOffNetworkFloorParticipantStatePendReq (void);
-  /**
-   * \brief The destructor of the McpttOffNetworkFloorParticipantStatePendReq class.
-   */
-  virtual ~McpttOffNetworkFloorParticipantStatePendReq (void);
-  /**
-   * Notifies the floor machine state that timer T201 has expired.
-   * \param floorMachine The FSM.
-   */
-  virtual void ExpiryOfT201 (McpttOffNetworkFloorParticipant& floorMachine) const;
-  /**
-   * Gets the ID of the machine state.
-   * \returns The ID of the state.
-   */
-  virtual McpttEntityId GetInstanceStateId (void) const;
-  /**
-   * Receives a floor deny message.
-   * \param floorMachine The FSM.
-   * \param msg The received message.
-   */
-  virtual void ReceiveFloorDeny (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgDeny& msg) const;
-  /**
-   * Receives a floor granted message.
-   * \param floorMachine The FSM.
-   * \param msg The received message.
-   */
-  virtual void ReceiveFloorGranted (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgGranted& msg) const;
-  /**
-   * Receives a floor queue position info message.
-   * \param floorMachine The FSM.
-   * \param msg The received message.
-   */
-  virtual void ReceiveFloorQueuePositionInfo (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgQueuePositionInfo& msg) const;
-  /**
-   * Receives a floor request message.
-   * \param floorMachine The FSM.
-   * \param msg The received message.
-   */
-  virtual void ReceiveFloorRequest (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgRequest& msg) const;
-  /**
-   * Receives a floor taken message.
-   * \param floorMachine The FSM.
-   * \param msg The received message.
-   */
-  virtual void ReceiveFloorTaken (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgTaken& msg) const;
-  /**
-   * Receives a media message.
-   * \param floorMachine The FSM.
-   * \param msg The received message.
-   */
-  virtual void ReceiveMedia (McpttOffNetworkFloorParticipant& floorMachine, const McpttMediaMsg& msg) const;
-  /**
-   * Notifies this machine state that the button has been released.
-   * \param floorMachine The FSM.
-   */
-  virtual void PttRelease (McpttOffNetworkFloorParticipant& floorMachine) const;
+  public:
+    /**
+     * Gets an instance of the McpttOffNetworkFloorParticipantStatePendReq.
+     * \returns An instance.
+     */
+    static Ptr<McpttOffNetworkFloorParticipantStatePendReq> GetInstance(void);
+    /**
+     * \brief Gets the ID of the state.
+     * \returns The ID of the state.
+     */
+    static McpttEntityId GetStateId(void);
+    /**
+     * \brief Creates an instance of the McpttOffNetworkFloorParticipantStatePendReq class.
+     */
+    McpttOffNetworkFloorParticipantStatePendReq(void);
+    /**
+     * \brief The destructor of the McpttOffNetworkFloorParticipantStatePendReq class.
+     */
+    virtual ~McpttOffNetworkFloorParticipantStatePendReq(void);
+    /**
+     * Notifies the floor machine state that timer T201 has expired.
+     * \param floorMachine The FSM.
+     */
+    virtual void ExpiryOfT201(McpttOffNetworkFloorParticipant& floorMachine) const;
+    /**
+     * Gets the ID of the machine state.
+     * \returns The ID of the state.
+     */
+    virtual McpttEntityId GetInstanceStateId(void) const;
+    /**
+     * Receives a floor deny message.
+     * \param floorMachine The FSM.
+     * \param msg The received message.
+     */
+    virtual void ReceiveFloorDeny(McpttOffNetworkFloorParticipant& floorMachine,
+                                  const McpttFloorMsgDeny& msg) const;
+    /**
+     * Receives a floor granted message.
+     * \param floorMachine The FSM.
+     * \param msg The received message.
+     */
+    virtual void ReceiveFloorGranted(McpttOffNetworkFloorParticipant& floorMachine,
+                                     const McpttFloorMsgGranted& msg) const;
+    /**
+     * Receives a floor queue position info message.
+     * \param floorMachine The FSM.
+     * \param msg The received message.
+     */
+    virtual void ReceiveFloorQueuePositionInfo(McpttOffNetworkFloorParticipant& floorMachine,
+                                               const McpttFloorMsgQueuePositionInfo& msg) const;
+    /**
+     * Receives a floor request message.
+     * \param floorMachine The FSM.
+     * \param msg The received message.
+     */
+    virtual void ReceiveFloorRequest(McpttOffNetworkFloorParticipant& floorMachine,
+                                     const McpttFloorMsgRequest& msg) const;
+    /**
+     * Receives a floor taken message.
+     * \param floorMachine The FSM.
+     * \param msg The received message.
+     */
+    virtual void ReceiveFloorTaken(McpttOffNetworkFloorParticipant& floorMachine,
+                                   const McpttFloorMsgTaken& msg) const;
+    /**
+     * Receives a media message.
+     * \param floorMachine The FSM.
+     * \param msg The received message.
+     */
+    virtual void ReceiveMedia(McpttOffNetworkFloorParticipant& floorMachine,
+                              const McpttMediaMsg& msg) const;
+    /**
+     * Notifies this machine state that the button has been released.
+     * \param floorMachine The FSM.
+     */
+    virtual void PttRelease(McpttOffNetworkFloorParticipant& floorMachine) const;
 };
+
 /**
  * \ingroup mcptt
  * \brief A class that represents the 'O: queued' state.
  */
 class McpttOffNetworkFloorParticipantStateQueued : public McpttOffNetworkFloorParticipantState
 {
-public:
-  /**
-   * Gets an instance of the McpttOffNetworkFloorParticipantStateQueued.
-   * \returns An instance.
-   */
-  static Ptr<McpttOffNetworkFloorParticipantStateQueued> GetInstance (void);
-  /**
-   * \brief Gets the ID of the state.
-   * \returns The ID of the state.
-   */
-  static McpttEntityId GetStateId (void);
-  /**
-   * \brief Creates an instance of the McpttOffNetworkFloorParticipantStateQueued class.
-   */
-  McpttOffNetworkFloorParticipantStateQueued (void);
-  /**
-   * \brief The destructor of the McpttOffNetworkFloorParticipantStateQueued class.
-   */
-  virtual ~McpttOffNetworkFloorParticipantStateQueued (void);
-  /**
-   * Accepts a grant.
-   * \param floorMachine The FSM.
-   */
-  virtual void AcceptGrant (McpttOffNetworkFloorParticipant& floorMachine) const;
-  /**
-   * Notifies the floor machine state that timer T203 has expired.
-   * \param floorMachine The FSM.
-   */
-  virtual void ExpiryOfT203 (McpttOffNetworkFloorParticipant& floorMachine) const;
-  /**
-   * Notifies the floor machine state that timer T204 has expired.
-   * \param floorMachine The FSM.
-   */
-  virtual void ExpiryOfT204 (McpttOffNetworkFloorParticipant& floorMachine) const;
-  /**
-   * Notifies the floor machine state that timer T233 has expired.
-   * \param floorMachine The FSM.
-   */
-  virtual void ExpiryOfT233 (McpttOffNetworkFloorParticipant& floorMachine) const;
-  /**
-   * Gets the ID of the machine state.
-   * \returns The ID of the state.
-   */
-  virtual McpttEntityId GetInstanceStateId (void) const;
-  /**
-   * Receives a floor deny message.
-   * \param floorMachine The FSM.
-   * \param msg The received message.
-   */
-  virtual void ReceiveFloorDeny (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgDeny& msg) const;
-  /**
-   * Receives a floor granted message.
-   * \param floorMachine The FSM.
-   * \param msg The received message.
-   */
-  virtual void ReceiveFloorGranted (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgGranted& msg) const;
-  /**
-   * Receives a floor queue position info message.
-   * \param floorMachine The FSM.
-   * \param msg The received message.
-   */
-  virtual void ReceiveFloorQueuePositionInfo (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgQueuePositionInfo& msg) const;
-  /**
-   * Receives a media message.
-   * \param floorMachine The FSM.
-   * \param msg The received message.
-   */
-  virtual void ReceiveMedia (McpttOffNetworkFloorParticipant& floorMachine, const McpttMediaMsg& msg) const;
-  /**
-   * Releases a previously made request.
-   * \param floorMachine The FSM.
-   */
-  virtual void ReleaseRequest (McpttOffNetworkFloorParticipant& floorMachine) const;
-  /**
-   * Sends a floor queue position request message.
-   * \param floorMachine The FSM.
-   */
-  virtual void SendFloorQueuePositionRequest (McpttOffNetworkFloorParticipant& floorMachine) const;
+  public:
+    /**
+     * Gets an instance of the McpttOffNetworkFloorParticipantStateQueued.
+     * \returns An instance.
+     */
+    static Ptr<McpttOffNetworkFloorParticipantStateQueued> GetInstance(void);
+    /**
+     * \brief Gets the ID of the state.
+     * \returns The ID of the state.
+     */
+    static McpttEntityId GetStateId(void);
+    /**
+     * \brief Creates an instance of the McpttOffNetworkFloorParticipantStateQueued class.
+     */
+    McpttOffNetworkFloorParticipantStateQueued(void);
+    /**
+     * \brief The destructor of the McpttOffNetworkFloorParticipantStateQueued class.
+     */
+    virtual ~McpttOffNetworkFloorParticipantStateQueued(void);
+    /**
+     * Accepts a grant.
+     * \param floorMachine The FSM.
+     */
+    virtual void AcceptGrant(McpttOffNetworkFloorParticipant& floorMachine) const;
+    /**
+     * Notifies the floor machine state that timer T203 has expired.
+     * \param floorMachine The FSM.
+     */
+    virtual void ExpiryOfT203(McpttOffNetworkFloorParticipant& floorMachine) const;
+    /**
+     * Notifies the floor machine state that timer T204 has expired.
+     * \param floorMachine The FSM.
+     */
+    virtual void ExpiryOfT204(McpttOffNetworkFloorParticipant& floorMachine) const;
+    /**
+     * Notifies the floor machine state that timer T233 has expired.
+     * \param floorMachine The FSM.
+     */
+    virtual void ExpiryOfT233(McpttOffNetworkFloorParticipant& floorMachine) const;
+    /**
+     * Gets the ID of the machine state.
+     * \returns The ID of the state.
+     */
+    virtual McpttEntityId GetInstanceStateId(void) const;
+    /**
+     * Receives a floor deny message.
+     * \param floorMachine The FSM.
+     * \param msg The received message.
+     */
+    virtual void ReceiveFloorDeny(McpttOffNetworkFloorParticipant& floorMachine,
+                                  const McpttFloorMsgDeny& msg) const;
+    /**
+     * Receives a floor granted message.
+     * \param floorMachine The FSM.
+     * \param msg The received message.
+     */
+    virtual void ReceiveFloorGranted(McpttOffNetworkFloorParticipant& floorMachine,
+                                     const McpttFloorMsgGranted& msg) const;
+    /**
+     * Receives a floor queue position info message.
+     * \param floorMachine The FSM.
+     * \param msg The received message.
+     */
+    virtual void ReceiveFloorQueuePositionInfo(McpttOffNetworkFloorParticipant& floorMachine,
+                                               const McpttFloorMsgQueuePositionInfo& msg) const;
+    /**
+     * Receives a media message.
+     * \param floorMachine The FSM.
+     * \param msg The received message.
+     */
+    virtual void ReceiveMedia(McpttOffNetworkFloorParticipant& floorMachine,
+                              const McpttMediaMsg& msg) const;
+    /**
+     * Releases a previously made request.
+     * \param floorMachine The FSM.
+     */
+    virtual void ReleaseRequest(McpttOffNetworkFloorParticipant& floorMachine) const;
+    /**
+     * Sends a floor queue position request message.
+     * \param floorMachine The FSM.
+     */
+    virtual void SendFloorQueuePositionRequest(McpttOffNetworkFloorParticipant& floorMachine) const;
 };
+
 /**
  * \ingroup mcptt
  * \brief A class that represents the 'O: silence' state.
  */
 class McpttOffNetworkFloorParticipantStateSilence : public McpttOffNetworkFloorParticipantState
 {
-public:
-  /**
-   * Gets an instance of the McpttOffNetworkFloorParticipantStateSilence.
-   * \returns An instance.
-   */
-  static Ptr<McpttOffNetworkFloorParticipantStateSilence> GetInstance (void);
-  /**
-   * \brief Gets the ID of the state.
-   * \returns The ID of the state.
-   */
-  static McpttEntityId GetStateId (void);
-  /**
-   * \brief Creates an instance of the McpttOffNetworkFloorParticipantStateSilence class.
-   */
-  McpttOffNetworkFloorParticipantStateSilence (void);
-  /**
-   * \brief The destructor of the McpttOffNetworkFloorParticipantStateSilence class.
-   */
-  virtual ~McpttOffNetworkFloorParticipantStateSilence (void);
-  /**
-   * Notifies the floor machine state that timer T230 has expired.
-   * \param floorMachine The FSM.
-   */
-  virtual void ExpiryOfT230 (McpttOffNetworkFloorParticipant& floorMachine) const;
-  /**
-   * Gets the ID of the machine state.
-   * \returns The ID of the state.
-   */
-  virtual McpttEntityId GetInstanceStateId (void) const;
-  /**
-   * Receives a floor granted message.
-   * \param floorMachine The FSM.
-   * \param msg The received message.
-   */
-  virtual void ReceiveFloorGranted (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgGranted& msg) const;
-  /**
-   * Receives a floor request message.
-   * \param floorMachine The FSM.
-   * \param msg The received message.
-   * \note
-   */
-  virtual void ReceiveFloorRequest (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgRequest& msg) const;
-  /**
-   * Receives a floor taken message.
-   * \param floorMachine The FSM.
-   * \param msg The received message.
-   */
-  virtual void ReceiveFloorTaken (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgTaken& msg) const;
-  /**
-   * Receives a media message.
-   * \param floorMachine The FSM.
-   * \param msg The received message.
-   */
-  virtual void ReceiveMedia (McpttOffNetworkFloorParticipant& floorMachine, const McpttMediaMsg& msg) const;
-  /**
-   * Notifies the machine state that it has been selected.
-   * \param floorMachine The FSM.
-   */
-  virtual void Selected (McpttOffNetworkFloorParticipant& floorMachine) const;
-  /**
-   * Notifies this machine state that the button has been pushed.
-   * \param floorMachine The FSM.
-   */
-  virtual void PttPush (McpttOffNetworkFloorParticipant& floorMachine) const;
+  public:
+    /**
+     * Gets an instance of the McpttOffNetworkFloorParticipantStateSilence.
+     * \returns An instance.
+     */
+    static Ptr<McpttOffNetworkFloorParticipantStateSilence> GetInstance(void);
+    /**
+     * \brief Gets the ID of the state.
+     * \returns The ID of the state.
+     */
+    static McpttEntityId GetStateId(void);
+    /**
+     * \brief Creates an instance of the McpttOffNetworkFloorParticipantStateSilence class.
+     */
+    McpttOffNetworkFloorParticipantStateSilence(void);
+    /**
+     * \brief The destructor of the McpttOffNetworkFloorParticipantStateSilence class.
+     */
+    virtual ~McpttOffNetworkFloorParticipantStateSilence(void);
+    /**
+     * Notifies the floor machine state that timer T230 has expired.
+     * \param floorMachine The FSM.
+     */
+    virtual void ExpiryOfT230(McpttOffNetworkFloorParticipant& floorMachine) const;
+    /**
+     * Gets the ID of the machine state.
+     * \returns The ID of the state.
+     */
+    virtual McpttEntityId GetInstanceStateId(void) const;
+    /**
+     * Receives a floor granted message.
+     * \param floorMachine The FSM.
+     * \param msg The received message.
+     */
+    virtual void ReceiveFloorGranted(McpttOffNetworkFloorParticipant& floorMachine,
+                                     const McpttFloorMsgGranted& msg) const;
+    /**
+     * Receives a floor request message.
+     * \param floorMachine The FSM.
+     * \param msg The received message.
+     * \note
+     */
+    virtual void ReceiveFloorRequest(McpttOffNetworkFloorParticipant& floorMachine,
+                                     const McpttFloorMsgRequest& msg) const;
+    /**
+     * Receives a floor taken message.
+     * \param floorMachine The FSM.
+     * \param msg The received message.
+     */
+    virtual void ReceiveFloorTaken(McpttOffNetworkFloorParticipant& floorMachine,
+                                   const McpttFloorMsgTaken& msg) const;
+    /**
+     * Receives a media message.
+     * \param floorMachine The FSM.
+     * \param msg The received message.
+     */
+    virtual void ReceiveMedia(McpttOffNetworkFloorParticipant& floorMachine,
+                              const McpttMediaMsg& msg) const;
+    /**
+     * Notifies the machine state that it has been selected.
+     * \param floorMachine The FSM.
+     */
+    virtual void Selected(McpttOffNetworkFloorParticipant& floorMachine) const;
+    /**
+     * Notifies this machine state that the button has been pushed.
+     * \param floorMachine The FSM.
+     */
+    virtual void PttPush(McpttOffNetworkFloorParticipant& floorMachine) const;
 };
 
 } // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_OFF_NETWORK_FLOOR_PARTICIPANT_STATE_H */
-

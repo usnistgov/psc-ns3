@@ -35,16 +35,16 @@
 
 #include "lte-sl-ue-rrc.h"
 
+#include "lte-rrc-sap.h"
 #include "lte-sl-o2o-comm-params.h"
 #include "lte-sl-ue-controller.h"
 #include "lte-sl-ue-ctrl-sap.h"
+#include "lte-ue-rrc.h"
 
 #include <ns3/abort.h>
 #include <ns3/boolean.h>
 #include <ns3/fatal-error.h>
 #include <ns3/log.h>
-#include <ns3/lte-rrc-sap.h>
-#include <ns3/lte-ue-rrc.h>
 #include <ns3/object-factory.h>
 #include <ns3/object-map.h>
 #include <ns3/pointer.h>

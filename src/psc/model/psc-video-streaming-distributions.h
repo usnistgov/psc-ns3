@@ -33,12 +33,15 @@
 #ifndef PSC_VIDEO_STREAMING_DISTRIBUTIONS_H
 #define PSC_VIDEO_STREAMING_DISTRIBUTIONS_H
 
-#include <ns3/string.h>
 #include <ns3/ptr.h>
+#include <ns3/string.h>
+
 #include <map>
 
-namespace ns3 {
-namespace psc {
+namespace ns3
+{
+namespace psc
+{
 
 /**
  * \ingroup psc
@@ -53,28 +56,28 @@ namespace psc {
  */
 class PscVideoStreamingDistributions
 {
-public:
-  /**
-   * Get the distribution of packet sizes corresponding to the distribution
-   * name passed as a parameter.
-   *
-   * If the model does not recognize the name provided, it will abort the simulation
-   *
-   * \param distributionName The name of the distribution
-   * \return The distribution of packet sizes
-   */
-  static std::map <double, uint32_t> GetSizeDistribution (std::string distributionName);
+  public:
+    /**
+     * Get the distribution of packet sizes corresponding to the distribution
+     * name passed as a parameter.
+     *
+     * If the model does not recognize the name provided, it will abort the simulation
+     *
+     * \param distributionName The name of the distribution
+     * \return The distribution of packet sizes
+     */
+    static std::map<double, uint32_t> GetSizeDistribution(std::string distributionName);
 
-  /**
-   * Get the distribution of packet intervals corresponding to the distribution
-   * name passed as a parameter.
-   *
-   * If the model does not recognize the name provided, it will abort the simulation
-   *
-   * \param distributionName The name of the distribution
-   * \return The distribution of packet intervals
-   */
-  static std::map <double, double> GetIntervalDistribution (std::string distributionName);
+    /**
+     * Get the distribution of packet intervals corresponding to the distribution
+     * name passed as a parameter.
+     *
+     * If the model does not recognize the name provided, it will abort the simulation
+     *
+     * \param distributionName The name of the distribution
+     * \return The distribution of packet intervals
+     */
+    static std::map<double, double> GetIntervalDistribution(std::string distributionName);
 
 }; // class PscVideoStreamingDistributions
 

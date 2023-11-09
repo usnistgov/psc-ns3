@@ -22,8 +22,8 @@
 
 #include "lte-pdcp-header.h"
 #include "lte-pdcp-sap.h"
-#include "lte-sl-pdcp-header.h"
 #include "lte-pdcp-tag.h"
+#include "lte-sl-pdcp-header.h"
 
 #include "ns3/log.h"
 #include "ns3/simulator.h"

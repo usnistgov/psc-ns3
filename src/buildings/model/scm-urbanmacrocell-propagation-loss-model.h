@@ -36,10 +36,12 @@
 #ifndef SCM_URBANMACROCELL_PROPAGATION_LOSS_MODEL_H
 #define SCM_URBANMACROCELL_PROPAGATION_LOSS_MODEL_H
 
-#include <ns3/buildings-propagation-loss-model.h>
+#include "buildings-propagation-loss-model.h"
+
 #include <ns3/propagation-environment.h>
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup buildings
@@ -49,97 +51,97 @@ namespace ns3 {
  */
 class ScmUrbanMacroCellPropagationLossModel : public BuildingsPropagationLossModel
 {
-
-public:
-  /**
-   * structure of the pathloss type to save the pathloss, probability of line-of-sight and random number to determine LOS condition
-   */
-  struct PathlossType
-  {
-    double loss; ///< pathloss calculated
-    double plos; ///< probability of line-of-sight
-    double r; ///< random number to determine LOS condition
-  };
-
-  /**
-   * structure to save the two nodes mobility models
-   */
-  struct MobilityDuo
-  {
-    Ptr<MobilityModel> a; ///< mobility model of node 1
-    Ptr<MobilityModel> b; ///< mobility model of node 2
+  public:
+    /**
+     * structure of the pathloss type to save the pathloss, probability of line-of-sight and random
+     * number to determine LOS condition
+     */
+    struct PathlossType
+    {
+        double loss; ///< pathloss calculated
+        double plos; ///< probability of line-of-sight
+        double r;    ///< random number to determine LOS condition
+    };
 
     /**
-     * equality function
-     * \param mo1 mobility model for node 1
-     * \param mo2 mobility model for node 2
+     * structure to save the two nodes mobility models
      */
-    friend bool operator== (const MobilityDuo& mo1, const MobilityDuo& mo2)
+    struct MobilityDuo
     {
-      return (mo1.a == mo2.a && mo1.b == mo2.b);
-    }
+        Ptr<MobilityModel> a; ///< mobility model of node 1
+        Ptr<MobilityModel> b; ///< mobility model of node 2
+
+        /**
+         * equality function
+         * \param mo1 mobility model for node 1
+         * \param mo2 mobility model for node 2
+         */
+        friend bool operator==(const MobilityDuo& mo1, const MobilityDuo& mo2)
+        {
+            return (mo1.a == mo2.a && mo1.b == mo2.b);
+        }
+
+        /**
+         * less than function
+         * \param mo1 mobility model for node 1
+         * \param mo2 mobility model for node 2
+         */
+        friend bool operator<(const MobilityDuo& mo1, const MobilityDuo& mo2)
+        {
+            return (mo1.a < mo2.a || ((mo1.a == mo2.a) && (mo1.b < mo2.b)));
+        }
+    };
+
+    // inherited from Object
     /**
-     * less than function
-     * \param mo1 mobility model for node 1
-     * \param mo2 mobility model for node 2
+     * \brief Get the type ID.
+     * \return the object TypeId
      */
-    friend bool operator< (const MobilityDuo& mo1, const MobilityDuo& mo2)
-    {
-      return (mo1.a < mo2.a || ( (mo1.a == mo2.a) && (mo1.b < mo2.b)));
-    }
+    static TypeId GetTypeId(void);
+    ScmUrbanMacroCellPropagationLossModel();
+    virtual ~ScmUrbanMacroCellPropagationLossModel();
 
-  };
+    /**
+     * Calculate the pathloss in dB
+     *
+     * \param a the first mobility model
+     * \param b the second mobility model
+     *
+     * \return the loss in dB for the propagation between the two given mobility models
+     */
+    double GetLoss(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
 
-  // inherited from Object
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId (void);
-  ScmUrbanMacroCellPropagationLossModel ();
-  virtual ~ScmUrbanMacroCellPropagationLossModel ();
+    /**
+     * Calculate the shadowing
+     *
+     * \param a first mobility model
+     * \param b second mobility model
+     *
+     * \return the shadowing value (in dB)
+     */
+    double GetShadowing(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
 
-  /**
-   * Calculate the pathloss in dB
-   *
-   * \param a the first mobility model
-   * \param b the second mobility model
-   *
-   * \return the loss in dB for the propagation between the two given mobility models
-   */
-  double GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
+    /**
+     * Evaluate the shadowing standard deviation based on the positions of the two nodes
+     *
+     * \param a the mobility model of the source
+     * \param b the mobility model of the destination
+     * \returns the shadowing standard deviation ""sigma"" (in dB)
+     */
+    double EvaluateSigma(Ptr<MobilityBuildingInfo> a, Ptr<MobilityBuildingInfo> b) const;
 
-  /**
-   * Calculate the shadowing
-   *
-   * \param a first mobility model
-   * \param b second mobility model
-   *
-   * \return the shadowing value (in dB)
-   */
-  double GetShadowing (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
+  private:
+    virtual int64_t DoAssignStreams(int64_t stream);
 
-  /**
-   * Evaluate the shadowing standard deviation based on the positions of the two nodes
-   *
-   * \param a the mobility model of the source
-   * \param b the mobility model of the destination
-   * \returns the shadowing standard deviation ""sigma"" (in dB)
-  */
-  double EvaluateSigma (Ptr<MobilityBuildingInfo> a, Ptr<MobilityBuildingInfo> b) const;
-
-private:
-  virtual int64_t DoAssignStreams (int64_t stream);
-
-  double m_frequency; ///< The propagation frequency in Hz
-  bool m_isShadowingEnabled; ///< Shadowing Status
-  Ptr<UniformRandomVariable> m_rand; ///< Random number to generate
-  mutable std::map<MobilityDuo, double> m_randomMap; ///< Map to keep track of random numbers generated per pair of nodes
-  mutable std::map<Ptr<MobilityModel>,  std::map<Ptr<MobilityModel>, double> > m_shadowingLossMap; ///< Map to keep track of shadowing values
+    double m_frequency;                ///< The propagation frequency in Hz
+    bool m_isShadowingEnabled;         ///< Shadowing Status
+    Ptr<UniformRandomVariable> m_rand; ///< Random number to generate
+    mutable std::map<MobilityDuo, double>
+        m_randomMap; ///< Map to keep track of random numbers generated per pair of nodes
+    mutable std::map<Ptr<MobilityModel>, std::map<Ptr<MobilityModel>, double>>
+        m_shadowingLossMap; ///< Map to keep track of shadowing values
 };
 
 } // namespace ns3
 
-
 #endif // SCM_URBANMACROCELL_PROPAGATION_LOSS_MODEL_H
-

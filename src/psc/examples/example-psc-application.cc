@@ -35,19 +35,19 @@
  */
 
 #include "ns3/core-module.h"
-#include "ns3/network-module.h"
 #include "ns3/csma-module.h"
 #include "ns3/internet-module.h"
+#include "ns3/network-module.h"
 #include "ns3/point-to-point-module.h"
 #include "ns3/psc-module.h"
 #include "ns3/random-variable-stream.h"
 
 // Example of a PSC Application.
 //
-// In this example, the client is configured with ON session durations 
+// In this example, the client is configured with ON session durations
 // of 10 s with 5 s between sessions. In each session, the client will
-// send 10 requests of 50 Bytes at 1 s interval. For each request, the 
-// server will send a response of 20 Bytes.  
+// send 10 requests of 50 Bytes at 1 s interval. For each request, the
+// server will send a response of 20 Bytes.
 // The server can be set to not send a response back to the source client
 // with the echoClient parameter set to false.
 // Other parameters include:
@@ -56,143 +56,155 @@
 //                 by the client and server
 // - time: the simulation time
 
-// Network Topology 
+// Network Topology
 //
-// n0 ==================  n1  
+// n0 ==================  n1
 //    LAN 6001:db80::/64
-
 
 using namespace ns3;
 using namespace psc;
 
-NS_LOG_COMPONENT_DEFINE ("PscApplicationExample");
+NS_LOG_COMPONENT_DEFINE("PscApplicationExample");
 
 /**
  * \brief Function to trace packet transmissions
- * 
+ *
  * \param streamWrapper The file stream wripper
- * \param appName The name of the application 
+ * \param appName The name of the application
  * \param header The header information
  */
 void
-TraceAppTxTraffic (Ptr<OutputStreamWrapper> streamWrapper, std::string appName, SeqTsSizeHeader header)
+TraceAppTxTraffic(Ptr<OutputStreamWrapper> streamWrapper,
+                  std::string appName,
+                  SeqTsSizeHeader header)
 {
-  *streamWrapper->GetStream () << appName <<
-    " " << Simulator::Now ().GetSeconds () <<
-    " TX " << header.GetSize () <<
-    " " << header.GetSeq () <<  std::endl;}
+    *streamWrapper->GetStream() << appName << " " << Simulator::Now().GetSeconds() << " TX "
+                                << header.GetSize() << " " << header.GetSeq() << std::endl;
+}
 
 /**
  * \brief Function to trace packet reception
- * 
+ *
  * \param streamWrapper The file stream wripper
- * \param appName The name of the application 
+ * \param appName The name of the application
  * \param header The header information
  */
 void
-TraceAppRxTraffic (Ptr<OutputStreamWrapper> streamWrapper, std::string appName, SeqTsSizeHeader header)
+TraceAppRxTraffic(Ptr<OutputStreamWrapper> streamWrapper,
+                  std::string appName,
+                  SeqTsSizeHeader header)
 {
-  *streamWrapper->GetStream () << appName <<
-    " " << Simulator::Now ().GetSeconds () <<
-    " RX " << header.GetSize () <<
-    " " << header.GetSeq () << std::endl;
+    *streamWrapper->GetStream() << appName << " " << Simulator::Now().GetSeconds() << " RX "
+                                << header.GetSize() << " " << header.GetSeq() << std::endl;
 }
 
-
 int
-main (int argc, char *argv[])
+main(int argc, char* argv[])
 {
-  bool verbose = true;
-  bool enableTraces = false;
-  bool echoClient = true;
-  uint32_t nCsma = 2;
-  double startTime = 2;
-  double simTime = 30;
+    bool verbose = true;
+    bool enableTraces = false;
+    bool echoClient = true;
+    uint32_t nCsma = 2;
+    double startTime = 2;
+    double simTime = 30;
 
-  Ptr<OutputStreamWrapper> appTrafficOutputStreamWrapper;
+    Ptr<OutputStreamWrapper> appTrafficOutputStreamWrapper;
 
-  CommandLine cmd;
-  cmd.AddValue ("echoClient", "Set EchoClient attribute", echoClient);
-  cmd.AddValue ("verbose", "Tell echo applications to log if true", verbose);
-  cmd.AddValue ("enableTraces", "Enable trace file output", enableTraces);
-  cmd.AddValue ("time", "Simulation time", simTime);
+    CommandLine cmd;
+    cmd.AddValue("echoClient", "Set EchoClient attribute", echoClient);
+    cmd.AddValue("verbose", "Tell echo applications to log if true", verbose);
+    cmd.AddValue("enableTraces", "Enable trace file output", enableTraces);
+    cmd.AddValue("time", "Simulation time", simTime);
 
-  cmd.Parse (argc,argv);
+    cmd.Parse(argc, argv);
 
-  if (verbose)
+    if (verbose)
     {
-      LogComponentEnable ("PscApplicationExample", LOG_LEVEL_ALL);
-      LogComponentEnable ("PscApplication", LOG_LEVEL_ALL);
-      LogComponentEnable ("PscApplicationClient", LOG_LEVEL_ALL);
-      LogComponentEnable ("PscApplicationServer", LOG_LEVEL_ALL);
-      LogComponentEnable ("PscApplicationConfiguration", LOG_LEVEL_ALL);
-      LogComponentEnable ("PscApplicationHelper", LOG_LEVEL_ALL);
+        LogComponentEnable("PscApplicationExample", LOG_LEVEL_ALL);
+        LogComponentEnable("PscApplication", LOG_LEVEL_ALL);
+        LogComponentEnable("PscApplicationClient", LOG_LEVEL_ALL);
+        LogComponentEnable("PscApplicationServer", LOG_LEVEL_ALL);
+        LogComponentEnable("PscApplicationConfiguration", LOG_LEVEL_ALL);
+        LogComponentEnable("PscApplicationHelper", LOG_LEVEL_ALL);
     }
 
-  NS_LOG_INFO ("CSMA nodes: " << nCsma);
-  NS_LOG_INFO ("Simulation Time: " << simTime);
+    NS_LOG_INFO("CSMA nodes: " << nCsma);
+    NS_LOG_INFO("Simulation Time: " << simTime);
 
-  NodeContainer csmaNodes;
-  csmaNodes.Create (nCsma);
+    NodeContainer csmaNodes;
+    csmaNodes.Create(nCsma);
 
-  CsmaHelper csma;
-  csma.SetChannelAttribute ("DataRate", StringValue ("100Mbps"));
-  csma.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (1)));
+    CsmaHelper csma;
+    csma.SetChannelAttribute("DataRate", StringValue("100Mbps"));
+    csma.SetChannelAttribute("Delay", TimeValue(MilliSeconds(1)));
 
-  NetDeviceContainer csmaDevices;
-  csmaDevices = csma.Install (csmaNodes);
+    NetDeviceContainer csmaDevices;
+    csmaDevices = csma.Install(csmaNodes);
 
-  InternetStackHelper stack;
-  stack.Install (csmaNodes);
+    InternetStackHelper stack;
+    stack.Install(csmaNodes);
 
-  Ipv6AddressHelper ipv6h;
-  ipv6h.SetBase (Ipv6Address ("6001:db80::"), Ipv6Prefix (64));
-  Ipv6InterfaceContainer csmaInterfaces;
-  csmaInterfaces = ipv6h.Assign (csmaDevices);
+    Ipv6AddressHelper ipv6h;
+    ipv6h.SetBase(Ipv6Address("6001:db80::"), Ipv6Prefix(64));
+    Ipv6InterfaceContainer csmaInterfaces;
+    csmaInterfaces = ipv6h.Assign(csmaDevices);
 
-  Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
+    Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 
-  // Application configuration
-  Ptr<PscApplicationConfiguration> appConfig = CreateObject <PscApplicationConfiguration> (
-      "PscApplicationExample",
-      UdpSocketFactory::GetTypeId (),     //Socket type
-      5000                                //port number
-      );
+    // Application configuration
+    Ptr<PscApplicationConfiguration> appConfig =
+        CreateObject<PscApplicationConfiguration>("PscApplicationExample",
+                                                  UdpSocketFactory::GetTypeId(), // Socket type
+                                                  5000                           // port number
+        );
 
-  appConfig->SetApplicationPattern (
-    CreateObjectWithAttributes<ConstantRandomVariable> ("Constant", DoubleValue (10)),   //Number of packets to send per session
-    CreateObjectWithAttributes<ConstantRandomVariable> ("Constant", DoubleValue (1)),   //Packet interval (in s)
-    CreateObjectWithAttributes<ConstantRandomVariable> ("Constant", DoubleValue (5)),   //Time between sessions
-    50,        //Client packet size (bytes)
-    20);       //Server packet size (bytes)
+    appConfig->SetApplicationPattern(
+        CreateObjectWithAttributes<ConstantRandomVariable>(
+            "Constant",
+            DoubleValue(10)), // Number of packets to send per session
+        CreateObjectWithAttributes<ConstantRandomVariable>(
+            "Constant",
+            DoubleValue(1)), // Packet interval (in s)
+        CreateObjectWithAttributes<ConstantRandomVariable>("Constant",
+                                                           DoubleValue(5)), // Time between sessions
+        50,  // Client packet size (bytes)
+        20); // Server packet size (bytes)
 
-  // Use helper to deploy the applications at client and server nodes
-  Ptr<PscApplicationHelper> appHelper = CreateObject<PscApplicationHelper> ();
+    // Use helper to deploy the applications at client and server nodes
+    Ptr<PscApplicationHelper> appHelper = CreateObject<PscApplicationHelper>();
 
-  ApplicationContainer apps = appHelper->Install (appConfig, csmaNodes.Get (0),
-                                csmaNodes.Get (1),
-                                csmaNodes.Get (1)->GetObject<Ipv6L3Protocol> ()->GetAddress (1, 1).GetAddress (),
-                                echoClient,
-                                Seconds (startTime),
-                                Seconds (simTime));
+    ApplicationContainer apps = appHelper->Install(
+        appConfig,
+        csmaNodes.Get(0),
+        csmaNodes.Get(1),
+        csmaNodes.Get(1)->GetObject<Ipv6L3Protocol>()->GetAddress(1, 1).GetAddress(),
+        echoClient,
+        Seconds(startTime),
+        Seconds(simTime));
 
-  if (enableTraces)
-  {
-    appTrafficOutputStreamWrapper = Create<OutputStreamWrapper> ("PscApplicationExample_trace.txt", std::ios::out);
-    //print header line
-    *appTrafficOutputStreamWrapper->GetStream () << "Name\tTime\tAction\tPayload\tSeqNum" << std::endl;
-    for (uint32_t i = 0; i < apps.GetN (); i++)
+    if (enableTraces)
     {
-      DynamicCast<PscApplication> (apps.Get (i))->TraceConnectWithoutContext (
-        "Rx", MakeBoundCallback (&TraceAppRxTraffic, appTrafficOutputStreamWrapper));
-      DynamicCast<PscApplication> (apps.Get (i))->TraceConnectWithoutContext (
-        "Tx", MakeBoundCallback (&TraceAppTxTraffic, appTrafficOutputStreamWrapper));
+        appTrafficOutputStreamWrapper =
+            Create<OutputStreamWrapper>("PscApplicationExample_trace.txt", std::ios::out);
+        // print header line
+        *appTrafficOutputStreamWrapper->GetStream()
+            << "Name\tTime\tAction\tPayload\tSeqNum" << std::endl;
+        for (uint32_t i = 0; i < apps.GetN(); i++)
+        {
+            DynamicCast<PscApplication>(apps.Get(i))
+                ->TraceConnectWithoutContext(
+                    "Rx",
+                    MakeBoundCallback(&TraceAppRxTraffic, appTrafficOutputStreamWrapper));
+            DynamicCast<PscApplication>(apps.Get(i))
+                ->TraceConnectWithoutContext(
+                    "Tx",
+                    MakeBoundCallback(&TraceAppTxTraffic, appTrafficOutputStreamWrapper));
+        }
     }
-  }
 
-  Simulator::Stop (Seconds (simTime));
+    Simulator::Stop(Seconds(simTime));
 
-  Simulator::Run ();
-  Simulator::Destroy ();
-  return 0;
+    Simulator::Run();
+    Simulator::Destroy();
+    return 0;
 }

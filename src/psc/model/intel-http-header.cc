@@ -30,105 +30,107 @@
  * employees is not subject to copyright protection within the United States.
  */
 
-#include <ns3/simulator.h>
-#include <ns3/log.h>
-
 #include "intel-http-header.h"
 
-namespace ns3 {
+#include <ns3/log.h>
+#include <ns3/simulator.h>
 
-NS_LOG_COMPONENT_DEFINE ("IntelHttpHeader");
-
-namespace psc {
-
-NS_OBJECT_ENSURE_REGISTERED (IntelHttpHeader);
-
-IntelHttpHeader::IntelHttpHeader ()
+namespace ns3
 {
-  NS_LOG_FUNCTION (this);
-  m_requestType = Type::Main;
-  m_numEmbeddedObjects = 0;
+
+NS_LOG_COMPONENT_DEFINE("IntelHttpHeader");
+
+namespace psc
+{
+
+NS_OBJECT_ENSURE_REGISTERED(IntelHttpHeader);
+
+IntelHttpHeader::IntelHttpHeader()
+{
+    NS_LOG_FUNCTION(this);
+    m_requestType = Type::Main;
+    m_numEmbeddedObjects = 0;
 }
 
-IntelHttpHeader::~IntelHttpHeader ()
+IntelHttpHeader::~IntelHttpHeader()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 TypeId
 IntelHttpHeader::GetTypeId()
 {
-  static TypeId tid =
-      TypeId ("ns3::psc::IntelHttpHeader").SetParent<Header> ().AddConstructor<IntelHttpHeader> ();
+    static TypeId tid =
+        TypeId("ns3::psc::IntelHttpHeader").SetParent<Header>().AddConstructor<IntelHttpHeader>();
 
-  return tid;
+    return tid;
 }
 
 TypeId
 IntelHttpHeader::GetInstanceTypeId() const
 {
-  return GetTypeId ();
+    return GetTypeId();
 }
 
 void
-IntelHttpHeader::SetRequestType (Type requestType)
+IntelHttpHeader::SetRequestType(Type requestType)
 {
-  NS_LOG_FUNCTION (this << requestType);
-  m_requestType = requestType;
+    NS_LOG_FUNCTION(this << requestType);
+    m_requestType = requestType;
 }
 
 IntelHttpHeader::Type
 IntelHttpHeader::GetRequestType() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_requestType;
+    NS_LOG_FUNCTION(this);
+    return m_requestType;
 }
 
 void
-IntelHttpHeader::SetNumberEmbeddedObjects (uint16_t numEmbeddedObjects)
+IntelHttpHeader::SetNumberEmbeddedObjects(uint16_t numEmbeddedObjects)
 {
-  NS_LOG_FUNCTION (this << numEmbeddedObjects);
-  m_numEmbeddedObjects = numEmbeddedObjects;
+    NS_LOG_FUNCTION(this << numEmbeddedObjects);
+    m_numEmbeddedObjects = numEmbeddedObjects;
 }
 
 uint16_t
 IntelHttpHeader::GetNumberEmbeddedObjects() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_numEmbeddedObjects;
+    NS_LOG_FUNCTION(this);
+    return m_numEmbeddedObjects;
 }
 
 void
-IntelHttpHeader::SetPayloadSize (uint32_t payloadSize)
+IntelHttpHeader::SetPayloadSize(uint32_t payloadSize)
 {
-  NS_LOG_FUNCTION (this << payloadSize);
-  m_payloadSize = payloadSize;
+    NS_LOG_FUNCTION(this << payloadSize);
+    m_payloadSize = payloadSize;
 }
 
 uint32_t
 IntelHttpHeader::GetPayloadSize() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_payloadSize;
+    NS_LOG_FUNCTION(this);
+    return m_payloadSize;
 }
 
 uint32_t
-IntelHttpHeader::Deserialize (Buffer::Iterator start)
+IntelHttpHeader::Deserialize(Buffer::Iterator start)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  Buffer::Iterator i = start;
+    Buffer::Iterator i = start;
 
-  m_payloadSize = i.ReadNtohU32 ();
+    m_payloadSize = i.ReadNtohU32();
 
-  uint16_t readVal = i.ReadNtohU16 ();
-  if (readVal & 0x8000U)
-  {
-      m_requestType = Type::Main;
-    }
-  else
+    uint16_t readVal = i.ReadNtohU16();
+    if (readVal & 0x8000U)
     {
-      m_requestType = Type::Embedded;
+        m_requestType = Type::Main;
+    }
+    else
+    {
+        m_requestType = Type::Embedded;
     }
     m_numEmbeddedObjects = readVal & 0x0FFFU;
 
@@ -138,41 +140,41 @@ IntelHttpHeader::Deserialize (Buffer::Iterator start)
 uint32_t
 IntelHttpHeader::GetSerializedSize() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return sizeof (uint16_t) + sizeof (uint32_t);
+    return sizeof(uint16_t) + sizeof(uint32_t);
 }
 
 void
-IntelHttpHeader::Print (std::ostream &os) const
+IntelHttpHeader::Print(std::ostream& os) const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  os << "Request Type: " << (m_requestType == Type::Main ? "HTML" : "EmbeddedObject")
-     << " Payload Size: " << m_payloadSize
-     << " Number of Embedded Objects: " << m_numEmbeddedObjects << std::endl;
+    os << "Request Type: " << (m_requestType == Type::Main ? "HTML" : "EmbeddedObject")
+       << " Payload Size: " << m_payloadSize
+       << " Number of Embedded Objects: " << m_numEmbeddedObjects << std::endl;
 }
 
 void
-IntelHttpHeader::Serialize (Buffer::Iterator start) const
+IntelHttpHeader::Serialize(Buffer::Iterator start) const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  Buffer::Iterator i = start;
-  i.WriteHtonU32 (m_payloadSize);
+    Buffer::Iterator i = start;
+    i.WriteHtonU32(m_payloadSize);
 
-  uint16_t typeAndObjects = 0U;
-  if (m_requestType == Type::Main)
+    uint16_t typeAndObjects = 0U;
+    if (m_requestType == Type::Main)
     {
         typeAndObjects = 0x8000U;
     }
-  i.WriteHtonU16 (typeAndObjects + m_numEmbeddedObjects);
+    i.WriteHtonU16(typeAndObjects + m_numEmbeddedObjects);
 }
 
 uint32_t
 IntelHttpHeader::GetHeaderSize()
 {
-  return sizeof (uint16_t) + sizeof (uint32_t);
+    return sizeof(uint16_t) + sizeof(uint32_t);
 }
 
 } // namespace psc

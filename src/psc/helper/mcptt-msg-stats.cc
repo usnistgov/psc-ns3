@@ -29,99 +29,107 @@
  * employees is not subject to copyright protection within the United States.
  */
 
-#include <fstream>
-#include <iomanip>
+#include "mcptt-msg-stats.h"
 
 #include <ns3/abort.h>
 #include <ns3/boolean.h>
 #include <ns3/log.h>
 #include <ns3/mcptt-msg.h>
+#include <ns3/mcptt-on-network-floor-arbitrator.h>
 #include <ns3/mcptt-ptt-app.h>
 #include <ns3/mcptt-server-app.h>
-#include <ns3/mcptt-on-network-floor-arbitrator.h>
 #include <ns3/object.h>
-#include <ns3/type-id.h>
-#include <ns3/string.h>
 #include <ns3/sip-header.h>
+#include <ns3/string.h>
+#include <ns3/type-id.h>
 
-#include "mcptt-msg-stats.h"
+#include <fstream>
+#include <iomanip>
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("McpttMsgStats");
+NS_LOG_COMPONENT_DEFINE("McpttMsgStats");
 
-namespace psc {
+namespace psc
+{
 
-NS_OBJECT_ENSURE_REGISTERED (McpttMsgStats);
+NS_OBJECT_ENSURE_REGISTERED(McpttMsgStats);
 
 TypeId
 McpttMsgStats::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::psc::McpttMsgStats")
-    .SetParent<Object> ()
-    .AddConstructor<McpttMsgStats> ()
-    .AddAttribute ("CallControl",
-                   "Indicates if call control messages should be included.",
-                   BooleanValue (true),
-                   MakeBooleanAccessor (&McpttMsgStats::m_callControl),
-                   MakeBooleanChecker ())
-    .AddAttribute ("FloorControl",
-                   "Indicates if floor control messages should be included.",
-                   BooleanValue (true),
-                   MakeBooleanAccessor (&McpttMsgStats::m_floorControl),
-                   MakeBooleanChecker ())
-    .AddAttribute ("IncludeMessageContent",
-                   "Indicates if the content of a traced message should be included.",
-                   BooleanValue (false),
-                   MakeBooleanAccessor (&McpttMsgStats::m_includeMsgContent),
-                   MakeBooleanChecker ())
-    .AddAttribute ("Media",
-                   "Indicates if media messages should be included.",
-                   BooleanValue (true),
-                   MakeBooleanAccessor (&McpttMsgStats::m_media),
-                   MakeBooleanChecker ())
-    .AddAttribute ("OutputFileName",
-                   "The name to use for the trace file.",
-                   StringValue ("mcptt-msg-stats.txt"),
-                   MakeStringAccessor (&McpttMsgStats::m_outputFileName),
-                   MakeStringChecker ())
-  ;
-  return tid;
+    static TypeId tid =
+        TypeId("ns3::psc::McpttMsgStats")
+            .SetParent<Object>()
+            .AddConstructor<McpttMsgStats>()
+            .AddAttribute("CallControl",
+                          "Indicates if call control messages should be included.",
+                          BooleanValue(true),
+                          MakeBooleanAccessor(&McpttMsgStats::m_callControl),
+                          MakeBooleanChecker())
+            .AddAttribute("FloorControl",
+                          "Indicates if floor control messages should be included.",
+                          BooleanValue(true),
+                          MakeBooleanAccessor(&McpttMsgStats::m_floorControl),
+                          MakeBooleanChecker())
+            .AddAttribute("IncludeMessageContent",
+                          "Indicates if the content of a traced message should be included.",
+                          BooleanValue(false),
+                          MakeBooleanAccessor(&McpttMsgStats::m_includeMsgContent),
+                          MakeBooleanChecker())
+            .AddAttribute("Media",
+                          "Indicates if media messages should be included.",
+                          BooleanValue(true),
+                          MakeBooleanAccessor(&McpttMsgStats::m_media),
+                          MakeBooleanChecker())
+            .AddAttribute("OutputFileName",
+                          "The name to use for the trace file.",
+                          StringValue("mcptt-msg-stats.txt"),
+                          MakeStringAccessor(&McpttMsgStats::m_outputFileName),
+                          MakeStringChecker());
+    return tid;
 }
 
 McpttMsgStats::McpttMsgStats()
     : m_firstMsg(true)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 McpttMsgStats::~McpttMsgStats()
 {
-  NS_LOG_FUNCTION (this);
-  if (m_outputFile.is_open ())
+    NS_LOG_FUNCTION(this);
+    if (m_outputFile.is_open())
     {
-      m_outputFile.close ();
+        m_outputFile.close();
     }
 }
 
 void
-McpttMsgStats::ReceiveRxTrace (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType)
+McpttMsgStats::ReceiveRxTrace(Ptr<const Application> app,
+                              uint16_t callId,
+                              Ptr<const Packet> pkt,
+                              const TypeId& headerType)
 {
-  NS_LOG_FUNCTION (this << app << callId << pkt << headerType);
+    NS_LOG_FUNCTION(this << app << callId << pkt << headerType);
 
-  Trace (app, callId, pkt, headerType, true);
+    Trace(app, callId, pkt, headerType, true);
 }
 
 void
-McpttMsgStats::ReceiveTxTrace (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType)
+McpttMsgStats::ReceiveTxTrace(Ptr<const Application> app,
+                              uint16_t callId,
+                              Ptr<const Packet> pkt,
+                              const TypeId& headerType)
 {
-  NS_LOG_FUNCTION (this << app << callId << pkt << headerType);
+    NS_LOG_FUNCTION(this << app << callId << pkt << headerType);
 
-  Trace (app, callId, pkt, headerType, false);
+    Trace(app, callId, pkt, headerType, false);
 }
 
 McpttCallMsg*
-McpttMsgStats::ResolveCallMsgType (Ptr<const Packet> pkt)
+McpttMsgStats::ResolveCallMsgType(Ptr<const Packet> pkt)
 {
     auto* temp = new McpttCallMsg;
     pkt->PeekHeader(*temp);
@@ -135,126 +143,126 @@ McpttMsgStats::ResolveCallMsgType (Ptr<const Packet> pkt)
         pkt->PeekHeader(*probeMsg);
         return probeMsg;
     }
-  else if (code == McpttCallMsgGrpAnnoun::CODE)
+    else if (code == McpttCallMsgGrpAnnoun::CODE)
     {
         auto* grpAnnounMsg = new McpttCallMsgGrpAnnoun;
         pkt->PeekHeader(*grpAnnounMsg);
         return grpAnnounMsg;
     }
-  else if (code == McpttCallMsgGrpAccept::CODE)
+    else if (code == McpttCallMsgGrpAccept::CODE)
     {
         auto* grpAcceptMsg = new McpttCallMsgGrpAccept;
         pkt->PeekHeader(*grpAcceptMsg);
         return grpAcceptMsg;
     }
-  else if (code == McpttCallMsgGrpImmPerilEnd::CODE)
+    else if (code == McpttCallMsgGrpImmPerilEnd::CODE)
     {
         auto* grpImmPerilEndMsg = new McpttCallMsgGrpImmPerilEnd;
         pkt->PeekHeader(*grpImmPerilEndMsg);
         return grpImmPerilEndMsg;
     }
-  else if (code == McpttCallMsgGrpEmergEnd::CODE)
+    else if (code == McpttCallMsgGrpEmergEnd::CODE)
     {
         auto* grpEmergEndMsg = new McpttCallMsgGrpEmergEnd;
         pkt->PeekHeader(*grpEmergEndMsg);
         return grpEmergEndMsg;
     }
-  else if (code == McpttCallMsgGrpEmergAlert::CODE)
+    else if (code == McpttCallMsgGrpEmergAlert::CODE)
     {
         auto* grpEmergAlertMsg = new McpttCallMsgGrpEmergAlert;
         pkt->PeekHeader(*grpEmergAlertMsg);
         return grpEmergAlertMsg;
     }
-  else if (code == McpttCallMsgGrpEmergAlertAck::CODE)
+    else if (code == McpttCallMsgGrpEmergAlertAck::CODE)
     {
         auto* grpEmergAlertAckMsg = new McpttCallMsgGrpEmergAlertAck;
         pkt->PeekHeader(*grpEmergAlertAckMsg);
         return grpEmergAlertAckMsg;
     }
-  else if (code == McpttCallMsgGrpEmergAlertCancel::CODE)
+    else if (code == McpttCallMsgGrpEmergAlertCancel::CODE)
     {
         auto* grpEmergAlertCancelMsg = new McpttCallMsgGrpEmergAlertCancel;
         pkt->PeekHeader(*grpEmergAlertCancelMsg);
         return grpEmergAlertCancelMsg;
     }
-  else if (code == McpttCallMsgGrpEmergAlertCancelAck::CODE)
+    else if (code == McpttCallMsgGrpEmergAlertCancelAck::CODE)
     {
         auto* emergAlertCancelAckMsg = new McpttCallMsgGrpEmergAlertCancelAck;
         pkt->PeekHeader(*emergAlertCancelAckMsg);
         return emergAlertCancelAckMsg;
     }
-  else if (code == McpttCallMsgGrpBroadcast::CODE)
+    else if (code == McpttCallMsgGrpBroadcast::CODE)
     {
         auto* grpBroadcastMsg = new McpttCallMsgGrpBroadcast;
         pkt->PeekHeader(*grpBroadcastMsg);
         return grpBroadcastMsg;
     }
-  else if (code == McpttCallMsgGrpBroadcastEnd::CODE)
+    else if (code == McpttCallMsgGrpBroadcastEnd::CODE)
     {
         auto* grpBroadcastEndMsg = new McpttCallMsgGrpBroadcastEnd;
         pkt->PeekHeader(*grpBroadcastEndMsg);
         return grpBroadcastEndMsg;
     }
-  else if (code == McpttCallMsgPrivateSetupReq::CODE)
+    else if (code == McpttCallMsgPrivateSetupReq::CODE)
     {
         auto* privateSetupReqMsg = new McpttCallMsgPrivateSetupReq;
         pkt->PeekHeader(*privateSetupReqMsg);
         return privateSetupReqMsg;
     }
-  else if (code == McpttCallMsgPrivateRinging::CODE)
+    else if (code == McpttCallMsgPrivateRinging::CODE)
     {
         auto* privateRingingMsg = new McpttCallMsgPrivateRinging;
         pkt->PeekHeader(*privateRingingMsg);
         return privateRingingMsg;
     }
-  else if (code == McpttCallMsgPrivateAccept::CODE)
+    else if (code == McpttCallMsgPrivateAccept::CODE)
     {
         auto* privateAcceptMsg = new McpttCallMsgPrivateAccept;
         pkt->PeekHeader(*privateAcceptMsg);
         return privateAcceptMsg;
     }
-  else if (code == McpttCallMsgPrivateReject::CODE)
+    else if (code == McpttCallMsgPrivateReject::CODE)
     {
         auto* privateRejectMsg = new McpttCallMsgPrivateReject;
         pkt->PeekHeader(*privateRejectMsg);
         return privateRejectMsg;
     }
-  else if (code == McpttCallMsgPrivateRelease::CODE)
+    else if (code == McpttCallMsgPrivateRelease::CODE)
     {
         auto* privateReleaseMsg = new McpttCallMsgPrivateRelease;
         pkt->PeekHeader(*privateReleaseMsg);
         return privateReleaseMsg;
     }
-  else if (code == McpttCallMsgPrivateReleaseAck::CODE)
+    else if (code == McpttCallMsgPrivateReleaseAck::CODE)
     {
         auto* privateReleaseAckMsg = new McpttCallMsgPrivateReleaseAck;
         pkt->PeekHeader(*privateReleaseAckMsg);
         return privateReleaseAckMsg;
     }
-  else if (code == McpttCallMsgPrivateAcceptAck::CODE)
+    else if (code == McpttCallMsgPrivateAcceptAck::CODE)
     {
         auto* privateAcceptAckMsg = new McpttCallMsgPrivateAcceptAck;
         pkt->PeekHeader(*privateAcceptAckMsg);
         return privateAcceptAckMsg;
     }
-  else if (code == McpttCallMsgPrivateEmergCancel::CODE)
+    else if (code == McpttCallMsgPrivateEmergCancel::CODE)
     {
         auto* privateEmergCancelMsg = new McpttCallMsgPrivateEmergCancel;
         pkt->PeekHeader(*privateEmergCancelMsg);
         return privateEmergCancelMsg;
     }
-  else if (code == McpttCallMsgPrivateEmergCancelAck::CODE)
+    else if (code == McpttCallMsgPrivateEmergCancelAck::CODE)
     {
         auto* privateEmergCancelAckMsg = new McpttCallMsgPrivateEmergCancelAck;
         pkt->PeekHeader(*privateEmergCancelAckMsg);
         return privateEmergCancelAckMsg;
     }
-  NS_FATAL_ERROR ("Could not resolve message code = " << (uint32_t)code << ".");
-  return nullptr;
+    NS_FATAL_ERROR("Could not resolve message code = " << (uint32_t)code << ".");
+    return nullptr;
 }
 
 McpttFloorMsg*
-McpttMsgStats::ResolveFloorMsgType (Ptr<const Packet> pkt)
+McpttMsgStats::ResolveFloorMsgType(Ptr<const Packet> pkt)
 {
     auto* temp = new McpttFloorMsg;
 
@@ -268,212 +276,212 @@ McpttMsgStats::ResolveFloorMsgType (Ptr<const Packet> pkt)
         pkt->PeekHeader(*reqMsg);
         return reqMsg;
     }
-  else if (subtype == McpttFloorMsgGranted::SUBTYPE
-           || subtype == McpttFloorMsgGranted::SUBTYPE_ACK)
+    else if (subtype == McpttFloorMsgGranted::SUBTYPE ||
+             subtype == McpttFloorMsgGranted::SUBTYPE_ACK)
     {
         auto* grantedMsg = new McpttFloorMsgGranted;
         pkt->PeekHeader(*grantedMsg);
         return grantedMsg;
     }
-  else if (subtype == McpttFloorMsgDeny::SUBTYPE
-           || subtype == McpttFloorMsgDeny::SUBTYPE_ACK)
+    else if (subtype == McpttFloorMsgDeny::SUBTYPE || subtype == McpttFloorMsgDeny::SUBTYPE_ACK)
     {
         auto* denyMsg = new McpttFloorMsgDeny;
         pkt->PeekHeader(*denyMsg);
         return denyMsg;
     }
-  else if (subtype == McpttFloorMsgRelease::SUBTYPE
-           || subtype == McpttFloorMsgRelease::SUBTYPE_ACK)
+    else if (subtype == McpttFloorMsgRelease::SUBTYPE ||
+             subtype == McpttFloorMsgRelease::SUBTYPE_ACK)
     {
         auto* releaseMsg = new McpttFloorMsgRelease;
         pkt->PeekHeader(*releaseMsg);
         return releaseMsg;
     }
-  else if (subtype == McpttFloorMsgIdle::SUBTYPE
-           || subtype == McpttFloorMsgIdle::SUBTYPE_ACK)
+    else if (subtype == McpttFloorMsgIdle::SUBTYPE || subtype == McpttFloorMsgIdle::SUBTYPE_ACK)
     {
         auto* idleMsg = new McpttFloorMsgIdle;
         pkt->PeekHeader(*idleMsg);
         return idleMsg;
     }
-  else if (subtype == McpttFloorMsgTaken::SUBTYPE
-           || subtype == McpttFloorMsgTaken::SUBTYPE_ACK)
+    else if (subtype == McpttFloorMsgTaken::SUBTYPE || subtype == McpttFloorMsgTaken::SUBTYPE_ACK)
     {
         auto* takenMsg = new McpttFloorMsgTaken;
         pkt->PeekHeader(*takenMsg);
         return takenMsg;
     }
-  else if (subtype == McpttFloorMsgRevoke::SUBTYPE)
+    else if (subtype == McpttFloorMsgRevoke::SUBTYPE)
     {
         auto* revokeMsg = new McpttFloorMsgRevoke;
         pkt->PeekHeader(*revokeMsg);
         return revokeMsg;
     }
-  else if (subtype == McpttFloorMsgQueuePositionRequest::SUBTYPE)
+    else if (subtype == McpttFloorMsgQueuePositionRequest::SUBTYPE)
     {
         auto* queuePositionRequestMsg = new McpttFloorMsgQueuePositionRequest;
         pkt->PeekHeader(*queuePositionRequestMsg);
         return queuePositionRequestMsg;
     }
-  else if (subtype == McpttFloorMsgQueuePositionInfo::SUBTYPE
-           || subtype == McpttFloorMsgQueuePositionInfo::SUBTYPE_ACK)
+    else if (subtype == McpttFloorMsgQueuePositionInfo::SUBTYPE ||
+             subtype == McpttFloorMsgQueuePositionInfo::SUBTYPE_ACK)
     {
         auto* queueInfoMsg = new McpttFloorMsgQueuePositionInfo;
         pkt->PeekHeader(*queueInfoMsg);
         return queueInfoMsg;
     }
-  else if (subtype == McpttFloorMsgAck::SUBTYPE)
+    else if (subtype == McpttFloorMsgAck::SUBTYPE)
     {
         auto* ackMsg = new McpttFloorMsgAck;
         pkt->PeekHeader(*ackMsg);
         return ackMsg;
     }
-  NS_FATAL_ERROR ("Could not resolve message subtype = " << (uint32_t)subtype << ".");
-  return nullptr;
+    NS_FATAL_ERROR("Could not resolve message subtype = " << (uint32_t)subtype << ".");
+    return nullptr;
 }
 
 void
-McpttMsgStats::Trace (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType, bool rx)
+McpttMsgStats::Trace(Ptr<const Application> app,
+                     uint16_t callId,
+                     Ptr<const Packet> pkt,
+                     const TypeId& headerType,
+                     bool rx)
 {
-  NS_LOG_FUNCTION (this << app << callId << pkt << headerType << rx);
-  if (m_firstMsg)
-  {
-      m_firstMsg = false;
-      m_outputFile.open (m_outputFileName.c_str ());
-      m_outputFile << "#";
-      m_outputFile << std::setw (9) << "time(s)";
-      m_outputFile << std::setw (7) << "nodeid";
-      m_outputFile << std::setw (7) << "callid";
-      m_outputFile << std::setw (5) << "ssrc";
-      m_outputFile << std::setw (9) << "selected";
-      m_outputFile << std::setw (7) << "rx/tx";
-      m_outputFile << std::setw (6) << "bytes";
-      m_outputFile << "  message";
-      m_outputFile << std::endl;
-    }
-  // Determine if the message corresponds to the client's selected call
-  Ptr<const McpttPttApp> pttApp = DynamicCast<const McpttPttApp> (app);
-  std::string selected = "N/A";
-  if (pttApp)
+    NS_LOG_FUNCTION(this << app << callId << pkt << headerType << rx);
+    if (m_firstMsg)
     {
-      if (callId == pttApp->GetSelectedCall ()->GetCallId ())
+        m_firstMsg = false;
+        m_outputFile.open(m_outputFileName.c_str());
+        m_outputFile << "#";
+        m_outputFile << std::setw(9) << "time(s)";
+        m_outputFile << std::setw(7) << "nodeid";
+        m_outputFile << std::setw(7) << "callid";
+        m_outputFile << std::setw(5) << "ssrc";
+        m_outputFile << std::setw(9) << "selected";
+        m_outputFile << std::setw(7) << "rx/tx";
+        m_outputFile << std::setw(6) << "bytes";
+        m_outputFile << "  message";
+        m_outputFile << std::endl;
+    }
+    // Determine if the message corresponds to the client's selected call
+    Ptr<const McpttPttApp> pttApp = DynamicCast<const McpttPttApp>(app);
+    std::string selected = "N/A";
+    if (pttApp)
+    {
+        if (callId == pttApp->GetSelectedCall()->GetCallId())
         {
-          selected = "True";
+            selected = "True";
         }
-      else
+        else
         {
-          selected = "False";
+            selected = "False";
         }
     }
     if (headerType == sip::SipHeader::GetTypeId() && m_callControl)
     {
-      sip::SipHeader sipHeader;
-      pkt->PeekHeader (sipHeader);
-      m_outputFile << std::fixed << std::setw (10) << Simulator::Now ().GetSeconds ();
-      m_outputFile << std::setw (6) << app->GetNode ()->GetId ();
-      m_outputFile << std::setw (6) << callId;
-      m_outputFile << std::setw (6) << "N/A";  // ssrc not applicable
-      m_outputFile << std::setw (9) << selected;
-      m_outputFile << std::setw (6) << (rx ? "RX" : "TX");
-      m_outputFile << std::setw (6) << sipHeader.GetSerializedSize ();
-      m_outputFile << "    SIP " << sipHeader.GetMessageTypeName ();
-      if (sipHeader.GetMessageType () == sip::SipHeader::SIP_REQUEST)
+        sip::SipHeader sipHeader;
+        pkt->PeekHeader(sipHeader);
+        m_outputFile << std::fixed << std::setw(10) << Simulator::Now().GetSeconds();
+        m_outputFile << std::setw(6) << app->GetNode()->GetId();
+        m_outputFile << std::setw(6) << callId;
+        m_outputFile << std::setw(6) << "N/A"; // ssrc not applicable
+        m_outputFile << std::setw(9) << selected;
+        m_outputFile << std::setw(6) << (rx ? "RX" : "TX");
+        m_outputFile << std::setw(6) << sipHeader.GetSerializedSize();
+        m_outputFile << "    SIP " << sipHeader.GetMessageTypeName();
+        if (sipHeader.GetMessageType() == sip::SipHeader::SIP_REQUEST)
         {
-          m_outputFile << "  " << sipHeader.GetMethodName ();
+            m_outputFile << "  " << sipHeader.GetMethodName();
         }
-      else if (sipHeader.GetMessageType () == sip::SipHeader::SIP_RESPONSE)
+        else if (sipHeader.GetMessageType() == sip::SipHeader::SIP_RESPONSE)
         {
-          uint16_t statusCode = sipHeader.GetStatusCode ();
-          if (statusCode == 100)
+            uint16_t statusCode = sipHeader.GetStatusCode();
+            if (statusCode == 100)
             {
-              m_outputFile << " 100 Trying";
+                m_outputFile << " 100 Trying";
             }
-          else if (statusCode == 200)
+            else if (statusCode == 200)
             {
-              m_outputFile << " 200 OK";
+                m_outputFile << " 200 OK";
             }
-          else
+            else
             {
-              m_outputFile << " " << statusCode;
+                m_outputFile << " " << statusCode;
             }
         }
-      else
+        else
         {
-          m_outputFile << " UNKNOWN";
+            m_outputFile << " UNKNOWN";
         }
-      m_outputFile << std::endl;
+        m_outputFile << std::endl;
     }
     else if (headerType.IsChildOf(McpttCallMsg::GetTypeId()) && m_callControl)
     {
-      McpttCallMsg* callMsg = ResolveCallMsgType (pkt);
-      m_outputFile << std::fixed << std::setw (10) << Simulator::Now ().GetSeconds ();
-      m_outputFile << std::setw (6) << app->GetNode ()->GetId ();
-      m_outputFile << std::setw (6) << callId;
-      m_outputFile << "  N/A";  // not applicable
-      m_outputFile << std::setw (9) << selected;
-      m_outputFile << std::setw (6) << (rx ? "RX" : "TX");
-      m_outputFile << std::setw (6) << callMsg->GetSerializedSize ();
-      if (m_includeMsgContent)
+        McpttCallMsg* callMsg = ResolveCallMsgType(pkt);
+        m_outputFile << std::fixed << std::setw(10) << Simulator::Now().GetSeconds();
+        m_outputFile << std::setw(6) << app->GetNode()->GetId();
+        m_outputFile << std::setw(6) << callId;
+        m_outputFile << "  N/A"; // not applicable
+        m_outputFile << std::setw(9) << selected;
+        m_outputFile << std::setw(6) << (rx ? "RX" : "TX");
+        m_outputFile << std::setw(6) << callMsg->GetSerializedSize();
+        if (m_includeMsgContent)
         {
-          m_outputFile << "  ";
-          callMsg->Print (m_outputFile);
+            m_outputFile << "  ";
+            callMsg->Print(m_outputFile);
         }
-      else
+        else
         {
-          // substr (10):  trims leading 'ns3::psc::'
-          m_outputFile << std::left << "    " << headerType.GetName ().substr (10) << std::right;
+            // substr (10):  trims leading 'ns3::psc::'
+            m_outputFile << std::left << "    " << headerType.GetName().substr(10) << std::right;
         }
-      m_outputFile << std::endl;
-      delete callMsg;
+        m_outputFile << std::endl;
+        delete callMsg;
     }
     else if (headerType.IsChildOf(McpttFloorMsg::GetTypeId()) && m_floorControl)
     {
-      McpttFloorMsg* floorMsg = ResolveFloorMsgType (pkt);
-      m_outputFile << std::fixed << std::setw (10) << Simulator::Now ().GetSeconds ();
-      m_outputFile << std::setw (6) << app->GetNode ()->GetId ();
-      m_outputFile << std::setw (6) << callId;
-      m_outputFile << std::setw (6) << floorMsg->GetSsrc ();
-      m_outputFile << std::setw (9) << selected;
-      m_outputFile << std::setw (6) << (rx ? "RX" : "TX");
-      m_outputFile << std::setw (6) << floorMsg->GetSerializedSize ();
-      if (m_includeMsgContent)
+        McpttFloorMsg* floorMsg = ResolveFloorMsgType(pkt);
+        m_outputFile << std::fixed << std::setw(10) << Simulator::Now().GetSeconds();
+        m_outputFile << std::setw(6) << app->GetNode()->GetId();
+        m_outputFile << std::setw(6) << callId;
+        m_outputFile << std::setw(6) << floorMsg->GetSsrc();
+        m_outputFile << std::setw(9) << selected;
+        m_outputFile << std::setw(6) << (rx ? "RX" : "TX");
+        m_outputFile << std::setw(6) << floorMsg->GetSerializedSize();
+        if (m_includeMsgContent)
         {
-          m_outputFile << "  ";
-          floorMsg->Print (m_outputFile);
+            m_outputFile << "  ";
+            floorMsg->Print(m_outputFile);
         }
-      else
+        else
         {
-          // substr (10):  trims leading 'ns3::psc::'
-          m_outputFile << std::left << "    " << headerType.GetName ().substr (10) << std::right;
+            // substr (10):  trims leading 'ns3::psc::'
+            m_outputFile << std::left << "    " << headerType.GetName().substr(10) << std::right;
         }
-      m_outputFile << std::endl;
-      delete floorMsg;
+        m_outputFile << std::endl;
+        delete floorMsg;
     }
     else if (headerType == McpttMediaMsg::GetTypeId() && m_media)
     {
-      McpttMediaMsg mediaMsg;
-      pkt->PeekHeader (mediaMsg);
-      m_outputFile << std::fixed << std::setw (10) << Simulator::Now ().GetSeconds ();
-      m_outputFile << std::setw (6) << app->GetNode ()->GetId ();
-      m_outputFile << std::setw (6) << callId;
-      m_outputFile << std::setw (6) << mediaMsg.GetSsrc ();
-      m_outputFile << std::setw (9) << selected;
-      m_outputFile << std::setw (6) << (rx ? "RX" : "TX");
-      m_outputFile << std::setw (6) << mediaMsg.GetSerializedSize ();
-      if (m_includeMsgContent)
+        McpttMediaMsg mediaMsg;
+        pkt->PeekHeader(mediaMsg);
+        m_outputFile << std::fixed << std::setw(10) << Simulator::Now().GetSeconds();
+        m_outputFile << std::setw(6) << app->GetNode()->GetId();
+        m_outputFile << std::setw(6) << callId;
+        m_outputFile << std::setw(6) << mediaMsg.GetSsrc();
+        m_outputFile << std::setw(9) << selected;
+        m_outputFile << std::setw(6) << (rx ? "RX" : "TX");
+        m_outputFile << std::setw(6) << mediaMsg.GetSerializedSize();
+        if (m_includeMsgContent)
         {
-          m_outputFile << "  ";
-          mediaMsg.Print (m_outputFile);
+            m_outputFile << "  ";
+            mediaMsg.Print(m_outputFile);
         }
-      else
+        else
         {
-          // substr (10):  trims leading 'ns3::psc::'
-          m_outputFile << std::left << "    " << headerType.GetName ().substr (10) << std::right;
+            // substr (10):  trims leading 'ns3::psc::'
+            m_outputFile << std::left << "    " << headerType.GetName().substr(10) << std::right;
         }
-      m_outputFile << std::endl;
+        m_outputFile << std::endl;
     }
 }
 
 } // namespace psc
 } // namespace ns3
-

@@ -33,19 +33,20 @@
  * subject to copyright protection within the United States.
  */
 
-#include "ns3/psc-module.h"
-#include "ns3/lte-module.h"
 #include "ns3/core-module.h"
+#include "ns3/lte-module.h"
+#include "ns3/psc-module.h"
 
 #ifdef HAS_NETSIMULYZER
-#include "ns3/netsimulyzer-module.h"
 #include "schoolshooting-lte-vis-helper.h"
+
+#include "ns3/netsimulyzer-module.h"
 #endif
 
 #include "schoolshooting-application-helper.h"
 #include "schoolshooting-lte-helper.h"
-#include <iostream>
 
+#include <iostream>
 
 using namespace ns3;
 using namespace psc;
@@ -70,153 +71,171 @@ using namespace psc;
  * - enableGuiTraces: enable traces for visualization (default = false)
  * - guiResolution: granularity of the visualization traces (default = 1000 ms).
  *   Larger values will reduce file size but lower resolution.
- * - reportTime: Time interval to print simulation time for monitoring progress 
+ * - reportTime: Time interval to print simulation time for monitoring progress
  *   (default = 0 s - disabled)
- * - testing: Enable testing by using modified application start/stop time for 100 s simulation 
+ * - testing: Enable testing by using modified application start/stop time for 100 s simulation
  *   (default = false)
- * - appId: The ID for the application to use. Allows for testing a single application 
+ * - appId: The ID for the application to use. Allows for testing a single application
  *   (default = -1, i.e., all applications are enabled)
  */
 
 int
-main (int argc, char *argv [])
+main(int argc, char* argv[])
 {
-  //defines default values for input parameters
-  Time duration = Seconds (14700);
-  bool enableLte = true;
-  bool enableLteTraces = true;
-  bool enableNetsimulyzer = false;
-  Time reportTime = Seconds (1);
-  int guiResolution = 1000; //refresh time in ms
-  bool testing = false; //indicate if the scenario will use modified time to run shorter simulation
-  int applicationId = -1; //all applications by default
+    // defines default values for input parameters
+    Time duration = Seconds(14700);
+    bool enableLte = true;
+    bool enableLteTraces = true;
+    bool enableNetsimulyzer = false;
+    Time reportTime = Seconds(1);
+    int guiResolution = 1000; // refresh time in ms
+    bool testing =
+        false; // indicate if the scenario will use modified time to run shorter simulation
+    int applicationId = -1; // all applications by default
 
-  CommandLine cmd;
+    CommandLine cmd;
 
-  cmd.AddValue ("duration", "Duration (in Seconds) of the simulation", duration);
-  cmd.AddValue ("enableLte", "Flag to enable LTE deployment", enableLte);
-  cmd.AddValue ("enableLteTraces", "Flag to enable LTE traces", enableLteTraces);
-  cmd.AddValue ("enableGuiTraces", "Flag to enable the visualization traces", enableNetsimulyzer);
-  cmd.AddValue ("guiResolution", "Granularity of the visualization", guiResolution);
-  cmd.AddValue ("reportTime", "Indicates whether or not the simulation time is reported periodically", reportTime);
-  cmd.AddValue ("testing", "Indicates if using modified application times for 100 s simulation", testing);
-  cmd.AddValue ("appId", "The ID for the application (see schoolshooting-application-helper.h::SchoolSchootingApplicationId", applicationId);
-  cmd.Parse (argc, argv);
+    cmd.AddValue("duration", "Duration (in Seconds) of the simulation", duration);
+    cmd.AddValue("enableLte", "Flag to enable LTE deployment", enableLte);
+    cmd.AddValue("enableLteTraces", "Flag to enable LTE traces", enableLteTraces);
+    cmd.AddValue("enableGuiTraces", "Flag to enable the visualization traces", enableNetsimulyzer);
+    cmd.AddValue("guiResolution", "Granularity of the visualization", guiResolution);
+    cmd.AddValue("reportTime",
+                 "Indicates whether or not the simulation time is reported periodically",
+                 reportTime);
+    cmd.AddValue("testing",
+                 "Indicates if using modified application times for 100 s simulation",
+                 testing);
+    cmd.AddValue("appId",
+                 "The ID for the application (see "
+                 "schoolshooting-application-helper.h::SchoolSchootingApplicationId",
+                 applicationId);
+    cmd.Parse(argc, argv);
 
-  //validate input
-  if (applicationId != -1)
-  {
-    NS_ABORT_MSG_IF (applicationId < 0 || applicationId > SchoolShootingApplicationHelper::SCHOOL_SHOOTING_VIDEO_CONFERENCE, "Invalid range for appId");
-  }
-
-  //1. Create a scenario definition
-  Ptr<SchoolShootingDefinitionHelper> scenarioDefinitionHelper = CreateObject<SchoolShootingDefinitionHelper> ();
-  //Do configuration of the scenario if needed
-  //Classes are primarily used for visualization purposes as currently no propagation model would use them properly
-  scenarioDefinitionHelper->SetAttribute ("CreateClassrooms", BooleanValue (false));
-
-  //2. Deploy a network
-  Ptr<SchoolShootingLteHelper> lteScenarioHelper = nullptr;
-  if (enableLte)
+    // validate input
+    if (applicationId != -1)
     {
-      lteScenarioHelper = CreateObject<SchoolShootingLteHelper> ();
-      lteScenarioHelper->SetScenarioDefinitionHelper (scenarioDefinitionHelper);
-
-      //Initialize the network, i.e., deploy eNodeBs and UEs
-      lteScenarioHelper->Initialize ();
-    }
-  else
-    {
-      scenarioDefinitionHelper->CreateScenario ("SchoolShootingNoLte");
+        NS_ABORT_MSG_IF(applicationId < 0 ||
+                            applicationId >
+                                SchoolShootingApplicationHelper::SCHOOL_SHOOTING_VIDEO_CONFERENCE,
+                        "Invalid range for appId");
     }
 
+    // 1. Create a scenario definition
+    Ptr<SchoolShootingDefinitionHelper> scenarioDefinitionHelper =
+        CreateObject<SchoolShootingDefinitionHelper>();
+    // Do configuration of the scenario if needed
+    // Classes are primarily used for visualization purposes as currently no propagation model would
+    // use them properly
+    scenarioDefinitionHelper->SetAttribute("CreateClassrooms", BooleanValue(false));
 
-  //3. Deploy applications
-  //This helper allows to enable specific applications, which can be useful to verify their behaviors
-  Ptr<SchoolShootingApplicationHelper> scenarioApplicationHelper = CreateObject<SchoolShootingApplicationHelper> ();
-
-  if (enableLte)
+    // 2. Deploy a network
+    Ptr<SchoolShootingLteHelper> lteScenarioHelper = nullptr;
+    if (enableLte)
     {
-      scenarioApplicationHelper->SetTechnologyHelper (lteScenarioHelper);
-      scenarioApplicationHelper->SetAttribute ("Testing", BooleanValue(testing));
-      scenarioApplicationHelper->SetScenarioDefinitionHelper (scenarioDefinitionHelper);
+        lteScenarioHelper = CreateObject<SchoolShootingLteHelper>();
+        lteScenarioHelper->SetScenarioDefinitionHelper(scenarioDefinitionHelper);
 
-      //Enable selected application if specified, otherwise all applications will be enabled.
-      if (applicationId != -1)
-      {
-        scenarioApplicationHelper->EnableApplication ((SchoolShootingApplicationHelper::SchoolSchootingApplicationId) applicationId);
-      }
-
-      scenarioApplicationHelper->Initialize ();
-
+        // Initialize the network, i.e., deploy eNodeBs and UEs
+        lteScenarioHelper->Initialize();
+    }
+    else
+    {
+        scenarioDefinitionHelper->CreateScenario("SchoolShootingNoLte");
     }
 
-  //4. Enable traces
-  //we use the standard helper to write scenario information
-  Ptr<PscScenarioTraceHelper> scenarioTraceHelper = CreateObject<PscScenarioTraceHelper> (scenarioDefinitionHelper->GetScenarioDefinition ());
-  scenarioTraceHelper->EnableScenarioTraces ();
-  scenarioTraceHelper->EnableTimeTrace (reportTime);
+    // 3. Deploy applications
+    // This helper allows to enable specific applications, which can be useful to verify their
+    // behaviors
+    Ptr<SchoolShootingApplicationHelper> scenarioApplicationHelper =
+        CreateObject<SchoolShootingApplicationHelper>();
 
-  //we can also enable traces specific the network deployment
-  if (enableLte)
+    if (enableLte)
     {
-      if (enableLteTraces)
-      {
-        lteScenarioHelper->EnableLteTraces ();
-      }
-      //enable traces for all active applications
-      scenarioApplicationHelper->EnableApplicationTraces ();
+        scenarioApplicationHelper->SetTechnologyHelper(lteScenarioHelper);
+        scenarioApplicationHelper->SetAttribute("Testing", BooleanValue(testing));
+        scenarioApplicationHelper->SetScenarioDefinitionHelper(scenarioDefinitionHelper);
+
+        // Enable selected application if specified, otherwise all applications will be enabled.
+        if (applicationId != -1)
+        {
+            scenarioApplicationHelper->EnableApplication(
+                (SchoolShootingApplicationHelper::SchoolSchootingApplicationId)applicationId);
+        }
+
+        scenarioApplicationHelper->Initialize();
     }
 
-  //5. Enable visualization
+    // 4. Enable traces
+    // we use the standard helper to write scenario information
+    Ptr<PscScenarioTraceHelper> scenarioTraceHelper =
+        CreateObject<PscScenarioTraceHelper>(scenarioDefinitionHelper->GetScenarioDefinition());
+    scenarioTraceHelper->EnableScenarioTraces();
+    scenarioTraceHelper->EnableTimeTrace(reportTime);
+
+    // we can also enable traces specific the network deployment
+    if (enableLte)
+    {
+        if (enableLteTraces)
+        {
+            lteScenarioHelper->EnableLteTraces();
+        }
+        // enable traces for all active applications
+        scenarioApplicationHelper->EnableApplicationTraces();
+    }
+
+    // 5. Enable visualization
 #ifdef HAS_NETSIMULYZER
-  Ptr<SchoolShootingLteVisHelper> guiHelper;
-  if (enableNetsimulyzer)
+    Ptr<SchoolShootingLteVisHelper> guiHelper;
+    if (enableNetsimulyzer)
     {
-      if (enableLte)
+        if (enableLte)
         {
-          guiHelper = CreateObject <SchoolShootingLteVisHelper> (scenarioApplicationHelper);
-          //enable graphs for all active applications
-          guiHelper->EnableApplicationGraphs ();
+            guiHelper = CreateObject<SchoolShootingLteVisHelper>(scenarioApplicationHelper);
+            // enable graphs for all active applications
+            guiHelper->EnableApplicationGraphs();
 
-          /** Need to delay enabling eNodeB throughput graphs until after ALL UEs are attached **/
-          Simulator::Schedule (Seconds (1), &SchoolShootingLteVisHelper::EnableEnbThroughputGraphs, guiHelper);
+            /** Need to delay enabling eNodeB throughput graphs until after ALL UEs are attached **/
+            Simulator::Schedule(Seconds(1),
+                                &SchoolShootingLteVisHelper::EnableEnbThroughputGraphs,
+                                guiHelper);
 
-          std::cout << "App graphs configured" << std::endl;
+            std::cout << "App graphs configured" << std::endl;
         }
-      else
+        else
         {
-          guiHelper = CreateObject <SchoolShootingLteVisHelper> (scenarioDefinitionHelper->GetScenarioDefinition ());
+            guiHelper = CreateObject<SchoolShootingLteVisHelper>(
+                scenarioDefinitionHelper->GetScenarioDefinition());
         }
 
-      guiHelper->GetOrchestrator()->SetTimeStep (MilliSeconds (guiResolution), Time::Unit::MS);
-      guiHelper->SetOrchestratorAttribute ("MobilityPollInterval", TimeValue (MilliSeconds (guiResolution)));
-      guiHelper->EnableKeyEventLog ();
+        guiHelper->GetOrchestrator()->SetTimeStep(MilliSeconds(guiResolution), Time::Unit::MS);
+        guiHelper->SetOrchestratorAttribute("MobilityPollInterval",
+                                            TimeValue(MilliSeconds(guiResolution)));
+        guiHelper->EnableKeyEventLog();
     }
 #else
-  if (enableNetsimulyzer)
+    if (enableNetsimulyzer)
     {
-      std::cerr << "GUI Traces enabled, but 'netsimulyzer' module not found! Ignoring.\n";
+        std::cerr << "GUI Traces enabled, but 'netsimulyzer' module not found! Ignoring.\n";
     }
 #endif
 
-  //6. Run the simulation
-  if (testing && duration > Seconds (100))
-  {
-    Simulator::Stop (Seconds (100));  
-  }
-  else 
-  {
-    Simulator::Stop (duration);
-  }
+    // 6. Run the simulation
+    if (testing && duration > Seconds(100))
+    {
+        Simulator::Stop(Seconds(100));
+    }
+    else
+    {
+        Simulator::Stop(duration);
+    }
 
-  std::cout << "Running Simulation" << std::endl;
+    std::cout << "Running Simulation" << std::endl;
 
-  Simulator::Run ();
+    Simulator::Run();
 
-  // End simulation and shutdown
-  Simulator::Destroy ();
+    // End simulation and shutdown
+    Simulator::Destroy();
 
-  return 0;
+    return 0;
 }
-

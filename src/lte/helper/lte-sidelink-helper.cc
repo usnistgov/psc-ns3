@@ -33,15 +33,17 @@
  * subject to copyright protection within the United States.
  */
 
+#include "lte-sidelink-helper.h"
+
+#include "epc-helper.h"
+
 #include "ns3/net-device-queue-interface.h"
 #include <ns3/abort.h>
 #include <ns3/angles.h>
 #include <ns3/assert.h>
 #include <ns3/double.h>
-#include <ns3/epc-helper.h>
 #include <ns3/ipv6-static-routing-helper.h>
 #include <ns3/log.h>
-#include <ns3/lte-sidelink-helper.h>
 #include <ns3/lte-sl-disc-preconfig-pool-factory.h>
 #include <ns3/lte-sl-disc-resource-pool-factory.h>
 #include <ns3/lte-sl-preconfig-pool-factory.h>
@@ -137,7 +139,8 @@ LteSidelinkHelper::AssociateForGroupcast(double txPower,
 
     Ptr<Object> uplinkPathlossModel = m_lteHelper->GetUplinkPathlossModel();
     Ptr<PropagationLossModel> lossModel = uplinkPathlossModel->GetObject<PropagationLossModel>();
-    NS_ASSERT_MSG(lossModel != nullptr, " " << uplinkPathlossModel << " is not a PropagationLossModel");
+    NS_ASSERT_MSG(lossModel != nullptr,
+                  " " << uplinkPathlossModel << " is not a PropagationLossModel");
 
     while (numGroupsAssociated < nGroups && candidateTx.GetN() > 0)
     {
@@ -242,7 +245,8 @@ LteSidelinkHelper::AssociateForBroadcast(double txPower,
 
     Ptr<Object> uplinkPathlossModel = m_lteHelper->GetUplinkPathlossModel();
     Ptr<PropagationLossModel> lossModel = uplinkPathlossModel->GetObject<PropagationLossModel>();
-    NS_ASSERT_MSG(lossModel != nullptr, " " << uplinkPathlossModel << " is not a PropagationLossModel");
+    NS_ASSERT_MSG(lossModel != nullptr,
+                  " " << uplinkPathlossModel << " is not a PropagationLossModel");
 
     while (numTransmittersSelected < nTransmitters)
     {
@@ -359,7 +363,8 @@ LteSidelinkHelper::AssociateForBroadcastWithTxEnabledToReceive(double txPower,
 
     Ptr<Object> uplinkPathlossModel = m_lteHelper->GetUplinkPathlossModel();
     Ptr<PropagationLossModel> lossModel = uplinkPathlossModel->GetObject<PropagationLossModel>();
-    NS_ASSERT_MSG(lossModel != nullptr, " " << uplinkPathlossModel << " is not a PropagationLossModel");
+    NS_ASSERT_MSG(lossModel != nullptr,
+                  " " << uplinkPathlossModel << " is not a PropagationLossModel");
 
     while (numTransmittersSelected < nTransmitters)
     {
@@ -449,7 +454,8 @@ LteSidelinkHelper::AssociateForBroadcastWithWrapAround(
 
     Ptr<Object> uplinkPathlossModel = m_lteHelper->GetUplinkPathlossModel();
     Ptr<PropagationLossModel> lossModel = uplinkPathlossModel->GetObject<PropagationLossModel>();
-    NS_ASSERT_MSG(lossModel != nullptr, " " << uplinkPathlossModel << " is not a PropagationLossModel");
+    NS_ASSERT_MSG(lossModel != nullptr,
+                  " " << uplinkPathlossModel << " is not a PropagationLossModel");
 
     while (numTransmittersSelected < nTransmitters)
     {

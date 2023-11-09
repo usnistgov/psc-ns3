@@ -33,154 +33,159 @@
  * subject to copyright protection within the United States.
  */
 
-#include "ns3/log.h"
+#include "indoor-to-indoor-propagation-loss-model.h"
+
+#include "mobility-building-info.h"
+
 #include "ns3/double.h"
 #include "ns3/enum.h"
+#include "ns3/log.h"
 #include "ns3/mobility-model.h"
-#include <cmath>
-#include <ns3/mobility-building-info.h>
-#include "indoor-to-indoor-propagation-loss-model.h"
 #include "ns3/simulator.h"
 
-NS_LOG_COMPONENT_DEFINE ("IndoorToIndoorPropagationLossModel");
+#include <cmath>
 
-namespace ns3 {
+NS_LOG_COMPONENT_DEFINE("IndoorToIndoorPropagationLossModel");
 
-NS_OBJECT_ENSURE_REGISTERED (IndoorToIndoorPropagationLossModel);
+namespace ns3
+{
+
+NS_OBJECT_ENSURE_REGISTERED(IndoorToIndoorPropagationLossModel);
 
 TypeId
 IndoorToIndoorPropagationLossModel::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::IndoorToIndoorPropagationLossModel")
+    static TypeId tid =
+        TypeId("ns3::IndoorToIndoorPropagationLossModel")
 
-    .SetParent<PropagationLossModel> ()
-    .SetGroupName ("Buildings")
+            .SetParent<PropagationLossModel>()
+            .SetGroupName("Buildings")
 
-    .AddConstructor<IndoorToIndoorPropagationLossModel> ()
+            .AddConstructor<IndoorToIndoorPropagationLossModel>()
 
-    .AddAttribute ("Frequency",
-                   "The propagation frequency in Hz",
-                   DoubleValue (763e6),
-                   MakeDoubleAccessor (&IndoorToIndoorPropagationLossModel::m_frequency),
-                   MakeDoubleChecker<double> ())
-  ;
+            .AddAttribute("Frequency",
+                          "The propagation frequency in Hz",
+                          DoubleValue(763e6),
+                          MakeDoubleAccessor(&IndoorToIndoorPropagationLossModel::m_frequency),
+                          MakeDoubleChecker<double>());
 
-  return tid;
+    return tid;
 }
 
-IndoorToIndoorPropagationLossModel::IndoorToIndoorPropagationLossModel ()
-  : PropagationLossModel ()
+IndoorToIndoorPropagationLossModel::IndoorToIndoorPropagationLossModel()
+    : PropagationLossModel()
 {
-  m_rand = CreateObject<UniformRandomVariable> ();
+    m_rand = CreateObject<UniformRandomVariable>();
 }
 
-IndoorToIndoorPropagationLossModel::~IndoorToIndoorPropagationLossModel ()
+IndoorToIndoorPropagationLossModel::~IndoorToIndoorPropagationLossModel()
 {
 }
 
 std::pair<double, bool>
-IndoorToIndoorPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
+IndoorToIndoorPropagationLossModel::GetLoss(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
 {
-  bool los = false;
-  double loss = 0.0;
-  double dist = a->GetDistanceFrom (b);
-  // Calculate the pathloss based on 3GPP specifications : 3GPP TR 36.843 V12.0.1
-  // The indoor to indoor model is defined by 3GPP TR 36.814 V9.0.0, Table A.2.1.1.5-1
+    bool los = false;
+    double loss = 0.0;
+    double dist = a->GetDistanceFrom(b);
+    // Calculate the pathloss based on 3GPP specifications : 3GPP TR 36.843 V12.0.1
+    // The indoor to indoor model is defined by 3GPP TR 36.814 V9.0.0, Table A.2.1.1.5-1
 
-  // Same building
-  if (a->GetObject<MobilityBuildingInfo> ()->GetBuilding () == b->GetObject<MobilityBuildingInfo> ()->GetBuilding ())
+    // Same building
+    if (a->GetObject<MobilityBuildingInfo>()->GetBuilding() ==
+        b->GetObject<MobilityBuildingInfo>()->GetBuilding())
     {
-      // Computing the probability of line of sight (LOS)
-      double probLos = 0.0;
-      if (dist <= 18)
+        // Computing the probability of line of sight (LOS)
+        double probLos = 0.0;
+        if (dist <= 18)
         {
-          probLos = 1.0;
+            probLos = 1.0;
         }
-      else if ((dist > 18)and (dist < 37))
+        else if ((dist > 18) and (dist < 37))
         {
-          probLos = std::exp (-(dist - 18) / 27);
+            probLos = std::exp(-(dist - 18) / 27);
         }
-      else
+        else
         {
-          probLos = 0.5;
+            probLos = 0.5;
         }
 
-      // Generate a random number between 0 and 1 (if it doesn't already exist) to evaluate the LOS/NLOS situation
-      double rand = 0.0;
-      MobilityDuo couple;
-      couple.a = a;
-      couple.b = b;
-      auto it_a = m_randomMap.find(couple);
-      if (it_a != m_randomMap.end ())
+        // Generate a random number between 0 and 1 (if it doesn't already exist) to evaluate the
+        // LOS/NLOS situation
+        double rand = 0.0;
+        MobilityDuo couple;
+        couple.a = a;
+        couple.b = b;
+        auto it_a = m_randomMap.find(couple);
+        if (it_a != m_randomMap.end())
         {
-          rand = it_a->second;
+            rand = it_a->second;
         }
-      else
+        else
         {
-          couple.a = b;
-          couple.b = a;
-          auto it_b = m_randomMap.find(couple);
-          if (it_b != m_randomMap.end ())
+            couple.a = b;
+            couple.b = a;
+            auto it_b = m_randomMap.find(couple);
+            if (it_b != m_randomMap.end())
             {
-              rand = it_b->second;
+                rand = it_b->second;
             }
-          else
+            else
             {
-              m_randomMap[couple] = m_rand->GetValue (0,1);
-              rand = m_randomMap[couple];
+                m_randomMap[couple] = m_rand->GetValue(0, 1);
+                rand = m_randomMap[couple];
             }
         }
 
-      // Computing the pathloss when the two nodes are in the same building
+        // Computing the pathloss when the two nodes are in the same building
 
-      if (rand <= probLos)
+        if (rand <= probLos)
         {
-          // LOS
-          loss = 89.5 + 16.9 * std::log10 (dist * 1e-3);
-          los = true;
-          NS_LOG_INFO (this << "Indoor (Same building) LOS = " << loss);
+            // LOS
+            loss = 89.5 + 16.9 * std::log10(dist * 1e-3);
+            los = true;
+            NS_LOG_INFO(this << "Indoor (Same building) LOS = " << loss);
         }
-      else
+        else
         {
-          // NLOS
-          loss = 147.5 + 43.3 * std::log10 (dist * 1e-3);
-          NS_LOG_INFO (this << "Indoor (Same building) NLOS = " << loss);
+            // NLOS
+            loss = 147.5 + 43.3 * std::log10(dist * 1e-3);
+            NS_LOG_INFO(this << "Indoor (Same building) NLOS = " << loss);
         }
     }
 
-  // Different buildings
-  else
+    // Different buildings
+    else
     {
-      // Computing the pathloss when the two nodes are in different buildings
-      loss = std::max (131.1 + 42.8 * std::log10 (dist * 1e-3), 147.4 + 43.3 * std::log10 (dist * 1e-3));
-      NS_LOG_INFO (this << "Indoor (Different buildings) = " << loss);
+        // Computing the pathloss when the two nodes are in different buildings
+        loss = std::max(131.1 + 42.8 * std::log10(dist * 1e-3),
+                        147.4 + 43.3 * std::log10(dist * 1e-3));
+        NS_LOG_INFO(this << "Indoor (Different buildings) = " << loss);
     }
 
-  // Pathloss correction for Public Safety frequency 700 MHz
-  if (((m_frequency / 1e9) >= 0.758)and ((m_frequency / 1e9) <= 0.798))
+    // Pathloss correction for Public Safety frequency 700 MHz
+    if (((m_frequency / 1e9) >= 0.758) and ((m_frequency / 1e9) <= 0.798))
     {
-      loss = loss + 20 * std::log10 (m_frequency / 2e9);
+        loss = loss + 20 * std::log10(m_frequency / 2e9);
     }
 
-  return std::make_pair (std::max (0.0, loss), los);
+    return std::make_pair(std::max(0.0, loss), los);
 }
 
 double
-IndoorToIndoorPropagationLossModel::DoCalcRxPower (double txPowerDbm,
-                                              Ptr<MobilityModel> a,
-                                              Ptr<MobilityModel> b) const
+IndoorToIndoorPropagationLossModel::DoCalcRxPower(double txPowerDbm,
+                                                  Ptr<MobilityModel> a,
+                                                  Ptr<MobilityModel> b) const
 {
-  return (txPowerDbm - GetLoss (a, b).first);
+    return (txPowerDbm - GetLoss(a, b).first);
 }
 
 int64_t
-IndoorToIndoorPropagationLossModel::DoAssignStreams (int64_t stream)
+IndoorToIndoorPropagationLossModel::DoAssignStreams(int64_t stream)
 {
-  NS_LOG_FUNCTION (this << stream);
-  m_rand->SetStream (stream);
-  return 1;
+    NS_LOG_FUNCTION(this << stream);
+    m_rand->SetStream(stream);
+    return 1;
 }
 
-
 } // namespace ns3
-

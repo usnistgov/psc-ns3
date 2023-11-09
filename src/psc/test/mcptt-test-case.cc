@@ -31,95 +31,97 @@
 
 #include "mcptt-test-case.h"
 
-namespace ns3 {
-namespace psc {
-namespace tests {
+namespace ns3
+{
+namespace psc
+{
+namespace tests
+{
 
 McpttTestCase::McpttTestCase(const std::string& name, Ptr<McpttTestCaseConfig> config)
     : TestCase(name),
       m_config(nullptr)
 {
-  SetConfig (config);
+    SetConfig(config);
 }
 
 Ptr<McpttPttApp>
-McpttTestCase::GetApp (uint32_t index)
+McpttTestCase::GetApp(uint32_t index)
 {
-  ApplicationContainer clientApps = GetClientApps ();
-  Ptr<Application> app = clientApps.Get (index);
-  Ptr<McpttPttApp> pttApp = DynamicCast<McpttPttApp, Application> (app);
+    ApplicationContainer clientApps = GetClientApps();
+    Ptr<Application> app = clientApps.Get(index);
+    Ptr<McpttPttApp> pttApp = DynamicCast<McpttPttApp, Application>(app);
 
-  return pttApp;
+    return pttApp;
 }
 
 Ptr<McpttCallMachine>
-McpttTestCase::GetCallMachine (uint32_t index)
+McpttTestCase::GetCallMachine(uint32_t index)
 {
-  Ptr<McpttPttApp> pttApp = GetApp (index);
-  Ptr<McpttCall> call = pttApp->GetSelectedCall ();
-  Ptr<McpttCallMachine> machine = call->GetCallMachine ();
+    Ptr<McpttPttApp> pttApp = GetApp(index);
+    Ptr<McpttCall> call = pttApp->GetSelectedCall();
+    Ptr<McpttCallMachine> machine = call->GetCallMachine();
 
-  return machine;
+    return machine;
 }
 
 Ptr<McpttFloorParticipant>
-McpttTestCase::GetFloorMachine (uint32_t index)
+McpttTestCase::GetFloorMachine(uint32_t index)
 {
-  Ptr<McpttPttApp> pttApp = GetApp (index);
-  Ptr<McpttCall> call = pttApp->GetSelectedCall ();
-  Ptr<McpttFloorParticipant> machine = call->GetFloorMachine ();
+    Ptr<McpttPttApp> pttApp = GetApp(index);
+    Ptr<McpttCall> call = pttApp->GetSelectedCall();
+    Ptr<McpttFloorParticipant> machine = call->GetFloorMachine();
 
-  return machine;
+    return machine;
 }
 
 void
 McpttTestCase::Configure()
 {
-  Ptr<McpttTestCaseConfig> configuration = GetConfig ();
+    Ptr<McpttTestCaseConfig> configuration = GetConfig();
 
-  ApplicationContainer clientApps = configuration->Configure ();
+    ApplicationContainer clientApps = configuration->Configure();
 
-  SetClientApps (clientApps);
+    SetClientApps(clientApps);
 }
 
 void
 McpttTestCase::Stop()
 {
-  Simulator::Stop ();
+    Simulator::Stop();
 }
 
 void
 McpttTestCase::DoRun()
 {
-  Configure ();
-  Execute ();
+    Configure();
+    Execute();
 }
 
 ApplicationContainer
 McpttTestCase::GetClientApps() const
 {
-  return m_clientApps;
+    return m_clientApps;
 }
 
 Ptr<McpttTestCaseConfig>
 McpttTestCase::GetConfig() const
 {
-  return m_config;
+    return m_config;
 }
 
 void
-McpttTestCase::SetClientApps (const ApplicationContainer& clientApps)
+McpttTestCase::SetClientApps(const ApplicationContainer& clientApps)
 {
-  m_clientApps = clientApps;
+    m_clientApps = clientApps;
 }
 
 void
-McpttTestCase::SetConfig (Ptr<McpttTestCaseConfig>  config)
+McpttTestCase::SetConfig(Ptr<McpttTestCaseConfig> config)
 {
-  m_config = config;
+    m_config = config;
 }
 
 } // namespace tests
 } // namespace psc
 } // namespace ns3
-

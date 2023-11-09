@@ -33,36 +33,37 @@
  * subject to copyright protection within the United States.
  */
 
-#include "ns3/object.h"
-#include "ns3/log.h"
-
 #include "schoolshooting-network-technology-helper.h"
 
-namespace ns3 {
+#include "ns3/log.h"
+#include "ns3/object.h"
 
-NS_LOG_COMPONENT_DEFINE ("SchoolShootingNetworkTechnologyHelper");
+namespace ns3
+{
 
-namespace psc {
+NS_LOG_COMPONENT_DEFINE("SchoolShootingNetworkTechnologyHelper");
 
-NS_OBJECT_ENSURE_REGISTERED (SchoolShootingNetworkTechnologyHelper);
+namespace psc
+{
+
+NS_OBJECT_ENSURE_REGISTERED(SchoolShootingNetworkTechnologyHelper);
 
 TypeId
 SchoolShootingNetworkTechnologyHelper::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::psc::SchoolShootingNetworkTechnologyHelper")
-    .SetParent<Object> ()
-  ;
+    static TypeId tid =
+        TypeId("ns3::psc::SchoolShootingNetworkTechnologyHelper").SetParent<Object>();
 
-  return tid;
+    return tid;
 }
 
-SchoolShootingNetworkTechnologyHelper::SchoolShootingNetworkTechnologyHelper ()
+SchoolShootingNetworkTechnologyHelper::SchoolShootingNetworkTechnologyHelper()
 {
 }
 
-SchoolShootingNetworkTechnologyHelper::~SchoolShootingNetworkTechnologyHelper ()
+SchoolShootingNetworkTechnologyHelper::~SchoolShootingNetworkTechnologyHelper()
 {
 }
 
-} //namespace psc
-} //namespace ns3
+} // namespace psc
+} // namespace ns3

@@ -29,247 +29,259 @@
  * employees is not subject to copyright protection within the United States.
  */
 
+#include "mcptt-call-machine-grp-broadcast-state.h"
+
+#include "mcptt-call-machine-grp-broadcast.h"
+#include "mcptt-ptt-app.h"
+
 #include <ns3/log.h>
 #include <ns3/object.h>
 #include <ns3/ptr.h>
 #include <ns3/type-id.h>
 
-#include "mcptt-call-machine-grp-broadcast.h"
-#include "mcptt-call-machine-grp-broadcast-state.h"
-#include "mcptt-ptt-app.h"
+namespace ns3
+{
 
-namespace ns3 {
+NS_LOG_COMPONENT_DEFINE("McpttCallMachineGrpBroadcastState");
 
-NS_LOG_COMPONENT_DEFINE ("McpttCallMachineGrpBroadcastState");
-
-namespace psc {
+namespace psc
+{
 
 /** McpttCallMachineGrpBroadcastState - begin **/
 McpttCallMachineGrpBroadcastState::~McpttCallMachineGrpBroadcastState()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
-McpttCallMachineGrpBroadcastState::AcceptCall (McpttCallMachineGrpBroadcast& machine) const
+McpttCallMachineGrpBroadcastState::AcceptCall(McpttCallMachineGrpBroadcast& machine) const
 {
-  NS_LOG_FUNCTION (this << &machine);
+    NS_LOG_FUNCTION(this << &machine);
 }
 
 void
-McpttCallMachineGrpBroadcastState::ExpiryOfTfb1 (McpttCallMachineGrpBroadcast& machine) const
+McpttCallMachineGrpBroadcastState::ExpiryOfTfb1(McpttCallMachineGrpBroadcast& machine) const
 {
-  NS_LOG_FUNCTION (this << &machine);
+    NS_LOG_FUNCTION(this << &machine);
 }
 
 void
-McpttCallMachineGrpBroadcastState::ExpiryOfTfb2 (McpttCallMachineGrpBroadcast& machine) const
+McpttCallMachineGrpBroadcastState::ExpiryOfTfb2(McpttCallMachineGrpBroadcast& machine) const
 {
-  NS_LOG_FUNCTION (this << &machine);
+    NS_LOG_FUNCTION(this << &machine);
 }
 
 void
-McpttCallMachineGrpBroadcastState::ExpiryOfTfb3 (McpttCallMachineGrpBroadcast& machine) const
+McpttCallMachineGrpBroadcastState::ExpiryOfTfb3(McpttCallMachineGrpBroadcast& machine) const
 {
-  NS_LOG_FUNCTION (this << &machine);
+    NS_LOG_FUNCTION(this << &machine);
 }
 
 void
-McpttCallMachineGrpBroadcastState::InitiateCall (McpttCallMachineGrpBroadcast& machine) const
+McpttCallMachineGrpBroadcastState::InitiateCall(McpttCallMachineGrpBroadcast& machine) const
 {
-  NS_LOG_FUNCTION (this << &machine);
+    NS_LOG_FUNCTION(this << &machine);
 }
 
 bool
-McpttCallMachineGrpBroadcastState::IsCallOngoing (const McpttCallMachineGrpBroadcast& machine) const
+McpttCallMachineGrpBroadcastState::IsCallOngoing(const McpttCallMachineGrpBroadcast& machine) const
 {
-  NS_LOG_FUNCTION (this << &machine);
+    NS_LOG_FUNCTION(this << &machine);
 
-  return false;
+    return false;
 }
 
 void
-McpttCallMachineGrpBroadcastState::ReceiveGrpCallBroadcast (McpttCallMachineGrpBroadcast& machine, const McpttCallMsgGrpBroadcast& msg) const
+McpttCallMachineGrpBroadcastState::ReceiveGrpCallBroadcast(
+    McpttCallMachineGrpBroadcast& machine,
+    const McpttCallMsgGrpBroadcast& msg) const
 {
-  NS_LOG_FUNCTION (this << &machine << &msg);
+    NS_LOG_FUNCTION(this << &machine << &msg);
 }
 
 void
-McpttCallMachineGrpBroadcastState::ReceiveGrpCallBroadcastEnd (McpttCallMachineGrpBroadcast& machine, const McpttCallMsgGrpBroadcastEnd& msg) const
+McpttCallMachineGrpBroadcastState::ReceiveGrpCallBroadcastEnd(
+    McpttCallMachineGrpBroadcast& machine,
+    const McpttCallMsgGrpBroadcastEnd& msg) const
 {
-  NS_LOG_FUNCTION (this << &machine << &msg);
+    NS_LOG_FUNCTION(this << &machine << &msg);
 }
 
 void
-McpttCallMachineGrpBroadcastState::RejectCall (McpttCallMachineGrpBroadcast& machine) const
+McpttCallMachineGrpBroadcastState::RejectCall(McpttCallMachineGrpBroadcast& machine) const
 {
-  NS_LOG_FUNCTION (this << &machine);
+    NS_LOG_FUNCTION(this << &machine);
 }
 
 void
-McpttCallMachineGrpBroadcastState::ReleaseCall (McpttCallMachineGrpBroadcast& machine) const
+McpttCallMachineGrpBroadcastState::ReleaseCall(McpttCallMachineGrpBroadcast& machine) const
 {
-  NS_LOG_FUNCTION (this << &machine);
+    NS_LOG_FUNCTION(this << &machine);
 }
 
 McpttCallMachineGrpBroadcastState::McpttCallMachineGrpBroadcastState()
     : SimpleRefCount<McpttCallMachineGrpBroadcastState>()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
+
 /** McpttCallMachineGrpBroadcastState - end **/
 
 std::ostream&
-operator<< (std::ostream& os, const McpttCallMachineGrpBroadcastState& inst)
+operator<<(std::ostream& os, const McpttCallMachineGrpBroadcastState& inst)
 {
-  McpttEntityId stateId = inst.GetInstanceStateId ();
+    McpttEntityId stateId = inst.GetInstanceStateId();
 
-  os << stateId;
+    os << stateId;
 
-  return os;
+    return os;
 }
 
 /** McpttCallMachineGrpBroadcastStateB1 - begin **/
 Ptr<McpttCallMachineGrpBroadcastStateB1>
 McpttCallMachineGrpBroadcastStateB1::GetInstance()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+    NS_LOG_FUNCTION_NOARGS();
 
-  static Ptr<McpttCallMachineGrpBroadcastStateB1> inst = Create<McpttCallMachineGrpBroadcastStateB1> ();
+    static Ptr<McpttCallMachineGrpBroadcastStateB1> inst =
+        Create<McpttCallMachineGrpBroadcastStateB1>();
 
-  return inst;
+    return inst;
 }
 
 McpttEntityId
 McpttCallMachineGrpBroadcastStateB1::GetStateId()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+    NS_LOG_FUNCTION_NOARGS();
 
-  static McpttEntityId sid (1, "'B1: start-stop'");
+    static McpttEntityId sid(1, "'B1: start-stop'");
 
-  return sid;
+    return sid;
 }
 
 McpttCallMachineGrpBroadcastStateB1::~McpttCallMachineGrpBroadcastStateB1()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 McpttEntityId
 McpttCallMachineGrpBroadcastStateB1::GetInstanceStateId() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return McpttCallMachineGrpBroadcastStateB1::GetStateId ();
+    return McpttCallMachineGrpBroadcastStateB1::GetStateId();
 }
 
 void
-McpttCallMachineGrpBroadcastStateB1::InitiateCall (McpttCallMachineGrpBroadcast& machine) const
+McpttCallMachineGrpBroadcastStateB1::InitiateCall(McpttCallMachineGrpBroadcast& machine) const
 {
-  NS_LOG_FUNCTION (this << &machine);
+    NS_LOG_FUNCTION(this << &machine);
 
-  Ptr<McpttCall> call = machine.GetCall ();
-  Ptr<McpttPttApp> pttApp = call->GetOwner ();
-  Ptr<McpttTimer> tfb1 = machine.GetTfb1 ();
-  Ptr<McpttTimer> tfb2 = machine.GetTfb2 ();
-  McpttCallMsgFieldGrpId grpId = machine.GetGrpId ();
-  Ptr<McpttFloorParticipant> floorMachine = call->GetFloorMachine ();
+    Ptr<McpttCall> call = machine.GetCall();
+    Ptr<McpttPttApp> pttApp = call->GetOwner();
+    Ptr<McpttTimer> tfb1 = machine.GetTfb1();
+    Ptr<McpttTimer> tfb2 = machine.GetTfb2();
+    McpttCallMsgFieldGrpId grpId = machine.GetGrpId();
+    Ptr<McpttFloorParticipant> floorMachine = call->GetFloorMachine();
 
-  uint32_t myUserId = machine.GetCall ()->GetOwner ()->GetUserId ();
-  uint16_t callId = machine.GenerateRandomCallId ();
-  NS_LOG_DEBUG ("Generate call ID of " << callId);
-  uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
-  uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
-  Address origAddress = pttApp->GetLocalAddress ();
-  AddressValue grpAddress;
-  call->GetAttribute ("PeerAddress", grpAddress);
+    uint32_t myUserId = machine.GetCall()->GetOwner()->GetUserId();
+    uint16_t callId = machine.GenerateRandomCallId();
+    NS_LOG_DEBUG("Generate call ID of " << callId);
+    uint16_t floorPort = McpttPttApp::AllocateNextPortNumber();
+    uint16_t speechPort = McpttPttApp::AllocateNextPortNumber();
+    Address origAddress = pttApp->GetLocalAddress();
+    AddressValue grpAddress;
+    call->GetAttribute("PeerAddress", grpAddress);
 
-  McpttCallMsgFieldSdp sdp;
-  sdp.SetFloorPort (floorPort);
-  sdp.SetGrpAddr (grpAddress.Get ());
-  sdp.SetOrigAddr (origAddress);
-  sdp.SetSpeechPort (speechPort);
+    McpttCallMsgFieldSdp sdp;
+    sdp.SetFloorPort(floorPort);
+    sdp.SetGrpAddr(grpAddress.Get());
+    sdp.SetOrigAddr(origAddress);
+    sdp.SetSpeechPort(speechPort);
 
-  machine.SetSdp (sdp);
-  machine.SetCallId (callId);
-  machine.SetOrigId (myUserId);
-  machine.SetCallType (McpttCallMsgFieldCallType::BROADCAST_GROUP);
+    machine.SetSdp(sdp);
+    machine.SetCallId(callId);
+    machine.SetOrigId(myUserId);
+    machine.SetCallType(McpttCallMsgFieldCallType::BROADCAST_GROUP);
 
-  McpttCallMsgGrpBroadcast msg;
-  msg.SetCallId (callId);
-  msg.SetCallType (McpttCallMsgFieldCallType::BROADCAST_GROUP);
-  msg.SetOrigId (myUserId);
-  msg.SetGrpId (grpId);
-  msg.SetSdp (sdp);
+    McpttCallMsgGrpBroadcast msg;
+    msg.SetCallId(callId);
+    msg.SetCallType(McpttCallMsgFieldCallType::BROADCAST_GROUP);
+    msg.SetOrigId(myUserId);
+    msg.SetGrpId(grpId);
+    msg.SetSdp(sdp);
 
-  machine.SetPriority (McpttCallMsgFieldCallType::GetCallTypePriority (McpttCallMsgFieldCallType::BROADCAST_GROUP));
+    machine.SetPriority(
+        McpttCallMsgFieldCallType::GetCallTypePriority(McpttCallMsgFieldCallType::BROADCAST_GROUP));
 
-  machine.Send (msg);
+    machine.Send(msg);
 
-  call->OpenFloorChannel (grpAddress.Get (), floorPort);
-  call->OpenMediaChannel (grpAddress.Get (), speechPort);
+    call->OpenFloorChannel(grpAddress.Get(), floorPort);
+    call->OpenMediaChannel(grpAddress.Get(), speechPort);
 
-  floorMachine->SetOriginator (true);
-  floorMachine->Start ();
+    floorMachine->SetOriginator(true);
+    floorMachine->Start();
 
-  tfb1->Start ();
-  tfb2->Start ();
+    tfb1->Start();
+    tfb2->Start();
 
-  machine.ReportEvent (McpttCallMachine::CALL_INITIATED);
+    machine.ReportEvent(McpttCallMachine::CALL_INITIATED);
 
-  machine.ChangeState (McpttCallMachineGrpBroadcastStateB2::GetInstance ());
+    machine.ChangeState(McpttCallMachineGrpBroadcastStateB2::GetInstance());
 }
 
 void
-McpttCallMachineGrpBroadcastStateB1::ReceiveGrpCallBroadcast (McpttCallMachineGrpBroadcast& machine, const McpttCallMsgGrpBroadcast& msg) const
+McpttCallMachineGrpBroadcastStateB1::ReceiveGrpCallBroadcast(
+    McpttCallMachineGrpBroadcast& machine,
+    const McpttCallMsgGrpBroadcast& msg) const
 {
-  NS_LOG_FUNCTION (this << &machine << &msg);
+    NS_LOG_FUNCTION(this << &machine << &msg);
 
-  Ptr<McpttCall> call = machine.GetCall ();
-  Ptr<McpttTimer> tfb1 = machine.GetTfb1 ();
-  Ptr<McpttTimer> tfb3 = machine.GetTfb3 ();
-  McpttCallMsgFieldGrpId myGrpId = machine.GetGrpId ();
-  McpttCallMsgFieldSdp theirSdp = msg.GetSdp ();
-  McpttCallMsgFieldGrpId theirGrpId = msg.GetGrpId ();
-  McpttCallMsgFieldUserId theirOrigId = msg.GetOrigId ();
-  McpttCallMsgFieldCallId theirCallId = msg.GetCallId ();
-  McpttCallMsgFieldCallType theirCallType = msg.GetCallType ();
-  Ptr<McpttFloorParticipant> floorMachine = call->GetFloorMachine ();
+    Ptr<McpttCall> call = machine.GetCall();
+    Ptr<McpttTimer> tfb1 = machine.GetTfb1();
+    Ptr<McpttTimer> tfb3 = machine.GetTfb3();
+    McpttCallMsgFieldGrpId myGrpId = machine.GetGrpId();
+    McpttCallMsgFieldSdp theirSdp = msg.GetSdp();
+    McpttCallMsgFieldGrpId theirGrpId = msg.GetGrpId();
+    McpttCallMsgFieldUserId theirOrigId = msg.GetOrigId();
+    McpttCallMsgFieldCallId theirCallId = msg.GetCallId();
+    McpttCallMsgFieldCallType theirCallType = msg.GetCallType();
+    Ptr<McpttFloorParticipant> floorMachine = call->GetFloorMachine();
 
-  //TODO: Not in standard - should check that received call ID matches no other
-  if (myGrpId.GetGrpId () == theirGrpId.GetGrpId ())
+    // TODO: Not in standard - should check that received call ID matches no other
+    if (myGrpId.GetGrpId() == theirGrpId.GetGrpId())
     {
-      machine.SetCallId (theirCallId);
-      machine.SetCallType (theirCallType);
-      machine.SetSdp (theirSdp);
-      machine.SetOrigId (theirOrigId);
-      machine.SetGrpId (theirGrpId);
+        machine.SetCallId(theirCallId);
+        machine.SetCallType(theirCallType);
+        machine.SetSdp(theirSdp);
+        machine.SetOrigId(theirOrigId);
+        machine.SetGrpId(theirGrpId);
 
-      if (machine.IsUserAckReq ())
+        if (machine.IsUserAckReq())
         {
-          tfb3->Start ();
+            tfb3->Start();
 
-          machine.ChangeState (McpttCallMachineGrpBroadcastStateB3::GetInstance ());
+            machine.ChangeState(McpttCallMachineGrpBroadcastStateB3::GetInstance());
 
-          machine.TakeNewCallNotification (theirCallId.GetCallId ());
+            machine.TakeNewCallNotification(theirCallId.GetCallId());
         }
-      else
+        else
         {
-          McpttCallMsgFieldSdp mySdp = machine.GetSdp ();
+            McpttCallMsgFieldSdp mySdp = machine.GetSdp();
 
-          uint16_t floorPort = mySdp.GetFloorPort ();
-          Address grpAddr = mySdp.GetGrpAddr ();
-          uint16_t speechPort = mySdp.GetSpeechPort ();
+            uint16_t floorPort = mySdp.GetFloorPort();
+            Address grpAddr = mySdp.GetGrpAddr();
+            uint16_t speechPort = mySdp.GetSpeechPort();
 
-          call->OpenFloorChannel (grpAddr, floorPort);
-          call->OpenMediaChannel (grpAddr, speechPort);
+            call->OpenFloorChannel(grpAddr, floorPort);
+            call->OpenMediaChannel(grpAddr, speechPort);
 
-          floorMachine->SetOriginator (false);
-          floorMachine->Start ();
+            floorMachine->SetOriginator(false);
+            floorMachine->Start();
 
-          tfb1->Start ();
+            tfb1->Start();
 
-          machine.ChangeState (McpttCallMachineGrpBroadcastStateB2::GetInstance ());
+            machine.ChangeState(McpttCallMachineGrpBroadcastStateB2::GetInstance());
         }
     }
 }
@@ -277,401 +289,414 @@ McpttCallMachineGrpBroadcastStateB1::ReceiveGrpCallBroadcast (McpttCallMachineGr
 McpttCallMachineGrpBroadcastStateB1::McpttCallMachineGrpBroadcastStateB1()
     : McpttCallMachineGrpBroadcastState()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
+
 /** McpttCallMachineGrpBroadcastStateB1 - end **/
 
 /** McpttCallMachineGrpBroadcastStateB2 - begin **/
 Ptr<McpttCallMachineGrpBroadcastStateB2>
 McpttCallMachineGrpBroadcastStateB2::GetInstance()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+    NS_LOG_FUNCTION_NOARGS();
 
-  static Ptr<McpttCallMachineGrpBroadcastStateB2> inst = Create<McpttCallMachineGrpBroadcastStateB2> ();
+    static Ptr<McpttCallMachineGrpBroadcastStateB2> inst =
+        Create<McpttCallMachineGrpBroadcastStateB2>();
 
-  return inst;
+    return inst;
 }
 
 McpttEntityId
 McpttCallMachineGrpBroadcastStateB2::GetStateId()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+    NS_LOG_FUNCTION_NOARGS();
 
-  static McpttEntityId sid (2, "'B2: in-progress broadcast group call'");
+    static McpttEntityId sid(2, "'B2: in-progress broadcast group call'");
 
-  return sid;
+    return sid;
 }
 
 McpttCallMachineGrpBroadcastStateB2::~McpttCallMachineGrpBroadcastStateB2()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
-McpttCallMachineGrpBroadcastStateB2::ExpiryOfTfb1 (McpttCallMachineGrpBroadcast& machine) const
+McpttCallMachineGrpBroadcastStateB2::ExpiryOfTfb1(McpttCallMachineGrpBroadcast& machine) const
 {
-  NS_LOG_FUNCTION (this << &machine);
+    NS_LOG_FUNCTION(this << &machine);
 
-  Ptr<McpttCall> call = machine.GetCall ();
-  Ptr<McpttTimer> tfb2 = machine.GetTfb2 ();
-  Ptr<McpttFloorParticipant> floorMachine = call->GetFloorMachine ();
+    Ptr<McpttCall> call = machine.GetCall();
+    Ptr<McpttTimer> tfb2 = machine.GetTfb2();
+    Ptr<McpttFloorParticipant> floorMachine = call->GetFloorMachine();
 
-  if (floorMachine->IsStarted ())
+    if (floorMachine->IsStarted())
     {
-      floorMachine->Stop ();
+        floorMachine->Stop();
     }
-  if (call->IsFloorChannelOpen ())
+    if (call->IsFloorChannelOpen())
     {
-      call->CloseFloorChannel ();
+        call->CloseFloorChannel();
     }
-  if (call->IsMediaChannelOpen ())
+    if (call->IsMediaChannelOpen())
     {
-      call->CloseMediaChannel ();
-    }
-
-  if (tfb2->IsRunning ())
-    {
-      tfb2->Stop ();
+        call->CloseMediaChannel();
     }
 
-  machine.SetCallId (McpttCallMsgFieldCallId (0));
+    if (tfb2->IsRunning())
+    {
+        tfb2->Stop();
+    }
 
-  machine.ChangeState (McpttCallMachineGrpBroadcastStateB1::GetInstance ());
+    machine.SetCallId(McpttCallMsgFieldCallId(0));
+
+    machine.ChangeState(McpttCallMachineGrpBroadcastStateB1::GetInstance());
 }
 
 void
-McpttCallMachineGrpBroadcastStateB2::ExpiryOfTfb2 (McpttCallMachineGrpBroadcast& machine) const
+McpttCallMachineGrpBroadcastStateB2::ExpiryOfTfb2(McpttCallMachineGrpBroadcast& machine) const
 {
-  NS_LOG_FUNCTION (this << &machine);
+    NS_LOG_FUNCTION(this << &machine);
 
-  Ptr<McpttTimer> tfb2 = machine.GetTfb2 ();
-  McpttCallMsgFieldSdp mySdp = machine.GetSdp ();
-  McpttCallMsgFieldGrpId myGrpId = machine.GetGrpId ();
-  McpttCallMsgFieldCallId myCallId = machine.GetCallId ();
-  McpttCallMsgFieldUserId myOrigId = machine.GetOrigId ();
-  McpttCallMsgFieldCallType myCallType = machine.GetCallType ();
+    Ptr<McpttTimer> tfb2 = machine.GetTfb2();
+    McpttCallMsgFieldSdp mySdp = machine.GetSdp();
+    McpttCallMsgFieldGrpId myGrpId = machine.GetGrpId();
+    McpttCallMsgFieldCallId myCallId = machine.GetCallId();
+    McpttCallMsgFieldUserId myOrigId = machine.GetOrigId();
+    McpttCallMsgFieldCallType myCallType = machine.GetCallType();
 
-  McpttCallMsgGrpBroadcast msg;
-  msg.SetCallId (myCallId);
-  msg.SetCallType (myCallType);
-  msg.SetOrigId (myOrigId);
-  msg.SetGrpId (myGrpId);
-  msg.SetSdp (mySdp);
+    McpttCallMsgGrpBroadcast msg;
+    msg.SetCallId(myCallId);
+    msg.SetCallType(myCallType);
+    msg.SetOrigId(myOrigId);
+    msg.SetGrpId(myGrpId);
+    msg.SetSdp(mySdp);
 
-  machine.Send (msg);
+    machine.Send(msg);
 
-  tfb2->Start ();
+    tfb2->Start();
 }
 
 McpttEntityId
 McpttCallMachineGrpBroadcastStateB2::GetInstanceStateId() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return McpttCallMachineGrpBroadcastStateB2::GetStateId ();
+    return McpttCallMachineGrpBroadcastStateB2::GetStateId();
 }
 
 bool
-McpttCallMachineGrpBroadcastStateB2::IsCallOngoing (const McpttCallMachineGrpBroadcast& machine) const
+McpttCallMachineGrpBroadcastStateB2::IsCallOngoing(
+    const McpttCallMachineGrpBroadcast& machine) const
 {
-  NS_LOG_FUNCTION (this << &machine);
+    NS_LOG_FUNCTION(this << &machine);
 
-  return true;
+    return true;
 }
 
 void
-McpttCallMachineGrpBroadcastStateB2::ReceiveGrpCallBroadcastEnd (McpttCallMachineGrpBroadcast& machine, const McpttCallMsgGrpBroadcastEnd& msg) const
+McpttCallMachineGrpBroadcastStateB2::ReceiveGrpCallBroadcastEnd(
+    McpttCallMachineGrpBroadcast& machine,
+    const McpttCallMsgGrpBroadcastEnd& msg) const
 {
-  NS_LOG_FUNCTION (this << &machine << &msg);
+    NS_LOG_FUNCTION(this << &machine << &msg);
 
-  Ptr<McpttCall> call = machine.GetCall ();
-  Ptr<McpttTimer> tfb1 = machine.GetTfb1 ();
-  McpttCallMsgFieldCallId myCallId = machine.GetCallId ();
-  McpttCallMsgFieldCallId theirCallId = msg.GetCallId ();
-  Ptr<McpttFloorParticipant> floorMachine = call->GetFloorMachine ();
+    Ptr<McpttCall> call = machine.GetCall();
+    Ptr<McpttTimer> tfb1 = machine.GetTfb1();
+    McpttCallMsgFieldCallId myCallId = machine.GetCallId();
+    McpttCallMsgFieldCallId theirCallId = msg.GetCallId();
+    Ptr<McpttFloorParticipant> floorMachine = call->GetFloorMachine();
 
-  if (myCallId.GetCallId () == theirCallId.GetCallId ())
+    if (myCallId.GetCallId() == theirCallId.GetCallId())
     {
-      if (floorMachine->IsStarted ())
+        if (floorMachine->IsStarted())
         {
-          floorMachine->Stop ();
+            floorMachine->Stop();
         }
-      if (call->IsFloorChannelOpen ())
+        if (call->IsFloorChannelOpen())
         {
-          call->CloseFloorChannel ();
+            call->CloseFloorChannel();
         }
-      if (call->IsMediaChannelOpen ())
+        if (call->IsMediaChannelOpen())
         {
-          call->CloseMediaChannel ();
+            call->CloseMediaChannel();
         }
 
-      tfb1->Stop ();
+        tfb1->Stop();
 
-      machine.ChangeState (McpttCallMachineGrpBroadcastStateB1::GetInstance ());
+        machine.ChangeState(McpttCallMachineGrpBroadcastStateB1::GetInstance());
     }
 }
 
 void
-McpttCallMachineGrpBroadcastStateB2::ReleaseCall (McpttCallMachineGrpBroadcast& machine) const
+McpttCallMachineGrpBroadcastStateB2::ReleaseCall(McpttCallMachineGrpBroadcast& machine) const
 {
-  NS_LOG_FUNCTION (this << &machine);
+    NS_LOG_FUNCTION(this << &machine);
 
-  Ptr<McpttCall> call = machine.GetCall ();
-  Ptr<McpttPttApp> pttApp = call->GetOwner ();
-  Ptr<McpttTimer> tfb1 = machine.GetTfb1 ();
-  uint32_t myUserId = pttApp->GetUserId ();
-  Ptr<McpttTimer> tfb2 = machine.GetTfb2 ();
-  McpttCallMsgFieldGrpId myGrpId = machine.GetGrpId ();
-  McpttCallMsgFieldCallId myCallId = machine.GetCallId ();
-  McpttCallMsgFieldUserId myOrigId = machine.GetOrigId ();
-  Ptr<McpttFloorParticipant> floorMachine = call->GetFloorMachine ();
+    Ptr<McpttCall> call = machine.GetCall();
+    Ptr<McpttPttApp> pttApp = call->GetOwner();
+    Ptr<McpttTimer> tfb1 = machine.GetTfb1();
+    uint32_t myUserId = pttApp->GetUserId();
+    Ptr<McpttTimer> tfb2 = machine.GetTfb2();
+    McpttCallMsgFieldGrpId myGrpId = machine.GetGrpId();
+    McpttCallMsgFieldCallId myCallId = machine.GetCallId();
+    McpttCallMsgFieldUserId myOrigId = machine.GetOrigId();
+    Ptr<McpttFloorParticipant> floorMachine = call->GetFloorMachine();
 
-  if (myOrigId.GetId () == myUserId)
+    if (myOrigId.GetId() == myUserId)
     {
-      floorMachine->Stop ();
+        floorMachine->Stop();
 
-      call->CloseFloorChannel ();
-      call->CloseMediaChannel ();
+        call->CloseFloorChannel();
+        call->CloseMediaChannel();
 
-      McpttCallMsgGrpBroadcastEnd msg;
-      msg.SetCallId (myCallId);
-      msg.SetOrigId (myOrigId);
-      msg.SetGrpId (myGrpId);
+        McpttCallMsgGrpBroadcastEnd msg;
+        msg.SetCallId(myCallId);
+        msg.SetOrigId(myOrigId);
+        msg.SetGrpId(myGrpId);
 
-      machine.Send (msg);
+        machine.Send(msg);
 
-      tfb1->Stop ();
+        tfb1->Stop();
 
-      tfb2->Stop ();
+        tfb2->Stop();
 
-      machine.ChangeState (McpttCallMachineGrpBroadcastStateB1::GetInstance ());
+        machine.ChangeState(McpttCallMachineGrpBroadcastStateB1::GetInstance());
     }
-  else
+    else
     {
-      floorMachine->Stop ();
+        floorMachine->Stop();
 
-      call->CloseFloorChannel ();
-      call->CloseMediaChannel ();
+        call->CloseFloorChannel();
+        call->CloseMediaChannel();
 
-      machine.ChangeState (McpttCallMachineGrpBroadcastStateB4::GetInstance ());
+        machine.ChangeState(McpttCallMachineGrpBroadcastStateB4::GetInstance());
     }
 }
 
 McpttCallMachineGrpBroadcastStateB2::McpttCallMachineGrpBroadcastStateB2()
     : McpttCallMachineGrpBroadcastState()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
+
 /** McpttCallMachineGrpBroadcastStateB2 - end **/
 
 /** McpttCallMachineGrpBroadcastStateB3 - begin **/
 Ptr<McpttCallMachineGrpBroadcastStateB3>
 McpttCallMachineGrpBroadcastStateB3::GetInstance()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+    NS_LOG_FUNCTION_NOARGS();
 
-  static Ptr<McpttCallMachineGrpBroadcastStateB3> inst = Create<McpttCallMachineGrpBroadcastStateB3> ();
+    static Ptr<McpttCallMachineGrpBroadcastStateB3> inst =
+        Create<McpttCallMachineGrpBroadcastStateB3>();
 
-  return inst;
+    return inst;
 }
 
 McpttEntityId
 McpttCallMachineGrpBroadcastStateB3::GetStateId()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+    NS_LOG_FUNCTION_NOARGS();
 
-  static McpttEntityId sid (3, "'B3: pending user action'");
+    static McpttEntityId sid(3, "'B3: pending user action'");
 
-  return sid;
+    return sid;
 }
 
 McpttCallMachineGrpBroadcastStateB3::~McpttCallMachineGrpBroadcastStateB3()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
-McpttCallMachineGrpBroadcastStateB3::AcceptCall (McpttCallMachineGrpBroadcast& machine) const
+McpttCallMachineGrpBroadcastStateB3::AcceptCall(McpttCallMachineGrpBroadcast& machine) const
 {
-  NS_LOG_FUNCTION (this << &machine);
+    NS_LOG_FUNCTION(this << &machine);
 
-  Ptr<McpttCall> call = machine.GetCall ();
-  Ptr<McpttTimer> tfb1 = machine.GetTfb1 ();
-  Ptr<McpttTimer> tfb3 = machine.GetTfb3 ();
-  McpttCallMsgFieldSdp mySdp = machine.GetSdp ();
-  Ptr<McpttFloorParticipant> floorMachine = call->GetFloorMachine ();
+    Ptr<McpttCall> call = machine.GetCall();
+    Ptr<McpttTimer> tfb1 = machine.GetTfb1();
+    Ptr<McpttTimer> tfb3 = machine.GetTfb3();
+    McpttCallMsgFieldSdp mySdp = machine.GetSdp();
+    Ptr<McpttFloorParticipant> floorMachine = call->GetFloorMachine();
 
-  uint16_t floorPort = mySdp.GetFloorPort ();
-  Address grpAddr = mySdp.GetGrpAddr ();
-  uint16_t speechPort = mySdp.GetSpeechPort ();
+    uint16_t floorPort = mySdp.GetFloorPort();
+    Address grpAddr = mySdp.GetGrpAddr();
+    uint16_t speechPort = mySdp.GetSpeechPort();
 
-  call->OpenFloorChannel (grpAddr, floorPort);
-  call->OpenMediaChannel (grpAddr, speechPort);
+    call->OpenFloorChannel(grpAddr, floorPort);
+    call->OpenMediaChannel(grpAddr, speechPort);
 
-  floorMachine->SetOriginator (false);
-  floorMachine->Start ();
+    floorMachine->SetOriginator(false);
+    floorMachine->Start();
 
-  tfb3->Stop ();
+    tfb3->Stop();
 
-  tfb1->Start ();
+    tfb1->Start();
 
-  machine.ChangeState (McpttCallMachineGrpBroadcastStateB2::GetInstance ());
+    machine.ChangeState(McpttCallMachineGrpBroadcastStateB2::GetInstance());
 }
 
 void
-McpttCallMachineGrpBroadcastStateB3::ExpiryOfTfb3 (McpttCallMachineGrpBroadcast& machine) const
+McpttCallMachineGrpBroadcastStateB3::ExpiryOfTfb3(McpttCallMachineGrpBroadcast& machine) const
 {
-  NS_LOG_FUNCTION (this << &machine);
+    NS_LOG_FUNCTION(this << &machine);
 
-  machine.ChangeState (McpttCallMachineGrpBroadcastStateB4::GetInstance ());
+    machine.ChangeState(McpttCallMachineGrpBroadcastStateB4::GetInstance());
 }
 
 McpttEntityId
 McpttCallMachineGrpBroadcastStateB3::GetInstanceStateId() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return McpttCallMachineGrpBroadcastStateB3::GetStateId ();
+    return McpttCallMachineGrpBroadcastStateB3::GetStateId();
 }
 
 void
-McpttCallMachineGrpBroadcastStateB3::RejectCall (McpttCallMachineGrpBroadcast& machine) const
+McpttCallMachineGrpBroadcastStateB3::RejectCall(McpttCallMachineGrpBroadcast& machine) const
 {
-  NS_LOG_FUNCTION (this << &machine);
+    NS_LOG_FUNCTION(this << &machine);
 
-  Ptr<McpttTimer> tfb1 = machine.GetTfb1 ();
-  Ptr<McpttTimer> tfb3 = machine.GetTfb3 ();
+    Ptr<McpttTimer> tfb1 = machine.GetTfb1();
+    Ptr<McpttTimer> tfb3 = machine.GetTfb3();
 
-  tfb3->Stop ();
-  tfb1->Start ();
+    tfb3->Stop();
+    tfb1->Start();
 
-  machine.ChangeState (McpttCallMachineGrpBroadcastStateB4::GetInstance ());
+    machine.ChangeState(McpttCallMachineGrpBroadcastStateB4::GetInstance());
 }
 
 McpttCallMachineGrpBroadcastStateB3::McpttCallMachineGrpBroadcastStateB3()
     : McpttCallMachineGrpBroadcastState()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
+
 /** McpttCallMachineGrpBroadcastStateB3 - end **/
 
 /** McpttCallMachineGrpBroadcastStateB4 - begin **/
 Ptr<McpttCallMachineGrpBroadcastStateB4>
 McpttCallMachineGrpBroadcastStateB4::GetInstance()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+    NS_LOG_FUNCTION_NOARGS();
 
-  static Ptr<McpttCallMachineGrpBroadcastStateB4> inst = Create<McpttCallMachineGrpBroadcastStateB4> ();
+    static Ptr<McpttCallMachineGrpBroadcastStateB4> inst =
+        Create<McpttCallMachineGrpBroadcastStateB4>();
 
-  return inst;
+    return inst;
 }
 
 McpttEntityId
 McpttCallMachineGrpBroadcastStateB4::GetStateId()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+    NS_LOG_FUNCTION_NOARGS();
 
-  static McpttEntityId sid (4, "'B4: ignoring same call ID'");
+    static McpttEntityId sid(4, "'B4: ignoring same call ID'");
 
-  return sid;
+    return sid;
 }
 
 McpttCallMachineGrpBroadcastStateB4::~McpttCallMachineGrpBroadcastStateB4()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
-McpttCallMachineGrpBroadcastStateB4::ExpiryOfTfb1 (McpttCallMachineGrpBroadcast& machine) const
+McpttCallMachineGrpBroadcastStateB4::ExpiryOfTfb1(McpttCallMachineGrpBroadcast& machine) const
 {
-  NS_LOG_FUNCTION (this << &machine);
+    NS_LOG_FUNCTION(this << &machine);
 
-  Ptr<McpttCall> call = machine.GetCall ();
-  Ptr<McpttFloorParticipant> floorMachine = call->GetFloorMachine ();
+    Ptr<McpttCall> call = machine.GetCall();
+    Ptr<McpttFloorParticipant> floorMachine = call->GetFloorMachine();
 
-  if (floorMachine->IsStarted ())
+    if (floorMachine->IsStarted())
     {
-      floorMachine->Stop ();
+        floorMachine->Stop();
     }
-  if (call->IsFloorChannelOpen ())
+    if (call->IsFloorChannelOpen())
     {
-      call->CloseFloorChannel ();
+        call->CloseFloorChannel();
     }
-  if (call->IsMediaChannelOpen ())
+    if (call->IsMediaChannelOpen())
     {
-      call->CloseMediaChannel ();
+        call->CloseMediaChannel();
     }
 
-  machine.SetCallId (McpttCallMsgFieldCallId (0));
+    machine.SetCallId(McpttCallMsgFieldCallId(0));
 
-  machine.ChangeState (McpttCallMachineGrpBroadcastStateB1::GetInstance ());
+    machine.ChangeState(McpttCallMachineGrpBroadcastStateB1::GetInstance());
 }
 
 McpttEntityId
 McpttCallMachineGrpBroadcastStateB4::GetInstanceStateId() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return McpttCallMachineGrpBroadcastStateB4::GetStateId ();
+    return McpttCallMachineGrpBroadcastStateB4::GetStateId();
 }
 
 void
-McpttCallMachineGrpBroadcastStateB4::ReceiveGrpCallBroadcast (McpttCallMachineGrpBroadcast& machine, const McpttCallMsgGrpBroadcast& msg) const
+McpttCallMachineGrpBroadcastStateB4::ReceiveGrpCallBroadcast(
+    McpttCallMachineGrpBroadcast& machine,
+    const McpttCallMsgGrpBroadcast& msg) const
 {
-  NS_LOG_FUNCTION (this << &machine << &msg);
+    NS_LOG_FUNCTION(this << &machine << &msg);
 
-  Ptr<McpttTimer> tfb1 = machine.GetTfb1 ();
-  McpttCallMsgFieldCallId myCallId = machine.GetCallId ();
-  McpttCallMsgFieldCallId  theirCallId = msg.GetCallId ();
+    Ptr<McpttTimer> tfb1 = machine.GetTfb1();
+    McpttCallMsgFieldCallId myCallId = machine.GetCallId();
+    McpttCallMsgFieldCallId theirCallId = msg.GetCallId();
 
-  if (myCallId.GetCallId () == theirCallId.GetCallId ())
+    if (myCallId.GetCallId() == theirCallId.GetCallId())
     {
-      tfb1->Restart ();
+        tfb1->Restart();
     }
 }
 
 void
-McpttCallMachineGrpBroadcastStateB4::ReceiveGrpCallBroadcastEnd (McpttCallMachineGrpBroadcast& machine, const McpttCallMsgGrpBroadcastEnd& msg) const
+McpttCallMachineGrpBroadcastStateB4::ReceiveGrpCallBroadcastEnd(
+    McpttCallMachineGrpBroadcast& machine,
+    const McpttCallMsgGrpBroadcastEnd& msg) const
 {
-  NS_LOG_FUNCTION (this << &machine << &msg);
+    NS_LOG_FUNCTION(this << &machine << &msg);
 
-  Ptr<McpttCall> call = machine.GetCall ();
-  Ptr<McpttTimer> tfb1 = machine.GetTfb1 ();
-  McpttCallMsgFieldCallId myCallId = machine.GetCallId ();
-  McpttCallMsgFieldCallId  theirCallId = msg.GetCallId ();
-  Ptr<McpttFloorParticipant> floorMachine = call->GetFloorMachine ();
+    Ptr<McpttCall> call = machine.GetCall();
+    Ptr<McpttTimer> tfb1 = machine.GetTfb1();
+    McpttCallMsgFieldCallId myCallId = machine.GetCallId();
+    McpttCallMsgFieldCallId theirCallId = msg.GetCallId();
+    Ptr<McpttFloorParticipant> floorMachine = call->GetFloorMachine();
 
-  if (myCallId.GetCallId () == theirCallId.GetCallId ())
+    if (myCallId.GetCallId() == theirCallId.GetCallId())
     {
-      if (floorMachine->IsStarted ())
+        if (floorMachine->IsStarted())
         {
-          floorMachine->Stop ();
+            floorMachine->Stop();
         }
-      if (call->IsFloorChannelOpen ())
+        if (call->IsFloorChannelOpen())
         {
-          call->CloseFloorChannel ();
+            call->CloseFloorChannel();
         }
-      if (call->IsMediaChannelOpen ())
+        if (call->IsMediaChannelOpen())
         {
-          call->CloseMediaChannel ();
-        }
-
-      if (tfb1->IsRunning ())
-        {
-          tfb1->Stop ();
+            call->CloseMediaChannel();
         }
 
-      machine.ChangeState (McpttCallMachineGrpBroadcastStateB1::GetInstance ());
+        if (tfb1->IsRunning())
+        {
+            tfb1->Stop();
+        }
+
+        machine.ChangeState(McpttCallMachineGrpBroadcastStateB1::GetInstance());
     }
 }
 
 McpttCallMachineGrpBroadcastStateB4::McpttCallMachineGrpBroadcastStateB4()
     : McpttCallMachineGrpBroadcastState()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
+
 /** McpttCallMachineGrpBroadcastStateB4 - end **/
 
 } // namespace psc
 } // namespace ns3
-

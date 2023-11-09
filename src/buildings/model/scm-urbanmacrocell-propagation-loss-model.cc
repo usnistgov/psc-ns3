@@ -33,155 +33,160 @@
  * subject to copyright protection within the United States.
  */
 
-#include "ns3/log.h"
+#include "scm-urbanmacrocell-propagation-loss-model.h"
+
 #include "ns3/double.h"
 #include "ns3/enum.h"
+#include "ns3/log.h"
 #include "ns3/mobility-model.h"
-#include <cmath>
-#include "scm-urbanmacrocell-propagation-loss-model.h"
-#include <ns3/node.h>
-#include <ns3/pointer.h>
-#include <ns3/object-map.h>
-#include <ns3/object-factory.h>
 #include <ns3/boolean.h>
+#include <ns3/node.h>
+#include <ns3/object-factory.h>
+#include <ns3/object-map.h>
+#include <ns3/pointer.h>
 
-NS_LOG_COMPONENT_DEFINE ("ScmUrbanMacroCellPropagationLossModel");
+#include <cmath>
 
-namespace ns3 {
+NS_LOG_COMPONENT_DEFINE("ScmUrbanMacroCellPropagationLossModel");
+
+namespace ns3
+{
 
 NS_OBJECT_ENSURE_REGISTERED(ScmUrbanMacroCellPropagationLossModel);
 
 TypeId
 ScmUrbanMacroCellPropagationLossModel::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::ScmUrbanMacroCellPropagationLossModel")
+    static TypeId tid =
+        TypeId("ns3::ScmUrbanMacroCellPropagationLossModel")
 
-    .SetParent<BuildingsPropagationLossModel> ()
-    .SetGroupName ("Buildings")
+            .SetParent<BuildingsPropagationLossModel>()
+            .SetGroupName("Buildings")
 
-    .AddConstructor<ScmUrbanMacroCellPropagationLossModel> ()
+            .AddConstructor<ScmUrbanMacroCellPropagationLossModel>()
 
-    .AddAttribute ("Frequency",
-                   "The propagation frequency in Hz",
-                   DoubleValue (700e6),
-                   MakeDoubleAccessor (&ScmUrbanMacroCellPropagationLossModel::m_frequency),
-                   MakeDoubleChecker<double> ())
-    .AddAttribute ("ShadowingEnabled",
-                   "Activate or deactivate the shadowing computation",
-                   BooleanValue (true),
-                   MakeBooleanAccessor (&ScmUrbanMacroCellPropagationLossModel::m_isShadowingEnabled),
-                   MakeBooleanChecker ())
-  ;
+            .AddAttribute("Frequency",
+                          "The propagation frequency in Hz",
+                          DoubleValue(700e6),
+                          MakeDoubleAccessor(&ScmUrbanMacroCellPropagationLossModel::m_frequency),
+                          MakeDoubleChecker<double>())
+            .AddAttribute(
+                "ShadowingEnabled",
+                "Activate or deactivate the shadowing computation",
+                BooleanValue(true),
+                MakeBooleanAccessor(&ScmUrbanMacroCellPropagationLossModel::m_isShadowingEnabled),
+                MakeBooleanChecker());
 
-  return tid;
+    return tid;
 }
 
-ScmUrbanMacroCellPropagationLossModel::ScmUrbanMacroCellPropagationLossModel ()
-  : BuildingsPropagationLossModel ()
+ScmUrbanMacroCellPropagationLossModel::ScmUrbanMacroCellPropagationLossModel()
+    : BuildingsPropagationLossModel()
 {
-  NS_LOG_FUNCTION (this);
-  m_rand = CreateObject<UniformRandomVariable> ();
+    NS_LOG_FUNCTION(this);
+    m_rand = CreateObject<UniformRandomVariable>();
 }
 
-ScmUrbanMacroCellPropagationLossModel::~ScmUrbanMacroCellPropagationLossModel ()
+ScmUrbanMacroCellPropagationLossModel::~ScmUrbanMacroCellPropagationLossModel()
 {
 }
 
 double
-ScmUrbanMacroCellPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
+ScmUrbanMacroCellPropagationLossModel::GetLoss(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
 {
-  NS_LOG_FUNCTION (this);
-  // Pathloss
-  double loss = 0.0;
-  // Frequency in GHz
-  double fc = m_frequency / 1e9;
-  // Distance between the two nodes in meter
-  double dist = a->GetDistanceFrom (b);
+    NS_LOG_FUNCTION(this);
+    // Pathloss
+    double loss = 0.0;
+    // Frequency in GHz
+    double fc = m_frequency / 1e9;
+    // Distance between the two nodes in meter
+    double dist = a->GetDistanceFrom(b);
 
-  // Actual antenna heights
-  double hms = 0;
-  double hbs = 0;
+    // Actual antenna heights
+    double hms = 0;
+    double hbs = 0;
 
-  hbs = (a->GetPosition ().z > b->GetPosition ().z ? a->GetPosition ().z : b->GetPosition ().z);
-  hms = (a->GetPosition ().z < b->GetPosition ().z ? a->GetPosition ().z : b->GetPosition ().z);
+    hbs = (a->GetPosition().z > b->GetPosition().z ? a->GetPosition().z : b->GetPosition().z);
+    hms = (a->GetPosition().z < b->GetPosition().z ? a->GetPosition().z : b->GetPosition().z);
 
-  /*********************************************/
-  //3GPP TR 25.996 v6.1.0
-  //non-LOS condition (low probability of occurrence)
-  //hbs : BS antenna height in meter
-  //hms : MS antenna height in meter
-  //fc*1000 : frequency in MHz
-  //dist : distance between BS and MS in meter
-  loss = ((44.9 - 6.55 * std::log10 (hbs)) * std::log10 (dist / 1000)) + 45.5 + ((35.46 - (1.1 * hms)) * std::log10 (fc * 1000)) - (13.82 * std::log10 (hbs)) + (0.7 * hms) + 3;
-  /*********************************************/
+    /*********************************************/
+    // 3GPP TR 25.996 v6.1.0
+    // non-LOS condition (low probability of occurrence)
+    // hbs : BS antenna height in meter
+    // hms : MS antenna height in meter
+    // fc*1000 : frequency in MHz
+    // dist : distance between BS and MS in meter
+    loss = ((44.9 - 6.55 * std::log10(hbs)) * std::log10(dist / 1000)) + 45.5 +
+           ((35.46 - (1.1 * hms)) * std::log10(fc * 1000)) - (13.82 * std::log10(hbs)) +
+           (0.7 * hms) + 3;
+    /*********************************************/
 
-  return std::max (0.0, loss);
+    return std::max(0.0, loss);
 }
 
-
 double
-ScmUrbanMacroCellPropagationLossModel::GetShadowing (Ptr<MobilityModel> a, Ptr<MobilityModel> b)
-const
+ScmUrbanMacroCellPropagationLossModel::GetShadowing(Ptr<MobilityModel> a,
+                                                    Ptr<MobilityModel> b) const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  Ptr<MobilityBuildingInfo> a1 = a->GetObject <MobilityBuildingInfo> ();
-  Ptr<MobilityBuildingInfo> b1 = b->GetObject <MobilityBuildingInfo> ();
-  NS_ABORT_MSG_IF ((!a1 || !b1), "ScmUrbanMacroCellPropagationLossModel only works with MobilityBuildingInfo");
+    Ptr<MobilityBuildingInfo> a1 = a->GetObject<MobilityBuildingInfo>();
+    Ptr<MobilityBuildingInfo> b1 = b->GetObject<MobilityBuildingInfo>();
+    NS_ABORT_MSG_IF((!a1 || !b1),
+                    "ScmUrbanMacroCellPropagationLossModel only works with MobilityBuildingInfo");
 
-  auto ait = m_shadowingLossMap.find(a);
-  if (ait != m_shadowingLossMap.end ())
+    auto ait = m_shadowingLossMap.find(a);
+    if (ait != m_shadowingLossMap.end())
     {
         auto bit = ait->second.find(b);
         if (bit != ait->second.end())
         {
-          return (bit->second);
+            return (bit->second);
         }
-      else
+        else
         {
-          double sigma = EvaluateSigma (a1, b1);
-          // side effect: will create new entry
-          // sigma is standard deviation, not variance
-          double shadowingValue = m_randVariable->GetValue (0.0, (sigma * sigma));
-          ait->second[b] = shadowingValue;
-          m_shadowingLossMap[b][a] = shadowingValue;
-          return (shadowingValue);
+            double sigma = EvaluateSigma(a1, b1);
+            // side effect: will create new entry
+            // sigma is standard deviation, not variance
+            double shadowingValue = m_randVariable->GetValue(0.0, (sigma * sigma));
+            ait->second[b] = shadowingValue;
+            m_shadowingLossMap[b][a] = shadowingValue;
+            return (shadowingValue);
         }
     }
-  else
+    else
     {
-      double sigma = EvaluateSigma (a1, b1);
-      // side effect: will create new entries in both maps
-      // sigma is standard deviation, not variance
-      double shadowingValue = m_randVariable->GetValue (0.0, (sigma * sigma));
-      m_shadowingLossMap[a][b] = shadowingValue;
-      m_shadowingLossMap[b][a] = shadowingValue;
-      return (shadowingValue);
+        double sigma = EvaluateSigma(a1, b1);
+        // side effect: will create new entries in both maps
+        // sigma is standard deviation, not variance
+        double shadowingValue = m_randVariable->GetValue(0.0, (sigma * sigma));
+        m_shadowingLossMap[a][b] = shadowingValue;
+        m_shadowingLossMap[b][a] = shadowingValue;
+        return (shadowingValue);
     }
 }
 
-
 double
-ScmUrbanMacroCellPropagationLossModel::EvaluateSigma (Ptr<MobilityBuildingInfo> a, Ptr<MobilityBuildingInfo> b) const
+ScmUrbanMacroCellPropagationLossModel::EvaluateSigma(Ptr<MobilityBuildingInfo> a,
+                                                     Ptr<MobilityBuildingInfo> b) const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  if (m_isShadowingEnabled)
+    if (m_isShadowingEnabled)
     {
-      //3GPP TR 25.996 v6.1.0
-      return 8.0;
+        // 3GPP TR 25.996 v6.1.0
+        return 8.0;
     }
 
-  return 0.0;
+    return 0.0;
 }
 
 int64_t
-ScmUrbanMacroCellPropagationLossModel::DoAssignStreams (int64_t stream)
+ScmUrbanMacroCellPropagationLossModel::DoAssignStreams(int64_t stream)
 {
-  NS_LOG_FUNCTION (this << stream);
-  m_rand->SetStream (stream);
-  return 1;
+    NS_LOG_FUNCTION(this << stream);
+    m_rand->SetStream(stream);
+    return 1;
 }
-
 
 } // namespace ns3

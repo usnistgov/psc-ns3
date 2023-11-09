@@ -36,9 +36,10 @@
 #ifndef LTE_3GPP_HEX_GRID_ENB_TOPOLOGY_HELPER_H
 #define LTE_3GPP_HEX_GRID_ENB_TOPOLOGY_HELPER_H
 
+#include "lte-helper.h"
+#include "sidelink-rsrp-calculator.h"
+
 #include <ns3/buildings-helper.h>
-#include <ns3/lte-helper.h>
-#include <ns3/sidelink-rsrp-calculator.h>
 
 #include <map>
 #include <set>

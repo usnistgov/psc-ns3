@@ -33,12 +33,13 @@
  * subject to copyright protection within the United States.
  */
 
+#include "sidelink-rsrp-calculator.h"
+
 #include <ns3/abort.h>
 #include <ns3/angles.h>
 #include <ns3/antenna-model.h>
 #include <ns3/log.h>
 #include <ns3/mobility-model.h>
-#include <ns3/sidelink-rsrp-calculator.h>
 
 #include <cfloat>
 
@@ -128,7 +129,10 @@ SidelinkRsrpCalculator::CalcSlRsrpPsbch(Ptr<PropagationLossModel> lossModel,
         rbMask.push_back(i);
     }
     Ptr<SpectrumValue> psd =
-        ns3::LteSpectrumValueHelper::CreateUlTxPowerSpectralDensity(ulEarfcn, ulBandwidth, txPower, rbMask);
+        ns3::LteSpectrumValueHelper::CreateUlTxPowerSpectralDensity(ulEarfcn,
+                                                                    ulBandwidth,
+                                                                    txPower,
+                                                                    rbMask);
 
     double rsrp = DoCalcRsrp(lossModel, psd, txPhy, rxPhy);
 

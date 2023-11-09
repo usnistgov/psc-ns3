@@ -27,6 +27,6 @@ Testing Documentation
 +++++++++++++++++++++
 
 In this section we describe the PSC-related test suites included with the antenna
-module that verify its correct functionality. 
+module that verify its correct functionality.
 
 .. include:: antenna-testing-parabolic.inc

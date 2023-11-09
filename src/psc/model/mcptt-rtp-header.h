@@ -32,15 +32,17 @@
 #ifndef NIST_RTP_HEADER_H
 #define NIST_RTP_HEADER_H
 
-#include <iostream>
-
 #include <ns3/buffer.h>
 #include <ns3/header.h>
 #include <ns3/type-id.h>
 
-namespace ns3 {
+#include <iostream>
 
-namespace psc {
+namespace ns3
+{
+
+namespace psc
+{
 
 /**
  * \ingroup mcptt
@@ -62,195 +64,195 @@ namespace psc {
  */
 class McpttRtpHeader : public Header
 {
-public:
-  /**
-   * Gets the type ID of the McpttRtpHeader.
-   * \returns The type ID.
-   */
-  static TypeId GetTypeId (void);
-  /**
-  * Creates an instance of the McpttRtpHeader class.
-  */
-  McpttRtpHeader (void);
-  /**
-   * Creates an instance of the McpttRtpHeader class.
-   * \param ssrc They synchronization source (SSRC).
-   */
-  McpttRtpHeader (uint32_t ssrc);
-  /**
-   * Creates an instance of the McpttRtpHeader class.
-   * \param ssrc The synchronization source (SSRC).
-   * \param payloadType The payload type (PT).
-   */
-  McpttRtpHeader (uint32_t ssrc, uint8_t payloadType);
-  /**
-   * The destructor of the McpttRtpHeader class.
-   */
-  virtual ~McpttRtpHeader (void);
-  /**
-   * Adds a CSRC.
-   * \param csrc The CSRC to add.
-   * \returns True, if the CSRC was added.
-   */
-  virtual bool AddCsrc (uint32_t csrc);
-  /**
-   * Removes all CSRCs.
-   */
-  virtual void ClearCsrcs (void);
-  /**
-   * Reads the contents of the message from the byte stream.
-   * \param start The buffer to read from.
-   * \returns The number of bytes that were read.
-   */
-  virtual uint32_t Deserialize (Buffer::Iterator start);
-  /**
-   * Gets the type ID of this McpttRtpHeader instance.
-   * \returns The type ID.
-   */
-  virtual TypeId GetInstanceTypeId (void) const;
-  /**
-   * Gets the size (in bytes) of the message when it is serialized.
-   * \returns The size (in bytes).
-   */
-  virtual uint32_t GetSerializedSize (void) const;
-  /**
-   * Prints the contents of the header to the given output stream.
-   * \param os The output stream to write to.
-   */
-  virtual void Print (std::ostream& os) const;
-  /**
-   * Removes a CSRC.
-   * \param csrc The CSRC to remove.
-   * \returns True, if the CSRC was found and removed.
-   */
-  virtual bool RemoveCsrc (uint32_t csrc);
-  /**
-   * Writes the contents of the message to the byte stream.
-   * \param start The byte stream to write to.
-   */
-  virtual void Serialize (Buffer::Iterator start) const;
+  public:
+    /**
+     * Gets the type ID of the McpttRtpHeader.
+     * \returns The type ID.
+     */
+    static TypeId GetTypeId(void);
+    /**
+     * Creates an instance of the McpttRtpHeader class.
+     */
+    McpttRtpHeader(void);
+    /**
+     * Creates an instance of the McpttRtpHeader class.
+     * \param ssrc They synchronization source (SSRC).
+     */
+    McpttRtpHeader(uint32_t ssrc);
+    /**
+     * Creates an instance of the McpttRtpHeader class.
+     * \param ssrc The synchronization source (SSRC).
+     * \param payloadType The payload type (PT).
+     */
+    McpttRtpHeader(uint32_t ssrc, uint8_t payloadType);
+    /**
+     * The destructor of the McpttRtpHeader class.
+     */
+    virtual ~McpttRtpHeader(void);
+    /**
+     * Adds a CSRC.
+     * \param csrc The CSRC to add.
+     * \returns True, if the CSRC was added.
+     */
+    virtual bool AddCsrc(uint32_t csrc);
+    /**
+     * Removes all CSRCs.
+     */
+    virtual void ClearCsrcs(void);
+    /**
+     * Reads the contents of the message from the byte stream.
+     * \param start The buffer to read from.
+     * \returns The number of bytes that were read.
+     */
+    virtual uint32_t Deserialize(Buffer::Iterator start);
+    /**
+     * Gets the type ID of this McpttRtpHeader instance.
+     * \returns The type ID.
+     */
+    virtual TypeId GetInstanceTypeId(void) const;
+    /**
+     * Gets the size (in bytes) of the message when it is serialized.
+     * \returns The size (in bytes).
+     */
+    virtual uint32_t GetSerializedSize(void) const;
+    /**
+     * Prints the contents of the header to the given output stream.
+     * \param os The output stream to write to.
+     */
+    virtual void Print(std::ostream& os) const;
+    /**
+     * Removes a CSRC.
+     * \param csrc The CSRC to remove.
+     * \returns True, if the CSRC was found and removed.
+     */
+    virtual bool RemoveCsrc(uint32_t csrc);
+    /**
+     * Writes the contents of the message to the byte stream.
+     * \param start The byte stream to write to.
+     */
+    virtual void Serialize(Buffer::Iterator start) const;
 
-protected:
+  protected:
+  private:
+    uint8_t m_csrcCount;           //!< The number of CSRC identifiers included in the header (CC).
+    std::vector<uint32_t> m_csrcs; //!< The collection of contributing sources (CSRC).
+    uint8_t m_extension; //!< Flag to indicate if header is followed by exactly one header extension
+                         //!< (X).
+    uint8_t m_marker;    //!< A marker bit (M).
+    uint8_t m_padding;   //!< The padding bit value (P).
+    uint8_t m_payloadType; //!< The payload type (PT).
+    uint16_t m_seqNum;     //!< The RTP data packet sequence number (Sequence Number).
+    uint32_t m_ssrc;       //!< The synchronization source (SSRC).
+    uint32_t
+        m_timestamp;   //!< The sampling instant of the first octent in the RTP packet (Timestamp).
+    uint8_t m_version; //!< The version of the RTCP (V).
 
-private:
-  uint8_t m_csrcCount; //!< The number of CSRC identifiers included in the header (CC).
-  std::vector<uint32_t> m_csrcs; //!< The collection of contributing sources (CSRC).
-  uint8_t m_extension; //!< Flag to indicate if header is followed by exactly one header extension (X).
-  uint8_t m_marker; //!< A marker bit (M).
-  uint8_t m_padding; //!< The padding bit value (P).
-  uint8_t m_payloadType; //!< The payload type (PT).
-  uint16_t m_seqNum; //!< The RTP data packet sequence number (Sequence Number).
-  uint32_t m_ssrc; //!< The synchronization source (SSRC).
-  uint32_t m_timestamp; //!< The sampling instant of the first octent in the RTP packet (Timestamp).
-  uint8_t m_version; //!< The version of the RTCP (V).
+  protected:
+    /**
+     * Sets the number of CSRC identifiers (CC).
+     * \param csrcCount The number of CSRC identifiers (CC).
+     */
+    virtual void SetCsrcCount(uint8_t csrcCount);
+    /**
+     * Sets the collection of contributing sources (CSRC).
+     * \param csrcs The collection of contributing sources (CSRC).
+     */
+    virtual void SetCsrcs(const std::vector<uint32_t> csrcs);
 
-protected:
-  /**
-   * Sets the number of CSRC identifiers (CC).
-   * \param csrcCount The number of CSRC identifiers (CC).
-   */
-  virtual void SetCsrcCount (uint8_t csrcCount);
-  /**
-   * Sets the collection of contributing sources (CSRC).
-   * \param csrcs The collection of contributing sources (CSRC).
-   */
-  virtual void SetCsrcs (const std::vector<uint32_t>  csrcs);
-
-public:
-  /**
-   * Gets the number of CSRC identifiers (CC).
-   * \returns The number of CSRC identifiers (CC).
-   */
-  virtual uint8_t GetCsrcCount (void) const;
-  /**
-   * Gets the collection of contributing sources (CSRC).
-   * \returns The collection of contributing sources (CSRC).
-   */
-  virtual std::vector<uint32_t> GetCsrcs (void) const;
-  /**
-   * Gets the extension flag (X).
-   * \returns The extension flag (X).
-   */
-  virtual uint8_t GetExtension (void) const;
-  /**
-   * Gets the marker bit (M).
-   * \returns The marker bit (M).
-   */
-  virtual uint8_t GetMarker (void) const;
-  /**
-   * Gets the padding bit value (P).
-   * \returns The padding bit value.
-   */
-  virtual uint8_t GetPadding (void) const;
-  /**
-   * Gets the value of the payload type (PT) value.
-   * \returns The payload type (PT) value.
-   */
-  virtual uint8_t GetPayloadType (void) const;
-  /**
-   * Gets the sequence number (Sequence Number).
-   * \returns The sequence number (Sequence Number).
-   */
-  virtual uint16_t GetSeqNum (void) const;
-  /**
-   * Gets the synchronization source (SSRC).
-   * \returns The synchronization source.
-   */
-  virtual uint32_t GetSsrc (void) const;
-  /**
-   * Gets the timestamp (Timestamp).
-   * \returns The timestamp (Timestamp).
-   */
-  virtual uint32_t GetTimestamp (void) const;
-  /**
-   * Gets the version number (V).
-   * \returns The version number.
-   */
-  virtual uint8_t GetVersion (void) const;
-  /**
-   * Sets the extension flag (X).
-   * \param extension The extension flag.
-   */
-  virtual void SetExtension (uint8_t extension);
-  /**
-   * Sets the marker bit (M).
-   * \param marker The marker bit (M).
-   */
-  virtual void SetMarker (uint8_t marker);
-  /**
-   * Sets the padding bit value (P).
-   * \param padding The paddinb bit value.
-   */
-  virtual void SetPadding (uint8_t padding);
-  /**
-   * Sets the value of the payload type (PT).
-   * \param payloadType The payload type (PT) value.
-   */
-  virtual void SetPayloadType (uint8_t payloadType);
-  /**
-   * Sets the sequence number (Sequence Number).
-   * \param seqNum The sequence number.
-   */
-  virtual void SetSeqNum (uint16_t seqNum);
-  /**
-   * Sets the synchronization source (SSRC).
-   * \param ssrc The synchronization source.
-   */
-  virtual void SetSsrc (uint32_t ssrc);
-  /**
-   * Sets the timestamp (Timestamp).
-   * \param timestamp The timestamp (Timestamp).
-   */
-  virtual void SetTimestamp (uint32_t timestamp);
-  /**
-   * Sets the value of the version number (V).
-   * \param version The version number.
-   */
-  virtual void SetVersion (uint8_t version);
+  public:
+    /**
+     * Gets the number of CSRC identifiers (CC).
+     * \returns The number of CSRC identifiers (CC).
+     */
+    virtual uint8_t GetCsrcCount(void) const;
+    /**
+     * Gets the collection of contributing sources (CSRC).
+     * \returns The collection of contributing sources (CSRC).
+     */
+    virtual std::vector<uint32_t> GetCsrcs(void) const;
+    /**
+     * Gets the extension flag (X).
+     * \returns The extension flag (X).
+     */
+    virtual uint8_t GetExtension(void) const;
+    /**
+     * Gets the marker bit (M).
+     * \returns The marker bit (M).
+     */
+    virtual uint8_t GetMarker(void) const;
+    /**
+     * Gets the padding bit value (P).
+     * \returns The padding bit value.
+     */
+    virtual uint8_t GetPadding(void) const;
+    /**
+     * Gets the value of the payload type (PT) value.
+     * \returns The payload type (PT) value.
+     */
+    virtual uint8_t GetPayloadType(void) const;
+    /**
+     * Gets the sequence number (Sequence Number).
+     * \returns The sequence number (Sequence Number).
+     */
+    virtual uint16_t GetSeqNum(void) const;
+    /**
+     * Gets the synchronization source (SSRC).
+     * \returns The synchronization source.
+     */
+    virtual uint32_t GetSsrc(void) const;
+    /**
+     * Gets the timestamp (Timestamp).
+     * \returns The timestamp (Timestamp).
+     */
+    virtual uint32_t GetTimestamp(void) const;
+    /**
+     * Gets the version number (V).
+     * \returns The version number.
+     */
+    virtual uint8_t GetVersion(void) const;
+    /**
+     * Sets the extension flag (X).
+     * \param extension The extension flag.
+     */
+    virtual void SetExtension(uint8_t extension);
+    /**
+     * Sets the marker bit (M).
+     * \param marker The marker bit (M).
+     */
+    virtual void SetMarker(uint8_t marker);
+    /**
+     * Sets the padding bit value (P).
+     * \param padding The paddinb bit value.
+     */
+    virtual void SetPadding(uint8_t padding);
+    /**
+     * Sets the value of the payload type (PT).
+     * \param payloadType The payload type (PT) value.
+     */
+    virtual void SetPayloadType(uint8_t payloadType);
+    /**
+     * Sets the sequence number (Sequence Number).
+     * \param seqNum The sequence number.
+     */
+    virtual void SetSeqNum(uint16_t seqNum);
+    /**
+     * Sets the synchronization source (SSRC).
+     * \param ssrc The synchronization source.
+     */
+    virtual void SetSsrc(uint32_t ssrc);
+    /**
+     * Sets the timestamp (Timestamp).
+     * \param timestamp The timestamp (Timestamp).
+     */
+    virtual void SetTimestamp(uint32_t timestamp);
+    /**
+     * Sets the value of the version number (V).
+     * \param version The version number.
+     */
+    virtual void SetVersion(uint8_t version);
 };
 
-} // namepace psc
-} // namepace ns3
+} // namespace psc
+} // namespace ns3
 
 #endif // NIST_RTP_HEADER_H
-

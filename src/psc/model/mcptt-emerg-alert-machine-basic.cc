@@ -29,10 +29,7 @@
  * employees is not subject to copyright protection within the United States.
  */
 
-#include <ns3/log.h>
-#include <ns3/object.h>
-#include <ns3/ptr.h>
-#include <ns3/type-id.h>
+#include "mcptt-emerg-alert-machine-basic.h"
 
 #include "mcptt-call-machine-grp-basic.h"
 #include "mcptt-call-msg.h"
@@ -41,572 +38,603 @@
 #include "mcptt-ptt-app.h"
 #include "mcptt-timer.h"
 
-#include "mcptt-emerg-alert-machine-basic.h"
+#include <ns3/log.h>
+#include <ns3/object.h>
+#include <ns3/ptr.h>
+#include <ns3/type-id.h>
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("McpttEmergAlertMachineBasic");
+NS_LOG_COMPONENT_DEFINE("McpttEmergAlertMachineBasic");
 
-namespace psc {
+namespace psc
+{
 
 /** McpttEmergAlertMachineBasic - begin **/
-NS_OBJECT_ENSURE_REGISTERED (McpttEmergAlertMachineBasic);
+NS_OBJECT_ENSURE_REGISTERED(McpttEmergAlertMachineBasic);
 
 McpttEmergAlertMachineBasic::EmergUser::~EmergUser()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  Id = 0;
-  Loc = Vector ();
-  Tfe1 = nullptr;
+    Id = 0;
+    Loc = Vector();
+    Tfe1 = nullptr;
 }
 
 TypeId
 McpttEmergAlertMachineBasic::GetTypeId()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+    NS_LOG_FUNCTION_NOARGS();
 
-  static TypeId tid = TypeId ("ns3::psc::McpttEmergAlertMachineBasic")
-    .SetParent<McpttEmergAlertMachine> ()
-    .AddConstructor<McpttEmergAlertMachineBasic> ()
-    .AddAttribute ("TFE1", "The initial delay to use for timer TFE1 (Time value)",
-                   TimeValue (Seconds (30)),
-                   MakeTimeAccessor (&McpttEmergAlertMachineBasic::m_delayTfe1),
-                   MakeTimeChecker ())
-    .AddAttribute ("TFE2", "The initial delay to use for timer TFE2 (Time value)",
-                   TimeValue (Seconds (5)),
-                   MakeTimeAccessor (&McpttEmergAlertMachineBasic::SetDelayTfe2),
-                   MakeTimeChecker ())
-    .AddTraceSource ("StateChangeTrace", "The trace for capturing state changes.",
-                     MakeTraceSourceAccessor (&McpttEmergAlertMachineBasic::m_stateChangeTrace),
-                     "ns3::psc::McpttCallMachine::StateChangeTracedCallback")
-  ;
+    static TypeId tid =
+        TypeId("ns3::psc::McpttEmergAlertMachineBasic")
+            .SetParent<McpttEmergAlertMachine>()
+            .AddConstructor<McpttEmergAlertMachineBasic>()
+            .AddAttribute("TFE1",
+                          "The initial delay to use for timer TFE1 (Time value)",
+                          TimeValue(Seconds(30)),
+                          MakeTimeAccessor(&McpttEmergAlertMachineBasic::m_delayTfe1),
+                          MakeTimeChecker())
+            .AddAttribute("TFE2",
+                          "The initial delay to use for timer TFE2 (Time value)",
+                          TimeValue(Seconds(5)),
+                          MakeTimeAccessor(&McpttEmergAlertMachineBasic::SetDelayTfe2),
+                          MakeTimeChecker())
+            .AddTraceSource(
+                "StateChangeTrace",
+                "The trace for capturing state changes.",
+                MakeTraceSourceAccessor(&McpttEmergAlertMachineBasic::m_stateChangeTrace),
+                "ns3::psc::McpttCallMachine::StateChangeTracedCallback");
 
-  return tid;
+    return tid;
 }
 
-McpttEmergAlertMachineBasic::McpttEmergAlertMachineBasic (Ptr<McpttCallMachineGrp> owner)
-  : McpttEmergAlertMachine (),
-    m_emerg (false),
-    m_emergUsers (std::list<McpttEmergAlertMachineBasic::EmergUser> ()),
-    m_orgName (McpttCallMsgFieldOrgName ()),
-    m_owner (owner),
-    m_started (false),
-    m_stateChangeCb (MakeNullCallback<void, bool> ()),
-    m_tfe2 (CreateObject<McpttTimer> (McpttEntityId (2, "TFE2")))
+McpttEmergAlertMachineBasic::McpttEmergAlertMachineBasic(Ptr<McpttCallMachineGrp> owner)
+    : McpttEmergAlertMachine(),
+      m_emerg(false),
+      m_emergUsers(std::list<McpttEmergAlertMachineBasic::EmergUser>()),
+      m_orgName(McpttCallMsgFieldOrgName()),
+      m_owner(owner),
+      m_started(false),
+      m_stateChangeCb(MakeNullCallback<void, bool>()),
+      m_tfe2(CreateObject<McpttTimer>(McpttEntityId(2, "TFE2")))
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  m_tfe2->Link (&McpttEmergAlertMachineBasic::ExpiryOfTfe2, this);
+    m_tfe2->Link(&McpttEmergAlertMachineBasic::ExpiryOfTfe2, this);
 }
 
 McpttEmergAlertMachineBasic::~McpttEmergAlertMachineBasic()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
 McpttEmergAlertMachineBasic::CancelEmergAlert()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  if (!IsStarted ())
+    if (!IsStarted())
     {
-      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
-      return;
+        NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " not started yet.");
+        return;
     }
-  std::string selected = "False";
-  if (GetOwner ()->GetCall ()->GetCallId () == GetOwner ()->GetCall ()->GetOwner ()->GetSelectedCall ()->GetCallId ())
+    std::string selected = "False";
+    if (GetOwner()->GetCall()->GetCallId() ==
+        GetOwner()->GetCall()->GetOwner()->GetSelectedCall()->GetCallId())
     {
-      selected = "True";
+        selected = "True";
     }
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " canceling emergency alert.");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " canceling emergency alert.");
 
-  Ptr<McpttTimer> tfe2 = GetTfe2 ();
-  McpttCallMsgFieldGrpId grpId = GetOwner ()->GetGrpId ();
-  uint32_t myId = GetOwner ()->GetCall ()->GetOwner ()->GetUserId ();
+    Ptr<McpttTimer> tfe2 = GetTfe2();
+    McpttCallMsgFieldGrpId grpId = GetOwner()->GetGrpId();
+    uint32_t myId = GetOwner()->GetCall()->GetOwner()->GetUserId();
 
-  if (IsInEmergState ())
+    if (IsInEmergState())
     {
-      SetEmerg (false);
+        SetEmerg(false);
 
-      McpttCallMsgGrpEmergAlertCancel msg;
-      msg.SetGrpId (grpId);
-      msg.SetOrigId (myId);
-      msg.SetSendingId (myId);
+        McpttCallMsgGrpEmergAlertCancel msg;
+        msg.SetGrpId(grpId);
+        msg.SetOrigId(myId);
+        msg.SetSendingId(myId);
 
-      tfe2->Stop ();
+        tfe2->Stop();
 
-      Send (msg);
+        Send(msg);
 
-      if (!m_stateChangeCb.IsNull ())
+        if (!m_stateChangeCb.IsNull())
         {
-          m_stateChangeCb (false);
+            m_stateChangeCb(false);
         }
-      m_stateChangeTrace (GetOwner ()->GetCall ()->GetOwner ()->GetUserId (), GetOwner ()->GetCall ()->GetCallId (), selected, GetInstanceTypeId ().GetName (), "'E2: Emergency State'", "'E1: Not in emergency state'");
+        m_stateChangeTrace(GetOwner()->GetCall()->GetOwner()->GetUserId(),
+                           GetOwner()->GetCall()->GetCallId(),
+                           selected,
+                           GetInstanceTypeId().GetName(),
+                           "'E2: Emergency State'",
+                           "'E1: Not in emergency state'");
     }
 }
 
 TypeId
 McpttEmergAlertMachineBasic::GetInstanceTypeId() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return McpttEmergAlertMachineBasic::GetTypeId ();
+    return McpttEmergAlertMachineBasic::GetTypeId();
 }
 
 bool
 McpttEmergAlertMachineBasic::IsInEmergState() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  bool isInEmergState = false;
+    bool isInEmergState = false;
 
-  if (IsStarted ())
+    if (IsStarted())
     {
-      isInEmergState = GetEmerg ();
+        isInEmergState = GetEmerg();
     }
 
-  // NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " is" << (isInEmergState ? " " : " not ") << "in emergency state.");
+    // NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " is" << (isInEmergState ? " " : " not ")
+    // << "in emergency state.");
 
-  return isInEmergState;
+    return isInEmergState;
 }
 
 bool
 McpttEmergAlertMachineBasic::IsStarted() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  bool isStarted = GetStarted ();
+    bool isStarted = GetStarted();
 
-  return isStarted;
+    return isStarted;
 }
 
 bool
 McpttEmergAlertMachineBasic::IsOtherInEmergState() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  bool isOther = !m_emergUsers.empty ();
+    bool isOther = !m_emergUsers.empty();
 
-  return isOther;
+    return isOther;
 }
 
 void
-McpttEmergAlertMachineBasic::ReceiveGrpCallEmergAlert (const McpttCallMsgGrpEmergAlert& msg)
+McpttEmergAlertMachineBasic::ReceiveGrpCallEmergAlert(const McpttCallMsgGrpEmergAlert& msg)
 {
-  NS_LOG_FUNCTION (this << msg);
+    NS_LOG_FUNCTION(this << msg);
 
-  if (!IsStarted ())
+    if (!IsStarted())
     {
-      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
-      return;
+        NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " not started yet.");
+        return;
     }
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " received " << msg << ".");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " received " << msg << ".");
 
-  uint32_t theirId = msg.GetUserId ().GetId ();
-  Vector theirLoc = msg.GetUserLoc ().GetLoc ();
-  std::list<McpttEmergAlertMachineBasic::EmergUser>::iterator it;
-  uint32_t myId = GetOwner ()->GetCall ()->GetOwner ()->GetUserId ();
+    uint32_t theirId = msg.GetUserId().GetId();
+    Vector theirLoc = msg.GetUserLoc().GetLoc();
+    std::list<McpttEmergAlertMachineBasic::EmergUser>::iterator it;
+    uint32_t myId = GetOwner()->GetCall()->GetOwner()->GetUserId();
 
-  if (FindEmergUser (theirId, it))
+    if (FindEmergUser(theirId, it))
     {
-      it->Loc = theirLoc;
-      it->Tfe1->Restart ();
+        it->Loc = theirLoc;
+        it->Tfe1->Restart();
     }
-  else
+    else
     {
-      McpttEmergAlertMachineBasic::EmergUser emergUser;
-      emergUser.Id = msg.GetUserId ().GetId ();
-      emergUser.Loc = msg.GetUserLoc ().GetLoc ();
-      emergUser.Tfe1 = CreateObject<McpttTimer> (McpttEntityId (1, "TFE1"));
-      emergUser.Tfe1->Link (&McpttEmergAlertMachineBasic::ExpiryOfTfe1, this);
-      emergUser.Tfe1->SetDelay (m_delayTfe1);
-      emergUser.Tfe1->SetArgument (theirId);
-      emergUser.Tfe1->Start ();
+        McpttEmergAlertMachineBasic::EmergUser emergUser;
+        emergUser.Id = msg.GetUserId().GetId();
+        emergUser.Loc = msg.GetUserLoc().GetLoc();
+        emergUser.Tfe1 = CreateObject<McpttTimer>(McpttEntityId(1, "TFE1"));
+        emergUser.Tfe1->Link(&McpttEmergAlertMachineBasic::ExpiryOfTfe1, this);
+        emergUser.Tfe1->SetDelay(m_delayTfe1);
+        emergUser.Tfe1->SetArgument(theirId);
+        emergUser.Tfe1->Start();
 
-      AddEmergUser (emergUser);
+        AddEmergUser(emergUser);
 
-      McpttCallMsgGrpEmergAlertAck ackMsg;
-      ackMsg.SetGrpId (msg.GetGrpId ());
-      ackMsg.SetSendingId (myId);
-      ackMsg.SetOrigId (msg.GetUserId ());
+        McpttCallMsgGrpEmergAlertAck ackMsg;
+        ackMsg.SetGrpId(msg.GetGrpId());
+        ackMsg.SetSendingId(myId);
+        ackMsg.SetOrigId(msg.GetUserId());
 
-      Send (ackMsg);
-    }
-}
-
-void
-McpttEmergAlertMachineBasic::ReceiveGrpCallEmergAlertCancel (const McpttCallMsgGrpEmergAlertCancel& msg)
-{
-  NS_LOG_FUNCTION (this << msg);
-
-  if (!IsStarted ())
-    {
-      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
-      return;
-    }
-
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " received " << msg << ".");
-
-  uint32_t theirId = msg.GetSendingId ().GetId ();
-  uint32_t myId = GetOwner ()->GetCall ()->GetOwner ()->GetUserId ();
-
-  if (RemoveEmergUser (theirId))
-    {
-      McpttCallMsgGrpEmergAlertCancelAck ackMsg;
-      ackMsg.SetGrpId (msg.GetGrpId ());
-      ackMsg.SetSendingId (myId);
-      ackMsg.SetOrigId (msg.GetOrigId ());
-
-      Send (ackMsg);
+        Send(ackMsg);
     }
 }
 
 void
-McpttEmergAlertMachineBasic::Send (const McpttCallMsg& msg)
+McpttEmergAlertMachineBasic::ReceiveGrpCallEmergAlertCancel(
+    const McpttCallMsgGrpEmergAlertCancel& msg)
 {
-  NS_LOG_FUNCTION (this << msg);
+    NS_LOG_FUNCTION(this << msg);
 
-  if (!IsStarted ())
+    if (!IsStarted())
     {
-      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
-      return;
+        NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " not started yet.");
+        return;
     }
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " trying to send " << msg << ".");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " received " << msg << ".");
 
-  Ptr<McpttCallMachineGrp> owner = GetOwner ();
-  owner->Send (msg);
+    uint32_t theirId = msg.GetSendingId().GetId();
+    uint32_t myId = GetOwner()->GetCall()->GetOwner()->GetUserId();
+
+    if (RemoveEmergUser(theirId))
+    {
+        McpttCallMsgGrpEmergAlertCancelAck ackMsg;
+        ackMsg.SetGrpId(msg.GetGrpId());
+        ackMsg.SetSendingId(myId);
+        ackMsg.SetOrigId(msg.GetOrigId());
+
+        Send(ackMsg);
+    }
+}
+
+void
+McpttEmergAlertMachineBasic::Send(const McpttCallMsg& msg)
+{
+    NS_LOG_FUNCTION(this << msg);
+
+    if (!IsStarted())
+    {
+        NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " not started yet.");
+        return;
+    }
+
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " trying to send " << msg << ".");
+
+    Ptr<McpttCallMachineGrp> owner = GetOwner();
+    owner->Send(msg);
 }
 
 void
 McpttEmergAlertMachineBasic::SendEmergAlert()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  if (!IsStarted ())
+    if (!IsStarted())
     {
-      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
-      return;
+        NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " not started yet.");
+        return;
     }
-  std::string selected = "False";
-  if (GetOwner ()->GetCall ()->GetCallId () == GetOwner ()->GetCall ()->GetOwner ()->GetSelectedCall ()->GetCallId ())
+    std::string selected = "False";
+    if (GetOwner()->GetCall()->GetCallId() ==
+        GetOwner()->GetCall()->GetOwner()->GetSelectedCall()->GetCallId())
     {
-      selected = "True";
+        selected = "True";
     }
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " sending emergency alert.");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " sending emergency alert.");
 
-  Ptr<McpttTimer> tfe2 = GetTfe2 ();
-  Ptr<McpttCallMachineGrp> owner = GetOwner ();
-  McpttCallMsgFieldGrpId grpId = owner->GetGrpId ();
-  uint32_t userId = owner->GetCall ()->GetOwner ()->GetUserId ();
-  McpttCallMsgFieldOrgName orgName = GetOrgName ();
-  Vector nodeLoc = owner->GetCall ()->GetOwner ()->GetNodeLoc ();
+    Ptr<McpttTimer> tfe2 = GetTfe2();
+    Ptr<McpttCallMachineGrp> owner = GetOwner();
+    McpttCallMsgFieldGrpId grpId = owner->GetGrpId();
+    uint32_t userId = owner->GetCall()->GetOwner()->GetUserId();
+    McpttCallMsgFieldOrgName orgName = GetOrgName();
+    Vector nodeLoc = owner->GetCall()->GetOwner()->GetNodeLoc();
 
-  if (!IsInEmergState ())
+    if (!IsInEmergState())
     {
-      SetEmerg (true);
+        SetEmerg(true);
 
-      McpttCallMsgGrpEmergAlert msg;
-      msg.SetGrpId (grpId);
-      msg.SetUserId (userId);
-      msg.SetOrgName (orgName);
-      msg.SetUserLoc (nodeLoc);
+        McpttCallMsgGrpEmergAlert msg;
+        msg.SetGrpId(grpId);
+        msg.SetUserId(userId);
+        msg.SetOrgName(orgName);
+        msg.SetUserLoc(nodeLoc);
 
-      tfe2->Start ();
+        tfe2->Start();
 
-      Send (msg);
+        Send(msg);
 
-      if (!m_stateChangeCb.IsNull ())
+        if (!m_stateChangeCb.IsNull())
         {
-          m_stateChangeCb (true);
+            m_stateChangeCb(true);
         }
-      m_stateChangeTrace (GetOwner ()->GetCall ()->GetOwner ()->GetUserId (), GetOwner ()->GetCall ()->GetCallId (), selected, GetInstanceTypeId ().GetName (), "'E1: Not in emergency state'", "'E2: Emergency State'");
+        m_stateChangeTrace(GetOwner()->GetCall()->GetOwner()->GetUserId(),
+                           GetOwner()->GetCall()->GetCallId(),
+                           selected,
+                           GetInstanceTypeId().GetName(),
+                           "'E1: Not in emergency state'",
+                           "'E2: Emergency State'");
     }
 }
 
 void
-McpttEmergAlertMachineBasic::SetDelayTfe2 (const Time& delayTfe2)
+McpttEmergAlertMachineBasic::SetDelayTfe2(const Time& delayTfe2)
 {
-  NS_LOG_FUNCTION (this << &delayTfe2);
+    NS_LOG_FUNCTION(this << &delayTfe2);
 
-  GetTfe2 ()->SetDelay (delayTfe2);
+    GetTfe2()->SetDelay(delayTfe2);
 }
 
 void
 McpttEmergAlertMachineBasic::Start()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  if (IsStarted ())
+    if (IsStarted())
     {
-      NS_LOG_LOGIC ("McpttEmergAlertMachineBasic has already been started.");
+        NS_LOG_LOGIC("McpttEmergAlertMachineBasic has already been started.");
     }
-  else
+    else
     {
-      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " started.");
+        NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " started.");
 
-      SetEmerg (false);
-      SetStarted (true);
+        SetEmerg(false);
+        SetStarted(true);
     }
 }
 
 void
 McpttEmergAlertMachineBasic::Stop()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " stopped.");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " stopped.");
 
-  Ptr<McpttTimer> tfe2 = GetTfe2 ();
+    Ptr<McpttTimer> tfe2 = GetTfe2();
 
-  if (tfe2->IsRunning ())
+    if (tfe2->IsRunning())
     {
-      tfe2->Stop ();
+        tfe2->Stop();
     }
 
     for (auto it = m_emergUsers.begin(); it != m_emergUsers.end(); it++)
     {
-      if (it->Tfe1->IsRunning ())
+        if (it->Tfe1->IsRunning())
         {
-          it->Tfe1->Stop ();
-          it->Tfe1 = nullptr;
+            it->Tfe1->Stop();
+            it->Tfe1 = nullptr;
         }
     }
 
-  m_emergUsers.clear ();
+    m_emergUsers.clear();
 
-  SetEmerg (false);
-  SetStarted (false);
+    SetEmerg(false);
+    SetStarted(false);
 }
 
 void
-McpttEmergAlertMachineBasic::AddEmergUser (const McpttEmergAlertMachineBasic::EmergUser& user)
+McpttEmergAlertMachineBasic::AddEmergUser(const McpttEmergAlertMachineBasic::EmergUser& user)
 {
-  NS_LOG_FUNCTION (this << &user);
+    NS_LOG_FUNCTION(this << &user);
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " adding user " << user.Id << " to emergency alert list.");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << " adding user " << user.Id << " to emergency alert list.");
 
-  m_emergUsers.push_back (user);
+    m_emergUsers.push_back(user);
 }
 
 void
 McpttEmergAlertMachineBasic::DoDispose()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  SetOwner(nullptr);
-  SetTfe2(nullptr);
+    SetOwner(nullptr);
+    SetTfe2(nullptr);
 }
 
 void
-McpttEmergAlertMachineBasic::ExpiryOfTfe1 (uint32_t userId)
+McpttEmergAlertMachineBasic::ExpiryOfTfe1(uint32_t userId)
 {
-  NS_LOG_FUNCTION (this << userId);
+    NS_LOG_FUNCTION(this << userId);
 
-  if (!IsStarted ())
+    if (!IsStarted())
     {
-      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
-      return;
+        NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " not started yet.");
+        return;
     }
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  "'s TFE1 timer expired for user " << userId << " to emergency alert list.");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << "'s TFE1 timer expired for user " << userId << " to emergency alert list.");
 
-  RemoveEmergUser (userId);
+    RemoveEmergUser(userId);
 }
 
 void
 McpttEmergAlertMachineBasic::ExpiryOfTfe2()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  if (!IsStarted ())
+    if (!IsStarted())
     {
-      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
-      return;
+        NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " not started yet.");
+        return;
     }
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  "'s TFE2 timer expired.");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName() << "'s TFE2 timer expired.");
 
-  Ptr<McpttTimer> tfe2 = GetTfe2 ();
-  Ptr<McpttCallMachineGrp> owner = GetOwner ();
-  McpttCallMsgFieldGrpId grpId = owner->GetGrpId ();
-  uint32_t userId = owner->GetCall ()->GetOwner ()->GetUserId ();
-  McpttCallMsgFieldOrgName orgName = GetOrgName ();
-  Vector nodeLoc = owner->GetCall ()->GetOwner ()->GetNodeLoc ();
+    Ptr<McpttTimer> tfe2 = GetTfe2();
+    Ptr<McpttCallMachineGrp> owner = GetOwner();
+    McpttCallMsgFieldGrpId grpId = owner->GetGrpId();
+    uint32_t userId = owner->GetCall()->GetOwner()->GetUserId();
+    McpttCallMsgFieldOrgName orgName = GetOrgName();
+    Vector nodeLoc = owner->GetCall()->GetOwner()->GetNodeLoc();
 
-  if (IsInEmergState ())
+    if (IsInEmergState())
     {
-      McpttCallMsgGrpEmergAlert msg;
-      msg.SetGrpId (grpId);
-      msg.SetUserId (userId);
-      msg.SetOrgName (orgName);
-      msg.SetUserLoc (nodeLoc);
+        McpttCallMsgGrpEmergAlert msg;
+        msg.SetGrpId(grpId);
+        msg.SetUserId(userId);
+        msg.SetOrgName(orgName);
+        msg.SetUserLoc(nodeLoc);
 
-      tfe2->Start ();
+        tfe2->Start();
 
-      Send (msg);
+        Send(msg);
     }
 }
 
 bool
-McpttEmergAlertMachineBasic::FindEmergUser (uint32_t userId, std::list<McpttEmergAlertMachineBasic::EmergUser>::iterator& it)
+McpttEmergAlertMachineBasic::FindEmergUser(
+    uint32_t userId,
+    std::list<McpttEmergAlertMachineBasic::EmergUser>::iterator& it)
 {
-  NS_LOG_FUNCTION (this << userId);
+    NS_LOG_FUNCTION(this << userId);
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " looking for user " << userId << " in emergency list.");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << " looking for user " << userId << " in emergency list.");
 
-  bool found = false;
-  it = m_emergUsers.begin ();
-  while (it != m_emergUsers.end () && !found)
+    bool found = false;
+    it = m_emergUsers.begin();
+    while (it != m_emergUsers.end() && !found)
     {
-      if (it->Id == userId)
+        if (it->Id == userId)
         {
-          found = true;
+            found = true;
         }
-      else
+        else
         {
-          it++;
+            it++;
         }
     }
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " did" << (found ? " " : " NOT ") << "find user " << userId << " in emergency list.");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName() << " did" << (found ? " " : " NOT ") << "find user "
+                                               << userId << " in emergency list.");
 
-  return found;
+    return found;
 }
 
 bool
-McpttEmergAlertMachineBasic::RemoveEmergUser (uint32_t userId)
+McpttEmergAlertMachineBasic::RemoveEmergUser(uint32_t userId)
 {
-  NS_LOG_FUNCTION (this << userId);
+    NS_LOG_FUNCTION(this << userId);
 
-  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " removing user " << userId << " from emergency list.");
+    NS_LOG_LOGIC(GetInstanceTypeId().GetName()
+                 << " removing user " << userId << " from emergency list.");
 
-  std::list<McpttEmergAlertMachineBasic::EmergUser>::iterator it;
-  bool found = FindEmergUser (userId, it);
+    std::list<McpttEmergAlertMachineBasic::EmergUser>::iterator it;
+    bool found = FindEmergUser(userId, it);
 
-  if (found)
-  {
-      if (it->Tfe1->IsRunning ())
+    if (found)
+    {
+        if (it->Tfe1->IsRunning())
         {
-          it->Tfe1->Stop ();
+            it->Tfe1->Stop();
         }
 
-      m_emergUsers.erase (it);
+        m_emergUsers.erase(it);
     }
 
-  return found;
+    return found;
 }
 
 std::list<McpttEmergAlertMachineBasic::EmergUser>
 McpttEmergAlertMachineBasic::GetEmergUsers() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_emergUsers;
+    return m_emergUsers;
 }
 
 Ptr<McpttTimer>
 McpttEmergAlertMachineBasic::GetTfe2() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_tfe2;
+    return m_tfe2;
 }
 
 void
-McpttEmergAlertMachineBasic::SetEmergUsers (const std::list<McpttEmergAlertMachineBasic::EmergUser>& emergUsers)
+McpttEmergAlertMachineBasic::SetEmergUsers(
+    const std::list<McpttEmergAlertMachineBasic::EmergUser>& emergUsers)
 {
-  NS_LOG_FUNCTION (this << &emergUsers);
+    NS_LOG_FUNCTION(this << &emergUsers);
 
-  m_emergUsers = emergUsers;
+    m_emergUsers = emergUsers;
 }
 
 void
-McpttEmergAlertMachineBasic::SetTfe2 (Ptr<McpttTimer>  tfe2)
+McpttEmergAlertMachineBasic::SetTfe2(Ptr<McpttTimer> tfe2)
 {
-  NS_LOG_FUNCTION (this << tfe2);
+    NS_LOG_FUNCTION(this << tfe2);
 
-  m_tfe2 = tfe2;
+    m_tfe2 = tfe2;
 }
 
 bool
 McpttEmergAlertMachineBasic::GetEmerg() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_emerg;
+    return m_emerg;
 }
 
 McpttCallMsgFieldOrgName
 McpttEmergAlertMachineBasic::GetOrgName() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_orgName;
+    return m_orgName;
 }
 
 Ptr<McpttCallMachineGrp>
 McpttEmergAlertMachineBasic::GetOwner() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_owner;
+    return m_owner;
 }
 
 bool
 McpttEmergAlertMachineBasic::GetStarted() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_started;
+    return m_started;
 }
 
 void
-McpttEmergAlertMachineBasic::SetEmerg (bool emerg)
+McpttEmergAlertMachineBasic::SetEmerg(bool emerg)
 {
-  NS_LOG_FUNCTION (this << emerg);
+    NS_LOG_FUNCTION(this << emerg);
 
-  m_emerg = emerg;
+    m_emerg = emerg;
 }
 
 void
-McpttEmergAlertMachineBasic::SetOrgName (const McpttCallMsgFieldOrgName& orgName)
+McpttEmergAlertMachineBasic::SetOrgName(const McpttCallMsgFieldOrgName& orgName)
 {
-  NS_LOG_FUNCTION (this << orgName);
+    NS_LOG_FUNCTION(this << orgName);
 
-  m_orgName = orgName;
+    m_orgName = orgName;
 }
 
 void
-McpttEmergAlertMachineBasic::SetOwner (Ptr<McpttCallMachineGrp> owner)
+McpttEmergAlertMachineBasic::SetOwner(Ptr<McpttCallMachineGrp> owner)
 {
-  NS_LOG_FUNCTION (this << owner);
+    NS_LOG_FUNCTION(this << owner);
 
-  m_owner = owner;
+    m_owner = owner;
 }
 
 void
-McpttEmergAlertMachineBasic::SetStarted (bool started)
+McpttEmergAlertMachineBasic::SetStarted(bool started)
 {
-  NS_LOG_FUNCTION (this << started);
+    NS_LOG_FUNCTION(this << started);
 
-  m_started = started;
+    m_started = started;
 }
 
 void
-McpttEmergAlertMachineBasic::SetStateChangeCb (const Callback<void, bool>  stateChangeCb)
+McpttEmergAlertMachineBasic::SetStateChangeCb(const Callback<void, bool> stateChangeCb)
 {
-  NS_LOG_FUNCTION (this << &stateChangeCb);
+    NS_LOG_FUNCTION(this << &stateChangeCb);
 
-  m_stateChangeCb = stateChangeCb;
+    m_stateChangeCb = stateChangeCb;
 }
+
 /** McpttEmergAlertMachineBasic - end **/
 
 } // namespace psc
 } // namespace ns3
-

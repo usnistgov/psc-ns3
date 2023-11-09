@@ -16,47 +16,50 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "ns3/object.h"
-#include "ns3/log.h"
-#include "ns3/nstime.h"
 #include "sip-agent.h"
+
 #include "sip-header.h"
 
-namespace ns3 {
+#include "ns3/log.h"
+#include "ns3/nstime.h"
+#include "ns3/object.h"
 
-NS_LOG_COMPONENT_DEFINE ("SipAgent");
+namespace ns3
+{
 
-namespace sip {
+NS_LOG_COMPONENT_DEFINE("SipAgent");
 
-NS_OBJECT_ENSURE_REGISTERED (SipAgent);
+namespace sip
+{
+
+NS_OBJECT_ENSURE_REGISTERED(SipAgent);
 
 TypeId
 SipAgent::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::sip::SipAgent")
-    .SetParent<SipElement> ()
-    .SetGroupName ("Sip")
-    .AddConstructor<SipAgent> ()
-  ;
-  return tid;
+    static TypeId tid = TypeId("ns3::sip::SipAgent")
+                            .SetParent<SipElement>()
+                            .SetGroupName("Sip")
+                            .AddConstructor<SipAgent>();
+    return tid;
 }
 
-SipAgent::SipAgent ()
-  : SipElement ()
+SipAgent::SipAgent()
+    : SipElement()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-SipAgent::~SipAgent ()
+SipAgent::~SipAgent()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
-SipAgent::DoDispose ()
+SipAgent::DoDispose()
 {
-  NS_LOG_FUNCTION (this);
-  SipElement::DoDispose ();
+    NS_LOG_FUNCTION(this);
+    SipElement::DoDispose();
 }
 
 } // namespace sip

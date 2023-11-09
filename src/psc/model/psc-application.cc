@@ -33,22 +33,24 @@
  * subject to copyright protection within the United States.
  */
 
-#include "ns3/string.h"
-#include "ns3/boolean.h"
-#include "ns3/uinteger.h"
-#include "ns3/log.h"
-#include "ns3/packet.h"
-#include "ns3/udp-socket-factory.h"
-#include "ns3/simulator.h"
-
 #include "psc-application.h"
 
-namespace ns3 {
+#include "ns3/boolean.h"
+#include "ns3/log.h"
+#include "ns3/packet.h"
+#include "ns3/simulator.h"
+#include "ns3/string.h"
+#include "ns3/udp-socket-factory.h"
+#include "ns3/uinteger.h"
 
-NS_LOG_COMPONENT_DEFINE ("PscApplication");
+namespace ns3
+{
 
-namespace psc {
-NS_OBJECT_ENSURE_REGISTERED (PscApplication);
+NS_LOG_COMPONENT_DEFINE("PscApplication");
+
+namespace psc
+{
+NS_OBJECT_ENSURE_REGISTERED(PscApplication);
 
 // Initialize static member
 uint64_t PscSequenceNumber::s_sequenceNumber = 0;
@@ -56,50 +58,50 @@ uint64_t PscSequenceNumber::s_sequenceNumber = 0;
 TypeId
 PscApplication::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::psc::PscApplication")
-    .SetParent<Application> ()
-    .AddAttribute ("AppName",
-                   "The application name to show in the trace",
-                   StringValue ("IncidentApplication"),
-                   MakeStringAccessor (&PscApplication::m_appName),
-                   MakeStringChecker ())
-    .AddAttribute ("Protocol",
-                   "The transport protocol to use",
-                   TypeIdValue (UdpSocketFactory::GetTypeId ()),
-                   MakeTypeIdAccessor (&PscApplication::m_socketTid),
-                   MakeTypeIdChecker ())
-    .AddTraceSource ("Tx",
-                     "A packet is transmitted",
-                     MakeTraceSourceAccessor (&PscApplication::m_txTrace),
-                     "ns3::PscApplication::TxTracedCallback")
-    .AddTraceSource ("Rx",
-                     "A packet is received",
-                     MakeTraceSourceAccessor (&PscApplication::m_rxTrace),
-                     "ns3::PscApplication::RxTracedCallback")
-    .AddTraceSource ("Times",
-                     "Application Start and Stop times",
-                     MakeTraceSourceAccessor (&PscApplication::m_startStopTimeTrace),
-                     "ns3::PscApplication::TimeTracedCallback")
-  ;
-  return tid;
+    static TypeId tid =
+        TypeId("ns3::psc::PscApplication")
+            .SetParent<Application>()
+            .AddAttribute("AppName",
+                          "The application name to show in the trace",
+                          StringValue("IncidentApplication"),
+                          MakeStringAccessor(&PscApplication::m_appName),
+                          MakeStringChecker())
+            .AddAttribute("Protocol",
+                          "The transport protocol to use",
+                          TypeIdValue(UdpSocketFactory::GetTypeId()),
+                          MakeTypeIdAccessor(&PscApplication::m_socketTid),
+                          MakeTypeIdChecker())
+            .AddTraceSource("Tx",
+                            "A packet is transmitted",
+                            MakeTraceSourceAccessor(&PscApplication::m_txTrace),
+                            "ns3::PscApplication::TxTracedCallback")
+            .AddTraceSource("Rx",
+                            "A packet is received",
+                            MakeTraceSourceAccessor(&PscApplication::m_rxTrace),
+                            "ns3::PscApplication::RxTracedCallback")
+            .AddTraceSource("Times",
+                            "Application Start and Stop times",
+                            MakeTraceSourceAccessor(&PscApplication::m_startStopTimeTrace),
+                            "ns3::PscApplication::TimeTracedCallback");
+    return tid;
 }
 
-PscApplication::PscApplication ()
+PscApplication::PscApplication()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-PscApplication::~PscApplication ()
+PscApplication::~PscApplication()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
 PscApplication::DoDispose()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  Application::DoDispose ();
+    Application::DoDispose();
 }
 
 } // namespace psc

@@ -307,9 +307,9 @@ class FfMacSchedSapUser
      */
     struct SchedUlConfigIndParameters
     {
-        std::vector<UlDciListElement_s> m_dciList;   ///< DCI list
-        std::vector<PhichListElement_s> m_phichList; ///< PHICH list
-        std::vector<struct SlDciListElement_s> m_sldciList; ///< Sidelink DCI list
+        std::vector<UlDciListElement_s> m_dciList;                     ///< DCI list
+        std::vector<PhichListElement_s> m_phichList;                   ///< PHICH list
+        std::vector<struct SlDciListElement_s> m_sldciList;            ///< Sidelink DCI list
         std::vector<VendorSpecificListElement_s> m_vendorSpecificList; ///< vendor specific list
     };
 

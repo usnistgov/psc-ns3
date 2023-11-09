@@ -33,286 +33,295 @@
  * subject to copyright protection within the United States.
  */
 
-#include "ns3/log.h"
-#include "ns3/uinteger.h"
-#include "ns3/boolean.h"
-#include "ns3/packet.h"
-#include "ns3/socket.h"
-#include "ns3/simulator.h"
-
 #include "psc-application-server.h"
 
-namespace ns3 {
+#include "ns3/boolean.h"
+#include "ns3/log.h"
+#include "ns3/packet.h"
+#include "ns3/simulator.h"
+#include "ns3/socket.h"
+#include "ns3/uinteger.h"
 
-NS_LOG_COMPONENT_DEFINE ("PscApplicationServer");
+namespace ns3
+{
 
-namespace psc {
+NS_LOG_COMPONENT_DEFINE("PscApplicationServer");
 
-NS_OBJECT_ENSURE_REGISTERED (PscApplicationServer);
+namespace psc
+{
+
+NS_OBJECT_ENSURE_REGISTERED(PscApplicationServer);
 
 TypeId
 PscApplicationServer::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::psc::PscApplicationServer")
-    .SetParent<PscApplication> ()
-    .AddConstructor<PscApplicationServer> ()
-    .AddAttribute ("Port",
-                   "Port on which we listen for incoming packets.",
-                   UintegerValue (100),
-                   MakeUintegerAccessor (&PscApplicationServer::m_port),
-                   MakeUintegerChecker<uint16_t> ())
-    .AddAttribute ("PacketSize",
-                   "Packet size for the response packet.",
-                   UintegerValue (0),
-                   MakeUintegerAccessor (&PscApplicationServer::m_packetSize),
-                   MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("MinResponseInterval",
-                   "Minimum interval between response packets sent by this application.",
-                   TimeValue (MilliSeconds (1)),
-                   MakeTimeAccessor (&PscApplicationServer::m_minTimeBetweenRsps),
-                   MakeTimeChecker ())
-    .AddAttribute ("IsSink",
-                   "Flag to indicate if this server is a sink, or if it sends a response to the packets it receives",
-                   BooleanValue (false),
-                   MakeBooleanAccessor (&PscApplicationServer::m_isSink),
-                   MakeBooleanChecker ())
-  ;
-  return tid;
+    static TypeId tid =
+        TypeId("ns3::psc::PscApplicationServer")
+            .SetParent<PscApplication>()
+            .AddConstructor<PscApplicationServer>()
+            .AddAttribute("Port",
+                          "Port on which we listen for incoming packets.",
+                          UintegerValue(100),
+                          MakeUintegerAccessor(&PscApplicationServer::m_port),
+                          MakeUintegerChecker<uint16_t>())
+            .AddAttribute("PacketSize",
+                          "Packet size for the response packet.",
+                          UintegerValue(0),
+                          MakeUintegerAccessor(&PscApplicationServer::m_packetSize),
+                          MakeUintegerChecker<uint32_t>())
+            .AddAttribute("MinResponseInterval",
+                          "Minimum interval between response packets sent by this application.",
+                          TimeValue(MilliSeconds(1)),
+                          MakeTimeAccessor(&PscApplicationServer::m_minTimeBetweenRsps),
+                          MakeTimeChecker())
+            .AddAttribute("IsSink",
+                          "Flag to indicate if this server is a sink, or if it sends a response to "
+                          "the packets it receives",
+                          BooleanValue(false),
+                          MakeBooleanAccessor(&PscApplicationServer::m_isSink),
+                          MakeBooleanChecker());
+    return tid;
 }
 
-PscApplicationServer::PscApplicationServer ()
+PscApplicationServer::PscApplicationServer()
 {
-  NS_LOG_FUNCTION (this);
-  m_timeLastSendScheduled = Time (MilliSeconds (1));
+    NS_LOG_FUNCTION(this);
+    m_timeLastSendScheduled = Time(MilliSeconds(1));
 
-  m_rxBuffer = nullptr;
-  m_txBuffer = Create<Packet> ();
+    m_rxBuffer = nullptr;
+    m_txBuffer = Create<Packet>();
 }
 
-PscApplicationServer::~PscApplicationServer ()
+PscApplicationServer::~PscApplicationServer()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
 PscApplicationServer::DoDispose()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  m_rxBuffer = nullptr;
-  m_txBuffer = nullptr;
+    m_rxBuffer = nullptr;
+    m_txBuffer = nullptr;
 
-  PscApplication::DoDispose ();
+    PscApplication::DoDispose();
 }
 
 void
 PscApplicationServer::StartApplication()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  if (!m_socket)
+    if (!m_socket)
     {
-      m_socket = ns3::Socket::CreateSocket (GetNode (), m_socketTid);
-      InetSocketAddress local = InetSocketAddress (Ipv4Address::GetAny (), m_port);
-      m_socket->Bind (local);
-      m_socket->Listen ();
+        m_socket = ns3::Socket::CreateSocket(GetNode(), m_socketTid);
+        InetSocketAddress local = InetSocketAddress(Ipv4Address::GetAny(), m_port);
+        m_socket->Bind(local);
+        m_socket->Listen();
     }
 
-  m_socket->SetRecvCallback (MakeCallback (&PscApplicationServer::HandleRead, this));
-  m_socket->SetAcceptCallback (
-    MakeNullCallback<bool, Ptr<ns3::Socket>, const Address &> (),
-    MakeCallback (&PscApplicationServer::HandleAccept, this));
-  m_socket->SetSendCallback (MakeCallback (&PscApplicationServer::TrySend, this));
+    m_socket->SetRecvCallback(MakeCallback(&PscApplicationServer::HandleRead, this));
+    m_socket->SetAcceptCallback(MakeNullCallback<bool, Ptr<ns3::Socket>, const Address&>(),
+                                MakeCallback(&PscApplicationServer::HandleAccept, this));
+    m_socket->SetSendCallback(MakeCallback(&PscApplicationServer::TrySend, this));
 
-  if (!m_socket6)
+    if (!m_socket6)
     {
-      m_socket6 = ns3::Socket::CreateSocket (GetNode (), m_socketTid);
-      Inet6SocketAddress local = Inet6SocketAddress (Ipv6Address::GetAny (), m_port);
-      m_socket6->Bind (local);
-      m_socket6->Listen ();
+        m_socket6 = ns3::Socket::CreateSocket(GetNode(), m_socketTid);
+        Inet6SocketAddress local = Inet6SocketAddress(Ipv6Address::GetAny(), m_port);
+        m_socket6->Bind(local);
+        m_socket6->Listen();
     }
 
-  m_socket6->SetRecvCallback (MakeCallback (&PscApplicationServer::HandleRead, this));
-  m_socket6->SetAcceptCallback (
-    MakeNullCallback<bool, Ptr<ns3::Socket>, const Address &> (),
-    MakeCallback (&PscApplicationServer::HandleAccept, this));
-  m_socket6->SetSendCallback (MakeCallback (&PscApplicationServer::TrySend, this));
+    m_socket6->SetRecvCallback(MakeCallback(&PscApplicationServer::HandleRead, this));
+    m_socket6->SetAcceptCallback(MakeNullCallback<bool, Ptr<ns3::Socket>, const Address&>(),
+                                 MakeCallback(&PscApplicationServer::HandleAccept, this));
+    m_socket6->SetSendCallback(MakeCallback(&PscApplicationServer::TrySend, this));
 
-  m_startStopTimeTrace (m_appName, m_startTime, (m_stopTime - Seconds (2)));
+    m_startStopTimeTrace(m_appName, m_startTime, (m_stopTime - Seconds(2)));
 }
 
 void
 PscApplicationServer::StopNow()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  m_stopEvent.Cancel ();
-  m_stopTime = Simulator::Now ();
-  StopApplication ();
+    m_stopEvent.Cancel();
+    m_stopTime = Simulator::Now();
+    StopApplication();
 
-  m_startStopTimeTrace (m_appName, m_startTime, m_stopTime);
+    m_startStopTimeTrace(m_appName, m_startTime, m_stopTime);
 }
 
 void
-PscApplicationServer::StopApplication ()
+PscApplicationServer::StopApplication()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  if (m_socket)
+    if (m_socket)
     {
-      m_socket->Close ();
-      m_socket->SetRecvCallback (MakeNullCallback<void, Ptr<ns3::Socket> > ());
-      m_socket->SetSendCallback (MakeNullCallback<void, Ptr<ns3::Socket>, uint32_t > ());
-      m_socket = nullptr;
+        m_socket->Close();
+        m_socket->SetRecvCallback(MakeNullCallback<void, Ptr<ns3::Socket>>());
+        m_socket->SetSendCallback(MakeNullCallback<void, Ptr<ns3::Socket>, uint32_t>());
+        m_socket = nullptr;
     }
-  if (m_socket6)
+    if (m_socket6)
     {
-      m_socket6->Close ();
-      m_socket6->SetRecvCallback (MakeNullCallback<void, Ptr<ns3::Socket> > ());
-      m_socket6->SetSendCallback (MakeNullCallback<void, Ptr<ns3::Socket>, uint32_t > ());
-      m_socket6 = nullptr;
+        m_socket6->Close();
+        m_socket6->SetRecvCallback(MakeNullCallback<void, Ptr<ns3::Socket>>());
+        m_socket6->SetSendCallback(MakeNullCallback<void, Ptr<ns3::Socket>, uint32_t>());
+        m_socket6 = nullptr;
     }
-
 }
 
 void
-PscApplicationServer::HandleRead (Ptr<ns3::Socket> socket)
+PscApplicationServer::HandleRead(Ptr<ns3::Socket> socket)
 {
-  NS_LOG_FUNCTION (this << socket);
+    NS_LOG_FUNCTION(this << socket);
 
-  Ptr<ns3::Packet> recvPkt;
-  Address from;
-  while ( (recvPkt = socket->RecvFrom (from)) )
+    Ptr<ns3::Packet> recvPkt;
+    Address from;
+    while ((recvPkt = socket->RecvFrom(from)))
     {
-      if (Simulator::Now () > m_stopTime)
+        if (Simulator::Now() > m_stopTime)
         {
-          break;
+            break;
         }
-      // We may have several packets in this segment, so let's remove them sequentially
-      Ptr<ns3::Packet> tmpPacket = recvPkt->Copy ();
-      while (tmpPacket)
+        // We may have several packets in this segment, so let's remove them sequentially
+        Ptr<ns3::Packet> tmpPacket = recvPkt->Copy();
+        while (tmpPacket)
         {
-          if (m_rxBuffer)
+            if (m_rxBuffer)
             {
-              m_rxBuffer->AddAtEnd (tmpPacket);
+                m_rxBuffer->AddAtEnd(tmpPacket);
             }
-          else
+            else
             {
-              m_rxBuffer = tmpPacket;
+                m_rxBuffer = tmpPacket;
             }
 
-          SeqTsSizeHeader stsh;
+            SeqTsSizeHeader stsh;
 
-          if (m_rxBuffer->GetSize () >= stsh.GetSerializedSize ())
+            if (m_rxBuffer->GetSize() >= stsh.GetSerializedSize())
             {
-              // We have the full header. Now check if we also have the data
-              SeqTsSizeHeader nbh;
-              m_rxBuffer->PeekHeader (nbh);
-              if (m_rxBuffer->GetSize () >= nbh.GetSize () + stsh.GetSerializedSize ())
+                // We have the full header. Now check if we also have the data
+                SeqTsSizeHeader nbh;
+                m_rxBuffer->PeekHeader(nbh);
+                if (m_rxBuffer->GetSize() >= nbh.GetSize() + stsh.GetSerializedSize())
                 {
-                  // We have the full packet. Let's process it
-                  m_rxTrace (m_appName, nbh);
-                  if (!m_isSink)
+                    // We have the full packet. Let's process it
+                    m_rxTrace(m_appName, nbh);
+                    if (!m_isSink)
                     {
-                      ProcessRecvPkt (socket, from);
+                        ProcessRecvPkt(socket, from);
                     }
-                  // Get how many bytes we need to remove from the packet we just got
-                  // bytesUsed = receivedPacketSize - (TotalSize - PayloadSize - HeaderSize)
-                  uint32_t bytesToRemove = tmpPacket->GetSize () - (m_rxBuffer->GetSize () - nbh.GetSize () - stsh.GetSerializedSize ());
-                  m_rxBuffer->RemoveAllPacketTags ();
-                  m_rxBuffer->RemoveAllByteTags ();
-                  m_rxBuffer = nullptr;
+                    // Get how many bytes we need to remove from the packet we just got
+                    // bytesUsed = receivedPacketSize - (TotalSize - PayloadSize - HeaderSize)
+                    uint32_t bytesToRemove =
+                        tmpPacket->GetSize() -
+                        (m_rxBuffer->GetSize() - nbh.GetSize() - stsh.GetSerializedSize());
+                    m_rxBuffer->RemoveAllPacketTags();
+                    m_rxBuffer->RemoveAllByteTags();
+                    m_rxBuffer = nullptr;
 
-                  // Now let's see if there is anything else in the segment
-                  tmpPacket->RemoveAtStart (bytesToRemove);
-                  if (tmpPacket->GetSize () == 0)
+                    // Now let's see if there is anything else in the segment
+                    tmpPacket->RemoveAtStart(bytesToRemove);
+                    if (tmpPacket->GetSize() == 0)
                     {
                         tmpPacket = nullptr;
                     }
                 }
-              else
+                else
                 {
-                  // We don't have the full packet. Let's wait.
-                  tmpPacket = nullptr;
+                    // We don't have the full packet. Let's wait.
+                    tmpPacket = nullptr;
                 }
             }
-          else
+            else
             {
-              // We still need to keep receiving data (we don't have the full header).
-              tmpPacket = nullptr;
+                // We still need to keep receiving data (we don't have the full header).
+                tmpPacket = nullptr;
             }
         }
     }
 }
 
 void
-PscApplicationServer::ProcessRecvPkt (Ptr<ns3::Socket> socket, const Address& from)
+PscApplicationServer::ProcessRecvPkt(Ptr<ns3::Socket> socket, const Address& from)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  if (m_packetSize == 0)
+    if (m_packetSize == 0)
     {
-      NS_FATAL_ERROR_CONT ("Server is not sink but packet size set to 0. Response will not be sent");
-      return;
+        NS_FATAL_ERROR_CONT(
+            "Server is not sink but packet size set to 0. Response will not be sent");
+        return;
     }
 
-  // 2 seconds grace period
-  if (Simulator::Now () <= (m_stopTime - Seconds (2)))
+    // 2 seconds grace period
+    if (Simulator::Now() <= (m_stopTime - Seconds(2)))
     {
-      if ((Simulator::Now () - m_timeLastSendScheduled) >= m_minTimeBetweenRsps)
+        if ((Simulator::Now() - m_timeLastSendScheduled) >= m_minTimeBetweenRsps)
         {
-          m_timeLastSendScheduled = Simulator::Now ();
-          Simulator::Schedule (Seconds (0), &PscApplicationServer::DelayedSend, this, socket, from);
+            m_timeLastSendScheduled = Simulator::Now();
+            Simulator::Schedule(Seconds(0), &PscApplicationServer::DelayedSend, this, socket, from);
         }
-      else
+        else
         {
-          m_timeLastSendScheduled += m_minTimeBetweenRsps;
-          Simulator::Schedule (m_timeLastSendScheduled - Simulator::Now (), &PscApplicationServer::DelayedSend, this, socket, from);
+            m_timeLastSendScheduled += m_minTimeBetweenRsps;
+            Simulator::Schedule(m_timeLastSendScheduled - Simulator::Now(),
+                                &PscApplicationServer::DelayedSend,
+                                this,
+                                socket,
+                                from);
         }
     }
-  // else time is over. Stop transmitting, but the application will still be alive for those
-  // 2 seconds to receive packets in transit
+    // else time is over. Stop transmitting, but the application will still be alive for those
+    // 2 seconds to receive packets in transit
 }
 
 void
-PscApplicationServer::HandleAccept (Ptr<ns3::Socket> socket, const Address& from)
+PscApplicationServer::HandleAccept(Ptr<ns3::Socket> socket, const Address& from)
 {
-  NS_LOG_FUNCTION (this << socket << from);
+    NS_LOG_FUNCTION(this << socket << from);
 
-  socket->SetRecvCallback (MakeCallback (&PscApplicationServer::HandleRead, this));
-  socket->SetSendCallback (MakeCallback (&PscApplicationServer::TrySend, this));
+    socket->SetRecvCallback(MakeCallback(&PscApplicationServer::HandleRead, this));
+    socket->SetSendCallback(MakeCallback(&PscApplicationServer::TrySend, this));
 }
 
 void
-PscApplicationServer::DelayedSend (Ptr<ns3::Socket> socket, const Address& toAddr)
+PscApplicationServer::DelayedSend(Ptr<ns3::Socket> socket, const Address& toAddr)
 {
-  SeqTsSizeHeader stsh;
-  stsh.SetSeq (PscSequenceNumber::GetSequenceNumber ());
-  stsh.SetSize (m_packetSize);
+    SeqTsSizeHeader stsh;
+    stsh.SetSeq(PscSequenceNumber::GetSequenceNumber());
+    stsh.SetSize(m_packetSize);
 
-  Ptr<Packet> pkt = Create<Packet> (m_packetSize);
-  pkt->AddHeader (stsh);
+    Ptr<Packet> pkt = Create<Packet>(m_packetSize);
+    pkt->AddHeader(stsh);
 
-  m_toAddr = toAddr;
+    m_toAddr = toAddr;
 
-  m_txBuffer->AddAtEnd (pkt);
+    m_txBuffer->AddAtEnd(pkt);
 
-  m_txTrace (m_appName, stsh);
+    m_txTrace(m_appName, stsh);
 
-  TrySend (socket, socket->GetTxAvailable ());
+    TrySend(socket, socket->GetTxAvailable());
 }
 
 void
-PscApplicationServer::TrySend (Ptr<Socket> socket, uint32_t txSpace)
+PscApplicationServer::TrySend(Ptr<Socket> socket, uint32_t txSpace)
 {
-  if (socket->GetTxAvailable () && m_txBuffer->GetSize () > 0)
+    if (socket->GetTxAvailable() && m_txBuffer->GetSize() > 0)
     {
-      uint32_t length = m_txBuffer->GetSize () < socket->GetTxAvailable () ? m_txBuffer->GetSize () : socket->GetTxAvailable ();
-      Ptr<Packet> fragment = m_txBuffer->CreateFragment (0, length);
-      uint32_t sent = socket->SendTo (fragment, 0, m_toAddr);
-      m_txBuffer->RemoveAtStart (sent);
+        uint32_t length = m_txBuffer->GetSize() < socket->GetTxAvailable()
+                              ? m_txBuffer->GetSize()
+                              : socket->GetTxAvailable();
+        Ptr<Packet> fragment = m_txBuffer->CreateFragment(0, length);
+        uint32_t sent = socket->SendTo(fragment, 0, m_toAddr);
+        m_txBuffer->RemoveAtStart(sent);
     }
 }
 
 } // namespace psc
-} //namespace ns3
+} // namespace ns3

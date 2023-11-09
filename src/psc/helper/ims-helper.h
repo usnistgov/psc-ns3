@@ -18,16 +18,18 @@
 #ifndef IMS_HELPER_H
 #define IMS_HELPER_H
 
-#include <ns3/object.h>
 #include <ns3/ipv4-address.h>
 #include <ns3/ipv6-address.h>
+#include <ns3/object.h>
 #include <ns3/point-to-point-net-device.h>
 
-namespace ns3 {
+namespace ns3
+{
 
 class Node;
 
-namespace psc {
+namespace psc
+{
 
 /**
  * \ingroup psc
@@ -36,84 +38,83 @@ namespace psc {
  */
 class ImsHelper : public Object
 {
-public:
-  
-  /** 
-   * Constructor
-   */
-  ImsHelper ();
+  public:
+    /**
+     * Constructor
+     */
+    ImsHelper();
 
-  /** 
-   * Destructor
-   */  
-  virtual ~ImsHelper ();
-  
-  // inherited from Object
-  /**
-   *  Register this type.
-   *  \return The object TypeId.
-   */
-  static TypeId GetTypeId (void);
+    /**
+     * Destructor
+     */
+    virtual ~ImsHelper();
 
-  // inherited from Object
-  virtual void DoDispose ();
+    // inherited from Object
+    /**
+     *  Register this type.
+     *  \return The object TypeId.
+     */
+    static TypeId GetTypeId(void);
 
-  /**
-   * This method should be called once per simulation.  It creates an IMS
-   * node, adds an Internet stack to it, connects the PGW to it with a 
-   * point-to-point link, assigns IP addresses to the link, and installs
-   * a default route in the IMS node to reach the UE network.
-   *
-   * \param pgwNode PGW node pointer
-   */
-  void ConnectPgw (Ptr<Node> pgwNode);
+    // inherited from Object
+    virtual void DoDispose();
 
-  /**
-   *
-   * \return a pointer to the node implementing IMS functionality.
-   */
-  Ptr<Node> GetImsNode () const;
+    /**
+     * This method should be called once per simulation.  It creates an IMS
+     * node, adds an Internet stack to it, connects the PGW to it with a
+     * point-to-point link, assigns IP addresses to the link, and installs
+     * a default route in the IMS node to reach the UE network.
+     *
+     * \param pgwNode PGW node pointer
+     */
+    void ConnectPgw(Ptr<Node> pgwNode);
 
-  /**
-   * Return the address of the IMS that connects to the UE over the Gm
-   * reference point.   This should be the destination address for packets
-   * sent to the CSCF (IMS).
-   *
-   * \return Address of the IMS at Gm reference point; reachable by UEs
-   */
-  Address GetImsGmAddress (void) const;
+    /**
+     *
+     * \return a pointer to the node implementing IMS functionality.
+     */
+    Ptr<Node> GetImsNode() const;
 
-  /**
-   * Return the device pointer for the device connecting the IMS to the PGW
-   * at the Gm reference point.
-   *
-   * \return Device pointer of IMS device at Gm reference point
-   */
-  Ptr<PointToPointNetDevice> GetImsGmDevice (void) const;
+    /**
+     * Return the address of the IMS that connects to the UE over the Gm
+     * reference point.   This should be the destination address for packets
+     * sent to the CSCF (IMS).
+     *
+     * \return Address of the IMS at Gm reference point; reachable by UEs
+     */
+    Address GetImsGmAddress(void) const;
 
-  /**
-   * Override default IPv4 network configuration for IMS network
-   * \param baseAddress base IPv4 address
-   * \param baseMask base IPv4 mask
-   */
-  void SetImsIpv4Network (Ipv4Address baseAddress, Ipv4Mask baseMask);
+    /**
+     * Return the device pointer for the device connecting the IMS to the PGW
+     * at the Gm reference point.
+     *
+     * \return Device pointer of IMS device at Gm reference point
+     */
+    Ptr<PointToPointNetDevice> GetImsGmDevice(void) const;
 
-  /**
-   * Override default IPv6 network configuration for IMS network
-   * \param baseAddress base IPv6 address
-   * \param basePrefix base IPv6 prefix
-   */
-  void SetImsIpv6Network (Ipv6Address baseAddress, Ipv6Prefix basePrefix);
+    /**
+     * Override default IPv4 network configuration for IMS network
+     * \param baseAddress base IPv4 address
+     * \param baseMask base IPv4 mask
+     */
+    void SetImsIpv4Network(Ipv4Address baseAddress, Ipv4Mask baseMask);
 
-private:
-  bool m_useIpv6; //!< A flag that indicates if IPv6 should be used.
-  Ptr<Node> m_imsNode;
-  Ipv4Address m_ipv4BaseAddress {"15.0.0.0"};
-  Ipv4Mask m_ipv4BaseMask {"255.0.0.0"};
-  Ipv6Address m_ipv6BaseAddress {"6001:db80::"};
-  Ipv6Prefix m_ipv6BasePrefix {64};
-  Ptr<Node> m_pgwNode;
-  Ptr<PointToPointNetDevice> m_imsDevice;
+    /**
+     * Override default IPv6 network configuration for IMS network
+     * \param baseAddress base IPv6 address
+     * \param basePrefix base IPv6 prefix
+     */
+    void SetImsIpv6Network(Ipv6Address baseAddress, Ipv6Prefix basePrefix);
+
+  private:
+    bool m_useIpv6; //!< A flag that indicates if IPv6 should be used.
+    Ptr<Node> m_imsNode;
+    Ipv4Address m_ipv4BaseAddress{"15.0.0.0"};
+    Ipv4Mask m_ipv4BaseMask{"255.0.0.0"};
+    Ipv6Address m_ipv6BaseAddress{"6001:db80::"};
+    Ipv6Prefix m_ipv6BasePrefix{64};
+    Ptr<Node> m_pgwNode;
+    Ptr<PointToPointNetDevice> m_imsDevice;
 };
 
 } // namespace psc

@@ -29,34 +29,34 @@
  * employees is not subject to copyright protection within the United States.
  */
 
-#include <ns3/log.h>
-#include <ns3/object.h>
-#include <ns3/timer.h>
-#include <ns3/pointer.h>
+#include "mcptt-timer.h"
 
 #include "mcptt-entity-id.h"
 
-#include "mcptt-timer.h"
+#include <ns3/log.h>
+#include <ns3/object.h>
+#include <ns3/pointer.h>
+#include <ns3/timer.h>
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("McpttTimer");
+NS_LOG_COMPONENT_DEFINE("McpttTimer");
 
-namespace psc {
+namespace psc
+{
 
-NS_OBJECT_ENSURE_REGISTERED (McpttTimer);
+NS_OBJECT_ENSURE_REGISTERED(McpttTimer);
 
 TypeId
 McpttTimer::GetTypeId()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+    NS_LOG_FUNCTION_NOARGS();
 
-  static TypeId tid = TypeId ("ns3::psc::McpttTimer")
-    .SetParent<Object> ()
-    .AddConstructor<McpttTimer> ()
-  ;
+    static TypeId tid =
+        TypeId("ns3::psc::McpttTimer").SetParent<Object>().AddConstructor<McpttTimer>();
 
-  return tid;
+    return tid;
 }
 
 McpttTimer::McpttTimer()
@@ -64,7 +64,7 @@ McpttTimer::McpttTimer()
       m_id(McpttEntityId(0, "Timer")),
       m_rawTimer(nullptr)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 McpttTimer::McpttTimer(const McpttEntityId& id)
@@ -72,223 +72,224 @@ McpttTimer::McpttTimer(const McpttEntityId& id)
       m_id(id),
       m_rawTimer(nullptr)
 {
-  NS_LOG_FUNCTION (this << id);
+    NS_LOG_FUNCTION(this << id);
 }
 
 McpttTimer::~McpttTimer()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 Time
 McpttTimer::GetDelay() const
 {
-  Timer* rawTimer = GetRawTimer ();
+    Timer* rawTimer = GetRawTimer();
 
-  Time delay = rawTimer->GetDelay ();
+    Time delay = rawTimer->GetDelay();
 
-  return delay;
+    return delay;
 }
 
 TypeId
 McpttTimer::GetInstanceTypeId() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return McpttTimer::GetTypeId ();
+    return McpttTimer::GetTypeId();
 }
 
 Time
 McpttTimer::GetTimeLeft() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  Timer* rawTimer = GetRawTimer ();
+    Timer* rawTimer = GetRawTimer();
 
-  Time timeLeft = rawTimer->GetDelayLeft ();
+    Time timeLeft = rawTimer->GetDelayLeft();
 
-  NS_LOG_LOGIC ("Timer " << GetId () << " has " << timeLeft << " left.");
+    NS_LOG_LOGIC("Timer " << GetId() << " has " << timeLeft << " left.");
 
-  return timeLeft;
+    return timeLeft;
 }
 
 bool
 McpttTimer::IsExpired() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  Timer* rawTimer = GetRawTimer ();
+    Timer* rawTimer = GetRawTimer();
 
-  bool isExpired = rawTimer->IsExpired ();
+    bool isExpired = rawTimer->IsExpired();
 
-  NS_LOG_LOGIC ("Timer " << GetId () << " is" << (isExpired ? " " : " not ") << "expired.");
+    NS_LOG_LOGIC("Timer " << GetId() << " is" << (isExpired ? " " : " not ") << "expired.");
 
-  return isExpired;
+    return isExpired;
 }
 
 bool
 McpttTimer::IsRunning() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  Timer* rawTimer = GetRawTimer ();
+    Timer* rawTimer = GetRawTimer();
 
-  bool isRunning = rawTimer->IsRunning ();
+    bool isRunning = rawTimer->IsRunning();
 
-  NS_LOG_LOGIC ("Timer " << GetId () << " is" << (isRunning ? " " : " not ") << "running.");
+    NS_LOG_LOGIC("Timer " << GetId() << " is" << (isRunning ? " " : " not ") << "running.");
 
-  if (isRunning)
+    if (isRunning)
     {
-      GetTimeLeft ();
+        GetTimeLeft();
     }
 
-  return isRunning;
+    return isRunning;
 }
 
 void
-McpttTimer::Print (std::ostream& os) const
+McpttTimer::Print(std::ostream& os) const
 {
-  NS_LOG_FUNCTION (this << &os);
+    NS_LOG_FUNCTION(this << &os);
 
-  Time delay = GetDelay ();
-  McpttEntityId id = GetId ();
-  bool isRunning = IsRunning ();
-  bool isExpired = IsExpired ();
+    Time delay = GetDelay();
+    McpttEntityId id = GetId();
+    bool isRunning = IsRunning();
+    bool isExpired = IsExpired();
 
-  os << id << "(";
-  os << "delay=" << delay.GetSeconds () << "s" << ";";
-  os << "running=" << (isRunning ? "true" : "false") << ";";
-  os << "expired=" << (isExpired ? "true" : "false") << ";";
-  os << "time-left=";
+    os << id << "(";
+    os << "delay=" << delay.GetSeconds() << "s"
+       << ";";
+    os << "running=" << (isRunning ? "true" : "false") << ";";
+    os << "expired=" << (isExpired ? "true" : "false") << ";";
+    os << "time-left=";
 
-  if (isRunning)
+    if (isRunning)
     {
-      os << GetTimeLeft ().GetSeconds () << "s";
+        os << GetTimeLeft().GetSeconds() << "s";
     }
-  else
+    else
     {
-      os << "N/A";
+        os << "N/A";
     }
 
-  os << ")";
+    os << ")";
 }
 
 void
 McpttTimer::Restart()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  if (IsRunning ())
+    if (IsRunning())
     {
-      Stop ();
+        Stop();
     }
 
-  Start ();
+    Start();
 }
 
 void
-McpttTimer::SetDelay (const Time& delay)
+McpttTimer::SetDelay(const Time& delay)
 {
-  NS_LOG_FUNCTION (this << delay);
+    NS_LOG_FUNCTION(this << delay);
 
-  Timer* rawTimer = GetRawTimer ();
+    Timer* rawTimer = GetRawTimer();
 
-  NS_ASSERT_MSG (!IsRunning (), "Timer " << GetId () << " has already been started.");
+    NS_ASSERT_MSG(!IsRunning(), "Timer " << GetId() << " has already been started.");
 
-  NS_LOG_LOGIC ("Setting timer " << GetId () << " delay to " << delay << ".");
+    NS_LOG_LOGIC("Setting timer " << GetId() << " delay to " << delay << ".");
 
-  rawTimer->SetDelay (delay);
+    rawTimer->SetDelay(delay);
 }
 
 void
 McpttTimer::Start()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  Timer* rawTimer = GetRawTimer ();
+    Timer* rawTimer = GetRawTimer();
 
-  NS_ASSERT_MSG (!IsRunning (), "Timer " << GetId () << " has already been started.");
+    NS_ASSERT_MSG(!IsRunning(), "Timer " << GetId() << " has already been started.");
 
-  NS_LOG_LOGIC ("Starting timer " << GetId () << ".");
+    NS_LOG_LOGIC("Starting timer " << GetId() << ".");
 
-  rawTimer->Schedule ();
+    rawTimer->Schedule();
 }
 
 void
-McpttTimer::StartWith (const Time& delay)
+McpttTimer::StartWith(const Time& delay)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  Time permDelay = GetDelay ();
-  SetDelay (delay);
-  Start ();
-  GetRawTimer ()->SetDelay (permDelay);
+    Time permDelay = GetDelay();
+    SetDelay(delay);
+    Start();
+    GetRawTimer()->SetDelay(permDelay);
 }
 
 void
 McpttTimer::Stop()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  Timer* rawTimer = GetRawTimer ();
+    Timer* rawTimer = GetRawTimer();
 
-  NS_ASSERT_MSG (IsRunning (), "Timer " << GetId () << " is already stopped.");
+    NS_ASSERT_MSG(IsRunning(), "Timer " << GetId() << " is already stopped.");
 
-  NS_LOG_LOGIC ("Stopping timer " << GetId () << ".");
+    NS_LOG_LOGIC("Stopping timer " << GetId() << ".");
 
-  rawTimer->Cancel ();
+    rawTimer->Cancel();
 }
 
 void
 McpttTimer::DoDispose()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  Timer* rawTimer = GetRawTimer ();
+    Timer* rawTimer = GetRawTimer();
 
-  delete rawTimer;
+    delete rawTimer;
 
-  SetRawTimer(nullptr);
+    SetRawTimer(nullptr);
 }
 
 McpttEntityId
 McpttTimer::GetId() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_id;
+    return m_id;
 }
 
 Timer*
 McpttTimer::GetRawTimer() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return m_rawTimer;
+    return m_rawTimer;
 }
 
 void
-McpttTimer::SetId (const McpttEntityId& id)
+McpttTimer::SetId(const McpttEntityId& id)
 {
-  NS_LOG_FUNCTION (this << id);
+    NS_LOG_FUNCTION(this << id);
 
-  m_id = id;
+    m_id = id;
 }
 
 void
-McpttTimer::SetRawTimer (Timer* const& rawTimer)
+McpttTimer::SetRawTimer(Timer* const& rawTimer)
 {
-  NS_LOG_FUNCTION (this << rawTimer);
+    NS_LOG_FUNCTION(this << rawTimer);
 
-  m_rawTimer = rawTimer;
+    m_rawTimer = rawTimer;
 }
 
 std::ostream&
-operator<< (std::ostream& os, const McpttTimer& timer)
+operator<<(std::ostream& os, const McpttTimer& timer)
 {
-  timer.Print (os);
+    timer.Print(os);
 
-  return os;
+    return os;
 }
 
 } // namespace psc

@@ -1,4 +1,5 @@
 .. include:: replace.txt
+.. highlight:: cpp
 
 +++++++++++++++++++++
 PSC Application Model
@@ -7,7 +8,7 @@ PSC Application Model
 The PSC application model provides a simple and flexible way to generate traffic for
 various use cases using a client/server concept. Specifically, it uses a
 Request-Response design where the client sends request messages to the server
-that, if enabled, replies with response messages. 
+that, if enabled, replies with response messages.
 
 -----------------
 Model Description
@@ -15,7 +16,7 @@ Model Description
 
 The client generates requests following an on-off model, where “on” periods are called sessions. Random
 variables are associated with the inter-packet interval, number of packets in a
-session, and the inter-session interval. 
+session, and the inter-session interval.
 
 .. _fig-psc-application-client:
 
@@ -27,7 +28,7 @@ session, and the inter-session interval.
 On the server side, a response is generated as soon as a request arrives unless
 the previous response was sent within the minimum inter-response time, in which
 case it is delayed. The server application is thus configured using random
-variables for the packet size and minimum inter-response time. 
+variables for the packet size and minimum inter-response time.
 
 .. _fig-psc-application-server:
 
@@ -39,7 +40,7 @@ variables for the packet size and minimum inter-response time.
 
 The implementation is provided in the following files:
 
-* ``src/psc/model/psc-application-configuration.{h.cc}`` The parameters used by the helper to configure the client and server applications. 
+* ``src/psc/model/psc-application-configuration.{h.cc}`` The parameters used by the helper to configure the client and server applications.
 * ``src/psc/model/psc-application.{h.cc}`` Super class for the client and server implementation.
 * ``src/psc/model/psc-application-client.{h.cc}`` The client application sending requests.
 * ``src/psc/model/psc-application-server.{h.cc}`` The server application receiving requests and sending responses.
@@ -120,11 +121,11 @@ Usage
 
 There is one example in the ``psc/example/example-psc-application.cc``.
 
-In that example, two nodes, n0 and n1 are connected via a Carrier Sense Multiple Access (CSMA) link with a 100 Mb/s data rate and 1 ms delay. 
+In that example, two nodes, n0 and n1 are connected via a Carrier Sense Multiple Access (CSMA) link with a 100 Mb/s data rate and 1 ms delay.
 ::
 
   //
-  // n0 ==================  n1  
+  // n0 ==================  n1
   //    LAN 6001:db80::/64
 
 
@@ -138,35 +139,38 @@ The configuration and deployment of the PscApplication instances is done in two 
 
 * Creation and configuration of a PscApplicationConfiguration object as shown below:
 
-::
+.. sourcecode:: cpp
 
-  Ptr<PscApplicationConfiguration> appConfig = CreateObject <PscApplicationConfiguration> (
-      "PscApplicationExample",
-      UdpSocketFactory::GetTypeId (),     //Socket type
-      5000                                //port number
-      );
+    Ptr<PscApplicationConfiguration> appConfig =
+        CreateObject<PscApplicationConfiguration>("PscApplicationExample",
+            UdpSocketFactory::GetTypeId(), // Socket type
+            5000                           // port number
+        );
 
-  appConfig->SetApplicationPattern (
-    CreateObjectWithAttributes<ConstantRandomVariable> ("Constant", DoubleValue (10)),   //Number of packets to send per session
-    CreateObjectWithAttributes<ConstantRandomVariable> ("Constant", DoubleValue (1)),   //Packet interval (in s)
-    CreateObjectWithAttributes<ConstantRandomVariable> ("Constant", DoubleValue (5)),   //Time between sessions
-    50,        //Client packet size (bytes)
-    20);       //Server packet size (bytes)
-
+    appConfig->SetApplicationPattern(
+        CreateObjectWithAttributes<ConstantRandomVariable>(
+            "Constant", DoubleValue(10)), // Number of packets to send per session
+        CreateObjectWithAttributes<ConstantRandomVariable>(
+            "Constant", DoubleValue(1)), // Packet interval (in s)
+        CreateObjectWithAttributes<ConstantRandomVariable>("Constant",
+            DoubleValue(5)), // Time between sessions
+        50,  // Client packet size (bytes)
+        20); // Server packet size (bytes)
 
 * Deployment of the application in the client and server nodes, which can easily be done using an instance of PscApplicationHelper as show below:
 
-::
+.. sourcecode:: cpp
 
-  Ptr<PscApplicationHelper> appHelper = CreateObject<PscApplicationHelper> ();
+    Ptr<PscApplicationHelper> appHelper = CreateObject<PscApplicationHelper>();
 
-  ApplicationContainer apps = appHelper->Install (appConfig, csmaNodes.Get (0),
-                                csmaNodes.Get (1),
-                                csmaNodes.Get (1)->GetObject<Ipv6L3Protocol> ()->GetAddress (1, 1).GetAddress (),
-                                echoClient,
-                                Seconds (startTime),
-                                Seconds (simTime));
-
+    ApplicationContainer apps = appHelper->Install(
+        appConfig,
+        csmaNodes.Get(0),
+        csmaNodes.Get(1),
+        csmaNodes.Get(1)->GetObject<Ipv6L3Protocol>()->GetAddress(1, 1).GetAddress(),
+        echoClient,
+        Seconds(startTime),
+        Seconds(simTime));
 
 The example program supports a few options to change the application behavior
 and the level of output. The list of arguments is listed by using the

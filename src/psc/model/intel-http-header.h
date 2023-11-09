@@ -33,135 +33,143 @@
 #ifndef INTEL_HTTP_HEADER_H
 #define INTEL_HTTP_HEADER_H
 
-#include <cstdint>
 #include <ns3/header.h>
 
-namespace ns3 {
-namespace psc {
+#include <cstdint>
+
+namespace ns3
+{
+namespace psc
+{
 
 /**
  * \ingroup psc
  * \brief Packet header for the Intel HTTP application
  *
- * This header is used by the Intel HTTP application, and provides a flag indicating whether a request is for the main HTML object
- * or any of the embedded objects (this is used in requests from the client), a count of the embedded objects in the main HTML object
- * (this is used in the response for the main HTML object), and the total size of the payload
+ * This header is used by the Intel HTTP application, and provides a flag indicating whether a
+ * request is for the main HTML object or any of the embedded objects (this is used in requests from
+ * the client), a count of the embedded objects in the main HTML object (this is used in the
+ * response for the main HTML object), and the total size of the payload
  *
  * See the model documentation for details about this class
  */
 class IntelHttpHeader : public Header
 {
-public:
-  /**
-   * Possible types of HTTP request/responses.
-   */
-  enum Type { Main, Embedded };
+  public:
+    /**
+     * Possible types of HTTP request/responses.
+     */
+    enum Type
+    {
+        Main,
+        Embedded
+    };
 
-  /**
-   * Default constructor
-   */
-  IntelHttpHeader ();
-  /**
-   * Default destructor
-   */
-  ~IntelHttpHeader () override;
+    /**
+     * Default constructor
+     */
+    IntelHttpHeader();
+    /**
+     * Default destructor
+     */
+    ~IntelHttpHeader() override;
 
-  /**
-   * Get the TypeId for this class
-   *
-   * \return The TypeId for this class
-   */
-  static TypeId GetTypeId (void);
-  /**
-   * Get the TypeId for this instance
-   *
-   * \return The TypeId for this instance
-   */
-  TypeId GetInstanceTypeId (void) const override;
+    /**
+     * Get the TypeId for this class
+     *
+     * \return The TypeId for this class
+     */
+    static TypeId GetTypeId(void);
+    /**
+     * Get the TypeId for this instance
+     *
+     * \return The TypeId for this instance
+     */
+    TypeId GetInstanceTypeId(void) const override;
 
-  /**
-   * Set the request type
-   *
-   * \param requestType The request type
-   */
-  void SetRequestType (Type requestType);
-  /**
-   * Get the request type
-   *
-   * \return The request type
-   */
-  Type GetRequestType (void) const;
-  /**
-   * Set the number of embedded objects linked in the HTML document
-   *
-   * \param numEmbeddedObjects Number of embedded objects linked in the HTML document
-   */
-  void SetNumberEmbeddedObjects (uint16_t numEmbeddedObjects);
-  /**
-   * Get the number of embedded objects linked in the HTML document
-   *
-   * \return The number of embedded objects linked in the HTML document
-   */
-  uint16_t GetNumberEmbeddedObjects (void) const;
-  /**
-   * Set the Payload Size
-   *
-   * \param payloadSize The new payload size in bytes
-   */
-  void SetPayloadSize (uint32_t payloadSize);
-  /**
-   * Get the total payload size in bytes
-   *
-   * \return uint32_t Total bytes in the payload
-   */
-  uint32_t GetPayloadSize (void) const;
-  /**
-   * Deserialize this header in the Buffer provided as a parameter
-   *
-   * \param start The Iterator to the Buffer where to read the header fields
-   * \return The size of the deserialized header.
-   */
-  uint32_t Deserialize (Buffer::Iterator start) override;
-  /**
-   * Get the size of the header in serialized form
-   *
-   * \return The size of the header in serialized form.
-   */
-  uint32_t GetSerializedSize (void) const override;
-  /**
-   * Print a string version of the header in the ostream parameter provided.
-   *
-   * \param os The ostream where to print this header
-   */
-  void Print (std::ostream &os) const override;
-  /**
-   * Serialize this header in the buffer provided as a parameter
-   *
-   * \param start Iterator to the Buffer where to serialize this header
-   */
-  void Serialize (Buffer::Iterator start) const override;
-  /**
-   * Get the header size. This is a static method so we don't have to
-   * hardcode the value in other classes that still don't have a full
-   * object (e.g. to compute the size of a packet before building the packet)
-   *
-   * \return The size of the header
-   */
-  static uint32_t GetHeaderSize (void);
+    /**
+     * Set the request type
+     *
+     * \param requestType The request type
+     */
+    void SetRequestType(Type requestType);
+    /**
+     * Get the request type
+     *
+     * \return The request type
+     */
+    Type GetRequestType(void) const;
+    /**
+     * Set the number of embedded objects linked in the HTML document
+     *
+     * \param numEmbeddedObjects Number of embedded objects linked in the HTML document
+     */
+    void SetNumberEmbeddedObjects(uint16_t numEmbeddedObjects);
+    /**
+     * Get the number of embedded objects linked in the HTML document
+     *
+     * \return The number of embedded objects linked in the HTML document
+     */
+    uint16_t GetNumberEmbeddedObjects(void) const;
+    /**
+     * Set the Payload Size
+     *
+     * \param payloadSize The new payload size in bytes
+     */
+    void SetPayloadSize(uint32_t payloadSize);
+    /**
+     * Get the total payload size in bytes
+     *
+     * \return uint32_t Total bytes in the payload
+     */
+    uint32_t GetPayloadSize(void) const;
+    /**
+     * Deserialize this header in the Buffer provided as a parameter
+     *
+     * \param start The Iterator to the Buffer where to read the header fields
+     * \return The size of the deserialized header.
+     */
+    uint32_t Deserialize(Buffer::Iterator start) override;
+    /**
+     * Get the size of the header in serialized form
+     *
+     * \return The size of the header in serialized form.
+     */
+    uint32_t GetSerializedSize(void) const override;
+    /**
+     * Print a string version of the header in the ostream parameter provided.
+     *
+     * \param os The ostream where to print this header
+     */
+    void Print(std::ostream& os) const override;
+    /**
+     * Serialize this header in the buffer provided as a parameter
+     *
+     * \param start Iterator to the Buffer where to serialize this header
+     */
+    void Serialize(Buffer::Iterator start) const override;
+    /**
+     * Get the header size. This is a static method so we don't have to
+     * hardcode the value in other classes that still don't have a full
+     * object (e.g. to compute the size of a packet before building the packet)
+     *
+     * \return The size of the header
+     */
+    static uint32_t GetHeaderSize(void);
 
-private:
-  /**
-   * Request type
-   */
-  Type m_requestType;
-  /**
-   * Number of embedded objects linked in the HTML document
-   */
-  uint16_t m_numEmbeddedObjects;
-  /**
-   * Total size of the payload in bytes
-   */
-  uint32_t m_payloadSize;
+  private:
+    /**
+     * Request type
+     */
+    Type m_requestType;
+    /**
+     * Number of embedded objects linked in the HTML document
+     */
+    uint16_t m_numEmbeddedObjects;
+    /**
+     * Total size of the payload in bytes
+     */
+    uint32_t m_payloadSize;
 };
 
 } // namespace psc

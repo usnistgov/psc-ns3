@@ -12,7 +12,7 @@ The relevance of this model to public safety communications is that such
 scenarios often require a many-to-many group communications application, and
 existing |ns3| applications are not suitable to generate such traffic.
 
-The UDP group echo implementation is authored by 
+The UDP group echo implementation is authored by
 Fernando J. Cintron (fernando.cintron@nist.gov) and is derived from the
 UdpEchoServer found in the |ns3| applications module.
 
@@ -33,11 +33,11 @@ one or more clients.  The behavior of the ``ns3::psc::UdpEchoServer`` can be
 reproduced (i.e., it is a special case of this object).
 
 The model works as follows.  The UdpGroupEchoServer is an |ns3| application,
-listening for UDP datagrams on a configured UDP port.  Upon receipt of a 
+listening for UDP datagrams on a configured UDP port.  Upon receipt of a
 datagram for the first time from a client, the server records the client
 and a timestamp for when the packet was received.  The server then decides
 whether to forward the packet back to one or more clients, on a pre-configured
-'EchoPort'.  The set of possible clients is built dynamically based on 
+'EchoPort'.  The set of possible clients is built dynamically based on
 received packets.
 
 There are a few configurable policies:
@@ -47,12 +47,12 @@ There are a few configurable policies:
 
 2.  The server may be configured to echo to a group of clients including the
     sender.  Furthermore, the sending client may be excluded from the
-    response. 
+    response.
 
 3.  The server may be configured to echo to a group of clients including the
     sender, so long as the server has heard from each client within a
-    configurable timeout period.  Furthermore, the sending client may 
-    be excluded from the response. 
+    configurable timeout period.  Furthermore, the sending client may
+    be excluded from the response.
 
 Attributes
 ++++++++++
@@ -84,9 +84,9 @@ A simple example based on CSMA links is provided in the file ``src/psc/examples/
   //  ==========================
   //     LAN 10.1.2.0
 
-By default, node n0 is the client and node n1 is the server, although 
+By default, node n0 is the client and node n1 is the server, although
 additional nodes can be added with the ``--nExtra`` argument.  If there
-are more nodes, the highest numbered node is the server. 
+are more nodes, the highest numbered node is the server.
 
 Each client is configured with an on-off traffic generator that sends
 traffic at random times to the server.  The following program options exercise
@@ -135,7 +135,7 @@ back to the client.  Running with the option ``--nExtra=2`` shows:
 ::
 
   $ ./ns3 run 'example-udp-group-echo --nExtra=2'
-  
+
   ...
 
   9.99949 server received 41 bytes from 10.1.2.1 port 49153

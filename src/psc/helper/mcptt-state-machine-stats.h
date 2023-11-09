@@ -32,15 +32,18 @@
 #ifndef MCPTT_STATE_MACHINE_STATS_H
 #define MCPTT_STATE_MACHINE_STATS_H
 
-#include <fstream>
-#include <ns3/object.h>
 #include <ns3/mcptt-msg.h>
 #include <ns3/mcptt-ptt-app.h>
+#include <ns3/object.h>
 #include <ns3/type-id.h>
 
-namespace ns3 {
+#include <fstream>
 
-namespace psc {
+namespace ns3
+{
+
+namespace psc
+{
 
 /**
  * \ingroup psc
@@ -49,44 +52,48 @@ namespace psc {
  */
 class McpttStateMachineStats : public Object
 {
-public:
-  /**
-   * Gets the type ID of the McpttStateMachineStats class.
-   * \returns The type ID.
-   */
-  static TypeId GetTypeId (void);
-  /**
-   * Creates an instance of the McpttStateMachineStats class.
-   */
-  McpttStateMachineStats (void);
-  /**
-   * \brief The destructor of the McpttStateMachineStats class.
-   */
-  virtual ~McpttStateMachineStats (void);
-  /**
-   * Gets the type ID of this  instance.
-   * \returns The type ID.
-   */
-  virtual TypeId GetInstanceTypeId (void) const;
-  /**
-   * The callback for capturing state changes
-   * \param userId The user ID of the state machine.
-   * \param callId The call ID of the state machine.
-   * \param selected Indicator whether the call is selected on the client
-   * \param typeId The type ID of the state machine.
-   * \param oldStateName The name of the previous state.
-   * \param newStateName THe name of the current state.
-   */
-  virtual void StateChangeCb (uint32_t userId, uint16_t callId, const std::string& selected, const std::string& typeId, const std::string& oldStateName, const std::string& newStateName);
+  public:
+    /**
+     * Gets the type ID of the McpttStateMachineStats class.
+     * \returns The type ID.
+     */
+    static TypeId GetTypeId(void);
+    /**
+     * Creates an instance of the McpttStateMachineStats class.
+     */
+    McpttStateMachineStats(void);
+    /**
+     * \brief The destructor of the McpttStateMachineStats class.
+     */
+    virtual ~McpttStateMachineStats(void);
+    /**
+     * Gets the type ID of this  instance.
+     * \returns The type ID.
+     */
+    virtual TypeId GetInstanceTypeId(void) const;
+    /**
+     * The callback for capturing state changes
+     * \param userId The user ID of the state machine.
+     * \param callId The call ID of the state machine.
+     * \param selected Indicator whether the call is selected on the client
+     * \param typeId The type ID of the state machine.
+     * \param oldStateName The name of the previous state.
+     * \param newStateName THe name of the current state.
+     */
+    virtual void StateChangeCb(uint32_t userId,
+                               uint16_t callId,
+                               const std::string& selected,
+                               const std::string& typeId,
+                               const std::string& oldStateName,
+                               const std::string& newStateName);
 
-private:
-  bool m_firstCb; //!< Flag that indicates if the callback has been fired yet.
-  std::string m_outputFileName; //!< The file name of the trace file.
-  std::ofstream m_outputFile; //!< The file stream object of trace file
+  private:
+    bool m_firstCb;               //!< Flag that indicates if the callback has been fired yet.
+    std::string m_outputFileName; //!< The file name of the trace file.
+    std::ofstream m_outputFile;   //!< The file stream object of trace file
 };
 
 } // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_STATE_MACHINE_STATS_H */
-

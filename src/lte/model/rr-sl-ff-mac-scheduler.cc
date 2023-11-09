@@ -33,14 +33,16 @@
  * subject to copyright protection within the United States.
  */
 
+#include "rr-sl-ff-mac-scheduler.h"
+
+#include "lte-amc.h"
+#include "lte-common.h"
+#include "lte-vendor-specific-parameters.h"
+
 #include <ns3/boolean.h>
 #include <ns3/log.h>
-#include <ns3/lte-amc.h>
-#include <ns3/lte-common.h>
-#include <ns3/lte-vendor-specific-parameters.h>
 #include <ns3/math.h>
 #include <ns3/pointer.h>
-#include <ns3/rr-sl-ff-mac-scheduler.h>
 #include <ns3/simulator.h>
 
 #include <cfloat>
@@ -234,7 +236,7 @@ RrSlFfMacScheduler::DoCschedUeConfigReq(
     {
         (*ueIt).second = params.m_slDestinations;
     }
-    }
+}
 
 void
 RrSlFfMacScheduler::DoCschedLcConfigReq(
@@ -264,7 +266,7 @@ RrSlFfMacScheduler::DoCschedLcReleaseReq(
             }
         }
     }
-    }
+}
 
 void
 RrSlFfMacScheduler::DoCschedUeReleaseReq(
@@ -311,8 +313,7 @@ RrSlFfMacScheduler::DoCschedUeReleaseReq(
     {
         m_nextRntiDl = 0;
     }
-
-    }
+}
 
 void
 RrSlFfMacScheduler::DoCschedPoolConfigReq(
@@ -392,8 +393,7 @@ RrSlFfMacScheduler::DoSchedDlRlcBufferReq(
         // initialized to 1 (i.e., the lowest value for transmitting a signal)
         m_p10CqiTimers.insert(std::pair<uint16_t, uint32_t>(params.m_rnti, m_cqiTimersThreshold));
     }
-
-    }
+}
 
 void
 RrSlFfMacScheduler::DoSchedDlPagingBufferReq(
@@ -1253,8 +1253,7 @@ RrSlFfMacScheduler::DoSchedDlCqiInfoReq(
             NS_LOG_ERROR(this << " CQI type unknown");
         }
     }
-
-    }
+}
 
 void
 RrSlFfMacScheduler::DoSchedUlTriggerReq(
@@ -1920,8 +1919,7 @@ RrSlFfMacScheduler::DoSchedUlMacCtrlInfoReq(
             }
         }
     } // end for
-
-    }
+}
 
 void
 RrSlFfMacScheduler::DoSchedUlCqiInfoReq(
@@ -2060,7 +2058,7 @@ RrSlFfMacScheduler::DoSchedUlCqiInfoReq(
     default:
         NS_FATAL_ERROR("Unknown type of UL-CQI");
     }
-    }
+}
 
 void
 RrSlFfMacScheduler::RefreshDlCqiMaps()
@@ -2090,8 +2088,7 @@ RrSlFfMacScheduler::RefreshDlCqiMaps()
             itP10++;
         }
     }
-
-    }
+}
 
 void
 RrSlFfMacScheduler::RefreshUlCqiMaps()
@@ -2121,8 +2118,7 @@ RrSlFfMacScheduler::RefreshUlCqiMaps()
             itUl++;
         }
     }
-
-    }
+}
 
 void
 RrSlFfMacScheduler::UpdateDlRlcBufferInfo(uint16_t rnti, uint8_t lcid, uint16_t size)

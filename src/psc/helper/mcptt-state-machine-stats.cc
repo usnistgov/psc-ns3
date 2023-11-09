@@ -29,98 +29,104 @@
  * employees is not subject to copyright protection within the United States.
  */
 
-#include <fstream>
-#include <iomanip>
-#include <string>
+#include "mcptt-state-machine-stats.h"
 
 #include <ns3/boolean.h>
 #include <ns3/log.h>
 #include <ns3/mcptt-msg.h>
 #include <ns3/mcptt-ptt-app.h>
 #include <ns3/object.h>
-#include <ns3/type-id.h>
 #include <ns3/string.h>
+#include <ns3/type-id.h>
 
-#include "mcptt-state-machine-stats.h"
+#include <fstream>
+#include <iomanip>
+#include <string>
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("McpttStateMachineStats");
+NS_LOG_COMPONENT_DEFINE("McpttStateMachineStats");
 
-namespace psc {
+namespace psc
+{
 
-NS_OBJECT_ENSURE_REGISTERED (McpttStateMachineStats);
+NS_OBJECT_ENSURE_REGISTERED(McpttStateMachineStats);
 
 TypeId
 McpttStateMachineStats::GetTypeId()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+    NS_LOG_FUNCTION_NOARGS();
 
-  static TypeId tid = TypeId ("ns3::psc::McpttStateMachineStats")
-    .SetParent<Object> ()
-    .AddConstructor<McpttStateMachineStats> ()
-    .AddAttribute ("OutputFileName",
-                   "The name to use for the trace file.",
-                   StringValue ("mcptt-state-machine-stats.txt"),
-                   MakeStringAccessor (&McpttStateMachineStats::m_outputFileName),
-                   MakeStringChecker ())
-  ;
+    static TypeId tid =
+        TypeId("ns3::psc::McpttStateMachineStats")
+            .SetParent<Object>()
+            .AddConstructor<McpttStateMachineStats>()
+            .AddAttribute("OutputFileName",
+                          "The name to use for the trace file.",
+                          StringValue("mcptt-state-machine-stats.txt"),
+                          MakeStringAccessor(&McpttStateMachineStats::m_outputFileName),
+                          MakeStringChecker());
 
-  return tid;
+    return tid;
 }
 
 McpttStateMachineStats::McpttStateMachineStats()
     : Object(),
       m_firstCb(true)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 McpttStateMachineStats::~McpttStateMachineStats()
 {
-  NS_LOG_FUNCTION (this);
-  if (m_outputFile.is_open ())
+    NS_LOG_FUNCTION(this);
+    if (m_outputFile.is_open())
     {
-      m_outputFile.close ();
+        m_outputFile.close();
     }
 }
 
 TypeId
 McpttStateMachineStats::GetInstanceTypeId() const
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 
-  return McpttStateMachineStats::GetTypeId ();
+    return McpttStateMachineStats::GetTypeId();
 }
 
 void
-McpttStateMachineStats::StateChangeCb (uint32_t userId, uint16_t callId, const std::string& selected, const std::string& typeId, const std::string& oldStateName, const std::string& newStateName)
+McpttStateMachineStats::StateChangeCb(uint32_t userId,
+                                      uint16_t callId,
+                                      const std::string& selected,
+                                      const std::string& typeId,
+                                      const std::string& oldStateName,
+                                      const std::string& newStateName)
 {
-  NS_LOG_FUNCTION (this << userId << callId << selected << typeId << oldStateName << newStateName);
-  if (m_firstCb)
-  {
-      m_firstCb = false;
-      m_outputFile.open (m_outputFileName.c_str ());
-      m_outputFile << "#";
-      m_outputFile << std::setw (9) << "time(s)";
-      m_outputFile << std::setw (7) << "userid";
-      m_outputFile << std::setw (7) << "callid";
-      m_outputFile << std::setw (9) << "selected";
-      m_outputFile << std::setw (38) << "typeid";
-      m_outputFile << std::setw (36) << "oldstate";
-      m_outputFile << std::setw (36) << "newstate";
-      m_outputFile << std::endl;
+    NS_LOG_FUNCTION(this << userId << callId << selected << typeId << oldStateName << newStateName);
+    if (m_firstCb)
+    {
+        m_firstCb = false;
+        m_outputFile.open(m_outputFileName.c_str());
+        m_outputFile << "#";
+        m_outputFile << std::setw(9) << "time(s)";
+        m_outputFile << std::setw(7) << "userid";
+        m_outputFile << std::setw(7) << "callid";
+        m_outputFile << std::setw(9) << "selected";
+        m_outputFile << std::setw(38) << "typeid";
+        m_outputFile << std::setw(36) << "oldstate";
+        m_outputFile << std::setw(36) << "newstate";
+        m_outputFile << std::endl;
     }
-  m_outputFile << std::fixed << std::setw (10) << Simulator::Now ().GetSeconds ();
-  m_outputFile << std::setw (6) << userId;
-  m_outputFile << std::setw (6) << callId;
-  m_outputFile << std::setw (9) << selected;
-  m_outputFile << std::setw (40) << typeId.substr (10); // trim leading 'ns3::psc::'
-  m_outputFile << std::setw (36) << oldStateName;
-  m_outputFile << std::setw (36)  << newStateName;
-  m_outputFile << std::endl;
+    m_outputFile << std::fixed << std::setw(10) << Simulator::Now().GetSeconds();
+    m_outputFile << std::setw(6) << userId;
+    m_outputFile << std::setw(6) << callId;
+    m_outputFile << std::setw(9) << selected;
+    m_outputFile << std::setw(40) << typeId.substr(10); // trim leading 'ns3::psc::'
+    m_outputFile << std::setw(36) << oldStateName;
+    m_outputFile << std::setw(36) << newStateName;
+    m_outputFile << std::endl;
 }
 
 } // namespace psc
 } // namespace ns3
-
