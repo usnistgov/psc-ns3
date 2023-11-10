@@ -43,8 +43,11 @@
 # Prerequisites:  Python3 matplotlib and numpy
 # Usage (from the ns3 root folder): python3 run_wfpst-2024.py
 # Program outputs:  
-# 1) Four directories with simulation results, named with prefix 'wfpst-2024'
-# 2) Four PNG image files with prefix 'wfpst-2024'
+# 1) Seven directories with simulation results, named with prefix 'wfpst-2024'
+# 2) Four PNG image files with prefix 'wfpst-2024', corresponding to figures
+#    in the paper
+# 3) One text file with name 'wfpst-2024_Section_IV_PDRs.txt' with data
+#    about the impact of blind retransmissions and HARQ feedback
 
 import os
 import subprocess
@@ -330,16 +333,35 @@ def plot_cdf_metric_for_tech_by_selected_folders(folders, legends, metric):
         plt.savefig(base_filename, bbox_inches='tight')
         print(f'Figure: %s'  % (base_filename))
 
+def calculate_relay_pdr(infile):
+    lines = infile.readlines()
+    tx = 0
+    rx = 0
+    for line in lines:
+        columns = line.split()
+        if columns[0] == "#":
+            continue
+        # In the relay team, nodes are numbered between 5 and 8
+        if int(columns[1]) < 5 or int(columns[1]) > 8:
+            continue
+        if columns[7] == "McpttMediaMsg":
+            if "TX" in columns[5]:
+                tx += 1
+            if "RX" in columns[5]:
+                rx += 1
+    # Each TX will lead to three receptions, so PDR is rx/(3*tx)
+    # Multiply by 100 to convert to percent
+    return (100*rx/(3*tx))    
 
 def start_simulation(params):
-    minNumAccess, numerology, rri, maxNTx, harq, psfchPeriod, offNetMediaSps, relayMediaSps = params
-    outputDir = "wfpst-2024_slNum-%d_rri-%d_maxNTx-%d_harq-%s_psfchPeriod-%d_offNetMediaSps-%s_relayMediaSps-%s" % (numerology, rri, maxNTx, harq, psfchPeriod, offNetMediaSps, relayMediaSps)
+    minNumAccess, numerology, enableSensing, rri, maxNTx, harq, psfchPeriod, offNetMediaSps, relayMediaSps, relayXInit = params
+    outputDir = "wfpst-2024_slNum-%d_enableSensing-%s_rri-%d_maxNTx-%d_harq-%s_psfchPeriod-%d_offNetMediaSps-%s_relayMediaSps-%s_relayXInit-%d" % (numerology, enableSensing, rri, maxNTx, harq, psfchPeriod, offNetMediaSps, relayMediaSps, relayXInit)
     print(f'Output dir: %s'  % (outputDir))
     try:
         os.mkdir(outputDir)
     except FileExistsError:
         print("folder %s already exists, overwriting..." % outputDir)
-    run_command = f"./ns3 run --cwd={outputDir} nr-mcptt-operational-modes-static -- --minNumAccess={minNumAccess} --RngRun=2 --showProgress=true --slNumerology={numerology} --rri={rri} --maxNTx={maxNTx} --harq={harq} --psfchPeriod={psfchPeriod} --offNetMediaSps={offNetMediaSps} --relayMediaSps={relayMediaSps}"
+    run_command = f"./ns3 run --cwd={outputDir} nr-mcptt-operational-modes-static -- --minNumAccess={minNumAccess} --RngRun=2 --showProgress=true --slNumerology={numerology} --enableSensing={enableSensing} --rri={rri} --maxNTx={maxNTx} --harq={harq} --psfchPeriod={psfchPeriod} --offNetMediaSps={offNetMediaSps} --relayMediaSps={relayMediaSps} --relayXInit={relayXInit}"
     with open(outputDir + "/output.txt", "w") as f:
         output = subprocess.run(run_command.split(), stdout=f, stderr=subprocess.STDOUT)
     f.close()
@@ -358,14 +380,16 @@ minNumAccess = 1000
 
 # Fig. 5 simulation parameters
 numerology = 0
+enableSensing = 'false'
 rri = 20
 maxNTx = 1
 harq = 'false'
 psfchPeriod = 0
 offNetMediaSps = 'false'
 relayMediaSps = 'false'
+relayXInit = 397 
 
-params = (minNumAccess, numerology, rri, maxNTx, harq, psfchPeriod, offNetMediaSps, relayMediaSps)
+params = (minNumAccess, numerology, enableSensing, rri, maxNTx, harq, psfchPeriod, offNetMediaSps, relayMediaSps, relayXInit)
 allSims.append (params)
 
 # Fig. 6 simulation parameters
@@ -375,38 +399,44 @@ allSims.append (params)
 
 # -Two LCs - SPS+SPS
 numerology = 0
+enableSensing = 'false'
 rri = 20
 maxNTx = 1
 harq = 'false'
 psfchPeriod = 0
 offNetMediaSps = 'true'
 relayMediaSps = 'true'
+relayXInit = 397 
 
-params = (minNumAccess, numerology, rri, maxNTx, harq, psfchPeriod, offNetMediaSps, relayMediaSps)
+params = (minNumAccess, numerology, enableSensing, rri, maxNTx, harq, psfchPeriod, offNetMediaSps, relayMediaSps, relayXInit)
 allSims.append (params)
 
 # -Two LCs - Dyn+SPS
 numerology = 0
+enableSensing = 'false'
 rri = 0
 maxNTx = 1
 harq = 'false'
 psfchPeriod = 0
 offNetMediaSps = 'true'
 relayMediaSps = 'true'
+relayXInit = 397 
 
-params = (minNumAccess, numerology, rri, maxNTx, harq, psfchPeriod, offNetMediaSps, relayMediaSps)
+params = (minNumAccess, numerology, enableSensing, rri, maxNTx, harq, psfchPeriod, offNetMediaSps, relayMediaSps, relayXInit)
 allSims.append (params)
 
 # -Two LCs - Dyn+Dyn
 numerology = 0
+enableSensing = 'false'
 rri = 0
 maxNTx = 1
 harq = 'false'
 psfchPeriod = 0
 offNetMediaSps = 'false'
 relayMediaSps = 'false'
+relayXInit = 397 
 
-params = (minNumAccess, numerology, rri, maxNTx, harq, psfchPeriod, offNetMediaSps, relayMediaSps)
+params = (minNumAccess, numerology, enableSensing, rri, maxNTx, harq, psfchPeriod, offNetMediaSps, relayMediaSps, relayXInit)
 allSims.append (params)
 
 # Run all simulations 
@@ -439,17 +469,17 @@ pool.join()
 print ("Generating plots...")
  
 # Generate Fig. 5 plots
-outputDir = "wfpst-2024_slNum-0_rri-20_maxNTx-1_harq-false_psfchPeriod-0_offNetMediaSps-false_relayMediaSps-false"
+outputDir = "wfpst-2024_slNum-0_enableSensing-false_rri-20_maxNTx-1_harq-false_psfchPeriod-0_offNetMediaSps-false_relayMediaSps-false_relayXInit-397"
 plot_cdf_for_metric_by_tech_one_folder(outputDir, 'mcptt-m2e-latency')
 plot_cdf_for_metric_by_tech_one_folder(outputDir, 'mcptt-access-time')
 
 
 # Generate Fig. 6 plots:
 selected_folders = [
-    "wfpst-2024_slNum-0_rri-20_maxNTx-1_harq-false_psfchPeriod-0_offNetMediaSps-false_relayMediaSps-false",
-    "wfpst-2024_slNum-0_rri-20_maxNTx-1_harq-false_psfchPeriod-0_offNetMediaSps-true_relayMediaSps-true",
-    "wfpst-2024_slNum-0_rri-0_maxNTx-1_harq-false_psfchPeriod-0_offNetMediaSps-true_relayMediaSps-true",
-    "wfpst-2024_slNum-0_rri-0_maxNTx-1_harq-false_psfchPeriod-0_offNetMediaSps-false_relayMediaSps-false"
+    "wfpst-2024_slNum-0_enableSensing-false_rri-20_maxNTx-1_harq-false_psfchPeriod-0_offNetMediaSps-false_relayMediaSps-false_relayXInit-397",
+    "wfpst-2024_slNum-0_enableSensing-false_rri-20_maxNTx-1_harq-false_psfchPeriod-0_offNetMediaSps-true_relayMediaSps-true_relayXInit-397",
+    "wfpst-2024_slNum-0_enableSensing-false_rri-0_maxNTx-1_harq-false_psfchPeriod-0_offNetMediaSps-true_relayMediaSps-true_relayXInit-397",
+    "wfpst-2024_slNum-0_enableSensing-false_rri-0_maxNTx-1_harq-false_psfchPeriod-0_offNetMediaSps-false_relayMediaSps-false_relayXInit-397"
 ]
 corresponding_legends = [
     "One LC - SPS",
@@ -459,3 +489,89 @@ corresponding_legends = [
 ]
 
 plot_cdf_metric_for_tech_by_selected_folders(selected_folders, corresponding_legends, 'mcptt-m2e-latency')
+
+# At the end of Section IV, there are a few statistics provided regarding HARQ impact on packet
+# delivery ratio (PDR).  The following additional simulations will generate statistics for the
+# statement:  "For example, with μ = 2, for a simulation lasting for 1000 floor accesses, the
+# media PDR is approximately 95% with no retransmissions, 89% with blind retransmissions (four
+# transmissions per packet), and 99% for feedback-based HARQ (up to four transmissions)."
+#
+# To confirm that these statistics hold up for different distances, up to 500 meters away,
+# one can vary the 'relayXInit' position from its configure value of 397 meters to a value
+# as low as -103 meters (500 meters away from the original x-axis position of 397 meters).
+# These distance changes are not automatically run (only the original position of 397
+# is configured below).
+
+# Reset the simulation list
+allSims = []
+
+# No retransmissions
+numerology = 2
+enableSensing = 'true'
+rri = 0
+maxNTx = 1
+harq = 'false'
+offNetMediaSps = 'true'
+relayMediaSps = 'true'
+psfchPeriod = 0
+relayXInit = 397
+
+params = (minNumAccess, numerology, enableSensing, rri, maxNTx, harq, psfchPeriod, offNetMediaSps, relayMediaSps, relayXInit)
+allSims.append (params)
+
+# Blind retransmissions (3 retransmissions) due to psfchPeriod = 0
+numerology = 2
+enableSensing = 'true'
+rri = 0
+maxNTx = 4
+harq = 'true' 
+offNetMediaSps = 'true'
+relayMediaSps = 'true'
+psfchPeriod = 0
+relayXInit = 397
+
+params = (minNumAccess, numerology, enableSensing, rri, maxNTx, harq, psfchPeriod, offNetMediaSps, relayMediaSps, relayXInit)
+allSims.append (params)
+
+# HARQ with feedback (up to 3 retransmissions) due to psfchPeriod = 2
+numerology = 2
+enableSensing = 'true'
+rri = 0
+maxNTx = 4
+harq = 'true'
+offNetMediaSps = 'true'
+relayMediaSps = 'true'
+psfchPeriod = 2
+relayXInit = 397
+
+params = (minNumAccess, numerology, enableSensing, rri, maxNTx, harq, psfchPeriod, offNetMediaSps, relayMediaSps, relayXInit)
+allSims.append (params)
+
+#  Create another pool object with "nProcesses" number of simultaneous processes/simulations
+nProcesses = 3
+pool = Pool(processes=nProcesses)
+
+#  Run the simulations
+print ("Running HARQ simulations...")
+for _ in pool.imap_unordered(start_simulation, allSims):
+    pass
+pool.close()
+pool.join()
+
+filename = "wfpst-2024_Section_IV_PDRs.txt"
+#  Process the data, outputting PDR statistics to a file 'wfpst-2024_Section_IV_PDRs.txt'
+with open(filename, "w") as outfile:
+    # No retransmissions
+    with open("wfpst-2024_slNum-2_enableSensing-true_rri-0_maxNTx-1_harq-false_psfchPeriod-0_offNetMediaSps-true_relayMediaSps-true_relayXInit-397/mcptt-msg-stats.txt", "r") as infile:
+        outfile.write("Media PDR with no retransmissions:    %.1f %%\n" % calculate_relay_pdr(infile))
+    infile.close()
+    # Blind retransmissions
+    with open("wfpst-2024_slNum-2_enableSensing-true_rri-0_maxNTx-4_harq-true_psfchPeriod-0_offNetMediaSps-true_relayMediaSps-true_relayXInit-397/mcptt-msg-stats.txt", "r") as infile:
+        outfile.write("Media PDR with blind retransmissions: %.1f %%\n" % calculate_relay_pdr(infile))
+    infile.close()
+    # HARQ retransmissions
+    with open("wfpst-2024_slNum-2_enableSensing-true_rri-0_maxNTx-4_harq-true_psfchPeriod-2_offNetMediaSps-true_relayMediaSps-true_relayXInit-397/mcptt-msg-stats.txt", "r") as infile:
+        outfile.write("Media PDR with HARQ retransmissions:  %.1f %%\n" % calculate_relay_pdr(infile))
+    infile.close()
+outfile.close()
+print(f'File: %s' % filename)
