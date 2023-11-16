@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-# NIST-developed software is provided by NIST as a public 
+# NIST-developed software is provided by NIST as a public
 # service. You may use, copy and distribute copies of the software in
 # any medium, provided that you keep intact this entire notice. You
 # may improve, modify and create derivative works of the software or
@@ -33,241 +33,245 @@
 # subject to copyright protection within the United States.
 
 # Description:
-# This script runs the simulations corresponding to the 'Results' 
-# section of the paper entitled "Towards System Level Simulations of 
-# Public Safety Applications over 5G NR Sidelink" in submission to 
-# the 2024 IEEE World Forum on Public Safety Technology (WF-PST) 
+# This script runs the simulations corresponding to the 'Results'
+# section of the paper entitled "Towards System Level Simulations of
+# Public Safety Applications over 5G NR Sidelink" in submission to
+# the 2024 IEEE World Forum on Public Safety Technology (WF-PST)
 # conference. This program also processes the simulation output and
-# generates the plots corresponding to the results figures in the 
+# generates the plots corresponding to the results figures in the
 # paper.
 # Prerequisites:  Python3 matplotlib and numpy
 # Usage (from the ns3 root folder): python3 run_wfpst-2024.py
-# Program outputs:  
+# Program outputs:
 # 1) Seven directories with simulation results, named with prefix 'wfpst-2024'
 # 2) Four PNG image files with prefix 'wfpst-2024', corresponding to figures
 #    in the paper
 # 3) One text file with name 'wfpst-2024_Section_IV_PDRs.txt' with data
 #    about the impact of blind retransmissions and HARQ feedback
 
+import csv
 import os
 import subprocess
 import sys
-import csv
-import matplotlib.pyplot as plt
-import numpy as np
 from multiprocessing import Pool
 
+import matplotlib.pyplot as plt
+import numpy as np
 
-def process_access_time (outputDir):
 
+def process_access_time(outputDir):
     filename = "%s/mcptt-access-time.txt" % (outputDir)
     basename = "mcptt-access-time"
 
     # The 'counts' array is for tabulating access time outcomes for the table
     # columns: I, Q, A, D, F
     # rows:  on-network, relay, off-network
-    counts = np.zeros(15).reshape(3,5)
+    counts = np.zeros(15).reshape(3, 5)
 
     # Create lists for observed values
     on_network = []
     relay = []
     off_network = []
 
-    # Read in values 
-    fd = open(filename, 'r')
+    # Read in values
+    fd = open(filename, "r")
     for line in fd:
         col = line.split()
-        if (line.startswith("#")):
+        if line.startswith("#"):
             continue
         timestamp = float(col[0])
         callid = int(col[2])
         result = col[3]
-        if (callid == 1):
+        if callid == 1:
             # on network
-            if (result == 'I'):
+            if result == "I":
                 counts[0][0] += 1
-            elif result == 'Q':
+            elif result == "Q":
                 counts[0][1] += 1
-            elif result == 'A':
+            elif result == "A":
                 counts[0][2] += 1
-            elif result == 'D':
+            elif result == "D":
                 counts[0][3] += 1
-            elif result == 'F':
+            elif result == "F":
                 counts[0][4] += 1
-        elif (callid > 2):
+        elif callid > 2:
             # off network
-            if (result == 'I'):
+            if result == "I":
                 counts[1][0] += 1
-            elif result == 'Q':
+            elif result == "Q":
                 counts[1][1] += 1
-            elif result == 'A':
+            elif result == "A":
                 counts[1][2] += 1
-            elif result == 'D':
+            elif result == "D":
                 counts[1][3] += 1
-            elif result == 'F':
+            elif result == "F":
                 counts[1][4] += 1
-        elif (callid == 2):
+        elif callid == 2:
             # relay
-            if (result == 'I'):
+            if result == "I":
                 counts[2][0] += 1
-            elif result == 'Q':
+            elif result == "Q":
                 counts[2][1] += 1
-            elif result == 'A':
+            elif result == "A":
                 counts[2][2] += 1
-            elif result == 'D':
+            elif result == "D":
                 counts[2][3] += 1
-            elif result == 'F':
+            elif result == "F":
                 counts[2][4] += 1
-        if (callid == 1 and (result == 'I' or result == 'Q')):
-            on_network.append(1000*float(col[4]))
-        elif (callid == 2 and (result == 'I' or result == 'Q')):
-            relay.append(1000*float(col[4]))
-        elif (callid > 2 and (result == 'I' or result == 'Q')):
-            off_network.append(1000*float(col[4]))
+        if callid == 1 and (result == "I" or result == "Q"):
+            on_network.append(1000 * float(col[4]))
+        elif callid == 2 and (result == "I" or result == "Q"):
+            relay.append(1000 * float(col[4]))
+        elif callid > 2 and (result == "I" or result == "Q"):
+            off_network.append(1000 * float(col[4]))
 
-    columns = ('Immed', 'Queue', 'Aband', 'Deny', 'Fail')
-    rows = ('on-network', 'off-network', 'relay')
+    columns = ("Immed", "Queue", "Aband", "Deny", "Fail")
+    rows = ("on-network", "off-network", "relay")
 
     # Convert counts to percentages, formatted as strings
-    percentages = counts/counts.sum(axis=1)[:,None] 
+    percentages = counts / counts.sum(axis=1)[:, None]
     percentages_list = percentages.tolist()
 
-    #Write Outcome table to file
-    outputTableRaw = outputDir + '/' + basename + '-outcomes.txt'
-    outputTable = [['%.0f%%' % (100*elem) for elem in percentages_list[0]],
-        ['%.0f%%' % (100*elem) for elem in percentages_list[1]],
-        ['%.0f%%' % (100*elem) for elem in percentages_list[2]]]
+    # Write Outcome table to file
+    outputTableRaw = outputDir + "/" + basename + "-outcomes.txt"
+    outputTable = [
+        ["%.0f%%" % (100 * elem) for elem in percentages_list[0]],
+        ["%.0f%%" % (100 * elem) for elem in percentages_list[1]],
+        ["%.0f%%" % (100 * elem) for elem in percentages_list[2]],
+    ]
     with open(outputTableRaw, "w") as f:
         f.write("-\t" + "\t".join(columns) + "\n")
         f.write("on-network\t" + "\t".join(outputTable[0]) + "\n")
         f.write("off-network\t" + "\t".join(outputTable[1]) + "\n")
         f.write("relay\t" + "\t".join(outputTable[2]) + "\n")
 
-    #Generate eCDFs
+    # Generate eCDFs
     arr = np.array(on_network)
     x_onNet = np.sort(arr)
-    y_onNet = np.arange(len(x_onNet))/float(len(x_onNet))
+    y_onNet = np.arange(len(x_onNet)) / float(len(x_onNet))
     arr = np.array(off_network)
     x_offNet = np.sort(arr)
-    y_offNet = np.arange(len(x_offNet))/float(len(x_offNet))
+    y_offNet = np.arange(len(x_offNet)) / float(len(x_offNet))
     arr = np.array(relay)
     x_relay = np.sort(arr)
-    y_relay = np.arange(len(x_relay))/float(len(x_relay))
-   
-    #Write eCDFs raw data to files
-    outputRaw = outputDir + '/' + basename + '-cdf_onNet.txt'
-    np.savetxt(outputRaw, (x_onNet, y_onNet), fmt='%.6g', delimiter='\t', newline=os.linesep)
-    outputRaw = outputDir + '/' + basename + '-cdf_offNet.txt'
-    np.savetxt(outputRaw, (x_offNet, y_offNet), fmt='%.6g', delimiter='\t', newline=os.linesep)
-    outputRaw = outputDir + '/' + basename + '-cdf_relay.txt'
-    np.savetxt(outputRaw, (x_relay, y_relay), fmt='%.6g', delimiter='\t', newline=os.linesep)
+    y_relay = np.arange(len(x_relay)) / float(len(x_relay))
+
+    # Write eCDFs raw data to files
+    outputRaw = outputDir + "/" + basename + "-cdf_onNet.txt"
+    np.savetxt(
+        outputRaw, (x_onNet, y_onNet), fmt="%.6g", delimiter="\t", newline=os.linesep
+    )
+    outputRaw = outputDir + "/" + basename + "-cdf_offNet.txt"
+    np.savetxt(
+        outputRaw, (x_offNet, y_offNet), fmt="%.6g", delimiter="\t", newline=os.linesep
+    )
+    outputRaw = outputDir + "/" + basename + "-cdf_relay.txt"
+    np.savetxt(
+        outputRaw, (x_relay, y_relay), fmt="%.6g", delimiter="\t", newline=os.linesep
+    )
 
 
-def process_m2e_latency (outputDir):
-
+def process_m2e_latency(outputDir):
     filename = "%s/mcptt-m2e-latency.txt" % (outputDir)
     basename = "mcptt-m2e-latency"
 
-    f = open(filename, 'r')
+    f = open(filename, "r")
     on_network = []
     off_network = []
     relay = []
     for line in f:
-        if (line.startswith("#")):
+        if line.startswith("#"):
             continue
         col = line.split()
         callid = int(col[3])
         if callid == 1:
-            on_network.append(1000*float(col[4]))
+            on_network.append(1000 * float(col[4]))
         elif callid == 2:
-            relay.append(1000*float(col[4]))
+            relay.append(1000 * float(col[4]))
         elif callid > 2:
-            off_network.append(1000*float(col[4]))
+            off_network.append(1000 * float(col[4]))
     f.close()
 
     arr = np.array(on_network)
     x_onNet = np.sort(arr)
-    y_onNet = np.arange(len(x_onNet))/float(len(x_onNet))
+    y_onNet = np.arange(len(x_onNet)) / float(len(x_onNet))
     arr = np.array(off_network)
     x_offNet = np.sort(arr)
-    y_offNet = np.arange(len(x_offNet))/float(len(x_offNet))
+    y_offNet = np.arange(len(x_offNet)) / float(len(x_offNet))
     arr = np.array(relay)
     x_relay = np.sort(arr)
-    y_relay = np.arange(len(x_relay))/float(len(x_relay))
+    y_relay = np.arange(len(x_relay)) / float(len(x_relay))
 
-    #Write eCDFs raw data to files
-    outputRaw = outputDir + '/' + basename + '-cdf_onNet.txt'
-    np.savetxt(outputRaw, (x_onNet, y_onNet), fmt='%.6g', delimiter='\t', newline=os.linesep)
-    outputRaw = outputDir + '/' + basename + '-cdf_offNet.txt'
-    np.savetxt(outputRaw, (x_offNet, y_offNet), fmt='%.6g', delimiter='\t', newline=os.linesep)
-    outputRaw = outputDir + '/' + basename + '-cdf_relay.txt'
-    np.savetxt(outputRaw, (x_relay, y_relay), fmt='%.6g', delimiter='\t', newline=os.linesep)
+    # Write eCDFs raw data to files
+    outputRaw = outputDir + "/" + basename + "-cdf_onNet.txt"
+    np.savetxt(
+        outputRaw, (x_onNet, y_onNet), fmt="%.6g", delimiter="\t", newline=os.linesep
+    )
+    outputRaw = outputDir + "/" + basename + "-cdf_offNet.txt"
+    np.savetxt(
+        outputRaw, (x_offNet, y_offNet), fmt="%.6g", delimiter="\t", newline=os.linesep
+    )
+    outputRaw = outputDir + "/" + basename + "-cdf_relay.txt"
+    np.savetxt(
+        outputRaw, (x_relay, y_relay), fmt="%.6g", delimiter="\t", newline=os.linesep
+    )
 
 
 def plot_cdf_for_metric_by_tech_one_folder(folder, metric):
-    
     # Define technology files for each metric
     tech_files = {
         "mcptt-m2e-latency": {
             "on-network": "mcptt-m2e-latency-cdf_onNet.txt",
             "relay": "mcptt-m2e-latency-cdf_relay.txt",
-            "off-network": "mcptt-m2e-latency-cdf_offNet.txt"
+            "off-network": "mcptt-m2e-latency-cdf_offNet.txt",
         },
         "mcptt-access-time": {
             "on-network": "mcptt-access-time-cdf_onNet.txt",
             "relay": "mcptt-access-time-cdf_relay.txt",
-            "off-network": "mcptt-access-time-cdf_offNet.txt"
-        }
+            "off-network": "mcptt-access-time-cdf_offNet.txt",
+        },
     }
     # Check if metric files are available
     if metric not in tech_files:
         print(f"Warning: No tech files defined for metric '{metric}'.")
         return
-    
-    tech_line_styles = {
-        "on-network": '-',
-        "relay": '--',
-        "off-network": ':'
-    }
-    xlim_values = {
-        'mcptt-access-time': (0, 200),
-        'mcptt-m2e-latency':(0, 200) 
-    }
+
+    tech_line_styles = {"on-network": "-", "relay": "--", "off-network": ":"}
+    xlim_values = {"mcptt-access-time": (0, 200), "mcptt-m2e-latency": (0, 200)}
 
     # Create plot
-    plt.figure(figsize=(18, 2)) #Horizontal
+    plt.figure(figsize=(18, 2))  # Horizontal
     for tech, file_name in tech_files[metric].items():
         specific_file_path = os.path.join(folder, file_name)
-        
+
         if not os.path.exists(specific_file_path):
             print(f"Warning: File '{specific_file_path}' not found.")
             continue
-        
-        with open(specific_file_path, 'r') as file:
-            reader = csv.reader(file, delimiter='\t')
+
+        with open(specific_file_path, "r") as file:
+            reader = csv.reader(file, delimiter="\t")
             x_vals = next(reader)
             y_vals = next(reader)
-            
+
             x_vals = [float(val) for val in x_vals if val]
             y_vals = [float(val) for val in y_vals if val]
-            
+
             linestyle = tech_line_styles[tech]
             plt.plot(x_vals, y_vals, label=tech, linewidth=2.0, linestyle=linestyle)
-    
-    plt.xlabel(metric.replace("mcptt-", "").replace("-", " ").title()+' (ms)')
+
+    plt.xlabel(metric.replace("mcptt-", "").replace("-", " ").title() + " (ms)")
     xlims = xlim_values.get(metric, {})
     plt.xlim(xlims)
-    plt.ylabel('CDF')
+    plt.ylabel("CDF")
     plt.grid(True)
     plt.tight_layout()
     plt.subplots_adjust(right=0.75)
-    plt.legend(loc='lower right', fontsize='small')
+    plt.legend(loc="lower right", fontsize="small")
     plt.gca().set_position([0.1, 0.1, 0.2, 0.8])
-    
-    base_filename = f"wfpst-2024_Fig5_{metric}_cdf_by_tech.png"
-    plt.savefig(base_filename, bbox_inches='tight')
-    print(f'Figure: %s'  % (base_filename))
 
+    base_filename = f"wfpst-2024_Fig5_{metric}_cdf_by_tech.png"
+    plt.savefig(base_filename, bbox_inches="tight")
+    print(f"Figure: %s" % (base_filename))
 
 
 def plot_cdf_metric_for_tech_by_selected_folders(folders, legends, metric):
@@ -275,63 +279,64 @@ def plot_cdf_metric_for_tech_by_selected_folders(folders, legends, metric):
     metrics_files = {
         "mcptt-access-time": {
             "relay": "mcptt-access-time-cdf_relay.txt",
-            "off-network": "mcptt-access-time-cdf_offNet.txt"
+            "off-network": "mcptt-access-time-cdf_offNet.txt",
         },
         "mcptt-m2e-latency": {
             "relay": "mcptt-m2e-latency-cdf_relay.txt",
-            "off-network": "mcptt-m2e-latency-cdf_offNet.txt"
-        }
+            "off-network": "mcptt-m2e-latency-cdf_offNet.txt",
+        },
     }
     xlim_values = {
-        'mcptt-access-time': {
-            'relay': (0, 200),
-            'off-network': (0, 200)
-        },
-        'mcptt-m2e-latency': {
-            'relay': (0, 300),
-            'off-network': (0, 200)
-        }
+        "mcptt-access-time": {"relay": (0, 200), "off-network": (0, 200)},
+        "mcptt-m2e-latency": {"relay": (0, 300), "off-network": (0, 200)},
     }
-    line_styles = ['-', '-', '--', ':']
-    
-    #Create the plots
+    line_styles = ["-", "-", "--", ":"]
+
+    # Create the plots
     for tech, file_name in metrics_files[metric].items():
-        plt.figure(figsize=(18, 2)) 
-        
+        plt.figure(figsize=(18, 2))
+
         line_style_index = 0
-        
+
         for folder_name, legend_name in zip(folders, legends):
             specific_file_path = os.path.join(folder_name, file_name)
-            
+
             if not os.path.exists(specific_file_path):
                 print(f"Warning: File '{specific_file_path}' not found.")
                 continue
-            
-            with open(specific_file_path, 'r') as file:
-                reader = csv.reader(file, delimiter='\t')
+
+            with open(specific_file_path, "r") as file:
+                reader = csv.reader(file, delimiter="\t")
                 x_vals = next(reader)
                 y_vals = next(reader)
-                
+
                 x_vals = [float(val) for val in x_vals if val]
                 y_vals = [float(val) for val in y_vals if val]
-                
+
                 linestyle = line_styles[line_style_index]
-                plt.plot(x_vals, y_vals, label=legend_name, linewidth=2.0, linestyle=linestyle)
+                plt.plot(
+                    x_vals,
+                    y_vals,
+                    label=legend_name,
+                    linewidth=2.0,
+                    linestyle=linestyle,
+                )
                 line_style_index = (line_style_index + 1) % len(line_styles)
-        
-        plt.xlabel(metric.replace("mcptt-", "").replace("-", " ").title()+' (ms)')
-        plt.ylabel('CDF')
+
+        plt.xlabel(metric.replace("mcptt-", "").replace("-", " ").title() + " (ms)")
+        plt.ylabel("CDF")
         xlims = xlim_values.get(metric, {}).get(tech, None)
         plt.xlim(xlims)
         plt.grid(True)
         plt.tight_layout()
         plt.subplots_adjust(right=0.75)
-        plt.legend(loc='lower right', fontsize='small')  
+        plt.legend(loc="lower right", fontsize="small")
         plt.gca().set_position([0.1, 0.1, 0.2, 0.8])
-        
+
         base_filename = f"wfpst-2024_Fig6_{metric}_cdf_by_sched_{tech}.png"
-        plt.savefig(base_filename, bbox_inches='tight')
-        print(f'Figure: %s'  % (base_filename))
+        plt.savefig(base_filename, bbox_inches="tight")
+        print(f"Figure: %s" % (base_filename))
+
 
 def calculate_relay_pdr(infile):
     lines = infile.readlines()
@@ -351,12 +356,37 @@ def calculate_relay_pdr(infile):
                 rx += 1
     # Each TX will lead to three receptions, so PDR is rx/(3*tx)
     # Multiply by 100 to convert to percent
-    return (100*rx/(3*tx))    
+    return 100 * rx / (3 * tx)
+
 
 def start_simulation(params):
-    minNumAccess, numerology, enableSensing, rri, maxNTx, harq, psfchPeriod, offNetMediaSps, relayMediaSps, relayXInit = params
-    outputDir = "wfpst-2024_slNum-%d_enableSensing-%s_rri-%d_maxNTx-%d_harq-%s_psfchPeriod-%d_offNetMediaSps-%s_relayMediaSps-%s_relayXInit-%d" % (numerology, enableSensing, rri, maxNTx, harq, psfchPeriod, offNetMediaSps, relayMediaSps, relayXInit)
-    print(f'Output dir: %s'  % (outputDir))
+    (
+        minNumAccess,
+        numerology,
+        enableSensing,
+        rri,
+        maxNTx,
+        harq,
+        psfchPeriod,
+        offNetMediaSps,
+        relayMediaSps,
+        relayXInit,
+    ) = params
+    outputDir = (
+        "wfpst-2024_slNum-%d_enableSensing-%s_rri-%d_maxNTx-%d_harq-%s_psfchPeriod-%d_offNetMediaSps-%s_relayMediaSps-%s_relayXInit-%d"
+        % (
+            numerology,
+            enableSensing,
+            rri,
+            maxNTx,
+            harq,
+            psfchPeriod,
+            offNetMediaSps,
+            relayMediaSps,
+            relayXInit,
+        )
+    )
+    print(f"Output dir: %s" % (outputDir))
     try:
         os.mkdir(outputDir)
     except FileExistsError:
@@ -366,31 +396,43 @@ def start_simulation(params):
         output = subprocess.run(run_command.split(), stdout=f, stderr=subprocess.STDOUT)
     f.close()
     print("Processing data...")
-    process_access_time (outputDir)
-    process_m2e_latency (outputDir)
+    process_access_time(outputDir)
+    process_m2e_latency(outputDir)
 
-#Main script
+
+# Main script
 
 # Create list with all simulations to run. Each element is a tuple of simulation parameters values
 allSims = []
 
-#Define the minimum number of MCPTT floor accesses all calls must have before stopping the simulation. 
-#The results in the paper are with minNumAccess=1000
+# Define the minimum number of MCPTT floor accesses all calls must have before stopping the simulation.
+# The results in the paper are with minNumAccess=1000
 minNumAccess = 1000
 
 # Fig. 5 simulation parameters
 numerology = 0
-enableSensing = 'false'
+enableSensing = "false"
 rri = 20
 maxNTx = 1
-harq = 'false'
+harq = "false"
 psfchPeriod = 0
-offNetMediaSps = 'false'
-relayMediaSps = 'false'
-relayXInit = 397 
+offNetMediaSps = "false"
+relayMediaSps = "false"
+relayXInit = 397
 
-params = (minNumAccess, numerology, enableSensing, rri, maxNTx, harq, psfchPeriod, offNetMediaSps, relayMediaSps, relayXInit)
-allSims.append (params)
+params = (
+    minNumAccess,
+    numerology,
+    enableSensing,
+    rri,
+    maxNTx,
+    harq,
+    psfchPeriod,
+    offNetMediaSps,
+    relayMediaSps,
+    relayXInit,
+)
+allSims.append(params)
 
 # Fig. 6 simulation parameters
 
@@ -399,58 +441,91 @@ allSims.append (params)
 
 # -Two LCs - SPS+SPS
 numerology = 0
-enableSensing = 'false'
+enableSensing = "false"
 rri = 20
 maxNTx = 1
-harq = 'false'
+harq = "false"
 psfchPeriod = 0
-offNetMediaSps = 'true'
-relayMediaSps = 'true'
-relayXInit = 397 
+offNetMediaSps = "true"
+relayMediaSps = "true"
+relayXInit = 397
 
-params = (minNumAccess, numerology, enableSensing, rri, maxNTx, harq, psfchPeriod, offNetMediaSps, relayMediaSps, relayXInit)
-allSims.append (params)
+params = (
+    minNumAccess,
+    numerology,
+    enableSensing,
+    rri,
+    maxNTx,
+    harq,
+    psfchPeriod,
+    offNetMediaSps,
+    relayMediaSps,
+    relayXInit,
+)
+allSims.append(params)
 
 # -Two LCs - Dyn+SPS
 numerology = 0
-enableSensing = 'false'
+enableSensing = "false"
 rri = 0
 maxNTx = 1
-harq = 'false'
+harq = "false"
 psfchPeriod = 0
-offNetMediaSps = 'true'
-relayMediaSps = 'true'
-relayXInit = 397 
+offNetMediaSps = "true"
+relayMediaSps = "true"
+relayXInit = 397
 
-params = (minNumAccess, numerology, enableSensing, rri, maxNTx, harq, psfchPeriod, offNetMediaSps, relayMediaSps, relayXInit)
-allSims.append (params)
+params = (
+    minNumAccess,
+    numerology,
+    enableSensing,
+    rri,
+    maxNTx,
+    harq,
+    psfchPeriod,
+    offNetMediaSps,
+    relayMediaSps,
+    relayXInit,
+)
+allSims.append(params)
 
 # -Two LCs - Dyn+Dyn
 numerology = 0
-enableSensing = 'false'
+enableSensing = "false"
 rri = 0
 maxNTx = 1
-harq = 'false'
+harq = "false"
 psfchPeriod = 0
-offNetMediaSps = 'false'
-relayMediaSps = 'false'
-relayXInit = 397 
+offNetMediaSps = "false"
+relayMediaSps = "false"
+relayXInit = 397
 
-params = (minNumAccess, numerology, enableSensing, rri, maxNTx, harq, psfchPeriod, offNetMediaSps, relayMediaSps, relayXInit)
-allSims.append (params)
+params = (
+    minNumAccess,
+    numerology,
+    enableSensing,
+    rri,
+    maxNTx,
+    harq,
+    psfchPeriod,
+    offNetMediaSps,
+    relayMediaSps,
+    relayXInit,
+)
+allSims.append(params)
 
-# Run all simulations 
+# Run all simulations
 #  Inital run for compilation
-print ("Running ./ns3 build...")
+print("Running ./ns3 build...")
 output = subprocess.run(["./ns3", "show", "config"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 if output.returncode:
-    print('Error:  Is the project configured?  Run ./ns3 configure ... first')
+    print("Error:  Is the project configured?  Run ./ns3 configure ... first")
     print(output.stdout.decode("utf-8"))
     print(output.stderr.decode("utf-8"))
     sys.exit(1)
 output = subprocess.run(["./ns3", "build"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 if output.returncode:
-    print('Error:  The build failed; fix it to continue')
+    print("Error:  The build failed; fix it to continue")
     print(output.stdout.decode("utf-8"))
     print(output.stderr.decode("utf-8"))
     sys.exit(1)
@@ -460,18 +535,18 @@ nProcesses = 4
 pool = Pool(processes=nProcesses)
 
 #  Run the simulations
-print ("Running simulations...")
+print("Running simulations...")
 for _ in pool.imap_unordered(start_simulation, allSims):
     pass
 pool.close()
 pool.join()
 
-print ("Generating plots...")
- 
+print("Generating plots...")
+
 # Generate Fig. 5 plots
 outputDir = "wfpst-2024_slNum-0_enableSensing-false_rri-20_maxNTx-1_harq-false_psfchPeriod-0_offNetMediaSps-false_relayMediaSps-false_relayXInit-397"
-plot_cdf_for_metric_by_tech_one_folder(outputDir, 'mcptt-m2e-latency')
-plot_cdf_for_metric_by_tech_one_folder(outputDir, 'mcptt-access-time')
+plot_cdf_for_metric_by_tech_one_folder(outputDir, "mcptt-m2e-latency")
+plot_cdf_for_metric_by_tech_one_folder(outputDir, "mcptt-access-time")
 
 
 # Generate Fig. 6 plots:
@@ -479,16 +554,18 @@ selected_folders = [
     "wfpst-2024_slNum-0_enableSensing-false_rri-20_maxNTx-1_harq-false_psfchPeriod-0_offNetMediaSps-false_relayMediaSps-false_relayXInit-397",
     "wfpst-2024_slNum-0_enableSensing-false_rri-20_maxNTx-1_harq-false_psfchPeriod-0_offNetMediaSps-true_relayMediaSps-true_relayXInit-397",
     "wfpst-2024_slNum-0_enableSensing-false_rri-0_maxNTx-1_harq-false_psfchPeriod-0_offNetMediaSps-true_relayMediaSps-true_relayXInit-397",
-    "wfpst-2024_slNum-0_enableSensing-false_rri-0_maxNTx-1_harq-false_psfchPeriod-0_offNetMediaSps-false_relayMediaSps-false_relayXInit-397"
+    "wfpst-2024_slNum-0_enableSensing-false_rri-0_maxNTx-1_harq-false_psfchPeriod-0_offNetMediaSps-false_relayMediaSps-false_relayXInit-397",
 ]
 corresponding_legends = [
     "One LC - SPS",
     "Two LCs - SPS",
     "Two LCs - Dyn+SPS",
-    "Two LCs - Dyn+Dyn"
+    "Two LCs - Dyn+Dyn",
 ]
 
-plot_cdf_metric_for_tech_by_selected_folders(selected_folders, corresponding_legends, 'mcptt-m2e-latency')
+plot_cdf_metric_for_tech_by_selected_folders(
+    selected_folders, corresponding_legends, "mcptt-m2e-latency"
+)
 
 # At the end of Section IV, there are a few statistics provided regarding HARQ impact on packet
 # delivery ratio (PDR).  The following additional simulations will generate statistics for the
@@ -507,52 +584,85 @@ allSims = []
 
 # No retransmissions
 numerology = 2
-enableSensing = 'true'
+enableSensing = "true"
 rri = 0
 maxNTx = 1
-harq = 'false'
-offNetMediaSps = 'true'
-relayMediaSps = 'true'
+harq = "false"
+offNetMediaSps = "true"
+relayMediaSps = "true"
 psfchPeriod = 0
 relayXInit = 397
 
-params = (minNumAccess, numerology, enableSensing, rri, maxNTx, harq, psfchPeriod, offNetMediaSps, relayMediaSps, relayXInit)
-allSims.append (params)
+params = (
+    minNumAccess,
+    numerology,
+    enableSensing,
+    rri,
+    maxNTx,
+    harq,
+    psfchPeriod,
+    offNetMediaSps,
+    relayMediaSps,
+    relayXInit,
+)
+allSims.append(params)
 
 # Blind retransmissions (3 retransmissions) due to psfchPeriod = 0
 numerology = 2
-enableSensing = 'true'
+enableSensing = "true"
 rri = 0
 maxNTx = 4
-harq = 'true' 
-offNetMediaSps = 'true'
-relayMediaSps = 'true'
+harq = "true"
+offNetMediaSps = "true"
+relayMediaSps = "true"
 psfchPeriod = 0
 relayXInit = 397
 
-params = (minNumAccess, numerology, enableSensing, rri, maxNTx, harq, psfchPeriod, offNetMediaSps, relayMediaSps, relayXInit)
-allSims.append (params)
+params = (
+    minNumAccess,
+    numerology,
+    enableSensing,
+    rri,
+    maxNTx,
+    harq,
+    psfchPeriod,
+    offNetMediaSps,
+    relayMediaSps,
+    relayXInit,
+)
+allSims.append(params)
 
 # HARQ with feedback (up to 3 retransmissions) due to psfchPeriod = 2
 numerology = 2
-enableSensing = 'true'
+enableSensing = "true"
 rri = 0
 maxNTx = 4
-harq = 'true'
-offNetMediaSps = 'true'
-relayMediaSps = 'true'
+harq = "true"
+offNetMediaSps = "true"
+relayMediaSps = "true"
 psfchPeriod = 2
 relayXInit = 397
 
-params = (minNumAccess, numerology, enableSensing, rri, maxNTx, harq, psfchPeriod, offNetMediaSps, relayMediaSps, relayXInit)
-allSims.append (params)
+params = (
+    minNumAccess,
+    numerology,
+    enableSensing,
+    rri,
+    maxNTx,
+    harq,
+    psfchPeriod,
+    offNetMediaSps,
+    relayMediaSps,
+    relayXInit,
+)
+allSims.append(params)
 
 #  Create another pool object with "nProcesses" number of simultaneous processes/simulations
 nProcesses = 3
 pool = Pool(processes=nProcesses)
 
 #  Run the simulations
-print ("Running HARQ simulations...")
+print("Running HARQ simulations...")
 for _ in pool.imap_unordered(start_simulation, allSims):
     pass
 pool.close()
@@ -562,16 +672,34 @@ filename = "wfpst-2024_Section_IV_PDRs.txt"
 #  Process the data, outputting PDR statistics to a file 'wfpst-2024_Section_IV_PDRs.txt'
 with open(filename, "w") as outfile:
     # No retransmissions
-    with open("wfpst-2024_slNum-2_enableSensing-true_rri-0_maxNTx-1_harq-false_psfchPeriod-0_offNetMediaSps-true_relayMediaSps-true_relayXInit-397/mcptt-msg-stats.txt", "r") as infile:
-        outfile.write("Media PDR with no retransmissions:    %.1f %%\n" % calculate_relay_pdr(infile))
+    with open(
+        "wfpst-2024_slNum-2_enableSensing-true_rri-0_maxNTx-1_harq-false_psfchPeriod-0_offNetMediaSps-true_relayMediaSps-true_relayXInit-397/mcptt-msg-stats.txt",
+        "r",
+    ) as infile:
+        outfile.write(
+            "Media PDR with no retransmissions:    %.1f %%\n"
+            % calculate_relay_pdr(infile)
+        )
     infile.close()
     # Blind retransmissions
-    with open("wfpst-2024_slNum-2_enableSensing-true_rri-0_maxNTx-4_harq-true_psfchPeriod-0_offNetMediaSps-true_relayMediaSps-true_relayXInit-397/mcptt-msg-stats.txt", "r") as infile:
-        outfile.write("Media PDR with blind retransmissions: %.1f %%\n" % calculate_relay_pdr(infile))
+    with open(
+        "wfpst-2024_slNum-2_enableSensing-true_rri-0_maxNTx-4_harq-true_psfchPeriod-0_offNetMediaSps-true_relayMediaSps-true_relayXInit-397/mcptt-msg-stats.txt",
+        "r",
+    ) as infile:
+        outfile.write(
+            "Media PDR with blind retransmissions: %.1f %%\n"
+            % calculate_relay_pdr(infile)
+        )
     infile.close()
     # HARQ retransmissions
-    with open("wfpst-2024_slNum-2_enableSensing-true_rri-0_maxNTx-4_harq-true_psfchPeriod-2_offNetMediaSps-true_relayMediaSps-true_relayXInit-397/mcptt-msg-stats.txt", "r") as infile:
-        outfile.write("Media PDR with HARQ retransmissions:  %.1f %%\n" % calculate_relay_pdr(infile))
+    with open(
+        "wfpst-2024_slNum-2_enableSensing-true_rri-0_maxNTx-4_harq-true_psfchPeriod-2_offNetMediaSps-true_relayMediaSps-true_relayXInit-397/mcptt-msg-stats.txt",
+        "r",
+    ) as infile:
+        outfile.write(
+            "Media PDR with HARQ retransmissions:  %.1f %%\n"
+            % calculate_relay_pdr(infile)
+        )
     infile.close()
 outfile.close()
-print(f'File: %s' % filename)
+print(f"File: %s" % filename)
