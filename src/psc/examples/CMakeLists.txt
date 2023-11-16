@@ -36,7 +36,7 @@ build_lib_example(
 
 build_lib_example(
     NAME uav-mobility-energy-example
-    SOURCE_FILES example-udp-group-echo.cc
+    SOURCE_FILES uav-mobility-energy-example
     LIBRARIES_TO_LINK
     ${libcore}
     ${libenergy}
@@ -190,7 +190,7 @@ build_lib_example(
 
 build_lib_example(
     NAME example-mcptt-on-network-two-calls
-    SOURCE_FILES example-mcptt-on-network-floor-control-lte.cc
+    SOURCE_FILES example-mcptt-on-network-two-calls.cc
     LIBRARIES_TO_LINK
     ${libcore}
     ${libpoint-to-point}
@@ -218,7 +218,7 @@ build_lib_example(
 
 build_lib_example(
     NAME mcptt-operational-modes-static
-    SOURCE_FILES example-mcptt-on-network-two-simultaneous-calls.cc
+    SOURCE_FILES mcptt-operational-modes-static.cc
     LIBRARIES_TO_LINK
     ${libcore}
     ${libpoint-to-point}
