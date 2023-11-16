@@ -442,13 +442,13 @@ allSims.append (params)
 # Run all simulations 
 #  Inital run for compilation
 print ("Running ./ns3 build...")
-output = subprocess.run(['./ns3', 'show', 'config'], capture_output=True)
+output = subprocess.run(["./ns3", "show", "config"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 if output.returncode:
     print('Error:  Is the project configured?  Run ./ns3 configure ... first')
     print(output.stdout.decode("utf-8"))
     print(output.stderr.decode("utf-8"))
     sys.exit(1)
-output = subprocess.run(['./ns3', 'build'], capture_output=True)
+output = subprocess.run(["./ns3", "build"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 if output.returncode:
     print('Error:  The build failed; fix it to continue')
     print(output.stdout.decode("utf-8"))
