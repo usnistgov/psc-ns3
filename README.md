@@ -1,3 +1,14 @@
+This special branch is to support reproducibility of the results of the paper submission entitled:
+"Towards System Level Simulations of Public Safety Applications over 5G NR Sidelink"
+by Samantha Gamboa, Thomas R. Henderson, Wesley Garey, Chunmei Liu, and Richard Rouil.
+
+Prerequisites:  Typical system prerequisites for ns-3.40 release, and Python3 numpy and matplotlib
+
+After compiling ns-3, the script 'run-wfpst-2024.py' will regenerate results; see that script
+for further details.
+
+Future versions of NIST and CTTC modules are expected to incorporate the code included in
+this branch, but only after some refactoring.  This branch is intended to be archival only.
 
 The Network Simulator, Version 3
 ================================
