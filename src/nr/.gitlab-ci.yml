@@ -1,0 +1,126 @@
+stages:
+  - build
+
+
+###################### BUILD STAGE #############################################
+
+# Defines the steps to run the tests
+# Inherit with "extends: .base-build" and remember to set
+# the following variables: COMPILER (g++, clang++, ...) and
+# MODE (debug, release, optimized)
+.base-build:
+  stage: build
+  script:
+    - git clone https://gitlab.com/cttc-lena/ns-3-dev.git
+    - mkdir -p $CCACHE_BASEDIR_VALUE
+    - export CCACHE_BASEDIR=${PWD}
+    - export CCACHE_DIR=${PWD}/$CCACHE_BASEDIR_VALUE
+    - mkdir -p ns-3-dev/contrib/nr
+    - cp -r doc examples helper model test utils ns-3-dev/contrib/nr/
+    - cp -r CMakeLists.txt ns-3-dev/contrib/nr/
+    - cd ns-3-dev
+    - git checkout v2x-lte-dev
+    - git log -1
+    - export MPI_CI=1
+    - CXX=$COMPILER ./ns3 configure -d $MODE -GNinja --enable-examples --enable-modules=flow-monitor,stats,nr --enable-tests --enable-asserts
+    - cmake --version
+    - ./ns3 build
+    - ./test.py -n
+    - ./ns3 clean
+    - rm -rf contrib/nr
+    - cd ../
+    - rm -rf ns-3-dev
+  cache:
+    # Use separate key for each (debug/optimized/release) jobs because
+    # they run in parallel and will otherwise overwrite each other
+    # cache when they upload the cache archive at the end of the job,
+    # resulting in only the cache for the last finished configuration
+    # being stored.
+    #
+    # Do not distinguish between branches though to avoid
+    # recompilation of all the files when a new branch is created.
+    key: "ccache-$CI_JOB_NAME"
+    paths:
+      - $CCACHE_BASEDIR_VALUE/
+  timeout: 9h
+  variables:
+    CCACHE_BASEDIR_VALUE: ns-3-ccache-storage
+
+# Defines the per-commit jobs. They are executed for any branch
+#gcc-debug:
+#  extends: .base-build
+#  image: archlinux
+#  variables:
+#    COMPILER: g++
+#    MODE: debug
+#  before_script:
+#    - pacman -Syu --noconfirm
+#    - pacman -Sy base-devel git python ccache gsl gtk3 boost ninja cmake --noconfirm
+
+#gcc-release:
+#  extends: .base-build
+#  image: archlinux
+#  variables:
+#    COMPILER: g++
+#    MODE: release
+#  before_script:
+#    - pacman -Syu --noconfirm
+#    - pacman -Sy base-devel git python ccache gsl gtk3 boost ninja cmake --noconfirm
+
+#gcc-optimized:
+#  extends: .base-build
+#  image: archlinux
+#  variables:
+#    COMPILER: g++
+#    MODE: optimized
+#  before_script:
+#    - pacman -Syu --noconfirm
+#    - pacman -Sy base-devel git python ccache gsl gtk3 boost ninja cmake --noconfirm
+
+pages:
+  stage: build
+  before_script:
+    - apt-get update
+    - DEBIAN_FRONTEND=noninteractive apt-get install -y tzdata
+    - apt-get install -y doxygen graphviz make imagemagick dia texlive texlive-font-utils python3-sphinx latexmk texlive texlive-science texlive-formats-extra texlive-base python3-jinja2 python3-pygments texlive-fonts-extra git
+    - sed -i "s/EPS,PDF,//g" /etc/ImageMagick-6/policy.xml
+    - sed -i "s/none/read\ |\ write/g" /etc/ImageMagick-6/policy.xml
+  image: ubuntu
+  script:
+    - mkdir -p public/
+    - cd doc && make latexpdf
+    - cd ..
+    - mv doc/build/latex/*.pdf public/
+    - git submodule sync --recursive
+    - git submodule update --init --recursive
+    - python3 doc/m.css/documentation/doxygen.py doc/doxygen-mcss.conf --debug
+    - mv doc/doc/html/ public/
+  artifacts:
+    paths:
+      - public
+    
+#doxygen-linux:
+#  stage: build
+#  tags:
+#    - cttc
+#  image: archlinux
+#  before_script:
+#    - pacman -Syu --noconfirm
+#    - pacman -Sy base-devel ninja cmake python ccache gsl gtk3 boost --noconfirm
+#    - pacman -Sy git doxygen graphviz imagemagick dia texlive-core texlive-bin texlive-latexextra python-sphinx --noconfirm
+#    - mv /etc/ImageMagick-7/policy.xml /etc/ImageMagick-7/policy.xml.bak
+#  script:
+#    - mkdir -p public/
+#    - git submodule sync --recursive
+#    - git submodule update --init --recursive
+#    - doxygen --version
+#    - python3 doc/m.css/documentation/doxygen.py doc/doxygen-mcss.conf --debug
+#    - mv doc/doc/html/ public/
+#  artifacts:
+#    paths:
+#      - public
+
+ 
+include:
+  - '.gitlab-ci-clang.yml'
+  - '.gitlab-ci-gcc.yml'

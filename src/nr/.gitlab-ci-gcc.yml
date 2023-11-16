@@ -1,0 +1,67 @@
+# NS3 CI script for GCC
+
+# Any scheduled pipeline for GCC should define a variable, named
+# "RELEASE", that has a value "weekly". Also, a variable "GCC" should be set
+# to True.
+
+# We support GCC 9-11. Check if everything builds fine
+# under debug, release, and optimized, on Linux.
+
+.build-gcc:
+  extends: .base-build
+  before_script:
+    - apt-get --quiet update --yes
+    - update-alternatives --install /usr/bin/gfortran gfortran /usr/local/bin/gfortran 999
+    - apt-get --quiet install git gcc g++ cmake ninja-build python python3 python-dev qt5-default openmpi-bin openmpi-common openmpi-doc libopenmpi-dev ccache flex bison libfl-dev sqlite sqlite3 libsqlite3-dev libxml2 libxml2-dev libgtk-3-dev libboost-all-dev gsl-bin libgsl0-dev ssh --yes
+  variables:
+    COMPILER: g++
+
+# GCC 9
+gcc-9-debug:
+  extends: .build-gcc
+  only:
+    variables:
+      - $RELEASE == "weekly"
+      - $GCC_BUILD_ENABLE == "True"
+  image: gcc:9
+  variables:
+    MODE: debug
+
+gcc-9-release:
+  extends: .build-gcc
+  only:
+    variables:
+      - $RELEASE == "weekly"
+      - $GCC_BUILD_ENABLE == "True"
+  image: gcc:9
+  variables:
+    MODE: release
+
+gcc-9-optimized:
+  extends: .build-gcc
+  only:
+    variables:
+      - $RELEASE == "weekly"
+      - $GCC_BUILD_ENABLE == "True"
+  image: gcc:9
+  variables:
+    MODE: optimized
+
+# GCC 10
+gcc-10-debug:
+  extends: .build-gcc
+  image: gcc:10
+  variables:
+    MODE: debug
+
+gcc-10-release:
+  extends: .build-gcc
+  image: gcc:10
+  variables:
+    MODE: release
+
+gcc-10-optimized:
+  extends: .build-gcc
+  image: gcc:10
+  variables:
+    MODE: optimized
