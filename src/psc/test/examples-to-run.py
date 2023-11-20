@@ -14,6 +14,23 @@ cpp_examples = [
     ("camad-2019-communication", "True", "True"),
     ("camad-2019-connection", "True", "True"),
     ("camad-2019-discovery", "True", "True"),
+    ("example-intel-http", "True", "True"),
+    ("example-intel-http --lossy=1 --multipleApps=1", "True", "True"),
+    ("example-mcptt-on-network-floor-control-csma", "True", "True"),
+    ("example-mcptt-on-network-floor-control-lte", "True", "True"),
+    ("example-mcptt-on-network-two-calls", "True", "True"),
+    ("example-mcptt-on-network-two-simultaneous-calls", "True", "True"),
+    ("example-mcptt-pusher-orchestrator", "True", "True"),
+    ("example-psc-application --verbose=0", "True", "True"),
+    ("example-udp-group-echo --verbose=0", "True", "True"),
+    ("example-video-streaming", "True", "True"),
+    ("mcptt-lte-sl-out-of-covrg-comm", "True", "True"),
+    ("mcptt-lte-sl-out-of-covrg-comm --useIPv6=0", "True", "True"),
+    ("mcptt-operational-modes-mobility", "True", "True"),
+    ("mcptt-operational-modes-mobility --queueing=1", "True", "True"),
+    ("mcptt-operational-modes-static", "True", "True"),
+    ("uav-mobility-energy-example", "True", "True"),
+    ("uav-mobility-energy-example --useHelperApi=1", "True", "True"),
 ]
 
 # A list of Python examples to run in order to ensure that they remain
