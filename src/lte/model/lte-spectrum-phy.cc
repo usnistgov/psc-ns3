@@ -2374,6 +2374,7 @@ LteSpectrumPhy::RxSlPssch(std::vector<uint32_t> pktIndexes)
             params.m_size = (*itTb).second.size;
             params.m_rv = (*itTb).second.rv;
             params.m_ndi = (*itTb).second.ndi;
+            params.m_ccId = m_componentCarrierId;
             params.m_correctness = (uint8_t) !(*itTb).second.corrupt;
             params.m_sinrPerRb = GetMeanSinr(m_slSinrPerceived[(*itSinr).second] * m_slRxGain,
                                              (*itTb).second.rbBitmap);
@@ -2746,6 +2747,7 @@ LteSpectrumPhy::RxSlPsdch(std::vector<uint32_t> pktIndexes)
             m_rxPacketInfo.at(pktIndex)
                 .params->packetBurst->GetSize(); // discovery message has a static size
         prsparams.m_ndi = (*itTbDisc).second.ndi;
+        prsparams.m_ccId = m_componentCarrierId;
         prsparams.m_correctness = (uint8_t) !(*itTbDisc).second.corrupt;
         prsparams.m_sinrPerRb =
             GetMeanSinr(m_slSinrPerceived[(*itTbDisc).second.index] * m_slRxGain,
@@ -2948,6 +2950,7 @@ LteSpectrumPhy::RxSlPsbch(std::vector<uint32_t> pktIndexes)
         prsparams.m_size = m_rxPacketInfo.at(pktIndex).params->packetBurst->GetSize();
         prsparams.m_rv = 0;
         prsparams.m_ndi = 1;
+        prsparams.m_ccId = m_componentCarrierId;
         prsparams.m_correctness = !corrupt;
         prsparams.m_sinrPerRb = GetMeanSinr(m_slSinrPerceived[pktIndex] * m_slRxGain,
                                             m_rxPacketInfo.at(pktIndex).rbBitmap);
