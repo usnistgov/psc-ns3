@@ -67,7 +67,7 @@ using namespace psc;
  *   the start/stop of the applications. Changing the simulation time will
  *   simply truncate the scenario.
  * - enableLte: Enable the deployment of an LTE network (default = true).
- * - enableLteTraces: Enable LTE traces (default = true).
+ * - enableLteTraces: Enable LTE traces (default = false).
  * - enableGuiTraces: enable traces for visualization (default = false)
  * - guiResolution: granularity of the visualization traces (default = 1000 ms).
  *   Larger values will reduce file size but lower resolution.
@@ -85,7 +85,7 @@ main(int argc, char* argv[])
     // defines default values for input parameters
     Time duration = Seconds(14700);
     bool enableLte = true;
-    bool enableLteTraces = true;
+    bool enableLteTraces = false;
     bool enableNetsimulyzer = false;
     Time reportTime = Seconds(1);
     int guiResolution = 1000; // refresh time in ms
