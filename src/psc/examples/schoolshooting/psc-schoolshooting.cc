@@ -77,6 +77,16 @@ using namespace psc;
  *   (default = false)
  * - appId: The ID for the application to use. Allows for testing a single application
  *   (default = -1, i.e., all applications are enabled)
+ *
+ * Note: The full scenario is large and runs for over four hours of simulation
+ * time.  The scenario will trigger an assert or exception if the LTE
+ * traces feature is enabled or if asserts are enabled in the build.  These
+ * are apparently due to upstream LTE issues that have not been resolved as
+ * of release v7.0.  In addition, LTE traces are verbose and will consume tens
+ * of GB of file system if enabled, and will cause slower execution time.
+ * Therefore, LTE traces are disabled by default, and users are encouraged
+ * to build ns-3 in optimized mode without asserts enabled (the default
+ * setting).
  */
 
 int

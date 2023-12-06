@@ -18,6 +18,20 @@ potentially complex scenarios involving hundreds of users and a multitude of
 applications. The modular approach helps the users evaluate different
 technologies and configurations without having to start from scratch.
 
+**Note:** The full scenario is large and runs for over four hours of simulation
+time.  The scenario will trigger an assert or exception if the LTE
+traces feature is enabled or if asserts are enabled in the build.  These
+are apparently due to upstream LTE issues that have not been resolved as
+of release v7.0.  In addition, LTE traces are verbose and will consume tens
+of GB of file system if enabled, and will cause slower execution time.
+Therefore, LTE traces are disabled by default, and users are encouraged
+to build ns-3 in optimized mode without asserts enabled (the default setting).
+For example:
+
+::
+
+  $ ./ns3 configure -d optimized --enable-examples --enable-tests
+
 ---------------
 Design Overview
 ---------------
