@@ -739,7 +739,7 @@ McpttTraceHelper::RecordAccessTime(Time ts,
         m_accessTimeTraceFile << std::setw(7) << userId;
         m_accessTimeTraceFile << std::setw(7) << callId;
         m_accessTimeTraceFile << std::setw(6) << result;
-        m_accessTimeTraceFile << std::fixed << std::setw(11) << latency.GetSeconds() << std::endl;
+        m_accessTimeTraceFile << std::fixed << std::setw(13) << latency.GetSeconds() << std::endl;
     }
 
     m_accessTimeTrace(ts, userId, callId, result, latency);
@@ -760,7 +760,7 @@ McpttTraceHelper::RecordMouthToEarLatency(Time ts,
         m_mouthToEarLatencyTraceFile << std::setw(5) << ssrc;
         m_mouthToEarLatencyTraceFile << std::setw(7) << nodeId;
         m_mouthToEarLatencyTraceFile << std::setw(7) << callId;
-        m_mouthToEarLatencyTraceFile << std::fixed << std::setw(11) << latency.GetSeconds()
+        m_mouthToEarLatencyTraceFile << std::fixed << std::setw(13) << latency.GetSeconds()
                                      << std::endl;
     }
 
