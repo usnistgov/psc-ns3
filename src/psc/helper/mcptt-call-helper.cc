@@ -206,8 +206,8 @@ McpttCallHelper::AddCall(ApplicationContainer clients,
         Ptr<McpttPttApp> app = clients.Get(i)->GetObject<McpttPttApp>();
         clientUserIds.push_back(app->GetUserId());
         // McpttPttApp uses a static integer for allocating unique port numbers
-        uint16_t floorPort = McpttPttApp::AllocateNextPortNumber();
-        uint16_t mediaPort = McpttPttApp::AllocateNextPortNumber();
+        uint16_t floorPort = McpttPttApp::AllocateNextFloorPortNumber();
+        uint16_t mediaPort = McpttPttApp::AllocateNextMediaPortNumber();
         NS_LOG_DEBUG("Port from " << app->GetNode()->GetId() << " to server:  floor " << floorPort
                                   << " media " << mediaPort);
         // Each application gets its own instance of a McpttCall object

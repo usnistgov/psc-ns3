@@ -107,15 +107,30 @@ class McpttPttApp : public Application, public McpttMediaSink
      */
     Ptr<sip::SipAgent> GetSipAgent(void) const;
     /**
-     * Gets the current port number
-     * \returns The current port number.
-     */
-    static uint16_t GetCurrentPortNumber(void);
-    /**
      * Gets the next port number to use.
      * \returns The next port number.
      */
     static uint16_t AllocateNextPortNumber(void);
+    /**
+     * Gets the current media port number
+     * \returns The current media port number.
+     */
+    static uint16_t GetCurrentMediaPortNumber(void);
+    /**
+     * Gets the next media port number to use.
+     * \returns The next media port number.
+     */
+    static uint16_t AllocateNextMediaPortNumber(void);
+    /**
+     * Gets the current floor port number
+     * \returns The current floor port number.
+     */
+    static uint16_t GetCurrentFloorPortNumber(void);
+    /**
+     * Gets the next floor port number to use.
+     * \returns The next floor port number.
+     */
+    static uint16_t AllocateNextFloorPortNumber(void);
     /**
      * Accepts a call.
      */
@@ -343,7 +358,8 @@ class McpttPttApp : public Application, public McpttMediaSink
                                         const char* event);
 
   private:
-    static uint16_t s_portNumber;                         //!< A port number.
+    static uint16_t s_mediaPortNumber;                    //!< Media port number.
+    static uint16_t s_floorPortNumber;                    //!< Floor port number.
     bool m_isRunning;                                     //!< Whether application is running or not
     uint16_t m_callIdAllocator;                           //!< Counter to allocate call IDs
     std::map<uint16_t, Ptr<McpttChannel>> m_callChannels; //!< Map of call channels
