@@ -81,10 +81,13 @@ McpttChannel::Close()
 
     Ptr<Socket> socket = GetSocket();
 
-    socket->Close();
-    socket->SetRecvCallback(MakeNullCallback<void, Ptr<Socket>>());
+    if (socket)
+    {
+        socket->Close();
+        socket->SetRecvCallback(MakeNullCallback<void, Ptr<Socket>>());
 
-    SetSocket(nullptr);
+        SetSocket(nullptr);
+    }
 }
 
 TypeId
