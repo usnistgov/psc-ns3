@@ -93,6 +93,30 @@ class NrSlUeBwpmRrcSapProvider
      */
     virtual void SetBwpIdContainer(const std::set<uint8_t>& bwpIdVec) = 0;
 
+    /**
+     * \brief Add a new NR Sidelink Signalling Radio Bearer Logical Channel (LC)
+     *
+     * \param lcInfo is the Sidelink Logical Channel Information
+     * \param msu is the pointer to NrSlMacSapUser, which MAC uses to call RLC methods
+     * \return vector of SlLcInfoBwpm contains the LC configuration for each MAC
+     *         the size of the vector is equal to the number of bandwidth part manager enabled.
+     */
+    virtual std::vector<NrSlUeBwpmRrcSapProvider::SlLcInfoBwpm> AddNrSlSrbLc(
+        const NrSlUeCmacSapProvider::SidelinkLogicalChannelInfo& lcInfo,
+        NrSlMacSapUser* msu) = 0;
+
+    /**
+     * \brief Add a new NR Sidelink Discovery Radio Bearer Logical Channel (LC)
+     *
+     * \param lcInfo is the Sidelink Logical Channel Information
+     * \param msu is the pointer to NrSlMacSapUser, which MAC uses to call RLC methods
+     * \return vector of SlLcInfoBwpm contains the LC configuration for each MAC
+     *         the size of the vector is equal to the number of bandwidth part manager enabled.
+     */
+    virtual std::vector<NrSlUeBwpmRrcSapProvider::SlLcInfoBwpm> AddNrSlDiscoveryRbLc(
+        const NrSlUeCmacSapProvider::SidelinkLogicalChannelInfo& lcInfo,
+        NrSlMacSapUser* msu) = 0;
+
 }; // end of class NrSlUeBwpmRrcSapProvider
 
 /**
@@ -125,6 +149,12 @@ class MemberNrSlUeBwpmRrcSapProvider : public NrSlUeBwpmRrcSapProvider
                                          uint32_t dstL2Id) override;
     void ResetNrSlDrbLcMap() override;
     void SetBwpIdContainer(const std::set<uint8_t>& bwpIdVec) override;
+    std::vector<NrSlUeBwpmRrcSapProvider::SlLcInfoBwpm> AddNrSlSrbLc(
+        const NrSlUeCmacSapProvider::SidelinkLogicalChannelInfo& lcInfo,
+        NrSlMacSapUser* msu) override;
+    std::vector<NrSlUeBwpmRrcSapProvider::SlLcInfoBwpm> AddNrSlDiscoveryRbLc(
+        const NrSlUeCmacSapProvider::SidelinkLogicalChannelInfo& lcInfo,
+        NrSlMacSapUser* msu) override;
 
   private:
     C* m_owner; ///< the owner class
@@ -166,6 +196,24 @@ void
 MemberNrSlUeBwpmRrcSapProvider<C>::SetBwpIdContainer(const std::set<uint8_t>& bwpIdVec)
 {
     return m_owner->DoSetBwpIdContainer(bwpIdVec);
+}
+
+template <class C>
+std::vector<NrSlUeBwpmRrcSapProvider::SlLcInfoBwpm>
+MemberNrSlUeBwpmRrcSapProvider<C>::AddNrSlSrbLc(
+    const NrSlUeCmacSapProvider::SidelinkLogicalChannelInfo& lcInfo,
+    NrSlMacSapUser* msu)
+{
+    return m_owner->DoAddNrSlSrbLc(lcInfo, msu);
+}
+
+template <class C>
+std::vector<NrSlUeBwpmRrcSapProvider::SlLcInfoBwpm>
+MemberNrSlUeBwpmRrcSapProvider<C>::AddNrSlDiscoveryRbLc(
+    const NrSlUeCmacSapProvider::SidelinkLogicalChannelInfo& lcInfo,
+    NrSlMacSapUser* msu)
+{
+    return m_owner->DoAddNrSlDiscoveryRbLc(lcInfo, msu);
 }
 
 /**

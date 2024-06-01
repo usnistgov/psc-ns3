@@ -330,9 +330,9 @@ class Ipv6RawTestSuite : public TestSuite
 {
   public:
     Ipv6RawTestSuite()
-        : TestSuite("ipv6-raw", UNIT)
+        : TestSuite("ipv6-raw", Type::UNIT)
     {
-        AddTestCase(new Ipv6RawSocketImplTest, TestCase::QUICK);
+        AddTestCase(new Ipv6RawSocketImplTest, TestCase::Duration::QUICK);
     }
 };
 

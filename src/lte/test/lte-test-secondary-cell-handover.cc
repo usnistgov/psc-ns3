@@ -205,10 +205,10 @@ class LteSecondaryCellHandoverTestSuite : public TestSuite
 };
 
 LteSecondaryCellHandoverTestSuite::LteSecondaryCellHandoverTestSuite()
-    : TestSuite{"lte-secondary-cell-handover", SYSTEM}
+    : TestSuite{"lte-secondary-cell-handover", Type::SYSTEM}
 {
-    AddTestCase(new LteSecondaryCellHandoverTestCase("Ideal RRC", true), TestCase::QUICK);
-    AddTestCase(new LteSecondaryCellHandoverTestCase("Real RRC", false), TestCase::QUICK);
+    AddTestCase(new LteSecondaryCellHandoverTestCase("Ideal RRC", true), TestCase::Duration::QUICK);
+    AddTestCase(new LteSecondaryCellHandoverTestCase("Real RRC", false), TestCase::Duration::QUICK);
 }
 
 /**

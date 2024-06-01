@@ -20,6 +20,7 @@
 #ifndef WIFI_PHY_STATE_HELPER_H
 #define WIFI_PHY_STATE_HELPER_H
 
+#include "phy-entity.h"
 #include "wifi-phy-common.h"
 #include "wifi-phy-state.h"
 #include "wifi-ppdu.h"
@@ -29,6 +30,7 @@
 #include "ns3/object.h"
 #include "ns3/traced-callback.h"
 
+#include <algorithm>
 #include <list>
 #include <memory>
 #include <vector>
@@ -170,6 +172,12 @@ class WifiPhyStateHelper : public Object
     Time GetLastRxEndTime() const;
 
     /**
+     * \param states a set of PHY states
+     * \return the last time the PHY has been in any of the given states
+     */
+    Time GetLastTime(std::initializer_list<WifiPhyState> states) const;
+
+    /**
      * Switch state to TX for the given duration.
      *
      * \param txDuration the duration of the PPDU to transmit
@@ -224,6 +232,21 @@ class WifiPhyStateHelper : public Object
      * \param snr the SNR of the received PSDU in linear scale
      */
     void NotifyRxPsduFailed(Ptr<const WifiPsdu> psdu, double snr);
+
+    /**
+     * Handle the outcome of a reception of a PPDU.
+     *
+     * \param ppdu the received PPDU
+     * \param rxSignalInfo the info on the received signal (\see RxSignalInfo)
+     * \param txVector TXVECTOR of the PSDU
+     * \param staId the station ID of the PSDU (only used for MU)
+     * \param statusPerMpdu reception status per MPDU
+     */
+    void NotifyRxPpduOutcome(Ptr<const WifiPpdu> ppdu,
+                             RxSignalInfo rxSignalInfo,
+                             const WifiTxVector& txVector,
+                             uint16_t staId,
+                             const std::vector<bool>& statusPerMpdu);
     /**
      * Switch from RX after the reception was successful.
      */
@@ -291,6 +314,22 @@ class WifiPhyStateHelper : public Object
                                        WifiPreamble preamble);
 
     /**
+     * TracedCallback signature for the outcome of a received packet.
+     *
+     * \param [in] psdu The received PSDU (Physical Layer Service Data Unit).
+     * \param [in] signalInfo Information about the received signal, including its power and other
+     * characteristics.
+     * \param [in] txVector The transmission vector used for the packet, detailing
+     * the transmission parameters.
+     * \param [in] outcomes A vector of boolean values indicating the
+     * success or failure of receiving individual MPDUs within the PSDU.
+     */
+    typedef void (*RxOutcomeTracedCallback)(Ptr<const WifiPsdu> psdu,
+                                            RxSignalInfo signalInfo,
+                                            const WifiTxVector& txVector,
+                                            const std::vector<bool>& outcomes);
+
+    /**
      * TracedCallback signature for receive end error event.
      *
      * \param [in] packet       The received packet.
@@ -352,16 +391,22 @@ class WifiPhyStateHelper : public Object
     Time m_endRx;                   ///< end receive
     Time m_endCcaBusy;              ///< end CCA busy
     Time m_endSwitching;            ///< end switching
+    Time m_endSleep;                ///< end sleep
+    Time m_endOff;                  ///< end off
+    Time m_endIdle;                 ///< end idle
     Time m_startTx;                 ///< start transmit
     Time m_startRx;                 ///< start receive
     Time m_startCcaBusy;            ///< start CCA busy
     Time m_startSwitching;          ///< start switching
     Time m_startSleep;              ///< start sleep
+    Time m_startOff;                ///< start off
     Time m_previousStateChangeTime; ///< previous state change time
 
     Listeners m_listeners; ///< listeners
     TracedCallback<Ptr<const Packet>, double, WifiMode, WifiPreamble>
-        m_rxOkTrace;                                          ///< receive OK trace callback
+        m_rxOkTrace; ///< receive OK trace callback
+    TracedCallback<Ptr<const WifiPpdu>, RxSignalInfo, const WifiTxVector&, const std::vector<bool>&>
+        m_rxOutcomeTrace;                                     ///< receive OK trace callback
     TracedCallback<Ptr<const Packet>, double> m_rxErrorTrace; ///< receive error trace callback
     TracedCallback<Ptr<const Packet>, WifiMode, WifiPreamble, uint8_t>
         m_txTrace;                     ///< transmit trace callback

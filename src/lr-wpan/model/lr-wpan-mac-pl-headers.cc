@@ -24,6 +24,8 @@
 
 namespace ns3
 {
+namespace lrwpan
+{
 
 /***********************************************************
  *                Beacon MAC Payload
@@ -172,20 +174,15 @@ CommandPayloadHeader::GetSerializedSize() const
         size += 3; // (short address + Association Status)
         break;
     case DISASSOCIATION_NOTIF:
-        break;
     case DATA_REQ:
-        break;
     case PANID_CONFLICT:
-        break;
     case ORPHAN_NOTIF:
-        break;
     case BEACON_REQ:
         break;
     case COOR_REALIGN:
         size += 8;
         break;
     case GTS_REQ:
-        break;
     case CMD_RESERVED:
         break;
     }
@@ -208,13 +205,9 @@ CommandPayloadHeader::Serialize(Buffer::Iterator start) const
         i.WriteU8(m_assocStatus);
         break;
     case DISASSOCIATION_NOTIF:
-        break;
     case DATA_REQ:
-        break;
     case PANID_CONFLICT:
-        break;
     case ORPHAN_NOTIF:
-        break;
     case BEACON_REQ:
         break;
     case COOR_REALIGN:
@@ -225,7 +218,6 @@ CommandPayloadHeader::Serialize(Buffer::Iterator start) const
         i.WriteU8(m_logChPage);
         break;
     case GTS_REQ:
-        break;
     case CMD_RESERVED:
         break;
     }
@@ -247,13 +239,9 @@ CommandPayloadHeader::Deserialize(Buffer::Iterator start)
         m_assocStatus = i.ReadU8();
         break;
     case DISASSOCIATION_NOTIF:
-        break;
     case DATA_REQ:
-        break;
     case PANID_CONFLICT:
-        break;
     case ORPHAN_NOTIF:
-        break;
     case BEACON_REQ:
         break;
     case COOR_REALIGN:
@@ -264,7 +252,6 @@ CommandPayloadHeader::Deserialize(Buffer::Iterator start)
         m_logChPage = i.ReadU8();
         break;
     case GTS_REQ:
-        break;
     case CMD_RESERVED:
         break;
     }
@@ -292,13 +279,9 @@ CommandPayloadHeader::Print(std::ostream& os) const
            << "| Status Response | = " << m_assocStatus;
         break;
     case DISASSOCIATION_NOTIF:
-        break;
     case DATA_REQ:
-        break;
     case PANID_CONFLICT:
-        break;
     case ORPHAN_NOTIF:
-        break;
     case BEACON_REQ:
         break;
     case COOR_REALIGN:
@@ -309,9 +292,7 @@ CommandPayloadHeader::Print(std::ostream& os) const
            << "| Page Num.| = " << static_cast<uint32_t>(m_logChPage);
         break;
     case GTS_REQ:
-        break;
     case CMD_RESERVED:
-        break;
     default:
         break;
     }
@@ -448,4 +429,5 @@ CommandPayloadHeader::GetPanId() const
     return m_panid;
 }
 
+} // namespace lrwpan
 } // namespace ns3

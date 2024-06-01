@@ -259,9 +259,9 @@ class TracedValueCallbackTestSuite : public TestSuite
 };
 
 TracedValueCallbackTestSuite::TracedValueCallbackTestSuite()
-    : TestSuite("traced-value-callback", UNIT)
+    : TestSuite("traced-value-callback", Type::UNIT)
 {
-    AddTestCase(new TracedValueCallbackTestCase, TestCase::QUICK);
+    AddTestCase(new TracedValueCallbackTestCase, TestCase::Duration::QUICK);
 }
 
 /// Static variable for test initialization

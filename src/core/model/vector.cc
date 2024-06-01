@@ -27,7 +27,7 @@
 
 /**
  * \file
- * \ingroup attribute_Vector
+ * \ingroup geometry
  * ns3::Vector, ns3::Vector2D and ns3::Vector3D attribute value implementations.
  */
 
@@ -201,6 +201,24 @@ operator-(const Vector3D& a, const Vector3D& b)
     return Vector3D(a.x - b.x, a.y - b.y, a.z - b.z);
 }
 
+Vector3D
+operator*(const Vector3D& a, double b)
+{
+    return Vector3D(a.x * b, a.y * b, a.z * b);
+}
+
+Vector3D
+operator*(double a, const Vector3D& b)
+{
+    return Vector3D(b.x * a, b.y * a, b.z * a);
+}
+
+double
+operator*(const Vector3D& a, const Vector3D& b)
+{
+    return a.x * b.x + a.y * b.y + a.z * b.z;
+}
+
 std::ostream&
 operator<<(std::ostream& os, const Vector2D& vector)
 {
@@ -266,6 +284,24 @@ Vector2D
 operator-(const Vector2D& a, const Vector2D& b)
 {
     return Vector2D(a.x - b.x, a.y - b.y);
+}
+
+Vector2D
+operator*(const Vector2D& a, double b)
+{
+    return Vector2D(a.x * b, a.y * b);
+}
+
+Vector2D
+operator*(double a, const Vector2D& b)
+{
+    return Vector2D(b.x * a, b.y * a);
+}
+
+double
+operator*(const Vector2D& a, const Vector2D& b)
+{
+    return a.x * b.x + a.y * b.y;
 }
 
 } // namespace ns3

@@ -183,7 +183,7 @@ class RandCartAroundGeoTestSuite : public TestSuite
 };
 
 RandCartAroundGeoTestSuite::RandCartAroundGeoTestSuite()
-    : TestSuite("rand-cart-around-geo", UNIT)
+    : TestSuite("rand-cart-around-geo", Type::UNIT)
 {
     NS_LOG_INFO("creating RandCartAroundGeoTestSuite");
     Ptr<UniformRandomVariable> uniRand = CreateObject<UniformRandomVariable>();
@@ -201,7 +201,7 @@ RandCartAroundGeoTestSuite::RandCartAroundGeoTestSuite()
                                                           50, // 50 points generated
                                                           maxDistFromOrigin,
                                                           uniRand),
-                            TestCase::QUICK);
+                            TestCase::Duration::QUICK);
             }
         }
     }

@@ -22,13 +22,18 @@
 #include "ns3/boolean.h"
 #include "ns3/eht-configuration.h"
 #include "ns3/emlsr-manager.h"
+#include "ns3/enum.h"
 #include "ns3/frame-exchange-manager.h"
 #include "ns3/multi-user-scheduler.h"
+#include "ns3/pointer.h"
 #include "ns3/wifi-ack-manager.h"
 #include "ns3/wifi-assoc-manager.h"
 #include "ns3/wifi-mac-queue-scheduler.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/wifi-protection-manager.h"
+
+#include <sstream>
+#include <vector>
 
 namespace ns3
 {
@@ -38,6 +43,17 @@ WifiMacHelper::WifiMacHelper()
     // By default, we create an AdHoc MAC layer (without QoS).
     SetType("ns3::AdhocWifiMac");
 
+    m_dcf.SetTypeId("ns3::Txop");
+    for (const auto& [aci, ac] : wifiAcList)
+    {
+        auto [it, inserted] = m_edca.try_emplace(aci);
+        it->second.SetTypeId("ns3::QosTxop");
+    }
+    m_channelAccessManager.SetTypeId("ns3::ChannelAccessManager");
+    // Setting FEM attributes requires setting a TypeId first. We initialize the TypeId to the FEM
+    // of the latest standard, in order to allow users to set the attributes of all the FEMs. The
+    // Create method will set the requested standard before creating the FEM(s).
+    m_frameExchangeManager.SetTypeId(GetFrameExchangeManagerTypeIdName(WIFI_STANDARD_COUNT, true));
     m_assocManager.SetTypeId("ns3::WifiDefaultAssocManager");
     m_queueScheduler.SetTypeId("ns3::FcfsWifiQueueScheduler");
     m_protectionManager.SetTypeId("ns3::WifiDefaultProtectionManager");
@@ -61,44 +77,68 @@ WifiMacHelper::Create(Ptr<WifiNetDevice> device, WifiStandard standard) const
         macObjectFactory.Set("QosSupported", BooleanValue(true));
     }
 
+    // do not create a Txop if the standard is at least 802.11n
+    if (standard < WIFI_STANDARD_80211n)
+    {
+        auto dcf = m_dcf; // create a copy because this is a const method
+        dcf.Set("AcIndex", EnumValue<AcIndex>(AC_BE_NQOS));
+        macObjectFactory.Set("Txop", PointerValue(dcf.Create<Txop>()));
+    }
+    // create (Qos)Txop objects
+    for (auto [aci, edca] : m_edca)
+    {
+        edca.Set("AcIndex", EnumValue<AcIndex>(aci));
+        std::stringstream ss;
+        ss << aci << "_Txop";
+        auto s = ss.str().substr(3); // discard "AC "
+        macObjectFactory.Set(s, PointerValue(edca.Create<QosTxop>()));
+    }
+
+    // WaveNetDevice (through ns-3.38) stores PHY entities in a different member than WifiNetDevice,
+    // hence GetNPhys() would return 0
+    auto nLinks = std::max<uint8_t>(device->GetNPhys(), 1);
+
+    // create Channel Access Managers
+    std::vector<Ptr<ChannelAccessManager>> caManagers;
+    for (uint8_t linkId = 0; linkId < nLinks; ++linkId)
+    {
+        caManagers.emplace_back(m_channelAccessManager.Create<ChannelAccessManager>());
+    }
+
     Ptr<WifiMac> mac = macObjectFactory.Create<WifiMac>();
     mac->SetDevice(device);
     mac->SetAddress(Mac48Address::Allocate());
     device->SetMac(mac);
-    mac->ConfigureStandard(standard);
+    mac->SetChannelAccessManagers(caManagers);
 
-    Ptr<WifiMacQueueScheduler> queueScheduler = m_queueScheduler.Create<WifiMacQueueScheduler>();
-    mac->SetMacQueueScheduler(queueScheduler);
-
-    // WaveNetDevice (through ns-3.38) stores PHY entities in a different member than WifiNetDevice,
-    // hence GetNPhys() would return 0. We have to attach a protection manager and an ack manager to
-    // the unique instance of frame exchange manager anyway
-    for (uint8_t linkId = 0; linkId < std::max<uint8_t>(device->GetNPhys(), 1); ++linkId)
+    // create Frame Exchange Managers, each with an attached protection manager and ack manager
+    std::vector<Ptr<FrameExchangeManager>> feManagers;
+    auto frameExchangeManager = m_frameExchangeManager;
+    frameExchangeManager.SetTypeId(
+        GetFrameExchangeManagerTypeIdName(standard, mac->GetQosSupported()));
+    for (uint8_t linkId = 0; linkId < nLinks; ++linkId)
     {
-        auto fem = mac->GetFrameExchangeManager(linkId);
+        auto fem = frameExchangeManager.Create<FrameExchangeManager>();
+        feManagers.emplace_back(fem);
 
-        Ptr<WifiProtectionManager> protectionManager =
-            m_protectionManager.Create<WifiProtectionManager>();
+        auto protectionManager = m_protectionManager.Create<WifiProtectionManager>();
         protectionManager->SetWifiMac(mac);
         protectionManager->SetLinkId(linkId);
         fem->SetProtectionManager(protectionManager);
 
-        Ptr<WifiAckManager> ackManager = m_ackManager.Create<WifiAckManager>();
+        auto ackManager = m_ackManager.Create<WifiAckManager>();
         ackManager->SetWifiMac(mac);
         ackManager->SetLinkId(linkId);
         fem->SetAckManager(ackManager);
 
-        // 11be MLDs require a MAC address to be assigned to each STA. Note that
-        // FrameExchangeManager objects are created by WifiMac::SetupFrameExchangeManager
-        // (which is invoked by WifiMac::ConfigureStandard, which is called above),
-        // which sets the FrameExchangeManager's address to the address held by WifiMac.
-        // Hence, in case the number of PHY objects is 1, the FrameExchangeManager's
-        // address equals the WifiMac's address.
-        if (device->GetNPhys() > 1)
-        {
-            fem->SetAddress(Mac48Address::Allocate());
-        }
+        // 11be MLDs require a MAC address to be assigned to each STA
+        fem->SetAddress(device->GetNPhys() > 1 ? Mac48Address::Allocate() : mac->GetAddress());
     }
+
+    mac->SetFrameExchangeManagers(feManagers);
+
+    Ptr<WifiMacQueueScheduler> queueScheduler = m_queueScheduler.Create<WifiMacQueueScheduler>();
+    mac->SetMacQueueScheduler(queueScheduler);
 
     // create and install the Multi User Scheduler if this is an HE AP
     Ptr<ApWifiMac> apMac;

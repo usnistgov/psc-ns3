@@ -12,6 +12,7 @@ set(source_files
     helper/wifi-mac-helper.cc
     helper/wifi-radio-energy-model-helper.cc
     helper/yans-wifi-helper.cc
+    helper/wifi-phy-rx-trace-helper.cc
     model/addba-extension.cc
     model/adhoc-wifi-mac.cc
     model/ampdu-subframe-header.cc
@@ -42,6 +43,7 @@ set(source_files
     model/frame-capture-model.cc
     model/frame-exchange-manager.cc
     model/he/constant-obss-pd-algorithm.cc
+    model/he/he-6ghz-band-capabilities.cc
     model/he/he-capabilities.cc
     model/he/he-configuration.cc
     model/he/he-frame-exchange-manager.cc
@@ -101,6 +103,7 @@ set(source_files
     model/rate-control/thompson-sampling-wifi-manager.cc
     model/recipient-block-ack-agreement.cc
     model/reduced-neighbor-report.cc
+    model/reference/error-rate-tables.cc
     model/simple-frame-capture-model.cc
     model/snr-tag.cc
     model/spectrum-wifi-phy.cc
@@ -110,6 +113,7 @@ set(source_files
     model/supported-rates.cc
     model/table-based-error-rate-model.cc
     model/threshold-preamble-detection-model.cc
+    model/tim.cc
     model/txop.cc
     model/vht/vht-capabilities.cc
     model/vht/vht-configuration.cc
@@ -148,6 +152,7 @@ set(source_files
     model/wifi-remote-station-manager.cc
     model/wifi-spectrum-phy-interface.cc
     model/wifi-spectrum-signal-parameters.cc
+    model/wifi-standards.cc
     model/wifi-tx-current-model.cc
     model/wifi-tx-parameters.cc
     model/wifi-tx-timer.cc
@@ -156,6 +161,7 @@ set(source_files
     model/yans-error-rate-model.cc
     model/yans-wifi-channel.cc
     model/yans-wifi-phy.cc
+    model/wifi-spectrum-value-helper.cc
 )
 
 set(header_files
@@ -165,6 +171,7 @@ set(header_files
     helper/wifi-mac-helper.h
     helper/wifi-radio-energy-model-helper.h
     helper/yans-wifi-helper.h
+    helper/wifi-phy-rx-trace-helper.h
     model/addba-extension.h
     model/adhoc-wifi-mac.h
     model/ampdu-subframe-header.h
@@ -195,6 +202,7 @@ set(header_files
     model/frame-capture-model.h
     model/frame-exchange-manager.h
     model/he/constant-obss-pd-algorithm.h
+    model/he/he-6ghz-band-capabilities.h
     model/he/he-capabilities.h
     model/he/he-configuration.h
     model/he/he-frame-exchange-manager.h
@@ -264,6 +272,7 @@ set(header_files
     model/supported-rates.h
     model/table-based-error-rate-model.h
     model/threshold-preamble-detection-model.h
+    model/tim.h
     model/txop.h
     model/vht/vht-capabilities.h
     model/vht/vht-configuration.h
@@ -292,6 +301,7 @@ set(header_files
     model/wifi-mpdu-type.h
     model/wifi-mpdu.h
     model/wifi-net-device.h
+    model/wifi-opt-field.h
     model/wifi-phy-band.h
     model/wifi-phy-common.h
     model/wifi-phy-listener.h
@@ -317,6 +327,7 @@ set(header_files
     model/yans-error-rate-model.h
     model/yans-wifi-channel.h
     model/yans-wifi-phy.h
+    model/wifi-spectrum-value-helper.h
 )
 
 build_lib(
@@ -332,6 +343,7 @@ build_lib(
     test/channel-access-manager-test.cc
     test/inter-bss-test-suite.cc
     test/power-rate-adaptation-test.cc
+    test/power-save-test.cc
     test/spectrum-wifi-phy-test.cc
     test/tx-duration-test.cc
     test/wifi-aggregation-test.cc
@@ -339,12 +351,15 @@ build_lib(
     test/wifi-eht-info-elems-test.cc
     test/wifi-emlsr-test.cc
     test/wifi-error-rate-models-test.cc
+    test/wifi-fils-frame-test.cc
+    test/wifi-he-info-elems-test.cc
     test/wifi-ie-fragment-test.cc
     test/wifi-mac-ofdma-test.cc
     test/wifi-mac-queue-test.cc
     test/wifi-mlo-test.cc
     test/wifi-phy-ofdma-test.cc
     test/wifi-phy-reception-test.cc
+    test/wifi-phy-rx-trace-helper-test.cc
     test/wifi-phy-thresholds-test.cc
     test/wifi-primary-channels-test.cc
     test/wifi-ru-allocation-test.cc

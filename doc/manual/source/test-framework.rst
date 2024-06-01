@@ -761,9 +761,9 @@ as a ''unit'' test with the display name, ``my-test-suite-name``.
   };
 
   MyTestSuite::MyTestSuite()
-    : TestSuite("my-test-suite-name", UNIT)
+    : TestSuite("my-test-suite-name", Type::UNIT)
   {
-    AddTestCase(new MyTestCase, TestCase::QUICK);
+    AddTestCase(new MyTestCase, TestCase::Duration::QUICK);
   }
 
   static MyTestSuite myTestSuite;

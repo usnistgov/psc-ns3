@@ -18,6 +18,7 @@
  */
 
 #include "ns3/ap-wifi-mac.h"
+#include "ns3/attribute-container.h"
 #include "ns3/boolean.h"
 #include "ns3/config.h"
 #include "ns3/ctrl-headers.h"
@@ -1903,6 +1904,14 @@ BlockAckAggregationDisabledTest::DoRun()
                 "BeaconGeneration",
                 BooleanValue(true));
 
+    if (m_txop)
+    {
+        // set the TXOP limit on BE AC
+        mac.SetEdca(AC_BE,
+                    "TxopLimits",
+                    AttributeContainerValue<TimeValue>(std::list{MicroSeconds(4800)}));
+    }
+
     NetDeviceContainer apDevices;
     apDevices = wifi.Install(phy, mac, wifiApNode);
 
@@ -1931,10 +1940,6 @@ BlockAckAggregationDisabledTest::DoRun()
         ptr.Get<QosTxop>()->TraceConnectWithoutContext(
             "TxopTrace",
             MakeCallback(&TxopDurationTracer::Trace, &txopTracer));
-
-        // set the TXOP limit on BE AC
-        ap_device->GetMac()->GetAttribute("BE_Txop", ptr);
-        ptr.Get<QosTxop>()->SetTxopLimit(MicroSeconds(4800));
     }
 
     PacketSocketAddress socket;
@@ -2018,17 +2023,17 @@ class BlockAckTestSuite : public TestSuite
 };
 
 BlockAckTestSuite::BlockAckTestSuite()
-    : TestSuite("wifi-block-ack", UNIT)
+    : TestSuite("wifi-block-ack", Type::UNIT)
 {
-    AddTestCase(new PacketBufferingCaseA, TestCase::QUICK);
-    AddTestCase(new PacketBufferingCaseB, TestCase::QUICK);
-    AddTestCase(new OriginatorBlockAckWindowTest, TestCase::QUICK);
-    AddTestCase(new CtrlBAckResponseHeaderTest, TestCase::QUICK);
-    AddTestCase(new BlockAckRecipientBufferTest(0), TestCase::QUICK);
-    AddTestCase(new BlockAckRecipientBufferTest(4090), TestCase::QUICK);
-    AddTestCase(new MultiStaCtrlBAckResponseHeaderTest, TestCase::QUICK);
-    AddTestCase(new BlockAckAggregationDisabledTest(false), TestCase::QUICK);
-    AddTestCase(new BlockAckAggregationDisabledTest(true), TestCase::QUICK);
+    AddTestCase(new PacketBufferingCaseA, TestCase::Duration::QUICK);
+    AddTestCase(new PacketBufferingCaseB, TestCase::Duration::QUICK);
+    AddTestCase(new OriginatorBlockAckWindowTest, TestCase::Duration::QUICK);
+    AddTestCase(new CtrlBAckResponseHeaderTest, TestCase::Duration::QUICK);
+    AddTestCase(new BlockAckRecipientBufferTest(0), TestCase::Duration::QUICK);
+    AddTestCase(new BlockAckRecipientBufferTest(4090), TestCase::Duration::QUICK);
+    AddTestCase(new MultiStaCtrlBAckResponseHeaderTest, TestCase::Duration::QUICK);
+    AddTestCase(new BlockAckAggregationDisabledTest(false), TestCase::Duration::QUICK);
+    AddTestCase(new BlockAckAggregationDisabledTest(true), TestCase::Duration::QUICK);
 }
 
 static BlockAckTestSuite g_blockAckTestSuite; ///< the test suite

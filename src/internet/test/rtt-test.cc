@@ -187,9 +187,9 @@ class RttEstimatorTestSuite : public TestSuite
 {
   public:
     RttEstimatorTestSuite()
-        : TestSuite("rtt-estimator", UNIT)
+        : TestSuite("rtt-estimator", Type::UNIT)
     {
-        AddTestCase(new RttEstimatorTestCase, TestCase::QUICK);
+        AddTestCase(new RttEstimatorTestCase, TestCase::Duration::QUICK);
     }
 };
 

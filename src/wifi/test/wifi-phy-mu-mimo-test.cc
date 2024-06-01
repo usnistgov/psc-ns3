@@ -32,7 +32,9 @@
 #include "ns3/simulator.h"
 #include "ns3/spectrum-wifi-helper.h"
 #include "ns3/spectrum-wifi-phy.h"
+#include "ns3/string.h"
 #include "ns3/test.h"
+#include "ns3/txop.h"
 #include "ns3/uinteger.h"
 #include "ns3/wifi-mac-header.h"
 #include "ns3/wifi-net-device.h"
@@ -1555,7 +1557,9 @@ TestUlMuMimoPhyTransmission::DoSetup()
     Ptr<Node> apNode = CreateObject<Node>();
     Ptr<WifiNetDevice> apDev = CreateObject<WifiNetDevice>();
     apDev->SetStandard(WIFI_STANDARD_80211ax);
-    Ptr<ApWifiMac> apMac = CreateObject<ApWifiMac>();
+    auto apMac = CreateObjectWithAttributes<ApWifiMac>(
+        "Txop",
+        PointerValue(CreateObjectWithAttributes<Txop>("AcIndex", StringValue("AC_BE_NQOS"))));
     apMac->SetAttribute("BeaconGeneration", BooleanValue(false));
     apDev->SetMac(apMac);
     m_phyAp = CreateObject<MuMimoSpectrumWifiPhy>(0);
@@ -1860,11 +1864,11 @@ class WifiPhyMuMimoTestSuite : public TestSuite
 };
 
 WifiPhyMuMimoTestSuite::WifiPhyMuMimoTestSuite()
-    : TestSuite("wifi-phy-mu-mimo", UNIT)
+    : TestSuite("wifi-phy-mu-mimo", Type::UNIT)
 {
-    AddTestCase(new TestDlMuTxVector, TestCase::QUICK);
-    AddTestCase(new TestDlMuMimoPhyTransmission, TestCase::QUICK);
-    AddTestCase(new TestUlMuMimoPhyTransmission, TestCase::QUICK);
+    AddTestCase(new TestDlMuTxVector, TestCase::Duration::QUICK);
+    AddTestCase(new TestDlMuMimoPhyTransmission, TestCase::Duration::QUICK);
+    AddTestCase(new TestUlMuMimoPhyTransmission, TestCase::Duration::QUICK);
 }
 
 static WifiPhyMuMimoTestSuite WifiPhyMuMimoTestSuite; ///< the test suite

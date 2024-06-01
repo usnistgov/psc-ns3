@@ -36,6 +36,13 @@
 namespace ns3
 {
 // Explicit instantiation declaration
+
+/**
+ * \ingroup callback
+ * Explicit instantiation for ObjectBase
+ * \return A wrapper Callback
+ * \sa ns3::MakeCallback
+ */
 template Callback<ObjectBase*> MakeCallback<ObjectBase*>(ObjectBase* (*)());
 template Callback<ObjectBase*>::Callback();
 template class CallbackImpl<ObjectBase*>;
@@ -319,6 +326,7 @@ ObjectBase::TraceConnectWithoutContext(std::string name, const CallbackBase& cb)
     Ptr<const TraceSourceAccessor> accessor = tid.LookupTraceSourceByName(name);
     if (!accessor)
     {
+        NS_LOG_DEBUG("Cannot connect trace " << name << " on object of type " << tid.GetName());
         return false;
     }
     bool ok = accessor->ConnectWithoutContext(this, cb);
@@ -333,6 +341,7 @@ ObjectBase::TraceConnect(std::string name, std::string context, const CallbackBa
     Ptr<const TraceSourceAccessor> accessor = tid.LookupTraceSourceByName(name);
     if (!accessor)
     {
+        NS_LOG_DEBUG("Cannot connect trace " << name << " on object of type " << tid.GetName());
         return false;
     }
     bool ok = accessor->Connect(this, context, cb);

@@ -85,6 +85,25 @@ ApWifiMac::GetTypeId()
                           BooleanValue(true),
                           MakeBooleanAccessor(&ApWifiMac::SetBeaconGeneration),
                           MakeBooleanChecker())
+            .AddAttribute("FdBeaconInterval6GHz",
+                          "Time between a Beacon frame and a FILS Discovery (FD) frame or between "
+                          "two FD frames to be sent on a 6GHz link. A value of zero disables the "
+                          "transmission of FD frames.",
+                          TimeValue(Time{0}),
+                          MakeTimeAccessor(&ApWifiMac::m_fdBeaconInterval6GHz),
+                          MakeTimeChecker())
+            .AddAttribute("FdBeaconIntervalNon6GHz",
+                          "Time between a Beacon frame and a FILS Discovery (FD) frame or between "
+                          "two FD frames to be sent on a non-6GHz link. A value of zero disables "
+                          "the transmission of FD frames.",
+                          TimeValue(Time{0}),
+                          MakeTimeAccessor(&ApWifiMac::m_fdBeaconIntervalNon6GHz),
+                          MakeTimeChecker())
+            .AddAttribute("SendUnsolProbeResp",
+                          "Send unsolicited broadcast Probe Response instead of FILS Discovery",
+                          BooleanValue(false),
+                          MakeBooleanAccessor(&ApWifiMac::m_sendUnsolProbeResp),
+                          MakeBooleanChecker())
             .AddAttribute("EnableNonErpProtection",
                           "Whether or not protection mechanism should be used when non-ERP STAs "
                           "are present within the BSS."
@@ -97,6 +116,70 @@ ApWifiMac::GetTypeId()
                           TimeValue(MilliSeconds(20)),
                           MakeTimeAccessor(&ApWifiMac::m_bsrLifetime),
                           MakeTimeChecker())
+            .AddAttribute(
+                "CwMinsForSta",
+                "The CW min values that the AP advertises in EDCA Parameter Set elements and the "
+                "associated stations will use. The value of this attribute is an AC-indexed map "
+                "containing the CW min values for given ACs for all the links (sorted in "
+                "increasing order of link ID). If no values are provided for an AC, the same "
+                "values used by the AP are advertised. In case a string is used to set this "
+                "attribute, the string shall contain the pairs separated by a semicolon (;); "
+                "in every pair, the AC index and the list of values are separated by a blank "
+                "space, and the values of a list are separated by a comma (,) without spaces. "
+                "E.g. \"BE 31,31,31; VI 15,15,15\" defines the CW min values for AC BE and AC VI "
+                "for an AP MLD having three links.",
+                StringValue(""),
+                MakeAttributeContainerAccessor<UintAccessParamsPairValue, ';'>(
+                    &ApWifiMac::m_cwMinsForSta),
+                GetUintAccessParamsChecker<uint32_t>())
+            .AddAttribute(
+                "CwMaxsForSta",
+                "The CW max values that the AP advertises in EDCA Parameter Set elements and the "
+                "associated stations will use. The value of this attribute is an AC-indexed map "
+                "containing the CW max values for given ACs for all the links (sorted in "
+                "increasing order of link ID). If no values are provided for an AC, the same "
+                "values used by the AP are advertised. In case a string is used to set this "
+                "attribute, the string shall contain the pairs separated by a semicolon (;); "
+                "in every pair, the AC index and the list of values are separated by a blank "
+                "space, and the values of a list are separated by a comma (,) without spaces. "
+                "E.g. \"BE 31,31,31; VI 15,15,15\" defines the CW max values for AC BE and AC VI "
+                "for an AP MLD having three links.",
+                StringValue(""),
+                MakeAttributeContainerAccessor<UintAccessParamsPairValue, ';'>(
+                    &ApWifiMac::m_cwMaxsForSta),
+                GetUintAccessParamsChecker<uint32_t>())
+            .AddAttribute(
+                "AifsnsForSta",
+                "The AIFSN values that the AP advertises in EDCA Parameter Set elements and the "
+                "associated stations will use. The value of this attribute is an AC-indexed map "
+                "containing the AIFSN values for given ACs for all the links (sorted in "
+                "increasing order of link ID). If no values are provided for an AC, the same "
+                "values used by the AP are advertised. In case a string is used to set this "
+                "attribute, the string shall contain the pairs separated by a semicolon (;); "
+                "in every pair, the AC index and the list of values are separated by a blank "
+                "space, and the values of a list are separated by a comma (,) without spaces. "
+                "E.g. \"BE 3,3,3; VI 2,2,2\" defines the AIFSN values for AC BE and AC VI "
+                "for an AP MLD having three links.",
+                StringValue(""),
+                MakeAttributeContainerAccessor<UintAccessParamsPairValue, ';'>(
+                    &ApWifiMac::m_aifsnsForSta),
+                GetUintAccessParamsChecker<uint8_t>())
+            .AddAttribute(
+                "TxopLimitsForSta",
+                "The TXOP limit values that the AP advertises in EDCA Parameter Set elements and "
+                "the associated stations will use. The value of this attribute is an AC-indexed "
+                "map containing the TXOP limit values for given ACs for all the links (sorted in "
+                "increasing order of link ID). If no values are provided for an AC, the same "
+                "values used by the AP are advertised. In case a string is used to set this "
+                "attribute, the string shall contain the pairs separated by a semicolon (;); "
+                "in every pair, the AC index and the list of values are separated by a blank "
+                "space, and the values of a list are separated by a comma (,) without spaces. "
+                "E.g. \"BE 3200us,3200us,3200us; VI 2400us,2400us,2400us\" defines the TXOP limit "
+                "values for AC BE and AC VI for an AP MLD having three links.",
+                StringValue(""),
+                MakeAttributeContainerAccessor<TimeAccessParamsPairValue, ';'>(
+                    &ApWifiMac::m_txopLimitsForSta),
+                GetTimeAccessParamsChecker())
             .AddTraceSource("AssociatedSta",
                             "A station associated with this access point.",
                             MakeTraceSourceAccessor(&ApWifiMac::m_assocLogger),
@@ -108,11 +191,32 @@ ApWifiMac::GetTypeId()
     return tid;
 }
 
+template <class T>
+Ptr<const AttributeChecker>
+ApWifiMac::GetUintAccessParamsChecker()
+{
+    return MakeAttributeContainerChecker<UintAccessParamsPairValue, ';'>(
+        MakePairChecker<EnumValue<AcIndex>,
+                        AttributeContainerValue<UintegerValue, ',', std::vector>>(
+            MakeEnumChecker(AC_BE, "BE", AC_BK, "BK", AC_VI, "VI", AC_VO, "VO"),
+            MakeAttributeContainerChecker<UintegerValue, ',', std::vector>(
+                MakeUintegerChecker<T>())));
+}
+
+Ptr<const AttributeChecker>
+ApWifiMac::GetTimeAccessParamsChecker()
+{
+    return MakeAttributeContainerChecker<TimeAccessParamsPairValue, ';'>(
+        MakePairChecker<EnumValue<AcIndex>, AttributeContainerValue<TimeValue, ',', std::vector>>(
+            MakeEnumChecker(AC_BE, "BE", AC_BK, "BK", AC_VI, "VI", AC_VO, "VO"),
+            MakeAttributeContainerChecker<TimeValue, ',', std::vector>(MakeTimeChecker())));
+}
+
 ApWifiMac::ApWifiMac()
     : m_enableBeaconGeneration(false)
 {
     NS_LOG_FUNCTION(this);
-    m_beaconTxop = CreateObject<Txop>(CreateObject<WifiMacQueue>(AC_BEACON));
+    m_beaconTxop = CreateObjectWithAttributes<Txop>("AcIndex", StringValue("AC_BEACON"));
     m_beaconTxop->SetTxMiddle(m_txMiddle);
 
     // Let the lower layers know that we are acting as an AP.
@@ -153,11 +257,11 @@ ApWifiMac::GetLink(uint8_t linkId) const
 }
 
 void
-ApWifiMac::ConfigureStandard(WifiStandard standard)
+ApWifiMac::DoCompleteConfig()
 {
-    NS_LOG_FUNCTION(this << standard);
-    WifiMac::ConfigureStandard(standard);
+    NS_LOG_FUNCTION(this);
     m_beaconTxop->SetWifiMac(this);
+    // DCF behavior may be edited here; the default is PIFS access with zero backoff
     m_beaconTxop->SetAifsns(std::vector<uint8_t>(GetNLinks(), 1));
     m_beaconTxop->SetMinCws(std::vector<uint32_t>(GetNLinks(), 0));
     m_beaconTxop->SetMaxCws(std::vector<uint32_t>(GetNLinks(), 0));
@@ -237,7 +341,10 @@ ApWifiMac::AssignStreams(int64_t stream)
 {
     NS_LOG_FUNCTION(this << stream);
     m_beaconJitter->SetStream(stream);
-    return 1;
+    auto currentStream = stream + 1;
+    currentStream += m_beaconTxop->AssignStreams(currentStream);
+    currentStream += WifiMac::AssignStreams(currentStream);
+    return (currentStream - stream);
 }
 
 void
@@ -460,7 +567,7 @@ ApWifiMac::GetSupportedRates(uint8_t linkId) const
     // must have its MSB set to 1 (must be treated as a Basic Rate)
     // Also the standard mentioned that at least 1 element should be included in the SupportedRates
     // the rest can be in the ExtendedSupportedRates
-    if (GetHtSupported())
+    if (GetHtSupported(linkId))
     {
         for (const auto& selector : GetWifiPhy(linkId)->GetBssMembershipSelectorList())
         {
@@ -523,35 +630,51 @@ ApWifiMac::GetEdcaParameterSet(uint8_t linkId) const
     Time txopLimit;
 
     edca = GetQosTxop(AC_BE);
-    txopLimit = edca->GetTxopLimit(linkId);
     edcaParameters.SetBeAci(0);
-    edcaParameters.SetBeCWmin(edca->GetMinCw(linkId));
-    edcaParameters.SetBeCWmax(edca->GetMaxCw(linkId));
-    edcaParameters.SetBeAifsn(edca->GetAifsn(linkId));
+    edcaParameters.SetBeCWmin(m_cwMinsForSta.contains(AC_BE) ? m_cwMinsForSta.at(AC_BE).at(linkId)
+                                                             : edca->GetMinCw(linkId));
+    edcaParameters.SetBeCWmax(m_cwMaxsForSta.contains(AC_BE) ? m_cwMaxsForSta.at(AC_BE).at(linkId)
+                                                             : edca->GetMaxCw(linkId));
+    edcaParameters.SetBeAifsn(m_aifsnsForSta.contains(AC_BE) ? m_aifsnsForSta.at(AC_BE).at(linkId)
+                                                             : edca->GetAifsn(linkId));
+    txopLimit = m_txopLimitsForSta.contains(AC_BE) ? m_txopLimitsForSta.at(AC_BE).at(linkId)
+                                                   : edca->GetTxopLimit(linkId);
     edcaParameters.SetBeTxopLimit(static_cast<uint16_t>(txopLimit.GetMicroSeconds() / 32));
 
     edca = GetQosTxop(AC_BK);
-    txopLimit = edca->GetTxopLimit(linkId);
     edcaParameters.SetBkAci(1);
-    edcaParameters.SetBkCWmin(edca->GetMinCw(linkId));
-    edcaParameters.SetBkCWmax(edca->GetMaxCw(linkId));
-    edcaParameters.SetBkAifsn(edca->GetAifsn(linkId));
+    edcaParameters.SetBkCWmin(m_cwMinsForSta.contains(AC_BK) ? m_cwMinsForSta.at(AC_BK).at(linkId)
+                                                             : edca->GetMinCw(linkId));
+    edcaParameters.SetBkCWmax(m_cwMaxsForSta.contains(AC_BK) ? m_cwMaxsForSta.at(AC_BK).at(linkId)
+                                                             : edca->GetMaxCw(linkId));
+    edcaParameters.SetBkAifsn(m_aifsnsForSta.contains(AC_BK) ? m_aifsnsForSta.at(AC_BK).at(linkId)
+                                                             : edca->GetAifsn(linkId));
+    txopLimit = m_txopLimitsForSta.contains(AC_BK) ? m_txopLimitsForSta.at(AC_BK).at(linkId)
+                                                   : edca->GetTxopLimit(linkId);
     edcaParameters.SetBkTxopLimit(static_cast<uint16_t>(txopLimit.GetMicroSeconds() / 32));
 
     edca = GetQosTxop(AC_VI);
-    txopLimit = edca->GetTxopLimit(linkId);
     edcaParameters.SetViAci(2);
-    edcaParameters.SetViCWmin(edca->GetMinCw(linkId));
-    edcaParameters.SetViCWmax(edca->GetMaxCw(linkId));
-    edcaParameters.SetViAifsn(edca->GetAifsn(linkId));
+    edcaParameters.SetViCWmin(m_cwMinsForSta.contains(AC_VI) ? m_cwMinsForSta.at(AC_VI).at(linkId)
+                                                             : edca->GetMinCw(linkId));
+    edcaParameters.SetViCWmax(m_cwMaxsForSta.contains(AC_VI) ? m_cwMaxsForSta.at(AC_VI).at(linkId)
+                                                             : edca->GetMaxCw(linkId));
+    edcaParameters.SetViAifsn(m_aifsnsForSta.contains(AC_VI) ? m_aifsnsForSta.at(AC_VI).at(linkId)
+                                                             : edca->GetAifsn(linkId));
+    txopLimit = m_txopLimitsForSta.contains(AC_VI) ? m_txopLimitsForSta.at(AC_VI).at(linkId)
+                                                   : edca->GetTxopLimit(linkId);
     edcaParameters.SetViTxopLimit(static_cast<uint16_t>(txopLimit.GetMicroSeconds() / 32));
 
     edca = GetQosTxop(AC_VO);
-    txopLimit = edca->GetTxopLimit(linkId);
     edcaParameters.SetVoAci(3);
-    edcaParameters.SetVoCWmin(edca->GetMinCw(linkId));
-    edcaParameters.SetVoCWmax(edca->GetMaxCw(linkId));
-    edcaParameters.SetVoAifsn(edca->GetAifsn(linkId));
+    edcaParameters.SetVoCWmin(m_cwMinsForSta.contains(AC_VO) ? m_cwMinsForSta.at(AC_VO).at(linkId)
+                                                             : edca->GetMinCw(linkId));
+    edcaParameters.SetVoCWmax(m_cwMaxsForSta.contains(AC_VO) ? m_cwMaxsForSta.at(AC_VO).at(linkId)
+                                                             : edca->GetMaxCw(linkId));
+    edcaParameters.SetVoAifsn(m_aifsnsForSta.contains(AC_VO) ? m_aifsnsForSta.at(AC_VO).at(linkId)
+                                                             : edca->GetAifsn(linkId));
+    txopLimit = m_txopLimitsForSta.contains(AC_VO) ? m_txopLimitsForSta.at(AC_VO).at(linkId)
+                                                   : edca->GetTxopLimit(linkId);
     edcaParameters.SetVoTxopLimit(static_cast<uint16_t>(txopLimit.GetMicroSeconds() / 32));
 
     edcaParameters.SetQosInfo(0);
@@ -721,7 +844,7 @@ ApWifiMac::GetMultiLinkElement(uint8_t linkId, WifiMacType frameType, const Mac4
         mldCapabilities->srsSupport = 0;
         EnumValue<WifiTidToLinkMappingNegSupport> negSupport;
         ehtConfiguration->GetAttributeFailSafe("TidToLinkMappingNegSupport", negSupport);
-        mldCapabilities->tidToLinkMappingSupport = negSupport.Get();
+        mldCapabilities->tidToLinkMappingSupport = static_cast<uint8_t>(negSupport.Get());
         mldCapabilities->freqSepForStrApMld = 0; // not supported yet
         mldCapabilities->aarSupport = 0;         // not supported yet
     }
@@ -768,7 +891,7 @@ HtOperation
 ApWifiMac::GetHtOperation(uint8_t linkId) const
 {
     NS_LOG_FUNCTION(this << +linkId);
-    NS_ASSERT(GetHtSupported());
+    NS_ASSERT(GetHtSupported(linkId));
     HtOperation operation;
     auto phy = GetWifiPhy(linkId);
     auto remoteStationManager = GetWifiRemoteStationManager(linkId);
@@ -809,7 +932,8 @@ ApWifiMac::GetHtOperation(uint8_t linkId) const
     uint8_t nMcs = mcsList.size();
     for (const auto& sta : GetLink(linkId).staList)
     {
-        if (remoteStationManager->GetHtSupported(sta.second))
+        if (remoteStationManager->GetHtSupported(sta.second) ||
+            remoteStationManager->GetStationHe6GhzCapabilities(sta.second))
         {
             uint64_t maxSupportedRateByHtSta = 0; // in bit/s
             auto itMcs = mcsList.begin();
@@ -936,7 +1060,22 @@ ApWifiMac::GetHeOperation(uint8_t linkId) const
             nss,
             11); // TBD: hardcode to 11 for now since we assume all MCS values are supported
     }
-    operation.SetBssColor(GetHeConfiguration()->GetBssColor());
+    operation.m_bssColorInfo.m_bssColor = GetHeConfiguration()->GetBssColor();
+
+    if (auto phy = GetWifiPhy(linkId); phy && phy->GetPhyBand() == WIFI_PHY_BAND_6GHZ)
+    {
+        HeOperation::OpInfo6GHz op6Ghz;
+        const auto bw = phy->GetChannelWidth();
+        const auto ch = phy->GetOperatingChannel();
+        op6Ghz.m_chWid = (bw == 20) ? 0 : (bw == 40) ? 1 : (bw == 80) ? 2 : 3;
+        op6Ghz.m_primCh = ch.GetPrimaryChannelNumber(20, WIFI_STANDARD_80211ax);
+        op6Ghz.m_chCntrFreqSeg0 =
+            (bw == 160) ? ch.GetPrimaryChannelNumber(80, WIFI_STANDARD_80211ax) : ch.GetNumber();
+        // TODO: for 80+80 MHz channels, set this field to the secondary 80 MHz segment number
+        op6Ghz.m_chCntrFreqSeg1 = (bw == 160) ? ch.GetNumber() : 0;
+
+        operation.m_6GHzOpInfo = op6Ghz;
+    }
 
     return operation;
 }
@@ -1000,7 +1139,7 @@ ApWifiMac::SendProbeResp(Mac48Address to, uint8_t linkId)
     {
         probe.Get<EdcaParameterSet>() = GetEdcaParameterSet(linkId);
     }
-    if (GetHtSupported())
+    if (GetHtSupported(linkId))
     {
         probe.Get<ExtendedCapabilities>() = GetExtendedCapabilities();
         probe.Get<HtCapabilities>() = GetHtCapabilities(linkId);
@@ -1015,9 +1154,13 @@ ApWifiMac::SendProbeResp(Mac48Address to, uint8_t linkId)
     {
         probe.Get<HeCapabilities>() = GetHeCapabilities(linkId);
         probe.Get<HeOperation>() = GetHeOperation(linkId);
-        if (auto muEdcaParameterSet = GetMuEdcaParameterSet(); muEdcaParameterSet.has_value())
+        if (auto muEdcaParameterSet = GetMuEdcaParameterSet())
         {
             probe.Get<MuEdcaParameterSet>() = std::move(*muEdcaParameterSet);
+        }
+        if (Is6GhzBand(linkId))
+        {
+            probe.Get<He6GhzBandCapabilities>() = GetHe6GhzBandCapabilities(linkId);
         }
     }
     if (GetEhtSupported())
@@ -1099,7 +1242,7 @@ ApWifiMac::GetAssocResp(Mac48Address to, uint8_t linkId)
     {
         assoc.Get<EdcaParameterSet>() = GetEdcaParameterSet(linkId);
     }
-    if (GetHtSupported())
+    if (GetHtSupported(linkId))
     {
         assoc.Get<ExtendedCapabilities>() = GetExtendedCapabilities();
         assoc.Get<HtCapabilities>() = GetHtCapabilities(linkId);
@@ -1117,6 +1260,10 @@ ApWifiMac::GetAssocResp(Mac48Address to, uint8_t linkId)
         if (auto muEdcaParameterSet = GetMuEdcaParameterSet(); muEdcaParameterSet.has_value())
         {
             assoc.Get<MuEdcaParameterSet>() = std::move(*muEdcaParameterSet);
+        }
+        if (Is6GhzBand(linkId))
+        {
+            assoc.Get<He6GhzBandCapabilities>() = GetHe6GhzBandCapabilities(linkId);
         }
     }
     if (GetEhtSupported())
@@ -1266,7 +1413,8 @@ ApWifiMac::SetAid(MgtAssocResponseHeader& assoc, const LinkIdStaAddrMap& linkIdS
                 {
                     link.numNonErpStations++;
                 }
-                if (!remoteStationManager->GetHtSupported(staAddr))
+                if (!remoteStationManager->GetHtSupported(staAddr) &&
+                    !remoteStationManager->GetStationHe6GhzCapabilities(staAddr))
                 {
                     link.numNonHtStations++;
                 }
@@ -1391,7 +1539,7 @@ ApWifiMac::SendOneBeacon(uint8_t linkId)
     {
         beacon.Get<EdcaParameterSet>() = GetEdcaParameterSet(linkId);
     }
-    if (GetHtSupported())
+    if (GetHtSupported(linkId))
     {
         beacon.Get<ExtendedCapabilities>() = GetExtendedCapabilities();
         beacon.Get<HtCapabilities>() = GetHtCapabilities(linkId);
@@ -1409,6 +1557,10 @@ ApWifiMac::SendOneBeacon(uint8_t linkId)
         if (auto muEdcaParameterSet = GetMuEdcaParameterSet(); muEdcaParameterSet.has_value())
         {
             beacon.Get<MuEdcaParameterSet>() = std::move(*muEdcaParameterSet);
+        }
+        if (Is6GhzBand(linkId))
+        {
+            beacon.Get<He6GhzBandCapabilities>() = GetHe6GhzBandCapabilities(linkId);
         }
     }
     if (GetEhtSupported())
@@ -1442,10 +1594,13 @@ ApWifiMac::SendOneBeacon(uint8_t linkId)
     }
     packet->AddHeader(beacon);
 
+    NS_LOG_INFO("Generating beacon from " << link.feManager->GetAddress() << " linkID " << +linkId);
     // The beacon has it's own special queue, so we load it in there
     m_beaconTxop->Queue(packet, hdr);
     link.beaconEvent =
         Simulator::Schedule(GetBeaconInterval(), &ApWifiMac::SendOneBeacon, this, linkId);
+
+    ScheduleFilsDiscOrUnsolProbeRespFrames(linkId);
 
     // If a STA that does not support Short Slot Time associates,
     // the AP shall use long slot time beginning at the first Beacon
@@ -1461,6 +1616,76 @@ ApWifiMac::SendOneBeacon(uint8_t linkId)
         {
             // Disable short slot time
             GetWifiPhy(linkId)->SetSlot(MicroSeconds(20));
+        }
+    }
+}
+
+Ptr<WifiMpdu>
+ApWifiMac::GetFilsDiscovery(uint8_t linkId) const
+{
+    WifiMacHeader hdr(WIFI_MAC_MGT_ACTION);
+    hdr.SetAddr1(Mac48Address::GetBroadcast());
+    auto& link = GetLink(linkId);
+    hdr.SetAddr2(link.feManager->GetAddress());
+    hdr.SetAddr3(link.feManager->GetAddress());
+    hdr.SetDsNotFrom();
+    hdr.SetDsNotTo();
+
+    WifiActionHeader actionHdr;
+    WifiActionHeader::ActionValue action;
+    action.publicAction = WifiActionHeader::FILS_DISCOVERY;
+    actionHdr.SetAction(WifiActionHeader::PUBLIC, action);
+
+    FilsDiscHeader fils;
+    fils.SetSsid(GetSsid().PeekString());
+    fils.m_beaconInt = (m_beaconInterval / WIFI_TU).GetHigh();
+
+    fils.m_fdCap = FilsDiscHeader::FdCapability{};
+    fils.m_fdCap->SetOpChannelWidth(link.phy->GetChannelWidth());
+    fils.m_fdCap->SetMaxNss(std::min(link.phy->GetMaxSupportedTxSpatialStreams(),
+                                     link.phy->GetMaxSupportedRxSpatialStreams()));
+    fils.m_fdCap->SetStandard(link.phy->GetStandard());
+
+    fils.SetLengthSubfield();
+    fils.m_rnr = GetReducedNeighborReport(linkId);
+
+    auto packet = Create<Packet>();
+    packet->AddHeader(fils);
+    packet->AddHeader(actionHdr);
+
+    return Create<WifiMpdu>(packet, hdr);
+}
+
+void
+ApWifiMac::ScheduleFilsDiscOrUnsolProbeRespFrames(uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << linkId);
+    auto phy = GetLink(linkId).phy;
+
+    auto fdBeaconInterval = (phy->GetPhyBand() == WIFI_PHY_BAND_6GHZ) ? m_fdBeaconInterval6GHz
+                                                                      : m_fdBeaconIntervalNon6GHz;
+
+    if (!fdBeaconInterval.IsStrictlyPositive())
+    {
+        NS_LOG_DEBUG("Sending FILS Discovery/unsolicited Probe Response disabled");
+        return;
+    }
+
+    // Schedule FD or unsolicited Probe Response frames (IEEE Std 802.11ax-2021 26.17.2.3.2)
+    for (uint8_t count = 1; count < (m_beaconInterval / fdBeaconInterval).GetHigh(); ++count)
+    {
+        if (m_sendUnsolProbeResp)
+        {
+            Simulator::Schedule(fdBeaconInterval * count,
+                                &ApWifiMac::SendProbeResp,
+                                this,
+                                Mac48Address::GetBroadcast(),
+                                linkId);
+        }
+        else
+        {
+            Simulator::Schedule(fdBeaconInterval * count,
+                                [=, this]() { m_beaconTxop->Queue(GetFilsDiscovery(linkId)); });
         }
     }
 }
@@ -1526,7 +1751,7 @@ ApWifiMac::TxOk(Ptr<const WifiMpdu> mpdu)
             // we can stop the timer and enforce the configuration deriving from the
             // EML Notification frame sent by the EMLSR client
             if (auto eventIt = m_transitionTimeoutEvents.find(hdr.GetAddr1());
-                eventIt != m_transitionTimeoutEvents.cend() && eventIt->second.IsRunning())
+                eventIt != m_transitionTimeoutEvents.cend() && eventIt->second.IsPending())
             {
                 // no need to wait until the expiration of the transition timeout
                 eventIt->second.PeekEventImpl()->Invoke();
@@ -1726,12 +1951,14 @@ ApWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
                 ForwardUp(packet, from, to);
             }
         }
+        // NOLINTBEGIN(bugprone-branch-clone)
         else if (hdr->IsFromDs() && hdr->IsToDs())
         {
             // this is an AP-to-AP frame
             // we ignore for now.
             NotifyRxDrop(packet);
         }
+        // NOLINTEND(bugprone-branch-clone)
         else
         {
             // we can ignore these frames since
@@ -1816,7 +2043,9 @@ ApWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
                         {
                             GetLink(linkId).numNonErpStations--;
                         }
-                        if (!GetWifiRemoteStationManager(linkId)->GetHtSupported(from))
+                        if (!GetWifiRemoteStationManager(linkId)->GetHtSupported(from) &&
+                            !GetWifiRemoteStationManager(linkId)->GetStationHe6GhzCapabilities(
+                                from))
                         {
                             GetLink(linkId).numNonHtStations--;
                         }
@@ -1888,7 +2117,7 @@ ApWifiMac::ReceiveAssocRequest(const AssocReqRefVariant& assoc,
             return failure("STA's supported rate set not compatible with our Basic Rate set");
         }
 
-        if (GetHtSupported())
+        if (GetHtSupported(linkId))
         {
             // check whether the HT STA supports all MCSs in Basic MCS Set
             const auto& htCapabilities = frame.template Get<HtCapabilities>();
@@ -1933,6 +2162,13 @@ ApWifiMac::ReceiveAssocRequest(const AssocReqRefVariant& assoc,
                     {
                         return failure("HE STA does not support all MCSs in Basic MCS Set");
                     }
+                }
+            }
+            if (Is6GhzBand(linkId))
+            {
+                if (const auto& he6GhzCapabilities = frame.template Get<He6GhzBandCapabilities>())
+                {
+                    remoteStationManager->AddStationHe6GhzCapabilities(from, *he6GhzCapabilities);
                 }
             }
         }
@@ -1981,7 +2217,7 @@ ApWifiMac::ReceiveAssocRequest(const AssocReqRefVariant& assoc,
                 EnumValue<WifiTidToLinkMappingNegSupport> negSupport;
                 ehtConfig->GetAttributeFailSafe("TidToLinkMappingNegSupport", negSupport);
 
-                if (negSupport.Get() == 0)
+                if (negSupport.Get() == WifiTidToLinkMappingNegSupport::NOT_SUPPORTED)
                 {
                     return failure("TID-to-Link Mapping negotiation not supported");
                 }
@@ -2019,7 +2255,7 @@ ApWifiMac::ReceiveAssocRequest(const AssocReqRefVariant& assoc,
                     break;
                 }
 
-                if (negSupport.Get() == 1 &&
+                if (negSupport.Get() == WifiTidToLinkMappingNegSupport::SAME_LINK_SET &&
                     !TidToLinkMappingValidForNegType1(dlMapping, ulMapping))
                 {
                     return failure("Mapping TIDs to distinct link sets is incompatible with "
@@ -2055,7 +2291,7 @@ ApWifiMac::ReceiveAssocRequest(const AssocReqRefVariant& assoc,
         {
             remoteStationManager->AddSupportedErpSlotTime(from, true);
         }
-        if (GetHtSupported())
+        if (GetHtSupported(linkId))
         {
             const auto& htCapabilities = frame.template Get<HtCapabilities>();
             if (htCapabilities.has_value() && htCapabilities->IsSupportedMcs(0))
@@ -2378,7 +2614,7 @@ ApWifiMac::GetNextAssociationId(std::list<uint8_t> linkIds)
     {
         if (std::all_of(linkIds.begin(), linkIds.end(), [&](auto&& linkId) {
                 auto& staList = GetLink(linkId).staList;
-                return staList.find(nextAid) == staList.end();
+                return !staList.contains(nextAid);
             }))
         {
             return nextAid;

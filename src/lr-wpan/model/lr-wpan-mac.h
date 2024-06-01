@@ -39,8 +39,11 @@
 
 namespace ns3
 {
-
 class Packet;
+
+namespace lrwpan
+{
+
 class LrWpanCsmaCa;
 
 /**
@@ -55,7 +58,7 @@ class LrWpanCsmaCa;
  *
  * Tx options
  */
-enum LrWpanTxOption
+enum TxOption
 {
     TX_OPTION_NONE = 0,    //!< TX_OPTION_NONE
     TX_OPTION_ACK = 1,     //!< TX_OPTION_ACK
@@ -68,7 +71,7 @@ enum LrWpanTxOption
  *
  * MAC states
  */
-enum LrWpanMacState
+enum MacState
 {
     MAC_IDLE,               //!< MAC_IDLE
     MAC_CSMA,               //!< MAC_CSMA
@@ -83,13 +86,13 @@ enum LrWpanMacState
 };
 
 /**
- *  Overloaded operator to print the value of a LrWpanMacState.
+ *  Overloaded operator to print the value of a MacState.
  *
  *  \param os The output stream
  *  \param state The text value of the PHY state
  *  \return The output stream with text value of the MAC state
  */
-std::ostream& operator<<(std::ostream& os, const LrWpanMacState& state);
+std::ostream& operator<<(std::ostream& os, const MacState& state);
 
 /**
  * \ingroup lr-wpan
@@ -134,12 +137,12 @@ namespace TracedValueCallback
 
 /**
  * \ingroup lr-wpan
- * TracedValue callback signature for LrWpanMacState.
+ * TracedValue callback signature for MacState.
  *
  * \param [in] oldValue original value of the traced variable
  * \param [in] newValue new value of the traced variable
  */
-typedef void (*LrWpanMacState)(LrWpanMacState oldValue, LrWpanMacState newValue);
+typedef void (*MacState)(MacState oldValue, MacState newValue);
 
 /**
  * \ingroup lr-wpan
@@ -260,10 +263,9 @@ class LrWpanMac : public LrWpanMacBase
 
     void MlmePollRequest(MlmePollRequestParams params) override;
 
-    void MlmeSetRequest(LrWpanMacPibAttributeIdentifier id,
-                        Ptr<LrWpanMacPibAttributes> attribute) override;
+    void MlmeSetRequest(MacPibAttributeIdentifier id, Ptr<MacPibAttributes> attribute) override;
 
-    void MlmeGetRequest(LrWpanMacPibAttributeIdentifier id) override;
+    void MlmeGetRequest(MacPibAttributeIdentifier id) override;
 
     /**
      * Set the CSMA/CA implementation to be used by the MAC.
@@ -306,14 +308,14 @@ class LrWpanMac : public LrWpanMacBase
      * \param status to report to MAC
      *        PHY PD-DATA.confirm status
      */
-    void PdDataConfirm(LrWpanPhyEnumeration status);
+    void PdDataConfirm(PhyEnumeration status);
 
     /**
      * IEEE 802.15.4-2006 section 6.2.2.2
      * PLME-CCA.confirm status
      * \param status TRX_OFF, BUSY or IDLE
      */
-    void PlmeCcaConfirm(LrWpanPhyEnumeration status);
+    void PlmeCcaConfirm(PhyEnumeration status);
 
     /**
      * IEEE 802.15.4-2006 section 6.2.2.4
@@ -321,7 +323,7 @@ class LrWpanMac : public LrWpanMacBase
      * \param status SUCCESS, TRX_OFF or TX_ON
      * \param energyLevel 0x00-0xff ED level for the channel
      */
-    void PlmeEdConfirm(LrWpanPhyEnumeration status, uint8_t energyLevel);
+    void PlmeEdConfirm(PhyEnumeration status, uint8_t energyLevel);
 
     /**
      * IEEE 802.15.4-2006 section 6.2.2.6
@@ -331,9 +333,9 @@ class LrWpanMac : public LrWpanMacBase
      * \param id the attributed identifier
      * \param attribute the attribute value
      */
-    void PlmeGetAttributeConfirm(LrWpanPhyEnumeration status,
-                                 LrWpanPibAttributeIdentifier id,
-                                 Ptr<LrWpanPhyPibAttributes> attribute);
+    void PlmeGetAttributeConfirm(PhyEnumeration status,
+                                 PhyPibAttributeIdentifier id,
+                                 Ptr<PhyPibAttributes> attribute);
 
     /**
      * IEEE 802.15.4-2006 section 6.2.2.8
@@ -341,7 +343,7 @@ class LrWpanMac : public LrWpanMacBase
      * Set PHY state
      * \param status in RX_ON,TRX_OFF,FORCE_TRX_OFF,TX_ON
      */
-    void PlmeSetTRXStateConfirm(LrWpanPhyEnumeration status);
+    void PlmeSetTRXStateConfirm(PhyEnumeration status);
 
     /**
      * IEEE 802.15.4-2006 section 6.2.2.10
@@ -350,14 +352,14 @@ class LrWpanMac : public LrWpanMacBase
      * \param status SUCCESS, UNSUPPORTED_ATTRIBUTE, INVALID_PARAMETER, or READ_ONLY
      * \param id the attributed identifier
      */
-    void PlmeSetAttributeConfirm(LrWpanPhyEnumeration status, LrWpanPibAttributeIdentifier id);
+    void PlmeSetAttributeConfirm(PhyEnumeration status, PhyPibAttributeIdentifier id);
 
     /**
      * CSMA-CA algorithm calls back the MAC after executing channel assessment.
      *
      * \param macState indicate BUSY or IDLE channel condition
      */
-    void SetLrWpanMacState(LrWpanMacState macState);
+    void SetLrWpanMacState(MacState macState);
 
     /**
      * Set the max size of the transmit queue.
@@ -661,7 +663,7 @@ class LrWpanMac : public LrWpanMacBase
      *
      * \return True if m_txPkt (packet awaiting to be sent) destination is its coordinator
      */
-    bool isCoordDest();
+    bool IsCoordDest();
 
     /**
      * Check if the packet destination is its coordinator
@@ -696,7 +698,7 @@ class LrWpanMac : public LrWpanMacBase
      *
      *\return True if the Tx packet requires acknowledgment
      * */
-    bool isTxAckReq();
+    bool IsTxAckReq();
 
     /**
      * Print the Pending transaction list.
@@ -720,15 +722,15 @@ class LrWpanMac : public LrWpanMacBase
     typedef void (*SentTracedCallback)(Ptr<const Packet> packet, uint8_t retries, uint8_t backoffs);
 
     /**
-     * TracedCallback signature for LrWpanMacState change events.
+     * TracedCallback signature for MacState change events.
      *
      * \param [in] oldValue The original state value.
      * \param [in] newValue The new state value.
-     * \deprecated The LrWpanMacState is now accessible as the
+     * \deprecated The MacState is now accessible as the
      * TracedValue \c MacStateValue. The \c MacState TracedCallback will
      * be removed in a future release.
      */
-    typedef void (*StateTracedCallback)(LrWpanMacState oldState, LrWpanMacState newState);
+    typedef void (*StateTracedCallback)(MacState oldState, MacState newState);
 
   protected:
     // Inherited from Object.
@@ -879,7 +881,7 @@ class LrWpanMac : public LrWpanMacBase
      *
      * \param newState the new state
      */
-    void ChangeMacState(LrWpanMacState newState);
+    void ChangeMacState(MacState newState);
 
     /**
      * Handle an ACK timeout with a packet retransmission, if there are
@@ -1112,14 +1114,14 @@ class LrWpanMac : public LrWpanMacBase
     TracedCallback<Ptr<const Packet>> m_promiscSnifferTrace;
 
     /**
-     * A trace source that fires when the LrWpanMac changes states.
+     * A trace source that fires when the MAC changes states.
      * Parameters are the old mac state and the new mac state.
      *
      * \deprecated This TracedCallback is deprecated and will be
      * removed in a future release,  Instead, use the \c MacStateValue
      * TracedValue.
      */
-    TracedCallback<LrWpanMacState, LrWpanMacState> m_macStateLogger;
+    TracedCallback<MacState, MacState> m_macStateLogger;
 
     /**
      * The PHY associated with this MAC.
@@ -1134,7 +1136,7 @@ class LrWpanMac : public LrWpanMacBase
     /**
      * The current state of the MAC layer.
      */
-    TracedValue<LrWpanMacState> m_lrWpanMacState;
+    TracedValue<MacState> m_macState;
 
     /**
      * The current period of the incoming superframe.
@@ -1167,7 +1169,7 @@ class LrWpanMac : public LrWpanMacBase
     /**
      * The extended 64 address (IEEE EUI-64) used by this MAC.
      */
-    Mac64Address m_selfExt;
+    Mac64Address m_macExtendedAddress;
 
     /**
      * The transmit queue used by the MAC.
@@ -1322,6 +1324,7 @@ class LrWpanMac : public LrWpanMacBase
      */
     EventId m_scanEnergyEvent;
 };
+} // namespace lrwpan
 } // namespace ns3
 
 #endif /* LR_WPAN_MAC_H */

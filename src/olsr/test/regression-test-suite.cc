@@ -34,12 +34,12 @@ class RegressionTestSuite : public TestSuite
 {
   public:
     RegressionTestSuite()
-        : TestSuite("routing-olsr-regression", SYSTEM)
+        : TestSuite("routing-olsr-regression", Type::SYSTEM)
     {
         SetDataDir(NS_TEST_SOURCEDIR);
-        AddTestCase(new HelloRegressionTest, TestCase::QUICK);
-        AddTestCase(new TcRegressionTest, TestCase::QUICK);
-        AddTestCase(new Bug780Test, TestCase::QUICK);
+        AddTestCase(new HelloRegressionTest, TestCase::Duration::QUICK);
+        AddTestCase(new TcRegressionTest, TestCase::Duration::QUICK);
+        AddTestCase(new Bug780Test, TestCase::Duration::QUICK);
     }
 };
 

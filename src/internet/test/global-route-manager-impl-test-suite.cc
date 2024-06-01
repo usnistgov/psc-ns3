@@ -229,9 +229,9 @@ class GlobalRouteManagerImplTestSuite : public TestSuite
 };
 
 GlobalRouteManagerImplTestSuite::GlobalRouteManagerImplTestSuite()
-    : TestSuite("global-route-manager-impl", UNIT)
+    : TestSuite("global-route-manager-impl", Type::UNIT)
 {
-    AddTestCase(new GlobalRouteManagerImplTestCase(), TestCase::QUICK);
+    AddTestCase(new GlobalRouteManagerImplTestCase(), TestCase::Duration::QUICK);
 }
 
 static GlobalRouteManagerImplTestSuite

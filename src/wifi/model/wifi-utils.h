@@ -23,6 +23,7 @@
 #include "block-ack-type.h"
 
 #include "ns3/fatal-error.h"
+#include "ns3/nstime.h"
 #include "ns3/ptr.h"
 
 #include <list>
@@ -193,6 +194,13 @@ static constexpr uint8_t SINGLE_LINK_OP_ID = 0;
 
 /// Invalid link identifier
 static constexpr uint8_t WIFI_LINKID_UNDEFINED = 0xff;
+
+/// Wi-Fi Time Unit value in microseconds (see IEEE 802.11-2020 sec. 3.1)
+/// Used to initialize WIFI_TU
+constexpr int WIFI_TU_US = 1024;
+
+/// Wi-Fi Time Unit (see IEEE 802.11-2020 sec. 3.1)
+extern const Time WIFI_TU;
 
 } // namespace ns3
 

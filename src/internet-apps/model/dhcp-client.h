@@ -80,20 +80,15 @@ class DhcpClient : public Application
      */
     Ipv4Address GetDhcpServer();
 
-    /**
-     * Assign a fixed random variable stream number to the random variables
-     * used by this model. Return the number of streams (possibly zero) that
-     * have been assigned.
-     *
-     * \param stream First stream index to use
-     * \return the number of stream indices assigned by this model
-     */
-    int64_t AssignStreams(int64_t stream);
+    int64_t AssignStreams(int64_t stream) override;
 
   protected:
     void DoDispose() override;
 
   private:
+    void StartApplication() override;
+    void StopApplication() override;
+
     /// client states
     enum States
     {
@@ -103,16 +98,6 @@ class DhcpClient : public Application
     };
 
     static const int DHCP_PEER_PORT = 67; //!< DHCP server port
-
-    /*
-     * \brief Starts the DHCP client application
-     */
-    void StartApplication() override;
-
-    /*
-     * \brief Stops the DHCP client application
-     */
-    void StopApplication() override;
 
     /**
      * \brief Handles changes in LinkState

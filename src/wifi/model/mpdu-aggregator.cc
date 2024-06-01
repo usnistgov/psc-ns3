@@ -150,6 +150,7 @@ MpduAggregator::GetMaxAmpduSize(Mac48Address recipient,
     // Retrieve the Capabilities elements advertised by the recipient
     auto ehtCapabilities = stationManager->GetStationEhtCapabilities(recipient);
     auto heCapabilities = stationManager->GetStationHeCapabilities(recipient);
+    auto he6GhzCapabilities = stationManager->GetStationHe6GhzCapabilities(recipient);
     auto vhtCapabilities = stationManager->GetStationVhtCapabilities(recipient);
     auto htCapabilities = stationManager->GetStationHtCapabilities(recipient);
 
@@ -166,6 +167,10 @@ MpduAggregator::GetMaxAmpduSize(Mac48Address recipient,
         NS_ABORT_MSG_IF(!heCapabilities, "HE Capabilities element not received");
 
         maxAmpduSize = std::min(maxAmpduSize, heCapabilities->GetMaxAmpduLength());
+        if (he6GhzCapabilities)
+        {
+            maxAmpduSize = std::min(maxAmpduSize, he6GhzCapabilities->GetMaxAmpduLength());
+        }
     }
     else if (modulation == WIFI_MOD_CLASS_VHT)
     {

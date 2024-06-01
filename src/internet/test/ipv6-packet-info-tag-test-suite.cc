@@ -256,9 +256,9 @@ class Ipv6PacketInfoTagTestSuite : public TestSuite
 };
 
 Ipv6PacketInfoTagTestSuite::Ipv6PacketInfoTagTestSuite()
-    : TestSuite("ipv6-packet-info-tag", UNIT)
+    : TestSuite("ipv6-packet-info-tag", Type::UNIT)
 {
-    AddTestCase(new Ipv6PacketInfoTagTest(), TestCase::QUICK);
+    AddTestCase(new Ipv6PacketInfoTagTest(), TestCase::Duration::QUICK);
 }
 
 static Ipv6PacketInfoTagTestSuite g_packetinfotagTests; //!< Static variable for test initialization

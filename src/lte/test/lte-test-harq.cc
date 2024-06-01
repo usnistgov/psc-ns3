@@ -56,7 +56,7 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("LenaTestHarq");
 
 LenaTestHarqSuite::LenaTestHarqSuite()
-    : TestSuite("lte-harq", SYSTEM)
+    : TestSuite("lte-harq", Type::SYSTEM)
 {
     NS_LOG_INFO("creating LenaTestHarqTestCase");
 
@@ -64,13 +64,13 @@ LenaTestHarqSuite::LenaTestHarqSuite()
     // MCS 0 TB size of 66 bytes SINR -9.91 dB expected throughput 31822 bytes/s
     // TBLER 1st tx 1.0
     // TBLER 2nd tx 0.074
-    AddTestCase(new LenaHarqTestCase(2, 2400, 66, 0.12, 31822), TestCase::QUICK);
+    AddTestCase(new LenaHarqTestCase(2, 2400, 66, 0.12, 31822), TestCase::Duration::QUICK);
 
     // Tests on DL/UL Data channels (PDSCH, PUSCH)
     // MCS 10 TB size of 472 bytes SINR 0.3 dB expected throughput 209964 bytes/s
     // TBLER 1st tx 1.0
     // TBLER 2nd tx 0.248
-    AddTestCase(new LenaHarqTestCase(1, 770, 472, 0.06, 209964), TestCase::QUICK);
+    AddTestCase(new LenaHarqTestCase(1, 770, 472, 0.06, 209964), TestCase::Duration::QUICK);
 }
 
 /**

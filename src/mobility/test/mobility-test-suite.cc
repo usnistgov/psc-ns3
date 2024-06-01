@@ -484,12 +484,12 @@ class MobilityTestSuite : public TestSuite
 };
 
 MobilityTestSuite::MobilityTestSuite()
-    : TestSuite("mobility", UNIT)
+    : TestSuite("mobility", Type::UNIT)
 {
-    AddTestCase(new WaypointLazyNotifyFalse, TestCase::QUICK);
-    AddTestCase(new WaypointLazyNotifyTrue, TestCase::QUICK);
-    AddTestCase(new WaypointInitialPositionIsWaypoint, TestCase::QUICK);
-    AddTestCase(new WaypointMobilityModelViaHelper, TestCase::QUICK);
+    AddTestCase(new WaypointLazyNotifyFalse, TestCase::Duration::QUICK);
+    AddTestCase(new WaypointLazyNotifyTrue, TestCase::Duration::QUICK);
+    AddTestCase(new WaypointInitialPositionIsWaypoint, TestCase::Duration::QUICK);
+    AddTestCase(new WaypointMobilityModelViaHelper, TestCase::Duration::QUICK);
 }
 
 /**

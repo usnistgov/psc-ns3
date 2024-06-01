@@ -600,10 +600,10 @@ class WifiIeFragmentationTestSuite : public TestSuite
 };
 
 WifiIeFragmentationTestSuite::WifiIeFragmentationTestSuite()
-    : TestSuite("wifi-ie-fragment", UNIT)
+    : TestSuite("wifi-ie-fragment", Type::UNIT)
 {
-    AddTestCase(new WifiIeFragmentationTest(false), TestCase::QUICK);
-    AddTestCase(new WifiIeFragmentationTest(true), TestCase::QUICK);
+    AddTestCase(new WifiIeFragmentationTest(false), TestCase::Duration::QUICK);
+    AddTestCase(new WifiIeFragmentationTest(true), TestCase::Duration::QUICK);
 }
 
 static WifiIeFragmentationTestSuite g_wifiIeFragmentationTestSuite; ///< the test suite

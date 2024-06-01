@@ -170,7 +170,7 @@ class TcpScalableTestSuite : public TestSuite
 {
   public:
     TcpScalableTestSuite()
-        : TestSuite("tcp-scalable-test", UNIT)
+        : TestSuite("tcp-scalable-test", Type::UNIT)
     {
         AddTestCase(
             new TcpScalableIncrementTest(
@@ -178,38 +178,38 @@ class TcpScalableTestSuite : public TestSuite
                 536,
                 38,
                 "Scalable increment test on cWnd = 38 segments and segmentSize = 536 bytes"),
-            TestCase::QUICK);
+            TestCase::Duration::QUICK);
         AddTestCase(new TcpScalableIncrementTest(
                         38,
                         1,
                         100,
                         "Scalable increment test on cWnd = 38 segments and segmentSize = 1 byte"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(
             new TcpScalableIncrementTest(
                 53 * 1446,
                 1446,
                 50,
                 "Scalable increment test on cWnd = 53 segments and segmentSize = 1446 bytes"),
-            TestCase::QUICK);
+            TestCase::Duration::QUICK);
 
         AddTestCase(new TcpScalableDecrementTest(
                         38,
                         1,
                         "Scalable decrement test on cWnd = 38 segments and segmentSize = 1 byte"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(
             new TcpScalableDecrementTest(
                 100 * 536,
                 536,
                 "Scalable decrement test on cWnd = 100 segments and segmentSize = 536 bytes"),
-            TestCase::QUICK);
+            TestCase::Duration::QUICK);
         AddTestCase(
             new TcpScalableDecrementTest(
                 40 * 1446,
                 1446,
                 "Scalable decrement test on cWnd = 40 segments and segmentSize = 1446 bytes"),
-            TestCase::QUICK);
+            TestCase::Duration::QUICK);
     }
 };
 

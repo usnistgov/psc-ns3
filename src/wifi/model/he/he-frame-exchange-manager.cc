@@ -37,7 +37,7 @@
 #include <functional>
 
 #undef NS_LOG_APPEND_CONTEXT
-#define NS_LOG_APPEND_CONTEXT std::clog << "[link=" << +m_linkId << "][mac=" << m_self << "] "
+#define NS_LOG_APPEND_CONTEXT WIFI_FEM_NS_LOG_APPEND_CONTEXT
 
 namespace ns3
 {
@@ -88,7 +88,7 @@ void
 HeFrameExchangeManager::Reset()
 {
     NS_LOG_FUNCTION(this);
-    if (m_intraBssNavResetEvent.IsRunning())
+    if (m_intraBssNavResetEvent.IsPending())
     {
         m_intraBssNavResetEvent.Cancel();
     }
@@ -212,7 +212,7 @@ HeFrameExchangeManager::SendPsduMapWithProtection(WifiPsduMap psduMap, WifiTxPar
     // can reuse this value.
     NS_ASSERT(m_txParams.m_acknowledgment);
 
-    if (m_txParams.m_acknowledgment->acknowledgmentTime == Time::Min())
+    if (!m_txParams.m_acknowledgment->acknowledgmentTime.has_value())
     {
         CalculateAcknowledgmentTime(m_txParams.m_acknowledgment.get());
     }
@@ -233,7 +233,7 @@ HeFrameExchangeManager::SendPsduMapWithProtection(WifiPsduMap psduMap, WifiTxPar
                                          << ") incompatible with BSRP Trigger Frame");
         // Add a SIFS and the TB PPDU duration to the acknowledgment time of the Trigger Frame
         auto txVector = trigger.GetHeTbTxVector(trigger.begin()->GetAid12());
-        m_txParams.m_acknowledgment->acknowledgmentTime +=
+        *m_txParams.m_acknowledgment->acknowledgmentTime +=
             m_phy->GetSifs() + HePhy::ConvertLSigLengthToHeTbPpduDuration(trigger.GetUlLength(),
                                                                           txVector,
                                                                           m_phy->GetPhyBand());
@@ -360,12 +360,13 @@ HeFrameExchangeManager::SendMuRts(const WifiTxParameters& txParams)
 
     auto mpdu = Create<WifiMpdu>(payload, hdr);
 
-    NS_ASSERT(txParams.m_txDuration != Time::Min());
+    NS_ASSERT(txParams.m_txDuration.has_value());
+    NS_ASSERT(txParams.m_acknowledgment->acknowledgmentTime.has_value());
     mpdu->GetHeader().SetDuration(
         GetMuRtsDurationId(mpdu->GetSize(),
                            protection->muRtsTxVector,
-                           txParams.m_txDuration,
-                           txParams.m_acknowledgment->acknowledgmentTime));
+                           *txParams.m_txDuration,
+                           *txParams.m_acknowledgment->acknowledgmentTime));
 
     // Get the TXVECTOR used by one station to send the CTS response. This is used
     // to compute the preamble duration, so it does not matter which station we choose
@@ -536,8 +537,7 @@ HeFrameExchangeManager::SendPsduMap()
         // schedule the transmission of required BlockAckReq frames
         for (const auto& psdu : m_psduMap)
         {
-            if (acknowledgment->stationsSendBlockAckReqTo.find(psdu.second->GetAddr1()) !=
-                acknowledgment->stationsSendBlockAckReqTo.end())
+            if (acknowledgment->stationsSendBlockAckReqTo.contains(psdu.second->GetAddr1()))
             {
                 // the receiver of this PSDU will receive a BlockAckReq
                 std::set<uint8_t> tids = psdu.second->GetTids();
@@ -625,7 +625,7 @@ HeFrameExchangeManager::SendPsduMap()
                                                          acknowledgment->muBarTxVector,
                                                          m_phy->GetPhyBand());
             // update acknowledgmentTime to correctly set the Duration/ID
-            acknowledgment->acknowledgmentTime -= (m_phy->GetSifs() + txDuration);
+            *acknowledgment->acknowledgmentTime -= (m_phy->GetSifs() + txDuration);
             m_triggerFrame->GetHeader().SetDuration(GetPsduDurationId(txDuration, m_txParams));
 
             responseTxVector =
@@ -1233,13 +1233,14 @@ HeFrameExchangeManager::GetTxDuration(uint32_t ppduPayloadSize,
         txParams.m_acknowledgment->method == WifiAcknowledgment::DL_MU_AGGREGATE_TF)
     {
         // we need to account for the size of the aggregated MU-BAR Trigger Frame
-        auto acknowledgment = static_cast<WifiDlMuAggregateTf*>(txParams.m_acknowledgment.get());
+        auto psduInfo = txParams.GetPsduInfo(receiver);
+        NS_ASSERT_MSG(psduInfo, "No information for " << receiver << " in TX params");
+        NS_ASSERT_MSG(!psduInfo->seqNumbers.empty(), "No sequence number for " << receiver);
+        const auto tid = psduInfo->seqNumbers.cbegin()->first;
 
-        const auto& info = acknowledgment->stationsReplyingWithBlockAck.find(receiver);
-        NS_ASSERT(info != acknowledgment->stationsReplyingWithBlockAck.end());
-
-        ppduPayloadSize =
-            MpduAggregator::GetSizeIfAggregated(info->second.muBarSize, ppduPayloadSize);
+        ppduPayloadSize = MpduAggregator::GetSizeIfAggregated(
+            GetMuBarSize({m_mac->GetBarTypeAsOriginator(receiver, tid)}),
+            ppduPayloadSize);
     }
 
     uint16_t staId = (txParams.m_txVector.IsDlMu() ? m_apMac->GetAssociationId(receiver, m_linkId)
@@ -1249,7 +1250,7 @@ HeFrameExchangeManager::GetTxDuration(uint32_t ppduPayloadSize,
                                                    m_phy->GetPhyBand(),
                                                    staId);
 
-    return std::max(psduDuration, txParams.m_txDuration);
+    return txParams.m_txDuration ? std::max(psduDuration, *txParams.m_txDuration) : psduDuration;
 }
 
 void
@@ -1272,7 +1273,7 @@ HeFrameExchangeManager::TbPpduTimeout(WifiPsduMap* psduMap, std::size_t nSolicit
 
         TransmissionFailed();
     }
-    else if (!m_multiStaBaEvent.IsRunning())
+    else if (!m_multiStaBaEvent.IsPending())
     {
         m_edca->ResetCw(m_linkId);
         TransmissionSucceeded();
@@ -1829,8 +1830,7 @@ HeFrameExchangeManager::SendQosNullFramesInTbPpdu(const CtrlTriggerHeader& trigg
         return;
     }
 
-    WifiMacHeader header;
-    header.SetType(WIFI_MAC_QOSDATA_NULL);
+    WifiMacHeader header(WIFI_MAC_QOSDATA_NULL);
     header.SetAddr1(hdr.GetAddr2());
     header.SetAddr2(m_self);
     header.SetAddr3(hdr.GetAddr2());
@@ -1852,36 +1852,38 @@ HeFrameExchangeManager::SendQosNullFramesInTbPpdu(const CtrlTriggerHeader& trigg
                                                                    m_phy->GetPhyBand());
     header.SetDuration(hdr.GetDuration() - m_phy->GetSifs() - ppduDuration);
 
-    Ptr<WifiMpdu> mpdu;
     std::vector<Ptr<WifiMpdu>> mpduList;
-    uint8_t tid = 0;
-    header.SetQosTid(tid);
 
-    while (tid < 8 &&
-           IsWithinSizeAndTimeLimits(
-               txParams.GetSizeIfAddMpdu(mpdu = Create<WifiMpdu>(Create<Packet>(), header)),
-               hdr.GetAddr2(),
-               txParams,
-               ppduDuration))
+    for (uint8_t tid = 0; tid < 8; ++tid)
     {
         if (!m_mac->GetBaAgreementEstablishedAsOriginator(hdr.GetAddr2(), tid))
         {
             NS_LOG_DEBUG("Skipping tid=" << +tid << " because no agreement established");
-            header.SetQosTid(++tid);
             continue;
         }
 
-        NS_LOG_DEBUG("Aggregating a QoS Null frame with tid=" << +tid);
-        // We could call TryAddMpdu instead of IsWithinSizeAndTimeLimits above in order to
+        // We could call TryAddMpdu instead of IsWithinSizeAndTimeLimits below in order to
         // get the TX parameters updated automatically. However, aggregating the QoS Null
         // frames might fail because MPDU aggregation is disabled by default for VO
         // and BK. Therefore, we skip the check on max A-MPDU size and only update the
         // TX parameters below.
-        txParams.m_acknowledgment = GetAckManager()->TryAddMpdu(mpdu, txParams);
+        header.SetQosTid(tid);
+        auto mpdu = Create<WifiMpdu>(Create<Packet>(), header);
         txParams.AddMpdu(mpdu);
-        UpdateTxDuration(mpdu->GetHeader().GetAddr1(), txParams);
+        UpdateTxDuration(header.GetAddr1(), txParams);
+
+        if (!IsWithinSizeAndTimeLimits(txParams.GetSize(header.GetAddr1()),
+                                       hdr.GetAddr2(),
+                                       txParams,
+                                       ppduDuration))
+        {
+            txParams.UndoAddMpdu();
+            break;
+        }
+
+        NS_LOG_DEBUG("Aggregating a QoS Null frame with tid=" << +tid);
+        txParams.m_acknowledgment = GetAckManager()->TryAddMpdu(mpdu, txParams);
         mpduList.push_back(mpdu);
-        header.SetQosTid(++tid);
     }
 
     if (mpduList.empty())
@@ -2097,19 +2099,20 @@ HeFrameExchangeManager::IntraBssNavResetTimeout()
     m_channelAccessManager->NotifyNavResetNow(basicNav);
 }
 
-void
-HeFrameExchangeManager::SetTxopHolder(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector)
+std::optional<Mac48Address>
+HeFrameExchangeManager::FindTxopHolder(const WifiMacHeader& hdr, const WifiTxVector& txVector)
 {
-    NS_LOG_FUNCTION(this << psdu << txVector);
+    NS_LOG_FUNCTION(this << hdr << txVector);
 
-    if (psdu->GetHeader(0).IsTrigger() && psdu->GetAddr2() == m_bssid)
+    if (hdr.IsTrigger() && hdr.GetAddr2() == m_bssid)
     {
-        m_txopHolder = m_bssid;
+        return m_bssid;
     }
-    else if (!txVector.IsUlMu()) // the sender of a TB PPDU is not the TXOP holder
+    if (!txVector.IsUlMu()) // the sender of a TB PPDU is not the TXOP holder
     {
-        VhtFrameExchangeManager::SetTxopHolder(psdu, txVector);
+        return VhtFrameExchangeManager::FindTxopHolder(hdr, txVector);
     }
+    return std::nullopt;
 }
 
 bool
@@ -2184,7 +2187,7 @@ HeFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
         auto acknowledgment = static_cast<WifiUlMuMultiStaBa*>(m_txParams.m_acknowledgment.get());
         std::size_t index = acknowledgment->baType.m_bitmapLen.size();
 
-        if (m_txTimer.GetStasExpectedToRespond().count(sender) == 0)
+        if (!m_txTimer.GetStasExpectedToRespond().contains(sender))
         {
             NS_LOG_WARN("Received a TB PPDU from an unexpected station: " << sender);
             return;
@@ -2235,7 +2238,7 @@ HeFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
         }
 
         // Schedule the transmission of a Multi-STA BlockAck frame if needed
-        if (!acknowledgment->stationsReceivingMultiStaBa.empty() && !m_multiStaBaEvent.IsRunning())
+        if (!acknowledgment->stationsReceivingMultiStaBa.empty() && !m_multiStaBaEvent.IsPending())
         {
             m_multiStaBaEvent = Simulator::Schedule(m_phy->GetSifs(),
                                                     &HeFrameExchangeManager::SendMultiStaBlockAck,
@@ -2253,7 +2256,7 @@ HeFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
             m_txTimer.Cancel();
             m_channelAccessManager->NotifyAckTimeoutResetNow();
 
-            if (!m_multiStaBaEvent.IsRunning())
+            if (!m_multiStaBaEvent.IsPending())
             {
                 // all of the stations that replied with a TB PPDU sent QoS Null frames.
                 NS_LOG_DEBUG("Continue the TXOP");
@@ -2273,7 +2276,7 @@ HeFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
     {
         const auto& sender = hdr.GetAddr2();
 
-        if (m_txTimer.GetStasExpectedToRespond().count(sender) == 0)
+        if (!m_txTimer.GetStasExpectedToRespond().contains(sender))
         {
             NS_LOG_WARN("Received a TB PPDU from an unexpected station: " << sender);
             return;
@@ -2404,7 +2407,7 @@ HeFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
                                                                m_txParams.m_txVector);
 
             // remove the sender from the set of stations that are expected to send a BlockAck
-            if (m_txTimer.GetStasExpectedToRespond().count(sender) == 0)
+            if (!m_txTimer.GetStasExpectedToRespond().contains(sender))
             {
                 NS_LOG_WARN("Received a BlockAck from an unexpected stations: " << sender);
                 return;
@@ -2657,7 +2660,7 @@ HeFrameExchangeManager::EndReceiveAmpdu(Ptr<const WifiPsdu> psdu,
         auto acknowledgment = static_cast<WifiUlMuMultiStaBa*>(m_txParams.m_acknowledgment.get());
         std::size_t index = acknowledgment->baType.m_bitmapLen.size();
 
-        if (m_txTimer.GetStasExpectedToRespond().count(sender) == 0)
+        if (!m_txTimer.GetStasExpectedToRespond().contains(sender))
         {
             NS_LOG_WARN("Received a TB PPDU from an unexpected station: " << sender);
             return;
@@ -2693,7 +2696,7 @@ HeFrameExchangeManager::EndReceiveAmpdu(Ptr<const WifiPsdu> psdu,
         }
 
         // Schedule the transmission of a Multi-STA BlockAck frame if needed
-        if (!acknowledgment->stationsReceivingMultiStaBa.empty() && !m_multiStaBaEvent.IsRunning())
+        if (!acknowledgment->stationsReceivingMultiStaBa.empty() && !m_multiStaBaEvent.IsPending())
         {
             m_multiStaBaEvent = Simulator::Schedule(m_phy->GetSifs(),
                                                     &HeFrameExchangeManager::SendMultiStaBlockAck,
@@ -2711,7 +2714,7 @@ HeFrameExchangeManager::EndReceiveAmpdu(Ptr<const WifiPsdu> psdu,
             m_txTimer.Cancel();
             m_channelAccessManager->NotifyAckTimeoutResetNow();
 
-            if (!m_multiStaBaEvent.IsRunning())
+            if (!m_multiStaBaEvent.IsPending())
             {
                 // all of the stations that replied with a TB PPDU sent QoS Null frames.
                 NS_LOG_DEBUG("Continue the TXOP");
@@ -2730,7 +2733,7 @@ HeFrameExchangeManager::EndReceiveAmpdu(Ptr<const WifiPsdu> psdu,
     {
         Mac48Address sender = psdu->GetAddr2();
 
-        if (m_txTimer.GetStasExpectedToRespond().count(sender) == 0)
+        if (!m_txTimer.GetStasExpectedToRespond().contains(sender))
         {
             NS_LOG_WARN("Received a TB PPDU from an unexpected station: " << sender);
             return;

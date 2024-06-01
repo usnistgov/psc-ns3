@@ -63,10 +63,13 @@ class V4TraceRoute : public Application
      */
     void Print(Ptr<OutputStreamWrapper> stream);
 
+  protected:
+    void DoDispose() override;
+
   private:
     void StartApplication() override;
     void StopApplication() override;
-    void DoDispose() override;
+
     /**
      * \brief Return the application ID in the node.
      * \returns the application id
@@ -118,6 +121,8 @@ class V4TraceRoute : public Application
     uint16_t m_maxProbes;
     /// The current TTL value
     uint16_t m_ttl;
+    /// The packets Type of Service
+    uint8_t m_tos;
     /// The maximum Ttl (Max number of hops to trace)
     uint32_t m_maxTtl;
     /// The wait time until the response is considered lost.

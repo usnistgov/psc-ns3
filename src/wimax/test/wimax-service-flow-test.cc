@@ -163,9 +163,9 @@ class Ns3WimaxServiceFlowTestSuite : public TestSuite
 };
 
 Ns3WimaxServiceFlowTestSuite::Ns3WimaxServiceFlowTestSuite()
-    : TestSuite("wimax-service-flow", UNIT)
+    : TestSuite("wimax-service-flow", Type::UNIT)
 {
-    AddTestCase(new Ns3WimaxSfCreationTestCase, TestCase::QUICK);
+    AddTestCase(new Ns3WimaxSfCreationTestCase, TestCase::Duration::QUICK);
 }
 
 static Ns3WimaxServiceFlowTestSuite ns3WimaxServiceFlowTestSuite; ///< the test suite

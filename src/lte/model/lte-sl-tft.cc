@@ -228,7 +228,7 @@ operator==(const SidelinkInfo a, const SidelinkInfo b)
     return (a.m_castType == b.m_castType && a.m_srcL2Id == b.m_srcL2Id &&
             a.m_dstL2Id == b.m_dstL2Id && a.m_harqEnabled == b.m_harqEnabled &&
             a.m_pdb == b.m_pdb && a.m_dynamic == b.m_dynamic && a.m_rri == b.m_rri &&
-            a.m_lcId == b.m_lcId && a.m_priority == b.m_priority && a.m_t2 == b.m_t2);
+            a.m_lcId == b.m_lcId && a.m_priority == b.m_priority);
 }
 
 } // namespace ns3

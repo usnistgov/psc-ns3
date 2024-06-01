@@ -26,30 +26,10 @@
 
 #include <algorithm>
 #include <ctime>
+#include <filesystem>
 #include <regex>
 #include <sstream>
 #include <tuple>
-
-// Some compilers such as GCC < 8 (Ubuntu 18.04
-// ships with GCC 7) do not ship with the
-// std::filesystem header,  but with the
-// std::experimental::filesystem header.
-// Since Clang reuses these headers and the libstdc++
-// from GCC, we need to either use the experimental
-// version or require a more up-to-date GCC.
-// we use the "fs" namespace to prevent collisions
-// with musl libc.
-#ifdef __has_include
-#if __has_include(<filesystem>)
-#include <filesystem>
-namespace fs = std::filesystem;
-#elif __has_include(<experimental/filesystem>)
-#include <experimental/filesystem>
-namespace fs = std::experimental::filesystem;
-#else
-#error "No support for filesystem library"
-#endif
-#endif
 
 #ifdef __APPLE__
 #include <mach-o/dyld.h>
@@ -107,13 +87,13 @@ ReadFilesNoThrow(std::string path)
 {
     NS_LOG_FUNCTION(path);
     std::list<std::string> files;
-    if (!fs::exists(path))
+    if (!std::filesystem::exists(path))
     {
         return std::make_tuple(files, true);
     }
-    for (auto& it : fs::directory_iterator(path))
+    for (auto& it : std::filesystem::directory_iterator(path))
     {
-        if (!fs::is_directory(it.path()))
+        if (!std::filesystem::is_directory(it.path()))
         {
             files.push_back(it.path().filename().string());
         }
@@ -189,7 +169,7 @@ FindSelfDirectory()
     {
         //  LPTSTR = char *
         DWORD size = 1024;
-        LPTSTR lpFilename = (LPTSTR)malloc(sizeof(TCHAR) * size);
+        auto lpFilename = (LPTSTR)malloc(sizeof(TCHAR) * size);
         DWORD status = GetModuleFileName(nullptr, lpFilename, size);
         while (status == size)
         {
@@ -352,9 +332,9 @@ MakeDirectories(std::string path)
     NS_LOG_FUNCTION(path);
 
     std::error_code ec;
-    if (!fs::exists(path))
+    if (!std::filesystem::exists(path))
     {
-        fs::create_directories(path, ec);
+        std::filesystem::create_directories(path, ec);
     }
 
     if (ec.value())

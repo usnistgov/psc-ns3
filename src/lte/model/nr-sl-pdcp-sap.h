@@ -100,7 +100,8 @@ class NrSlPdcpSapUser
         IP_SDU = 0,
         ARP_SDU = 1,
         PC5_SIGNALING_SDU = 2,
-        NON_IP_SDU = 3
+        NON_IP_SDU = 3,
+        PC5_DISCOVERY_SDU = 4
     };
 
     /**

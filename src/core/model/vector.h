@@ -172,6 +172,30 @@ class Vector3D
      * \returns The vector difference of \pname{a} and \pname{b}.
      */
     friend Vector3D operator-(const Vector3D& a, const Vector3D& b);
+
+    /**
+     * Scalar multiplication operator.
+     * \param [in] a lhs vector.
+     * \param [in] b rhs scalar.
+     * \returns The vector \pname{a} scaled by \pname{b}.
+     */
+    friend Vector3D operator*(const Vector3D& a, double b);
+
+    /**
+     * Scalar multiplication operator.
+     * \param [in] a lhs scalar.
+     * \param [in] b rhs vector.
+     * \returns The vector \pname{b} scaled by \pname{a}.
+     */
+    friend Vector3D operator*(double a, const Vector3D& b);
+
+    /**
+     * Dot product operator.
+     * \param [in] a lhs vector.
+     * \param [in] b rhs vector.
+     * \returns The dot product of \pname{a} and \pname{b}.
+     */
+    friend double operator*(const Vector3D& a, const Vector3D& b);
 };
 
 /**
@@ -301,6 +325,30 @@ class Vector2D
      * \returns The vector difference of \pname{a} and \pname{b}.
      */
     friend Vector2D operator-(const Vector2D& a, const Vector2D& b);
+
+    /**
+     * Scalar multiplication operator.
+     * \param [in] a lhs vector.
+     * \param [in] b rhs scalar.
+     * \returns The vector \pname{a} scaled by \pname{b}.
+     */
+    friend Vector2D operator*(const Vector2D& a, double b);
+
+    /**
+     * Scalar multiplication operator.
+     * \param [in] a lhs scalar.
+     * \param [in] b rhs vector.
+     * \returns The vector \pname{b} scaled by \pname{a}.
+     */
+    friend Vector2D operator*(double a, const Vector2D& b);
+
+    /**
+     * Dot product operator.
+     * \param [in] a lhs vector.
+     * \param [in] b rhs vector.
+     * \returns The dot product of \pname{a} and \pname{b}.
+     */
+    friend double operator*(const Vector2D& a, const Vector2D& b);
 };
 
 double CalculateDistance(const Vector3D& a, const Vector3D& b);
@@ -318,47 +366,53 @@ ATTRIBUTE_HELPER_HEADER(Vector3D);
 ATTRIBUTE_HELPER_HEADER(Vector2D);
 
 /**
+ * \ingroup attribute_Vector3D
  * \relates Vector3D
  * Vector alias typedef for compatibility with mobility models
  */
 typedef Vector3D Vector;
 
 /**
+ * \ingroup attribute_Vector3D
  * \relates Vector3D
  * Vector alias typedef for compatibility with mobility models
  */
 typedef Vector3DValue VectorValue;
 
 /**
+ * \ingroup attribute_Vector3D
  * \relates Vector3D
  * Vector alias typedef for compatibility with mobility models
  */
 typedef Vector3DChecker VectorChecker;
 
-// Document these by hand so they go in group attribute_Vector3D
-/**
- * \relates Vector3D
- * \fn ns3::Ptr<const ns3::AttributeAccessor> ns3::MakeVectorAccessor (T1 a1)
- * \copydoc ns3::MakeAccessorHelper(T1)
- * \see AttributeAccessor
- */
-
-/**
- * \relates Vector3D
- * \fn ns3::Ptr<const ns3::AttributeAccessor> ns3::MakeVectorAccessor (T1 a1, T2 a2)
- * \copydoc ns3::MakeAccessorHelper(T1,T2)
- * \see AttributeAccessor
- */
-
 ATTRIBUTE_ACCESSOR_DEFINE(Vector);
 
-/**
- * \relates Vector3D
- * \returns The AttributeChecker.
- * \see AttributeChecker
- */
 Ptr<const AttributeChecker> MakeVectorChecker();
 
 } // namespace ns3
+
+// Document these by hand so they go in group attribute_Vector3D
+
+/*!
+\ingroup attribute_Vector3D
+\fn ns3::Ptr<const ns3::AttributeAccessor> ns3::MakeVectorAccessor (T1 a1)
+\copydoc ns3::MakeAccessorHelper(T1)
+\see AttributeAccessor
+*/
+
+/*!
+\ingroup attribute_Vector3D
+\fn ns3::Ptr<const ns3::AttributeAccessor> ns3::MakeVectorAccessor (T1 a1, T2 a2)
+\copydoc ns3::MakeAccessorHelper(T1,T2)
+\see AttributeAccessor
+*/
+
+/*!
+\ingroup attribute_Vector3D
+\fn ns3::Ptr<const ns3::AttributeChecker> ns3::MakeVectorChecker ()
+\returns The AttributeChecker.
+\see AttributeChecker
+*/
 
 #endif /* NS3_VECTOR_H */

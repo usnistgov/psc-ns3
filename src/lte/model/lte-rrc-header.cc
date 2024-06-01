@@ -3983,12 +3983,10 @@ RrcAsn1Header::DeserializeMeasConfig(LteRrcSap::MeasConfig* measConfig, Buffer::
             case 1:
                 // Deserialize measObjectUTRA
                 // ...
-                break;
 
             case 2:
                 // Deserialize measObjectGERAN
                 // ...
-                break;
 
             case 3:
                 // Deserialize measObjectCDMA2000
@@ -5878,7 +5876,7 @@ RrcConnectionReconfigurationHeader::SetMessage(LteRrcSap::RrcConnectionReconfigu
 LteRrcSap::RrcConnectionReconfiguration
 RrcConnectionReconfigurationHeader::GetMessage() const
 {
-    LteRrcSap::RrcConnectionReconfiguration msg;
+    LteRrcSap::RrcConnectionReconfiguration msg{};
 
     msg.rrcTransactionIdentifier = m_rrcTransactionIdentifier;
     msg.haveMeasConfig = m_haveMeasConfig;

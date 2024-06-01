@@ -33,6 +33,7 @@
 #include <iostream>
 
 using namespace ns3;
+using namespace ns3::lrwpan;
 
 NS_LOG_COMPONENT_DEFINE("lr-wpan-ifs-test");
 
@@ -418,9 +419,9 @@ class LrWpanIfsTestSuite : public TestSuite
 };
 
 LrWpanIfsTestSuite::LrWpanIfsTestSuite()
-    : TestSuite("lr-wpan-ifs-test", UNIT)
+    : TestSuite("lr-wpan-ifs-test", Type::UNIT)
 {
-    AddTestCase(new LrWpanDataIfsTestCase, TestCase::QUICK);
+    AddTestCase(new LrWpanDataIfsTestCase, TestCase::Duration::QUICK);
 }
 
 static LrWpanIfsTestSuite lrWpanIfsTestSuite; //!< Static variable for test initialization

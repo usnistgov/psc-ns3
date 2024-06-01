@@ -25,6 +25,7 @@
 #include <ns3/test.h>
 
 using namespace ns3;
+using namespace ns3::lrwpan;
 
 /**
  * \ingroup lr-wpan-test
@@ -104,9 +105,9 @@ class LrWpanPlmeAndPdInterfaceTestSuite : public TestSuite
 };
 
 LrWpanPlmeAndPdInterfaceTestSuite::LrWpanPlmeAndPdInterfaceTestSuite()
-    : TestSuite("lr-wpan-plme-pd-sap", UNIT)
+    : TestSuite("lr-wpan-plme-pd-sap", Type::UNIT)
 {
-    AddTestCase(new LrWpanPlmeAndPdInterfaceTestCase, TestCase::QUICK);
+    AddTestCase(new LrWpanPlmeAndPdInterfaceTestCase, TestCase::Duration::QUICK);
 }
 
 // Do not forget to allocate an instance of this TestSuite

@@ -168,9 +168,9 @@ class DhcpTestSuite : public TestSuite
 };
 
 DhcpTestSuite::DhcpTestSuite()
-    : TestSuite("dhcp", UNIT)
+    : TestSuite("dhcp", Type::UNIT)
 {
-    AddTestCase(new DhcpTestCase, TestCase::QUICK);
+    AddTestCase(new DhcpTestCase, TestCase::Duration::QUICK);
 }
 
 static DhcpTestSuite dhcpTestSuite; //!< Static variable for test initialization

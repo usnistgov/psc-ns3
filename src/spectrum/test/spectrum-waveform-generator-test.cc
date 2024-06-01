@@ -127,14 +127,14 @@ class WaveformGeneratorTestSuite : public TestSuite
 };
 
 WaveformGeneratorTestSuite::WaveformGeneratorTestSuite()
-    : TestSuite("waveform-generator", SYSTEM)
+    : TestSuite("waveform-generator", Type::SYSTEM)
 {
     NS_LOG_INFO("creating WaveformGeneratorTestSuite");
 
     // Stop while wave is active
-    AddTestCase(new WaveformGeneratorTestCase(1.0, 0.5, 1.2), TestCase::QUICK);
+    AddTestCase(new WaveformGeneratorTestCase(1.0, 0.5, 1.2), TestCase::Duration::QUICK);
     // Stop after wave
-    AddTestCase(new WaveformGeneratorTestCase(1.0, 0.5, 1.7), TestCase::QUICK);
+    AddTestCase(new WaveformGeneratorTestCase(1.0, 0.5, 1.7), TestCase::Duration::QUICK);
 }
 
 /// Static variable for test initialization

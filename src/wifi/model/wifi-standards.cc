@@ -14,41 +14,24 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+ * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#ifndef INT_TO_TYPE_H
-#define INT_TO_TYPE_H
-
-/**
- * \file
- * ns3::IntToType template class.
- */
+#include "wifi-standards.h"
 
 namespace ns3
 {
 
-/**
- * Convert an integer into a type.
- *
- * This trivial template is extremely useful, as explained in
- * "Modern C++ Design", p 29, section 2.4,
- * "Mapping Integral Constants to Types".
- *
- * For an example, see timer-impl.h
- *
- * \tparam v \explicit The integral constant value distinguishing this type
- *           from other values.
- */
-template <int v>
-struct IntToType
-{
-    /** Enumeration holding the type-specific value. */
-    enum v_e
-    {
-        value = v /**< The integer value distinguishing this type. */
-    };
+const std::map<WifiStandard, std::list<WifiPhyBand>> wifiStandards = {
+    {WIFI_STANDARD_80211a, {WIFI_PHY_BAND_5GHZ}},
+    {WIFI_STANDARD_80211b, {WIFI_PHY_BAND_2_4GHZ}},
+    {WIFI_STANDARD_80211g, {WIFI_PHY_BAND_2_4GHZ}},
+    {WIFI_STANDARD_80211p, {WIFI_PHY_BAND_5GHZ}},
+    {WIFI_STANDARD_80211n, {WIFI_PHY_BAND_2_4GHZ, WIFI_PHY_BAND_5GHZ}},
+    {WIFI_STANDARD_80211ac, {WIFI_PHY_BAND_5GHZ}},
+    {WIFI_STANDARD_80211ad, {WIFI_PHY_BAND_60GHZ}},
+    {WIFI_STANDARD_80211ax, {WIFI_PHY_BAND_2_4GHZ, WIFI_PHY_BAND_5GHZ, WIFI_PHY_BAND_6GHZ}},
+    {WIFI_STANDARD_80211be, {WIFI_PHY_BAND_2_4GHZ, WIFI_PHY_BAND_5GHZ, WIFI_PHY_BAND_6GHZ}},
 };
 
 } // namespace ns3
-
-#endif /* INT_TO_TYPE_H */

@@ -866,8 +866,8 @@ TcpTxBuffer::Update(const TcpOptionSack::SackList& list, const Callback<void, Tc
 
     NS_ASSERT((*(m_sentList.begin()))->m_sacked == false);
     NS_ASSERT_MSG(m_sentSize >= m_sackedOut + m_lostOut, *this);
-    // NS_ASSERT (list.size () == 0 || modified);   // Assert for duplicated SACK or
-    //  impossiblity to map the option into the sent blocks
+    // Assert for duplicated SACK or impossibility to map the option into the sent blocks
+    // NS_ASSERT (list.size () == 0 || modified);
     ConsistencyCheck();
     return bytesSacked;
 }
@@ -1103,14 +1103,10 @@ TcpTxBuffer::BytesInFlightRFC() const
         {
             bool isLost = IsLostRFC(beginOfCurrentPkt, it);
             // (a) If IsLost (S1) returns false: Pipe is incremented by 1 octet.
-            if (!isLost)
-            {
-                size += item->m_packet->GetSize();
-            }
             // (b) If S1 <= HighRxt: Pipe is incremented by 1 octet.
             // (NOTE: we use the m_retrans flag instead of keeping and updating
             // another variable). Only if the item is not marked as lost
-            else if (item->m_retrans)
+            if (!isLost || item->m_retrans)
             {
                 size += item->m_packet->GetSize();
             }

@@ -236,7 +236,7 @@ TcpZeroWindowTest::ProcessedAck(const Ptr<const TcpSocketState> tcb,
         if (h.GetFlags() & TcpHeader::SYN)
         {
             EventId persistentEvent = GetPersistentEvent(SENDER);
-            NS_TEST_ASSERT_MSG_EQ(persistentEvent.IsRunning(),
+            NS_TEST_ASSERT_MSG_EQ(persistentEvent.IsPending(),
                                   true,
                                   "Persistent event not started");
         }
@@ -255,9 +255,9 @@ class TcpZeroWindowTestSuite : public TestSuite
 {
   public:
     TcpZeroWindowTestSuite()
-        : TestSuite("tcp-zero-window-test", UNIT)
+        : TestSuite("tcp-zero-window-test", Type::UNIT)
     {
-        AddTestCase(new TcpZeroWindowTest("zero window test"), TestCase::QUICK);
+        AddTestCase(new TcpZeroWindowTest("zero window test"), TestCase::Duration::QUICK);
     }
 };
 

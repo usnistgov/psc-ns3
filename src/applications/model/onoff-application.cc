@@ -79,6 +79,12 @@ OnOffApplication::GetTypeId()
                           AddressValue(),
                           MakeAddressAccessor(&OnOffApplication::m_local),
                           MakeAddressChecker())
+            .AddAttribute("Tos",
+                          "The Type of Service used to send IPv4 packets. "
+                          "All 8 bits of the TOS byte are set (including ECN bits).",
+                          UintegerValue(0),
+                          MakeUintegerAccessor(&OnOffApplication::m_tos),
+                          MakeUintegerChecker<uint8_t>())
             .AddAttribute("OnTime",
                           "A RandomVariableStream used to pick the duration of the 'On' state.",
                           StringValue("ns3::ConstantRandomVariable[Constant=1.0]"),
@@ -186,6 +192,8 @@ OnOffApplication::StartApplication() // Called at time specified by Start
         m_socket = Socket::CreateSocket(GetNode(), m_tid);
         int ret = -1;
 
+        NS_ABORT_MSG_IF(m_peer.IsInvalid(), "'Remote' attribute not properly set");
+
         if (!m_local.IsInvalid())
         {
             NS_ABORT_MSG_IF((Inet6SocketAddress::IsMatchingType(m_peer) &&
@@ -216,6 +224,10 @@ OnOffApplication::StartApplication() // Called at time specified by Start
         m_socket->SetConnectCallback(MakeCallback(&OnOffApplication::ConnectionSucceeded, this),
                                      MakeCallback(&OnOffApplication::ConnectionFailed, this));
 
+        if (InetSocketAddress::IsMatchingType(m_peer))
+        {
+            m_socket->SetIpTos(m_tos); // Affects only IPv4 sockets.
+        }
         m_socket->Connect(m_peer);
         m_socket->SetAllowBroadcast(true);
         m_socket->ShutdownRecv();
@@ -256,7 +268,7 @@ OnOffApplication::CancelEvents()
 {
     NS_LOG_FUNCTION(this);
 
-    if (m_sendEvent.IsRunning() && m_cbrRateFailSafe == m_cbrRate)
+    if (m_sendEvent.IsPending() && m_cbrRateFailSafe == m_cbrRate)
     { // Cancel the pending send packet event
         // Calculate residual bits since last packet sent
         Time delta(Simulator::Now() - m_lastStartTime);

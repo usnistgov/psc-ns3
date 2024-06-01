@@ -214,7 +214,17 @@ AmpduAggregationTest::DoSetup()
     /*
      * Create and configure mac layer.
      */
-    m_mac = CreateObjectWithAttributes<StaWifiMac>("QosSupported", BooleanValue(true));
+    m_mac = CreateObjectWithAttributes<StaWifiMac>(
+        "QosSupported",
+        BooleanValue(true),
+        "BE_Txop",
+        PointerValue(CreateObjectWithAttributes<QosTxop>("AcIndex", StringValue("AC_BE"))),
+        "BK_Txop",
+        PointerValue(CreateObjectWithAttributes<QosTxop>("AcIndex", StringValue("AC_BK"))),
+        "VI_Txop",
+        PointerValue(CreateObjectWithAttributes<QosTxop>("AcIndex", StringValue("AC_VI"))),
+        "VO_Txop",
+        PointerValue(CreateObjectWithAttributes<QosTxop>("AcIndex", StringValue("AC_VO"))));
     m_mac->SetDevice(m_device);
     m_mac->SetWifiRemoteStationManagers(m_managers);
     for (uint8_t i = 0; i < m_params.nLinks; i++)
@@ -224,19 +234,30 @@ AmpduAggregationTest::DoSetup()
     m_mac->SetAddress(Mac48Address("00:00:00:00:00:01"));
     m_device->SetMac(m_mac);
     m_mac->SetWifiPhys(m_phys);
-    m_mac->ConfigureStandard(m_params.standard);
+    std::vector<Ptr<ChannelAccessManager>> caManagers;
     for (uint8_t i = 0; i < m_params.nLinks; i++)
     {
-        auto fem = m_mac->GetFrameExchangeManager(i);
+        caManagers.emplace_back(CreateObject<ChannelAccessManager>());
+    }
+    m_mac->SetChannelAccessManagers(caManagers);
+    ObjectFactory femFactory;
+    femFactory.SetTypeId(GetFrameExchangeManagerTypeIdName(m_params.standard, true));
+    std::vector<Ptr<FrameExchangeManager>> feManagers;
+    for (uint8_t i = 0; i < m_params.nLinks; i++)
+    {
+        auto fem = femFactory.Create<FrameExchangeManager>();
+        feManagers.emplace_back(fem);
         auto protectionManager = CreateObject<WifiDefaultProtectionManager>();
         protectionManager->SetWifiMac(m_mac);
         fem->SetProtectionManager(protectionManager);
         auto ackManager = CreateObject<WifiDefaultAckManager>();
         ackManager->SetWifiMac(m_mac);
         fem->SetAckManager(ackManager);
-        // here we should assign link addresses in case of MLDs, but we don't actually use link
-        // addresses in this test
+        // here we should assign distinct link addresses in case of MLDs, but we don't actually use
+        // link addresses in this test
+        fem->SetAddress(m_mac->GetAddress());
     }
+    m_mac->SetFrameExchangeManagers(feManagers);
     m_mac->SetState(StaWifiMac::ASSOCIATED);
     if (m_params.nLinks > 1)
     {
@@ -1136,15 +1157,15 @@ class WifiAggregationTestSuite : public TestSuite
 };
 
 WifiAggregationTestSuite::WifiAggregationTestSuite()
-    : TestSuite("wifi-aggregation", UNIT)
+    : TestSuite("wifi-aggregation", Type::UNIT)
 {
-    AddTestCase(new AmpduAggregationTest, TestCase::QUICK);
-    AddTestCase(new TwoLevelAggregationTest, TestCase::QUICK);
-    AddTestCase(new HeAggregationTest(64), TestCase::QUICK);
-    AddTestCase(new HeAggregationTest(256), TestCase::QUICK);
-    AddTestCase(new EhtAggregationTest(512), TestCase::QUICK);
-    AddTestCase(new EhtAggregationTest(1024), TestCase::QUICK);
-    AddTestCase(new PreservePacketsInAmpdus, TestCase::QUICK);
+    AddTestCase(new AmpduAggregationTest, TestCase::Duration::QUICK);
+    AddTestCase(new TwoLevelAggregationTest, TestCase::Duration::QUICK);
+    AddTestCase(new HeAggregationTest(64), TestCase::Duration::QUICK);
+    AddTestCase(new HeAggregationTest(256), TestCase::Duration::QUICK);
+    AddTestCase(new EhtAggregationTest(512), TestCase::Duration::QUICK);
+    AddTestCase(new EhtAggregationTest(1024), TestCase::Duration::QUICK);
+    AddTestCase(new PreservePacketsInAmpdus, TestCase::Duration::QUICK);
 }
 
 static WifiAggregationTestSuite g_wifiAggregationTestSuite; ///< the test suite

@@ -41,7 +41,7 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("LteRlcAmE2eTest");
 
 LteRlcAmE2eTestSuite::LteRlcAmE2eTestSuite()
-    : TestSuite("lte-rlc-am-e2e", SYSTEM)
+    : TestSuite("lte-rlc-am-e2e", Type::SYSTEM)
 {
     // NS_LOG_INFO ("Creating LteRlcAmE2eTestSuite");
 
@@ -77,18 +77,18 @@ LteRlcAmE2eTestSuite::LteRlcAmE2eTestSuite()
                     break;
                 }
 
-                TestCase::TestDuration testDuration;
+                TestCase::Duration testDuration;
                 if (l == 1 && s == 0)
                 {
-                    testDuration = TestCase::QUICK;
+                    testDuration = TestCase::Duration::QUICK;
                 }
                 else if (s <= 4)
                 {
-                    testDuration = TestCase::EXTENSIVE;
+                    testDuration = TestCase::Duration::EXTENSIVE;
                 }
                 else
                 {
-                    testDuration = TestCase::TAKES_FOREVER;
+                    testDuration = TestCase::Duration::TAKES_FOREVER;
                 }
                 AddTestCase(new LteRlcAmE2eTestCase(name.str(), runs[s], losses[l], bulkSduArrival),
                             testDuration);

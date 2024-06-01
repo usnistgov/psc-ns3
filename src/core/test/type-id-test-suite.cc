@@ -443,7 +443,7 @@ class TypeIdTestSuite : public TestSuite
 };
 
 TypeIdTestSuite::TypeIdTestSuite()
-    : TestSuite("type-id", UNIT)
+    : TestSuite("type-id", Type::UNIT)
 {
     // Turn on logging, so we see the result of collisions
     LogComponentEnable("TypeId", ns3::LogLevel(LOG_ERROR | LOG_PREFIX_FUNC));
@@ -452,9 +452,9 @@ TypeIdTestSuite::TypeIdTestSuite()
     // UniqueIdTestCase, the artificial collisions added by
     // CollisionTestCase will show up in the list of TypeIds
     // as chained.
-    AddTestCase(new UniqueTypeIdTestCase, QUICK);
-    AddTestCase(new CollisionTestCase, QUICK);
-    AddTestCase(new DeprecatedAttributeTestCase, QUICK);
+    AddTestCase(new UniqueTypeIdTestCase, Duration::QUICK);
+    AddTestCase(new CollisionTestCase, Duration::QUICK);
+    AddTestCase(new DeprecatedAttributeTestCase, Duration::QUICK);
 }
 
 /// Static variable for test initialization.
@@ -472,9 +472,9 @@ class TypeIdPerformanceSuite : public TestSuite
 };
 
 TypeIdPerformanceSuite::TypeIdPerformanceSuite()
-    : TestSuite("type-id-perf", PERFORMANCE)
+    : TestSuite("type-id-perf", Type::PERFORMANCE)
 {
-    AddTestCase(new LookupTimeTestCase, QUICK);
+    AddTestCase(new LookupTimeTestCase, Duration::QUICK);
 }
 
 /// Static variable for test initialization.

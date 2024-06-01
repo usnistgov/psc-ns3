@@ -313,7 +313,7 @@ ChannelAccessManager::NotifySwitchingEmlsrLink(Ptr<WifiPhy> phy,
                                                uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << phy << channel << linkId);
-    NS_ASSERT_MSG(m_switchingEmlsrLinks.count(phy) == 0,
+    NS_ASSERT_MSG(!m_switchingEmlsrLinks.contains(phy),
                   "The given PHY is already expected to switch channel");
     m_switchingEmlsrLinks.emplace(phy, EmlsrLinkSwitchInfo{channel, linkId});
 }
@@ -733,7 +733,7 @@ ChannelAccessManager::DoRestartAccessTimeoutIfNeeded()
     {
         NS_LOG_DEBUG("expected backoff end=" << expectedBackoffEnd);
         Time expectedBackoffDelay = expectedBackoffEnd - Simulator::Now();
-        if (m_accessTimeout.IsRunning() &&
+        if (m_accessTimeout.IsPending() &&
             Simulator::GetDelayLeft(m_accessTimeout) > expectedBackoffDelay)
         {
             m_accessTimeout.Cancel();
@@ -976,7 +976,7 @@ ChannelAccessManager::ResetState()
     InitLastBusyStructs();
 
     // Cancel timeout
-    if (m_accessTimeout.IsRunning())
+    if (m_accessTimeout.IsPending())
     {
         m_accessTimeout.Cancel();
     }
@@ -1015,7 +1015,7 @@ ChannelAccessManager::NotifySleepNow()
     NS_LOG_FUNCTION(this);
     m_sleeping = true;
     // Cancel timeout
-    if (m_accessTimeout.IsRunning())
+    if (m_accessTimeout.IsPending())
     {
         m_accessTimeout.Cancel();
     }
@@ -1033,7 +1033,7 @@ ChannelAccessManager::NotifyOffNow()
     NS_LOG_FUNCTION(this);
     m_off = true;
     // Cancel timeout
-    if (m_accessTimeout.IsRunning())
+    if (m_accessTimeout.IsPending())
     {
         m_accessTimeout.Cancel();
     }

@@ -182,7 +182,7 @@ WifiAssocManager::StartScanning(WifiScanParams&& scanParams)
     for (auto ap = m_apList.begin(); ap != m_apList.end();)
     {
         if (!MatchScanParams(*ap) ||
-            (!m_allowedLinks.empty() && m_allowedLinks.count(ap->m_linkId) == 0))
+            (!m_allowedLinks.empty() && !m_allowedLinks.contains(ap->m_linkId)))
         {
             // remove AP info from list
             m_apListIt.erase(ap->m_bssid);
@@ -203,7 +203,7 @@ WifiAssocManager::NotifyApInfo(const StaWifiMac::ApInfo&& apInfo)
     NS_LOG_FUNCTION(this << apInfo);
 
     if (!CanBeInserted(apInfo) || !MatchScanParams(apInfo) ||
-        (!m_allowedLinks.empty() && m_allowedLinks.count(apInfo.m_linkId) == 0))
+        (!m_allowedLinks.empty() && !m_allowedLinks.contains(apInfo.m_linkId)))
     {
         return;
     }
@@ -314,7 +314,8 @@ WifiAssocManager::CanSetupMultiLink(OptMleConstRef& mle, OptRnrConstRef& rnr)
         // mapping negotiation with the TID-To-Link Mapping Negotiation Support subfield of the
         // MLD Capabilities field of the Basic Multi-Link element it transmits to at least 1.
         // (Sec. 35.3.7.1.1 of 802.11be D3.1)
-        if (mldCapabilities->tidToLinkMappingSupport > 0 && negSupport.Get() == 0)
+        if (mldCapabilities->tidToLinkMappingSupport > 0 &&
+            negSupport.Get() == WifiTidToLinkMappingNegSupport::NOT_SUPPORTED)
         {
             NS_LOG_DEBUG("AP MLD supports TID-to-Link Mapping negotiation, while we don't");
             return false;

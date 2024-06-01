@@ -29,6 +29,7 @@
 #include "ns3/test.h"
 
 using namespace ns3;
+using namespace ns3::energy;
 
 NS_LOG_COMPONENT_DEFINE("BasicEnergyHarvesterTestSuite");
 
@@ -133,9 +134,9 @@ class BasicEnergyHarvesterTestSuite : public TestSuite
 };
 
 BasicEnergyHarvesterTestSuite::BasicEnergyHarvesterTestSuite()
-    : TestSuite("basic-energy-harvester", UNIT)
+    : TestSuite("basic-energy-harvester", Type::UNIT)
 {
-    AddTestCase(new BasicEnergyHarvesterTestCase, TestCase::QUICK);
+    AddTestCase(new BasicEnergyHarvesterTestCase, TestCase::Duration::QUICK);
 }
 
 /// create an instance of the test suite

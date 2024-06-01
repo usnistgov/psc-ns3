@@ -27,6 +27,7 @@
 #include <vector>
 
 using namespace ns3;
+using namespace ns3::lrwpan;
 
 NS_LOG_COMPONENT_DEFINE("lr-wpan-packet-test");
 
@@ -120,9 +121,9 @@ class LrWpanPacketTestSuite : public TestSuite
 };
 
 LrWpanPacketTestSuite::LrWpanPacketTestSuite()
-    : TestSuite("lr-wpan-packet", UNIT)
+    : TestSuite("lr-wpan-packet", Type::UNIT)
 {
-    AddTestCase(new LrWpanPacketTestCase, TestCase::QUICK);
+    AddTestCase(new LrWpanPacketTestCase, TestCase::Duration::QUICK);
 }
 
 static LrWpanPacketTestSuite g_lrWpanPacketTestSuite; //!< Static variable for test initialization

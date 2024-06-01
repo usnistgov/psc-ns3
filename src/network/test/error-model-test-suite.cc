@@ -305,10 +305,10 @@ class ErrorModelTestSuite : public TestSuite
 };
 
 ErrorModelTestSuite::ErrorModelTestSuite()
-    : TestSuite("error-model", UNIT)
+    : TestSuite("error-model", Type::UNIT)
 {
-    AddTestCase(new ErrorModelSimple, TestCase::QUICK);
-    AddTestCase(new BurstErrorModelSimple, TestCase::QUICK);
+    AddTestCase(new ErrorModelSimple, TestCase::Duration::QUICK);
+    AddTestCase(new BurstErrorModelSimple, TestCase::Duration::QUICK);
 }
 
 // Do not forget to allocate an instance of this TestSuite

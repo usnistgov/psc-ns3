@@ -122,22 +122,14 @@ class OnOffApplication : public Application
      */
     Ptr<Socket> GetSocket() const;
 
-    /**
-     * \brief Assign a fixed random variable stream number to the random variables
-     * used by this model.
-     *
-     * \param stream first stream index to use
-     * \return the number of stream indices assigned by this model
-     */
-    int64_t AssignStreams(int64_t stream);
+    int64_t AssignStreams(int64_t stream) override;
 
   protected:
     void DoDispose() override;
 
   private:
-    // inherited from Application base class.
-    void StartApplication() override; // Called at time specified by Start
-    void StopApplication() override;  // Called at time specified by Stop
+    void StartApplication() override;
+    void StopApplication() override;
 
     // helpers
     /**
@@ -163,6 +155,7 @@ class OnOffApplication : public Application
     Address m_peer;                      //!< Peer address
     Address m_local;                     //!< Local address to bind to
     bool m_connected;                    //!< True if connected
+    uint8_t m_tos;                       //!< The packets Type of Service
     Ptr<RandomVariableStream> m_onTime;  //!< rng for On Time
     Ptr<RandomVariableStream> m_offTime; //!< rng for Off Time
     DataRate m_cbrRate;                  //!< Rate that data is generated

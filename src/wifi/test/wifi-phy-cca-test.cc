@@ -765,8 +765,8 @@ class WifiPhyCcaIndicationTest : public TestCase
      */
     struct StateCheckPoint
     {
-        Time timePoint{Seconds(0)};          //!< time at which the check will performed
-        WifiPhyState expectedPhyState{IDLE}; //!< expected PHY state
+        Time timePoint{Seconds(0)}; //!< time at which the check will performed
+        WifiPhyState expectedPhyState{WifiPhyState::IDLE}; //!< expected PHY state
     };
 
     /**
@@ -2942,10 +2942,10 @@ class WifiPhyCcaTestSuite : public TestSuite
 };
 
 WifiPhyCcaTestSuite::WifiPhyCcaTestSuite()
-    : TestSuite("wifi-phy-cca", UNIT)
+    : TestSuite("wifi-phy-cca", Type::UNIT)
 {
-    AddTestCase(new WifiPhyCcaThresholdsTest, TestCase::QUICK);
-    AddTestCase(new WifiPhyCcaIndicationTest, TestCase::QUICK);
+    AddTestCase(new WifiPhyCcaThresholdsTest, TestCase::Duration::QUICK);
+    AddTestCase(new WifiPhyCcaIndicationTest, TestCase::Duration::QUICK);
 }
 
 static WifiPhyCcaTestSuite WifiPhyCcaTestSuite; ///< the test suite

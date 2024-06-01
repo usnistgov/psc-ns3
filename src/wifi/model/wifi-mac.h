@@ -26,6 +26,8 @@
 #include "wifi-remote-station-manager.h"
 #include "wifi-standards.h"
 
+#include "ns3/uniform-random-bit-generator.h"
+
 #include <functional>
 #include <list>
 #include <map>
@@ -55,6 +57,7 @@ class ChannelAccessManager;
 class ExtendedCapabilities;
 class OriginatorBlockAckAgreement;
 class RecipientBlockAckAgreement;
+class UniformRandomVariable;
 
 /**
  * \ingroup wifi
@@ -109,6 +112,17 @@ class WifiMac : public Object
     WifiMac& operator=(const WifiMac&) = delete;
 
     /**
+     * Assign a fixed random variable stream number to the random variables
+     * used by this model.  Return the number of streams (possibly zero) that
+     * have been assigned.
+     *
+     * \param stream first stream index to use
+     *
+     * \return the number of stream indices assigned by this model
+     */
+    virtual int64_t AssignStreams(int64_t stream);
+
+    /**
      * Sets the device this PHY is associated with.
      *
      * \param device the device this PHY is associated with
@@ -130,12 +144,22 @@ class WifiMac : public Object
     Ptr<FrameExchangeManager> GetFrameExchangeManager(uint8_t linkId = SINGLE_LINK_OP_ID) const;
 
     /**
+     * \param feManagers the frame exchange managers attached to this MAC.
+     */
+    void SetFrameExchangeManagers(const std::vector<Ptr<FrameExchangeManager>>& feManagers);
+
+    /**
      * Get the Channel Access Manager associated with the given link
      *
      * \param linkId the ID of the given link
      * \return the Channel Access Manager
      */
     Ptr<ChannelAccessManager> GetChannelAccessManager(uint8_t linkId = SINGLE_LINK_OP_ID) const;
+
+    /**
+     * \param caManagers the channel access managers attached to this MAC.
+     */
+    void SetChannelAccessManagers(const std::vector<Ptr<ChannelAccessManager>>& caManagers);
 
     /**
      * Get the number of links (can be greater than 1 for 11be devices only).
@@ -172,6 +196,14 @@ class WifiMac : public Object
      * \return the ID of the link (if any) on which the given PHY is operating
      */
     std::optional<uint8_t> GetLinkForPhy(std::size_t phyId) const;
+
+    /**
+     * Indicate if a given link is on the 6 GHz band.
+     *
+     * \param linkId the ID of the given link
+     * \return whether the given link is on the 6 GHz band
+     */
+    bool Is6GhzBand(uint8_t linkId) const;
 
     /**
      * \param remoteAddr the (MLD or link) address of a remote device
@@ -468,16 +500,6 @@ class WifiMac : public Object
     void NotifyRxDrop(Ptr<const Packet> packet);
 
     /**
-     * \param standard the wifi standard to be configured
-     *
-     * This method completes the configuration process for a requested PHY standard
-     * by creating the Frame Exchange Manager and the Channel Access Manager and
-     * configuring the PHY dependent parameters.
-     * This method can only be called after a configured PHY has been set.
-     */
-    virtual void ConfigureStandard(WifiStandard standard);
-
-    /**
      * \return pointer to HtConfiguration if it exists
      */
     Ptr<HtConfiguration> GetHtConfiguration() const;
@@ -522,6 +544,13 @@ class WifiMac : public Object
      */
     HeCapabilities GetHeCapabilities(uint8_t linkId) const;
     /**
+     * Return the HE 6GHz band capabilities of the device for the given 6 GHz link.
+     *
+     * \param linkId the ID of the given 6 GHz link
+     * \return the HE 6GHz band capabilities that we support
+     */
+    He6GhzBandCapabilities GetHe6GhzBandCapabilities(uint8_t linkId) const;
+    /**
      * Return the EHT capabilities of the device for the given link.
      *
      * \param linkId the ID of the given link
@@ -550,11 +579,12 @@ class WifiMac : public Object
      */
     bool GetDsssSupported(uint8_t linkId) const;
     /**
-     * Return whether the device supports HT.
+     * Return whether the device supports HT on the given link.
      *
+     * \param linkId the ID of the given link.
      * \return true if HT is supported, false otherwise
      */
-    bool GetHtSupported() const;
+    bool GetHtSupported(uint8_t linkId) const;
     /**
      * Return whether the device supports VHT on the given link.
      *
@@ -730,6 +760,7 @@ class WifiMac : public Object
   protected:
     void DoInitialize() override;
     void DoDispose() override;
+    void NotifyConstructionCompleted() override;
 
     /**
      * \param cwMin the minimum contention window size
@@ -739,15 +770,6 @@ class WifiMac : public Object
      * contention window size.
      */
     virtual void ConfigureContentionWindow(uint32_t cwMin, uint32_t cwMax);
-
-    /**
-     * Enable or disable QoS support for the device. Construct a Txop object
-     * or QosTxop objects accordingly. This method can only be called before
-     * initialization.
-     *
-     * \param enable whether QoS is supported
-     */
-    void SetQosSupported(bool enable);
 
     /**
      * Enable or disable short slot time feature.
@@ -899,6 +921,16 @@ class WifiMac : public Object
 
   private:
     /**
+     * Complete the configuration of the MAC layer components.
+     */
+    void CompleteConfig();
+
+    /**
+     * Allow subclasses to complete the configuration of the MAC layer components.
+     */
+    virtual void DoCompleteConfig() = 0;
+
+    /**
      * \param dcf the DCF to be configured
      * \param cwmin the minimum contention window for the DCF
      * \param cwmax the maximum contention window for the DCF
@@ -921,6 +953,60 @@ class WifiMac : public Object
     void ConfigurePhyDependentParameters(uint8_t linkId);
 
     /**
+     * Enable or disable QoS support for the device. Construct a Txop object or QosTxop objects
+     * accordingly. This method is private so that it is only used while constructing this object.
+     *
+     * \param enable whether QoS is supported
+     */
+    void SetQosSupported(bool enable);
+
+    /**
+     * Set the Txop object.
+     * This method is private so that it is only used while constructing this object.
+     *
+     * \param dcf the Txop object
+     */
+    void SetTxop(Ptr<Txop> dcf);
+
+    /**
+     * Set the AC_VO channel access function
+     * This method is private so that it is only used while constructing this object.
+     *
+     * \param edca the QosTxop object for AC_VO
+     */
+    void SetVoQueue(Ptr<QosTxop> edca);
+
+    /**
+     * Set the AC_VI channel access function
+     * This method is private so that it is only used while constructing this object.
+     *
+     * \param edca the QosTxop object for AC_VI
+     */
+    void SetViQueue(Ptr<QosTxop> edca);
+
+    /**
+     * Set the AC_BE channel access function
+     * This method is private so that it is only used while constructing this object.
+     *
+     * \param edca the QosTxop object for AC_BE
+     */
+    void SetBeQueue(Ptr<QosTxop> edca);
+
+    /**
+     * Set the AC_BK channel access function
+     * This method is private so that it is only used while constructing this object.
+     *
+     * \param edca the QosTxop object for AC_BK
+     */
+    void SetBkQueue(Ptr<QosTxop> edca);
+
+    /**
+     * This method is a private utility invoked to configure the channel
+     * access function for devices that do not support QoS.
+     */
+    void SetupDcfQueue();
+
+    /**
      * This method is a private utility invoked to configure the channel
      * access function for the specified Access Category.
      *
@@ -929,13 +1015,12 @@ class WifiMac : public Object
     void SetupEdcaQueue(AcIndex ac);
 
     /**
-     * Create a Frame Exchange Manager depending on the supported version
-     * of the standard.
+     * If no link has been already created, create the given number links; otherwise, do nothing.
      *
-     * \param standard the supported version of the standard
-     * \return the created Frame Exchange Manager
+     * \param nLinks the given number of links
+     * \return whether the given number of links have been created
      */
-    Ptr<FrameExchangeManager> SetupFrameExchangeManager(WifiStandard standard);
+    bool CreateLinksIfNeeded(std::size_t nLinks);
 
     /**
      * Create a LinkEntity object.
@@ -1076,6 +1161,8 @@ class WifiMac : public Object
     uint32_t m_bkMaxAmpduSize; ///< maximum A-MPDU size for AC_BK (in bytes)
 
     uint16_t m_mpduBufferSize; //!< BlockAck buffer size (in number of MPDUs)
+
+    UniformRandomBitGenerator m_shuffleLinkIdsGen; //!< random number generator to shuffle link IDs
 
     /// @brief DL TID-to-Link Mapping negotiated with an MLD (identified by its MLD address)
     std::unordered_map<Mac48Address, WifiTidLinkMapping, WifiAddressHash> m_dlTidLinkMappings;

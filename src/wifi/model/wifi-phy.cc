@@ -47,6 +47,13 @@
 
 #include <algorithm>
 
+#undef NS_LOG_APPEND_CONTEXT
+#define NS_LOG_APPEND_CONTEXT                                                                      \
+    WIFI_PHY_NS_LOG_APPEND_CONTEXT(                                                                \
+        (m_device && (m_device->GetNPhys() > m_phyId) && m_device->GetPhy(m_phyId)                 \
+             ? m_device->GetPhy(m_phyId)                                                           \
+             : nullptr))
+
 namespace ns3
 {
 
@@ -334,6 +341,11 @@ WifiPhy::GetTypeId()
                             "has been dropped by the device during reception",
                             MakeTraceSourceAccessor(&WifiPhy::m_phyRxDropTrace),
                             "ns3::Packet::TracedCallback")
+            .AddTraceSource("PhyRxPpduDrop",
+                            "Trace source indicating a ppdu "
+                            "has been dropped by the device during reception",
+                            MakeTraceSourceAccessor(&WifiPhy::m_phyRxPpduDropTrace),
+                            "ns3::WifiPhy::PhyRxPpduDropTracedCallback")
             .AddTraceSource("MonitorSnifferRx",
                             "Trace source simulating a wifi device in monitor mode "
                             "sniffing all received frames",
@@ -343,12 +355,17 @@ WifiPhy::GetTypeId()
                             "Trace source simulating the capability of a wifi device "
                             "in monitor mode to sniff all frames being transmitted",
                             MakeTraceSourceAccessor(&WifiPhy::m_phyMonitorSniffTxTrace),
-                            "ns3::WifiPhy::MonitorSnifferTxTracedCallback");
+                            "ns3::WifiPhy::MonitorSnifferTxTracedCallback")
+            .AddTraceSource("SignalTransmission",
+                            "Trace start of signal transmission",
+                            MakeTraceSourceAccessor(&WifiPhy::m_signalTransmissionCb),
+                            "ns3::SpectrumWifiPhy::SignalTransmissionCallback");
     return tid;
 }
 
 WifiPhy::WifiPhy()
-    : m_txMpduReferenceNumber(0xffffffff),
+    : m_phyId(0),
+      m_txMpduReferenceNumber(0xffffffff),
       m_rxMpduReferenceNumber(0xffffffff),
       m_endPhyRxEvent(),
       m_endTxEvent(),
@@ -409,8 +426,6 @@ WifiPhy::DoDispose()
 {
     NS_LOG_FUNCTION(this);
 
-    Reset();
-
     m_device = nullptr;
     m_mobility = nullptr;
     m_frameCaptureModel = nullptr;
@@ -425,6 +440,9 @@ WifiPhy::DoDispose()
     m_random = nullptr;
     m_state = nullptr;
 
+    Reset();
+
+    // this should be done after calling the Reset function
     for (auto& phyEntity : m_phyEntities)
     {
         phyEntity.second = nullptr;
@@ -479,13 +497,13 @@ void
 WifiPhy::SetRxSensitivity(double threshold)
 {
     NS_LOG_FUNCTION(this << threshold);
-    m_rxSensitivityW = DbmToW(threshold);
+    m_rxSensitivityDbm = threshold;
 }
 
 double
 WifiPhy::GetRxSensitivity() const
 {
-    return WToDbm(m_rxSensitivityW);
+    return m_rxSensitivityDbm;
 }
 
 void
@@ -628,8 +646,22 @@ WifiPhy::GetMobility() const
 }
 
 void
+WifiPhy::SetPhyId(uint8_t phyId)
+{
+    NS_LOG_FUNCTION(this << phyId);
+    m_phyId = phyId;
+}
+
+uint8_t
+WifiPhy::GetPhyId() const
+{
+    return m_phyId;
+}
+
+void
 WifiPhy::SetInterferenceHelper(const Ptr<InterferenceHelper> helper)
 {
+    NS_LOG_FUNCTION(this << helper);
     m_interference = helper;
     m_interference->SetNoiseFigure(DbToRatio(m_noiseFigureDb));
     m_interference->SetNumberOfReceiveAntennas(m_numberOfAntennas);
@@ -638,6 +670,7 @@ WifiPhy::SetInterferenceHelper(const Ptr<InterferenceHelper> helper)
 void
 WifiPhy::SetErrorRateModel(const Ptr<ErrorRateModel> model)
 {
+    NS_LOG_FUNCTION(this << model);
     NS_ASSERT(m_interference);
     m_interference->SetErrorRateModel(model);
 }
@@ -751,8 +784,7 @@ WifiPhy::GetPhyEntityForPpdu(const Ptr<const WifiPpdu> ppdu) const
 void
 WifiPhy::AddStaticPhyEntity(WifiModulationClass modulation, Ptr<PhyEntity> phyEntity)
 {
-    NS_LOG_FUNCTION(modulation);
-    NS_ASSERT_MSG(GetStaticPhyEntities().find(modulation) == GetStaticPhyEntities().end(),
+    NS_ASSERT_MSG(!GetStaticPhyEntities().contains(modulation),
                   "The PHY entity has already been added. The setting should only be done once per "
                   "modulation class");
     GetStaticPhyEntities()[modulation] = phyEntity;
@@ -762,7 +794,7 @@ void
 WifiPhy::AddPhyEntity(WifiModulationClass modulation, Ptr<PhyEntity> phyEntity)
 {
     NS_LOG_FUNCTION(this << modulation);
-    NS_ABORT_MSG_IF(GetStaticPhyEntities().find(modulation) == GetStaticPhyEntities().end(),
+    NS_ABORT_MSG_IF(!GetStaticPhyEntities().contains(modulation),
                     "Cannot add an unimplemented PHY to supported list. Update the former first.");
     NS_ASSERT_MSG(m_phyEntities.find(modulation) == m_phyEntities.end(),
                   "The PHY entity has already been added. The setting should only be done once per "
@@ -1617,6 +1649,13 @@ WifiPhy::NotifyRxDrop(Ptr<const WifiPsdu> psdu, WifiPhyRxfailureReason reason)
 }
 
 void
+WifiPhy::NotifyRxPpduDrop(Ptr<const WifiPpdu> ppdu, WifiPhyRxfailureReason reason)
+{
+    NotifyRxDrop(GetAddressedPsduInPpdu(ppdu), reason);
+    m_phyRxPpduDropTrace(ppdu, reason);
+}
+
+void
 WifiPhy::NotifyMonitorSniffRx(Ptr<const WifiPsdu> psdu,
                               uint16_t channelFreqMhz,
                               WifiTxVector txVector,
@@ -1777,11 +1816,19 @@ WifiPhy::Send(WifiConstPsduMap psdus, const WifiTxVector& txVector)
     Time txDuration = CalculateTxDuration(psdus, txVector, GetPhyBand());
 
     bool noEndPreambleDetectionEvent = true;
-    for (const auto& it : m_phyEntities)
+    for (const auto& [mc, entity] : m_phyEntities)
     {
-        noEndPreambleDetectionEvent &= it.second->NoEndPreambleDetectionEvents();
+        noEndPreambleDetectionEvent =
+            noEndPreambleDetectionEvent && entity->NoEndPreambleDetectionEvents();
     }
-    if (!noEndPreambleDetectionEvent || m_currentEvent)
+    if (!noEndPreambleDetectionEvent && !m_currentEvent)
+    {
+        // PHY is in the initial few microseconds during which the
+        // start of RX has occurred but the preamble detection period
+        // has not elapsed
+        AbortCurrentReception(SIGNAL_DETECTION_ABORTED_BY_TX);
+    }
+    else if (!noEndPreambleDetectionEvent || m_currentEvent)
     {
         AbortCurrentReception(RECEPTION_ABORTED_BY_TX);
     }
@@ -1824,17 +1871,23 @@ WifiPhy::Send(WifiConstPsduMap psdus, const WifiTxVector& txVector)
     }
 
     m_endTxEvent =
-        Simulator::Schedule(txDuration, &WifiPhy::NotifyTxEnd, this, psdus); // TODO: fix for MU
+        Simulator::Schedule(txDuration, &WifiPhy::TxDone, this, psdus); // TODO: fix for MU
 
     StartTx(ppdu);
     ppdu->ResetTxVector();
 
     m_channelAccessRequested = false;
     m_powerRestricted = false;
+}
 
-    Simulator::Schedule(txDuration, &WifiPhy::Reset, this);
-
-    Simulator::Schedule(txDuration, &WifiPhy::SwitchMaybeToCcaBusy, this, nullptr);
+void
+WifiPhy::TxDone(const WifiConstPsduMap& psdus)
+{
+    NS_LOG_FUNCTION(this << psdus);
+    NotifyTxEnd(psdus);
+    Reset();
+    // we might have received signals during TX
+    SwitchMaybeToCcaBusy();
 }
 
 uint64_t
@@ -1855,6 +1908,16 @@ WifiPhy::Reset()
 {
     NS_LOG_FUNCTION(this);
     m_currentPreambleEvents.clear();
+    bool noEndPreambleDetectionEvent = true;
+    for (const auto& [mc, entity] : m_phyEntities)
+    {
+        noEndPreambleDetectionEvent =
+            noEndPreambleDetectionEvent && entity->NoEndPreambleDetectionEvents();
+    }
+    if (m_interference && (m_currentEvent || !noEndPreambleDetectionEvent))
+    {
+        m_interference->NotifyRxEnd(Simulator::Now(), GetCurrentFrequencyRange());
+    }
     m_currentEvent = nullptr;
     for (auto& phyEntity : m_phyEntities)
     {
@@ -1882,7 +1945,7 @@ WifiPhy::StartReceivePreamble(Ptr<const WifiPpdu> ppdu,
         // TODO find a fallback PHY for receiving the PPDU (e.g. 11a for 11ax due to preamble
         // structure)
         NS_LOG_DEBUG("Unsupported modulation received (" << modulation << "), consider as noise");
-        m_interference->Add(ppdu, rxDuration, rxPowersW);
+        m_interference->Add(ppdu, rxDuration, rxPowersW, GetCurrentFrequencyRange());
         SwitchMaybeToCcaBusy();
     }
 }
@@ -1890,7 +1953,7 @@ WifiPhy::StartReceivePreamble(Ptr<const WifiPpdu> ppdu,
 bool
 WifiPhy::IsReceivingPhyHeader() const
 {
-    return m_endPhyRxEvent.IsRunning();
+    return m_endPhyRxEvent.IsPending();
 }
 
 void
@@ -2122,6 +2185,14 @@ WifiPhy::AbortCurrentReception(WifiPhyRxfailureReason reason)
     if (reason != OBSS_PD_CCA_RESET ||
         m_currentEvent) // Otherwise abort has already been called previously
     {
+        if (reason == SIGNAL_DETECTION_ABORTED_BY_TX)
+        {
+            for (auto signalDetectEvent : m_currentPreambleEvents)
+            {
+                NotifyRxPpduDrop(signalDetectEvent.second->GetPpdu(),
+                                 SIGNAL_DETECTION_ABORTED_BY_TX);
+            }
+        }
         for (auto& phyEntity : m_phyEntities)
         {
             phyEntity.second->CancelAllEvents();
@@ -2132,7 +2203,7 @@ WifiPhy::AbortCurrentReception(WifiPhyRxfailureReason reason)
         {
             return;
         }
-        NotifyRxDrop(GetAddressedPsduInPpdu(m_currentEvent->GetPpdu()), reason);
+        NotifyRxPpduDrop(m_currentEvent->GetPpdu(), reason);
         if (reason == OBSS_PD_CCA_RESET)
         {
             m_state->SwitchFromRxAbort(GetChannelWidth());

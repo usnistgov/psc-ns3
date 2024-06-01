@@ -31,12 +31,18 @@
 using namespace ns3;
 
 /**
+ * \ingroup click
+ * \defgroup click-tests click module tests
+ */
+
+/**
  * \file
  * \ingroup click-tests
  * Click test suite.
  */
 
 /**
+ * \ingroup click-tests
  * Add Click Internet stack.
  *
  * \param node Node.
@@ -50,6 +56,7 @@ AddClickInternetStack(Ptr<Node> node)
 }
 
 /**
+ * \ingroup click-tests
  * Add network device.
  *
  * \param node Node.
@@ -243,11 +250,11 @@ class ClickIfidFromNameTestSuite : public TestSuite
 {
   public:
     ClickIfidFromNameTestSuite()
-        : TestSuite("routing-click", UNIT)
+        : TestSuite("routing-click", Type::UNIT)
     {
-        AddTestCase(new ClickTrivialTest, TestCase::QUICK);
-        AddTestCase(new ClickIfidFromNameTest, TestCase::QUICK);
-        AddTestCase(new ClickIpMacAddressFromNameTest, TestCase::QUICK);
+        AddTestCase(new ClickTrivialTest, TestCase::Duration::QUICK);
+        AddTestCase(new ClickIfidFromNameTest, TestCase::Duration::QUICK);
+        AddTestCase(new ClickIpMacAddressFromNameTest, TestCase::Duration::QUICK);
     }
 };
 

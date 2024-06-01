@@ -30,6 +30,8 @@
 namespace ns3
 {
 
+const Time WIFI_TU = MicroSeconds(WIFI_TU_US);
+
 double
 DbToRatio(double dB)
 {
@@ -57,9 +59,9 @@ RatioToDb(double ratio)
 uint32_t
 GetAckSize()
 {
-    WifiMacHeader ack;
-    ack.SetType(WIFI_MAC_CTL_ACK);
-    return ack.GetSize() + 4;
+    static const uint32_t size = WifiMacHeader(WIFI_MAC_CTL_ACK).GetSize() + 4;
+
+    return size;
 }
 
 uint32_t
@@ -102,17 +104,17 @@ GetMuBarSize(std::list<BlockAckReqType> types)
 uint32_t
 GetRtsSize()
 {
-    WifiMacHeader rts;
-    rts.SetType(WIFI_MAC_CTL_RTS);
-    return rts.GetSize() + 4;
+    static const uint32_t size = WifiMacHeader(WIFI_MAC_CTL_RTS).GetSize() + 4;
+
+    return size;
 }
 
 uint32_t
 GetCtsSize()
 {
-    WifiMacHeader cts;
-    cts.SetType(WIFI_MAC_CTL_CTS);
-    return cts.GetSize() + 4;
+    static const uint32_t size = WifiMacHeader(WIFI_MAC_CTL_CTS).GetSize() + 4;
+
+    return size;
 }
 
 bool

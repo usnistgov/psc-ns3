@@ -209,10 +209,10 @@ class Ipv4ListRoutingTestSuite : public TestSuite
 {
   public:
     Ipv4ListRoutingTestSuite()
-        : TestSuite("ipv4-list-routing", UNIT)
+        : TestSuite("ipv4-list-routing", Type::UNIT)
     {
-        AddTestCase(new Ipv4ListRoutingPositiveTestCase(), TestCase::QUICK);
-        AddTestCase(new Ipv4ListRoutingNegativeTestCase(), TestCase::QUICK);
+        AddTestCase(new Ipv4ListRoutingPositiveTestCase(), TestCase::Duration::QUICK);
+        AddTestCase(new Ipv4ListRoutingNegativeTestCase(), TestCase::Duration::QUICK);
     }
 };
 

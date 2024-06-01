@@ -46,7 +46,7 @@ NS_LOG_COMPONENT_DEFINE("LteRadioLinkFailureTest");
  * Test Suite
  */
 LteRadioLinkFailureTestSuite::LteRadioLinkFailureTestSuite()
-    : TestSuite("lte-radio-link-failure", SYSTEM)
+    : TestSuite("lte-radio-link-failure", Type::SYSTEM)
 {
     std::vector<Vector> uePositionList;
     std::vector<Vector> enbPositionList;
@@ -73,7 +73,7 @@ LteRadioLinkFailureTestSuite::LteRadioLinkFailureTestSuite()
                                                 enbPositionList,
                                                 ueJumpAwayPosition,
                                                 checkConnectedList),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     // One eNB: Real RRC PROTOCOL
     AddTestCase(new LteRadioLinkFailureTestCase(1,
@@ -84,7 +84,7 @@ LteRadioLinkFailureTestSuite::LteRadioLinkFailureTestSuite()
                                                 enbPositionList,
                                                 ueJumpAwayPosition,
                                                 checkConnectedList),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     // Two eNBs: Ideal RRC PROTOCOL
 
@@ -99,7 +99,7 @@ LteRadioLinkFailureTestSuite::LteRadioLinkFailureTestSuite()
                                                 enbPositionList,
                                                 ueJumpAwayPosition,
                                                 checkConnectedList),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     // Two eNBs: Ideal RRC PROTOCOL
     AddTestCase(new LteRadioLinkFailureTestCase(2,
@@ -110,7 +110,7 @@ LteRadioLinkFailureTestSuite::LteRadioLinkFailureTestSuite()
                                                 enbPositionList,
                                                 ueJumpAwayPosition,
                                                 checkConnectedList),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
 } // end of LteRadioLinkFailureTestSuite::LteRadioLinkFailureTestSuite ()
 

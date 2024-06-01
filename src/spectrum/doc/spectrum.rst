@@ -743,7 +743,7 @@ returns a 3D long term channel matrix whose dimensions are the number of the
 receive antenna ports, the number transmit antenna ports, and
 the number of clusters. When multiple ports are being configured note that
 the sub-array partition model is adopted for TXRU virtualization, as described
-in Section 5.2.2 of 3GPP TR 36.897[TR36897]_, and so equal beam weights are used for all the ports.
+in Section 5.2.2 of 3GPP TR 36.897 [TR36897]_, and so equal beam weights are used for all the ports.
 Support of the full-connection model for TXRU virtualization would need extensions.
 To reduce the computational load, the long term
 components associated to the different channels are stored in the m_longTermMap
@@ -768,7 +768,7 @@ The value of :math:`v_{scatt}` can be configured using the attribute "vScatt"
 (by default it is set to 0, so that the scattering effect is not considered).
 Function GenSpectrumChannelMatrix generates the received PSD for each pair of
 the transmit and receive antenna ports. It creates a frequency domain 3D spectrum
-channel matrix whose dimensions are the number of receive antena ports,
+channel matrix whose dimensions are the number of receive antenna ports,
 the number of transmit antenna ports, and the number of resource blocks.
 Finally, the frequency domain 3D spectrum channel matrix is used to obtain the
 received PSD. In case of multiple ports at the transmitter the PSD is calculated
@@ -813,8 +813,8 @@ presence of obstacles, such as trees, cars or humans, at the level
 of a single cluster. This differs from a complete blockage, which
 would result in an LOS to NLOS transition. Therefore, when this
 feature is enabled, an additional attenuation is added to certain
-clusters, depending on their angle of arrival. There are two possi-
-ble methods for the computation of the additional attenuation, i.e.,
+clusters, depending on their angle of arrival. There are two possible
+methods for the computation of the additional attenuation, i.e.,
 stochastic (Model A) and geometric (Model B). In this work, we
 used the implementation provided by [Zhang]_, which
 uses the stochastic method. In particular, the model is implemented by the
@@ -1101,3 +1101,41 @@ References
    Mattias Frenne, Farshid Ghasemzadeh, Måns Hagström et al. Advanced Antenna Systems
    for 5G Network Deployments: Bridging the Gap Between Theory and Practice.
    Academic Press, 2020.
+
+
+3GPP TR 38.811 Non-Terrestrial Networks
+=======================================
+3GPP with [3GPPTR38811]_ has extended the channel model presented in [3GPPTR38901]_ to support the so called Non-Terrestrial Networks
+(NTN), i.e. communication scenarios where the propagation of the signal travels through the atmosphere.
+The channel spectrum estimation procedure is the same as the one described in [3GPPTR38901]_, with a new set of parameters.
+
+
+Use-cases
+#########
+The use-cases for this channel model include simulations in 3D/vertical environments with communicating nodes placed
+in different types of orbit, in the atmosphere and/or on the ground.
+
+Implementation
+##############
+The channel spectrum estimation procedure is already implemented (as described in [ns3Zugno]_ ) into the classes
+ThreeGppChannelModel and ThreeGppSpectrumPropagationLossModel, that have been extended to support NTN through the
+introduction of the appropriate parameters.
+3GPP considers two frequencies of interest: S-band (2GHz) and Ka-band (20/30GHz). Many channel parameters are dependent
+on the frequency band in use, but no specific range of frequencies of these bands has been given by 3GPP. Hence, this
+implementation considers S-band anything below 13GHz, and Ka-band anything above it.
+Four propagation scenarios are identified, in decreasing order of building height and density: Dense Urban, Urban,
+Suburban and Rural. Channel estimation parameters are scenario-dependent.
+**Note**: For satellite, the parameters that describe the departure angle spread are 0. Thus, in the logarithmic scale
+at which these parameters are represented is :math:`-\infty`.
+
+References
+##########
+
+.. [ns3Zugno] Zugno Tommaso, Michele Polese, Natale Patriciello, Biljana Bojović,
+   Sandra Lagen, Michele Zorzi. "Implementation of a spatial channel model for ns-3."
+   In Proceedings of the 2020 Workshop on ns-3, pp. 49-56. 2020.
+
+.. [3GPPTR38901] 3GPP. 2018. TR 38.901. Study on channel for frequencies from 0.5 to
+   100 GHz. V.15.0.0. (2018-06).
+
+.. [3GPPTR38811] 3GPP. 2018. TR 38.811, Study on New Radio (NR) to support non-terrestrial networks, V15.4.0. (2020-09).

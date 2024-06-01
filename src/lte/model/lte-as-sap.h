@@ -103,6 +103,17 @@ class LteAsSapProvider
                                          const SidelinkInfo& slInfo) = 0;
 
     /**
+     * \brief Delete existing NR SL radio bearer
+     *
+     * \param isTransmit True if the bearer is for transmission
+     * \param isReceive True if the bearer is for reception
+     * \param slInfo The SidelinkInfo for the bearer
+     */
+    virtual void DeleteNrSlRadioBearer(bool isTransmit,
+                                       bool isReceive,
+                                       const SidelinkInfo& slInfo) = 0;
+
+    /**
      * \brief Send sidelink data packet to RRC.
      *
      * \param packet The packet
@@ -153,6 +164,13 @@ class LteAsSapUser
      * \param slInfo The SidelinkInfo for the bearer
      */
     virtual void NotifyNrSlRadioBearerActivated(const struct SidelinkInfo& slInfo) = 0;
+
+    /**
+     * \brief Notify the NAS that the NR sidelink has been removed
+     *
+     * \param slInfo The SidelinkInfo for the bearer
+     */
+    virtual void NotifyNrSlRadioBearerRemoved(const struct SidelinkInfo& slInfo) = 0;
 };
 
 /**
@@ -183,6 +201,9 @@ class MemberLteAsSapProvider : public LteAsSapProvider
     void ActivateNrSlRadioBearer(bool isTransmit,
                                  bool isReceive,
                                  const struct SidelinkInfo& slInfo) override;
+    void DeleteNrSlRadioBearer(bool isTransmit,
+                               bool isReceive,
+                               const struct SidelinkInfo& slInfo) override;
     void SendSidelinkData(Ptr<Packet> packet, uint32_t dstL2Id, uint8_t lcId) override;
 
   private:
@@ -248,6 +269,15 @@ MemberLteAsSapProvider<C>::ActivateNrSlRadioBearer(bool isTransmit,
 
 template <class C>
 void
+MemberLteAsSapProvider<C>::DeleteNrSlRadioBearer(bool isTransmit,
+                                                 bool isReceive,
+                                                 const struct SidelinkInfo& slInfo)
+{
+    m_owner->DoDeleteNrSlDataRadioBearer(isTransmit, isReceive, slInfo);
+}
+
+template <class C>
+void
 MemberLteAsSapProvider<C>::SendSidelinkData(Ptr<Packet> packet, uint32_t dstL2Id, uint8_t lcId)
 {
     m_owner->DoSendSidelinkData(packet, dstL2Id, lcId);
@@ -277,6 +307,7 @@ class MemberLteAsSapUser : public LteAsSapUser
     void RecvData(Ptr<Packet> packet) override;
     void NotifyConnectionReleased() override;
     void NotifyNrSlRadioBearerActivated(const struct SidelinkInfo& slInfo) override;
+    void NotifyNrSlRadioBearerRemoved(const struct SidelinkInfo& slInfo) override;
 
   private:
     C* m_owner; ///< the owner class
@@ -321,6 +352,13 @@ void
 MemberLteAsSapUser<C>::NotifyNrSlRadioBearerActivated(const struct SidelinkInfo& slInfo)
 {
     m_owner->DoNotifyNrSlRadioBearerActivated(slInfo);
+}
+
+template <class C>
+void
+MemberLteAsSapUser<C>::NotifyNrSlRadioBearerRemoved(const struct SidelinkInfo& slInfo)
+{
+    m_owner->DoNotifyNrSlRadioBearerRemoved(slInfo);
 }
 
 } // namespace ns3

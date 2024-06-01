@@ -188,14 +188,12 @@ class ThreeGppHttpClient : public Application
                                          uint32_t numBytes);
 
   protected:
-    // Inherited from Object base class.
     void DoDispose() override;
 
-    // Inherited from Application base class.
+  private:
     void StartApplication() override;
     void StopApplication() override;
 
-  private:
     // SOCKET CALLBACK METHODS
 
     /**
@@ -393,6 +391,8 @@ class ThreeGppHttpClient : public Application
     Address m_remoteServerAddress;
     /// The `RemoteServerPort` attribute.
     uint16_t m_remoteServerPort;
+    /// The `Tos` attribute.
+    uint8_t m_tos;
 
     // TRACE SOURCES
 

@@ -81,7 +81,7 @@ monotonically increasing counter) will be handled first.
 In other words tied events are handled in FIFO order.
 
 Note that concurrent events (events that happen at the very same time)
-are unlikely in a real system - not to say impossible. In |ns-3|
+are unlikely in a real system - not to say impossible. In |ns3|
 concurrent events are common for a number of reasons, one of them
 being the time representation. While developing a model this must
 be carefully taken into account.
@@ -289,14 +289,14 @@ for example::
 
 or by using a command line argument
 
-.. sourcecode:: terminal
+.. sourcecode:: console
 
   $ ./ns3 run "...  --SimulatorImplementationType=ns3::DistributedSimulatorImpl"
 
 In addition to the basic simulator engines there is a general facility used
 to build "adapters" which provide small behavior modifications to one of
 the core `SimulatorImpl` engines.  The adapter base class is
-`SimulatorAdapter`, itself derived from `SimulatorImpl`.  `SimluatorAdapter`
+`SimulatorAdapter`, itself derived from `SimulatorImpl`.  `SimulatorAdapter`
 uses the `PIMPL (pointer to implementation) <https://en.cppreference.com/w/cpp/language/pimpl>`_
 idiom to forward all calls to the configured base simulator engine.
 This makes it easy to provide small customizations
@@ -305,7 +305,7 @@ just by overriding the specific Simulator calls needed, and allowing
 
 There are few places where adapters are used currently:
 
-*  `ReadltimeSimulatorImpl`  This adapter attempts to execute in real time
+*  `RealtimeSimulatorImpl`  This adapter attempts to execute in real time
    by pacing the wall clock evolution.  This pacing is "best effort",
    meaning actual event execution may not occur exactly in sync, but
    close to it. This engine is normally only used with the
@@ -413,5 +413,5 @@ complexity of the other API calls.
 +------------------------+-------------------------------------+-------------+--------------+----------+--------------+
 | MapScheduler           | `st::map`                           | Logarithmic | Constant     | 40 bytes | 32 bytes     |
 +------------------------+-------------------------------------+-------------+--------------+----------+--------------+
-| PriorityQueueScheduler | `std::priority_queue<,std::vector>` | Logarithimc | Logarithims  | 24 bytes | 0            |
+| PriorityQueueScheduler | `std::priority_queue<,std::vector>` | Logarithmic | Logarithms   | 24 bytes | 0            |
 +------------------------+-------------------------------------+-------------+--------------+----------+--------------+

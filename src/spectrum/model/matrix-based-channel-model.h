@@ -93,11 +93,6 @@ class MatrixBasedChannelModel : public Object
         std::pair<uint32_t, uint32_t> m_nodeIds;
 
         /**
-         * Destructor for ChannelMatrix
-         */
-        virtual ~ChannelMatrix() = default;
-
-        /**
          * Returns true if the ChannelMatrix object was generated
          * considering node b as transmitter and node a as receiver.
          * \param aAntennaId the ID of the antenna array of the a node
@@ -139,6 +134,12 @@ class MatrixBasedChannelModel : public Object
         Double2DVector m_angle;
 
         /**
+         * Sin/cos of cluster angle angle[direction][n], where direction = 0(AOA), 1(ZOA), 2(AOD),
+         * 3(ZOD) in degree.
+         */
+        std::vector<std::vector<std::pair<double, double>>> m_cachedAngleSincos;
+
+        /**
          * Alpha term per cluster as described in 3GPP TR 37.885 v15.3.0, Sec. 6.2.3
          * for calculating doppler.
          */
@@ -156,6 +157,19 @@ class MatrixBasedChannelModel : public Object
          * were generated generated).
          */
         std::pair<uint32_t, uint32_t> m_nodeIds;
+
+        /**
+         * Auxiliary variable to m_cachedDelaySincos
+         *
+         * It is used to determine RB width (12*SCS) changes due to numerology,
+         * in case the number of the RBs in the channel remains constant.
+         */
+        mutable double m_cachedRbWidth = 0.0;
+
+        /**
+         * Matrix array that holds the precomputed delay sincos
+         */
+        mutable ComplexMatrixArray m_cachedDelaySincos;
 
         /**
          * Destructor for ChannelParams

@@ -24,7 +24,7 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("TcpRxBufferTestSuite");
 
 /**
- * \ingroup internet-tests
+ * \ingroup internet-test
  * \ingroup tests
  *
  * \brief The TcpRxBuffer Test
@@ -302,9 +302,9 @@ class TcpRxBufferTestSuite : public TestSuite
 {
   public:
     TcpRxBufferTestSuite()
-        : TestSuite("tcp-rx-buffer", UNIT)
+        : TestSuite("tcp-rx-buffer", Type::UNIT)
     {
-        AddTestCase(new TcpRxBufferTestCase, TestCase::QUICK);
+        AddTestCase(new TcpRxBufferTestCase, TestCase::Duration::QUICK);
     }
 };
 

@@ -62,12 +62,7 @@ class EnumValue : public AttributeValue
 {
   public:
     EnumValue();
-    /**
-     * Construct from an explicit value.
-     *
-     * \param [in] value The value to begin with.
-     */
-    EnumValue(T value);
+    EnumValue(const T& value);
     void Set(T value);
     T Get() const;
 
@@ -78,14 +73,14 @@ class EnumValue : public AttributeValue
     bool DeserializeFromString(std::string value, Ptr<const AttributeChecker> checker) override;
 
   private:
-    T m_value; //!< The stored value.
+    T m_value{}; //!< The stored value.
 };
 
 template <typename T>
 EnumValue<T>::EnumValue() = default;
 
 template <typename T>
-EnumValue<T>::EnumValue(T value)
+EnumValue<T>::EnumValue(const T& value)
     : m_value(value)
 {
 }

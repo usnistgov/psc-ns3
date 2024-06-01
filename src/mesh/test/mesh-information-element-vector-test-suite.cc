@@ -162,9 +162,9 @@ class MeshTestSuite : public TestSuite
 };
 
 MeshTestSuite::MeshTestSuite()
-    : TestSuite("devices-mesh", UNIT)
+    : TestSuite("devices-mesh", Type::UNIT)
 {
-    AddTestCase(new MeshInformationElementVectorBist, TestCase::QUICK);
+    AddTestCase(new MeshInformationElementVectorBist, TestCase::Duration::QUICK);
 }
 
 static MeshTestSuite g_meshTestSuite; ///< the test suite

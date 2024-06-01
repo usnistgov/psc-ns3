@@ -686,7 +686,11 @@ Two main changes were needed to adapt the Spectrum framework to Wi-Fi.
 First, the physical layer must send signals compatible with the
 Spectrum channel framework, and in particular, the
 ``MultiModelSpectrumChannel`` that allows signals from different
-technologies to coexist.  Second, the InterferenceHelper must be
+technologies to coexist (``SingleModelSpectrumChannel`` may also work
+for pure Wi-Fi simulations in 5 GHz and 6 GHz bands (but not 2.4 GHz);
+if you get an error using ``SingleModelSpectrumChannel``, switch to
+``MultiModelSpectrumChannel``).
+Second, the InterferenceHelper must be
 extended to support the insertion of non-Wi-Fi signals and to
 add their received power to the noise, in the same way that
 unintended Wi-Fi signals (perhaps from a different SSID or arriving
@@ -943,6 +947,14 @@ Manager, which in turn informs the Multi-User Scheduler (if any) and the Wifi Re
 Station Manager. As a result, PPDUs are transmitted on the largest idle primary channel.
 For example, if a STA is operating on a 40 MHz channel and the secondary20 channel
 is indicated to be busy, transmissions will occur on the primary20 channel.
+
+In |ns3|, by default, beacons for both QoS and non-QoS APs access the channel after a PIFS interval (SIFS
+plus one slot time), and with zero backoff (CWmin and CWmax both set to zero), giving
+them higher priority than other access categories.  Beacons are given a
+separate Txop from data frames.  The DCF parameters described above are non-standard,
+but appear to be what some vendors have implemented in their products.  To change the
+DCF parameters for |ns3| access points, the ``ApWifiMac::DoCompleteConfig()`` method
+must be manually edited.
 
 The higher-level MAC functions are implemented in a set of other C++ classes and
 deal with:
@@ -1516,7 +1528,7 @@ Depending on your goal, the common tasks are (in no particular order):
   ``frame-exchange-manager.*`` or its subclasses to accomplish this.
   Handling of control frames is performed in ``FrameExchangeManager::ReceiveMpdu``.
 * MAC high modification. For example, handling new management frames (think beacon/probe),
-  beacon/probe generation.  Users usually make changes to ``wifi-mac.*``,``sta-wifi-mac.*``, ``ap-wifi-mac.*``, or ``adhoc-wifi-mac.*`` to accomplish this.
+  beacon/probe generation.  Users usually make changes to ``wifi-mac.*``, ``sta-wifi-mac.*``, ``ap-wifi-mac.*``, or ``adhoc-wifi-mac.*`` to accomplish this.
 * Wi-Fi queue management.  The files ``txop.*`` and ``qos-txop.*`` are of interest for this task.
 * Channel access management.  Users should modify the files ``channel-access-manager.*``, which grant access to
   ``Txop`` and ``QosTxop``.

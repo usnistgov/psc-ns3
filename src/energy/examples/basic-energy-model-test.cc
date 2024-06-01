@@ -34,6 +34,7 @@
 #include <cmath>
 
 using namespace ns3;
+using namespace ns3::energy;
 
 NS_LOG_COMPONENT_DEFINE("BasicEnergyModelTestSuite");
 
@@ -165,7 +166,10 @@ BasicEnergyUpdateTest::StateSwitchTest(WifiPhyState state)
      */
 
     // schedule change of state
-    Simulator::Schedule(Seconds(m_timeS), &WifiRadioEnergyModel::ChangeState, devModel, state);
+    Simulator::Schedule(Seconds(m_timeS),
+                        &WifiRadioEnergyModel::ChangeState,
+                        devModel,
+                        static_cast<int>(state));
 
     // Calculate remaining energy at simulation stop time
     Simulator::Schedule(Seconds(m_timeS * 2), &BasicEnergySource::UpdateEnergySource, source);

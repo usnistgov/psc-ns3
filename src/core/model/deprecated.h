@@ -22,12 +22,17 @@
 
 /**
  * \file
- * \ingroup core
+ * \ingroup deprecation
  * NS_DEPRECATED macro definition.
  */
 
 /**
+ * \defgroup deprecation Deprecation
  * \ingroup core
+ */
+
+/**
+ * \ingroup deprecation
  * \def NS_DEPRECATED
  * Mark a function as deprecated.
  *
@@ -36,8 +41,22 @@
  * When deprecating a feature, please update the documentation
  * with information for users on how to update their code.
  *
- * For example,
- * \snippet src/core/doc/deprecated-example.h doxygen snippet
+ * The following snippet shows an example of how to deprecate the function SomethingUseful()
+ * in favor of the new function TheNewWay().
+ * Note: in the following snippet, the Doxygen blocks are not following the ns-3 style.
+ * This allows the code to be safely embedded in the documentation.
+ *
+ * \code
+ * /// Do something useful.
+ * ///
+ * /// \deprecated This method will go away in future versions of ns-3.
+ * /// See instead TheNewWay().
+ * NS_DEPRECATED_3_XX("see TheNewWay")
+ * void SomethingUseful();
+ *
+ * /// Do something more useful.
+ * void TheNewWay();
+ * \endcode
  *
  * Please follow these two guidelines to ease future maintenance
  * (primarily the eventual removal of the deprecated code):
@@ -48,7 +67,8 @@
  * 2.  Typically only the declaration needs to be deprecated,
  *
  *     \code
- *     NS_DEPRECATED_3_XX ("see TheNewWay") void SomethingUseful ();
+ *     NS_DEPRECATED_3_XX("see TheNewWay")
+ *     void SomethingUseful();
  *     \endcode
  *
  *     but it's helpful to put the same macro as a comment
@@ -56,9 +76,9 @@
  *     all the bits which eventually have to be removed:
  *
  *     \code
- *     \/\* NS_DEPRECATED_3_XX ("see TheNewWay") *\\/
- *     void SomethingUseful () { ... }
- *     \endcode.
+ *     // NS_DEPRECATED_3_XX("see TheNewWay")
+ *     void SomethingUseful() { ... }
+ *     \endcode
  *
  * \note Sometimes it is necessary to silence a deprecation warning.
  * Even though this is highly discouraged, if necessary it is possible to use:
@@ -75,17 +95,24 @@
 #define NS_DEPRECATED(msg) [[deprecated(msg)]]
 
 /**
- * \ingroup core
+ * \ingroup deprecation
+ * \def NS_DEPRECATED_3_42
+ * Tag for things deprecated in version ns-3.42.
+ */
+#define NS_DEPRECATED_3_42(msg) NS_DEPRECATED("Deprecated in ns-3.42: " msg)
+
+/**
+ * \ingroup deprecation
  * \def NS_DEPRECATED_3_41
  * Tag for things deprecated in version ns-3.41.
  */
-#define NS_DEPRECATED_3_41(msg) NS_DEPRECATED(msg)
+#define NS_DEPRECATED_3_41(msg) NS_DEPRECATED("Deprecated in ns-3.41: " msg)
 
 /**
- * \ingroup core
+ * \ingroup deprecation
  * \def NS_DEPRECATED_3_40
  * Tag for things deprecated in version ns-3.40.
  */
-#define NS_DEPRECATED_3_40(msg) NS_DEPRECATED(msg)
+#define NS_DEPRECATED_3_40(msg) NS_DEPRECATED("Deprecated in ns-3.40: " msg)
 
 #endif /* NS3_DEPRECATED_H */

@@ -680,7 +680,7 @@ AnimationInterface::RemainingEnergyTrace(std::string context,
 
     NS_LOG_INFO("Remaining energy on one of sources on node " << nodeId << ": " << currentEnergy);
 
-    const Ptr<EnergySource> energySource = node->GetObject<EnergySource>();
+    const Ptr<energy::EnergySource> energySource = node->GetObject<energy::EnergySource>();
 
     NS_ASSERT(energySource);
     // Don't call GetEnergyFraction () because of recursion
@@ -1008,14 +1008,14 @@ AnimationInterface::LrWpanPhyTxBeginTrace(std::string context, Ptr<const Packet>
 
     Ptr<NetDevice> ndev = GetNetDeviceFromContext(context);
     NS_ASSERT(ndev);
-    Ptr<LrWpanNetDevice> netDevice = DynamicCast<LrWpanNetDevice>(ndev);
+    Ptr<lrwpan::LrWpanNetDevice> netDevice = DynamicCast<lrwpan::LrWpanNetDevice>(ndev);
 
     Ptr<Node> n = ndev->GetNode();
     NS_ASSERT(n);
 
     UpdatePosition(n);
 
-    LrWpanMacHeader hdr;
+    lrwpan::LrWpanMacHeader hdr;
     if (!p->PeekHeader(hdr))
     {
         NS_LOG_WARN("LrWpanMacHeader not present");
@@ -2063,7 +2063,7 @@ AnimationInterface::WriteNodeEnergies()
     for (auto i = NodeList::Begin(); i != NodeList::End(); ++i)
     {
         Ptr<Node> n = *i;
-        if (NodeList::GetNode(n->GetId())->GetObject<EnergySource>())
+        if (NodeList::GetNode(n->GetId())->GetObject<energy::EnergySource>())
         {
             UpdateNodeCounter(m_remainingEnergyCounterId, n->GetId(), 1);
         }

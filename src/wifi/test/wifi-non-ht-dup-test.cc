@@ -29,12 +29,15 @@
 #include "ns3/nist-error-rate-model.h"
 #include "ns3/node.h"
 #include "ns3/non-communicating-net-device.h"
+#include "ns3/pointer.h"
 #include "ns3/rng-seed-manager.h"
 #include "ns3/simulator.h"
 #include "ns3/spectrum-wifi-helper.h"
 #include "ns3/spectrum-wifi-phy.h"
 #include "ns3/sta-wifi-mac.h"
+#include "ns3/string.h"
 #include "ns3/test.h"
+#include "ns3/txop.h"
 #include "ns3/waveform-generator.h"
 #include "ns3/wifi-mac-header.h"
 #include "ns3/wifi-net-device.h"
@@ -870,7 +873,9 @@ TestMultipleCtsResponsesFromMuRts::DoSetup()
 
     auto apNode = CreateObject<Node>();
     auto apDev = CreateObject<WifiNetDevice>();
-    auto apMac = CreateObject<ApWifiMac>();
+    auto apMac = CreateObjectWithAttributes<ApWifiMac>(
+        "Txop",
+        PointerValue(CreateObjectWithAttributes<Txop>("AcIndex", StringValue("AC_BE_NQOS"))));
     apMac->SetAttribute("BeaconGeneration", BooleanValue(false));
     apDev->SetMac(apMac);
     m_phyAp = CreateObject<MuRtsCtsSpectrumWifiPhy>();
@@ -1046,7 +1051,7 @@ class WifiNonHtDuplicateTestSuite : public TestSuite
 };
 
 WifiNonHtDuplicateTestSuite::WifiNonHtDuplicateTestSuite()
-    : TestSuite("wifi-non-ht-dup", UNIT)
+    : TestSuite("wifi-non-ht-dup", Type::UNIT)
 {
     /**
      * Channel map:
@@ -1088,7 +1093,7 @@ WifiNonHtDuplicateTestSuite::WifiNonHtDuplicateTestSuite()
                                                    {{WIFI_STANDARD_80211a, 5180, 0},
                                                     {WIFI_STANDARD_80211n, 5200, 0},
                                                     {WIFI_STANDARD_80211ac, 5230, 0}}),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     /* same channel map and test scenario as previously but inject interference on channel 40 */
     AddTestCase(new TestNonHtDuplicatePhyReception(WIFI_STANDARD_80211ax,
                                                    5210,
@@ -1097,35 +1102,44 @@ WifiNonHtDuplicateTestSuite::WifiNonHtDuplicateTestSuite()
                                                     {WIFI_STANDARD_80211n, 5200, 0},
                                                     {WIFI_STANDARD_80211ac, 5230, 0}},
                                                    {false, true, false, false}),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     /* test PHY reception of multiple CTS responses following a MU-RTS */
     /* 4 STAs operating on 20 MHz */
-    AddTestCase(new TestMultipleCtsResponsesFromMuRts({{20}, {20}, {20}, {20}}), TestCase::QUICK);
+    AddTestCase(new TestMultipleCtsResponsesFromMuRts({{20}, {20}, {20}, {20}}),
+                TestCase::Duration::QUICK);
     /* 4 STAs operating on 40 MHz */
-    AddTestCase(new TestMultipleCtsResponsesFromMuRts({{40}, {40}, {40}, {40}}), TestCase::QUICK);
+    AddTestCase(new TestMultipleCtsResponsesFromMuRts({{40}, {40}, {40}, {40}}),
+                TestCase::Duration::QUICK);
     /* 4 STAs operating on 80 MHz */
-    AddTestCase(new TestMultipleCtsResponsesFromMuRts({{80}, {80}, {80}, {80}}), TestCase::QUICK);
+    AddTestCase(new TestMultipleCtsResponsesFromMuRts({{80}, {80}, {80}, {80}}),
+                TestCase::Duration::QUICK);
     /* 4 STAs operating on 160 MHz */
     AddTestCase(new TestMultipleCtsResponsesFromMuRts({{160}, {160}, {160}, {160}}),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     /* 4 STAs operating on different bandwidths with PPDUs sent with decreasing BW: 160, 80, 40 and
      * 20 MHz */
-    AddTestCase(new TestMultipleCtsResponsesFromMuRts({{160}, {80}, {40}, {20}}), TestCase::QUICK);
+    AddTestCase(new TestMultipleCtsResponsesFromMuRts({{160}, {80}, {40}, {20}}),
+                TestCase::Duration::QUICK);
     /* 4 STAs operating on different bandwidths with PPDUs sent with increasing BW: 20, 40, 80 and
      * 160 MHz */
-    AddTestCase(new TestMultipleCtsResponsesFromMuRts({{20}, {40}, {80}, {160}}), TestCase::QUICK);
+    AddTestCase(new TestMultipleCtsResponsesFromMuRts({{20}, {40}, {80}, {160}}),
+                TestCase::Duration::QUICK);
     /* 2 STAs operating on different bandwidths with PPDUs sent with decreasing BW but the first STA
      * does not respond */
-    AddTestCase(new TestMultipleCtsResponsesFromMuRts({{80, true}, {40, false}}), TestCase::QUICK);
+    AddTestCase(new TestMultipleCtsResponsesFromMuRts({{80, true}, {40, false}}),
+                TestCase::Duration::QUICK);
     /* 2 STAs operating on different bandwidths with PPDUs sent with decreasing BW but the second
      * STA does not respond */
-    AddTestCase(new TestMultipleCtsResponsesFromMuRts({{80, false}, {40, true}}), TestCase::QUICK);
+    AddTestCase(new TestMultipleCtsResponsesFromMuRts({{80, false}, {40, true}}),
+                TestCase::Duration::QUICK);
     /* 2 STAs operating on different bandwidths with PPDUs sent with increasing BW but the first STA
      * does not respond */
-    AddTestCase(new TestMultipleCtsResponsesFromMuRts({{40, true}, {80, false}}), TestCase::QUICK);
+    AddTestCase(new TestMultipleCtsResponsesFromMuRts({{40, true}, {80, false}}),
+                TestCase::Duration::QUICK);
     /* 2 STAs operating on different bandwidths with PPDUs sent with increasing BW but the second
      * STA does not respond */
-    AddTestCase(new TestMultipleCtsResponsesFromMuRts({{40, false}, {80, true}}), TestCase::QUICK);
+    AddTestCase(new TestMultipleCtsResponsesFromMuRts({{40, false}, {80, true}}),
+                TestCase::Duration::QUICK);
 }
 
 static WifiNonHtDuplicateTestSuite wifiNonHtDuplicateTestSuite; ///< the test suite

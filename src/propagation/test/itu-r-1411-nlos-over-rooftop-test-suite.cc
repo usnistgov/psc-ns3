@@ -144,7 +144,7 @@ class ItuR1411NlosOverRooftopPropagationLossModelTestSuite : public TestSuite
 
 ItuR1411NlosOverRooftopPropagationLossModelTestSuite::
     ItuR1411NlosOverRooftopPropagationLossModelTestSuite()
-    : TestSuite("itu-r-1411-nlos-over-rooftop", SYSTEM)
+    : TestSuite("itu-r-1411-nlos-over-rooftop", Type::SYSTEM)
 {
     LogComponentEnable("ItuR1411NlosOverRooftopPropagationLossModelTest", LOG_LEVEL_ALL);
 
@@ -158,7 +158,7 @@ ItuR1411NlosOverRooftopPropagationLossModelTestSuite::
                     LargeCity,
                     143.68,
                     "f=2114Mhz, dist=900, urban large city"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new ItuR1411NlosOverRooftopPropagationLossModelTestCase(
                     1.865e9,
                     500,
@@ -168,7 +168,7 @@ ItuR1411NlosOverRooftopPropagationLossModelTestSuite::
                     LargeCity,
                     132.84,
                     "f=2114Mhz, dist=900, urban large city"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 }
 
 /// Static variable for test initialization

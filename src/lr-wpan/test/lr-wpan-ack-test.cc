@@ -37,6 +37,7 @@
 #include <string>
 
 using namespace ns3;
+using namespace ns3::lrwpan;
 
 NS_LOG_COMPONENT_DEFINE("lr-wpan-ack-test");
 
@@ -336,19 +337,19 @@ class LrWpanAckTestSuite : public TestSuite
 };
 
 LrWpanAckTestSuite::LrWpanAckTestSuite()
-    : TestSuite("lr-wpan-ack", UNIT)
+    : TestSuite("lr-wpan-ack", Type::UNIT)
 {
     AddTestCase(new LrWpanAckTestCase("short-unicast", LrWpanAckTestCase::SHORT_ADDRESS_UNICAST),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(
         new LrWpanAckTestCase("short-multicast", LrWpanAckTestCase::SHORT_ADDRESS_MULTICAST),
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
     AddTestCase(
         new LrWpanAckTestCase("short-broadcast", LrWpanAckTestCase::SHORT_ADDRESS_BROADCAST),
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
     AddTestCase(
         new LrWpanAckTestCase("extended-unicast", LrWpanAckTestCase::EXTENDED_ADDRESS_UNICAST),
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
 }
 
 static LrWpanAckTestSuite g_lrWpanAckTestSuite; //!< Static variable for test initialization

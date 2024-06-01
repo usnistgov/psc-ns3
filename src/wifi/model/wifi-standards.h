@@ -45,7 +45,8 @@ enum WifiStandard
     WIFI_STANDARD_80211ac,
     WIFI_STANDARD_80211ad,
     WIFI_STANDARD_80211ax,
-    WIFI_STANDARD_80211be
+    WIFI_STANDARD_80211be,
+    WIFI_STANDARD_COUNT
 };
 
 /**
@@ -86,17 +87,7 @@ operator<<(std::ostream& os, WifiStandard standard)
 /**
  * \brief map a given standard configured by the user to the allowed PHY bands
  */
-const std::map<WifiStandard, std::list<WifiPhyBand>> wifiStandards = {
-    {WIFI_STANDARD_80211a, {WIFI_PHY_BAND_5GHZ}},
-    {WIFI_STANDARD_80211b, {WIFI_PHY_BAND_2_4GHZ}},
-    {WIFI_STANDARD_80211g, {WIFI_PHY_BAND_2_4GHZ}},
-    {WIFI_STANDARD_80211p, {WIFI_PHY_BAND_5GHZ}},
-    {WIFI_STANDARD_80211n, {WIFI_PHY_BAND_2_4GHZ, WIFI_PHY_BAND_5GHZ}},
-    {WIFI_STANDARD_80211ac, {WIFI_PHY_BAND_5GHZ}},
-    {WIFI_STANDARD_80211ad, {WIFI_PHY_BAND_60GHZ}},
-    {WIFI_STANDARD_80211ax, {WIFI_PHY_BAND_2_4GHZ, WIFI_PHY_BAND_5GHZ, WIFI_PHY_BAND_6GHZ}},
-    {WIFI_STANDARD_80211be, {WIFI_PHY_BAND_2_4GHZ, WIFI_PHY_BAND_5GHZ, WIFI_PHY_BAND_6GHZ}},
-};
+extern const std::map<WifiStandard, std::list<WifiPhyBand>> wifiStandards;
 
 /**
  * \ingroup wifi
@@ -179,6 +170,39 @@ GetDefaultPhyBand(WifiStandard standard)
     default:
         return WIFI_PHY_BAND_2_4GHZ;
     }
+}
+
+/**
+ * Get the TypeId name for the FrameExchangeManager corresponding to the given standard.
+ *
+ * \param standard the given standard
+ * \param qosSupported whether QoS is supported (ignored if standard is at least HT)
+ * \return the TypeId name for the FrameExchangeManager corresponding to the given standard
+ */
+inline std::string
+GetFrameExchangeManagerTypeIdName(WifiStandard standard, bool qosSupported)
+{
+    if (standard >= WIFI_STANDARD_80211be)
+    {
+        return "ns3::EhtFrameExchangeManager";
+    }
+    if (standard >= WIFI_STANDARD_80211ax)
+    {
+        return "ns3::HeFrameExchangeManager";
+    }
+    if (standard >= WIFI_STANDARD_80211ac)
+    {
+        return "ns3::VhtFrameExchangeManager";
+    }
+    if (standard >= WIFI_STANDARD_80211n)
+    {
+        return "ns3::HtFrameExchangeManager";
+    }
+    if (qosSupported)
+    {
+        return "ns3::QosFrameExchangeManager";
+    }
+    return "ns3::FrameExchangeManager";
 }
 
 } // namespace ns3

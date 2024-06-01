@@ -38,7 +38,6 @@ NS_LOG_COMPONENT_DEFINE("ThreeGppV2vChannelConditionModelsTest");
 
 /**
  * \ingroup building-test
- * \ingroup tests
  *
  * Test case for the classes ThreeGppV2vUrbanChannelConditionModel,
  * and ThreeGppV2vHighwayChannelConditionModel to test their code to
@@ -511,7 +510,6 @@ ThreeGppV2vHighwayLosNlosvChCondModelTestCase::DoRun()
 
 /**
  * \ingroup building-test
- * \ingroup tests
  *
  * Test suite for the 3GPP V2V channel condition model
  *
@@ -539,17 +537,17 @@ class ThreeGppV2vChCondModelsTestSuite : public TestSuite
 };
 
 ThreeGppV2vChCondModelsTestSuite::ThreeGppV2vChCondModelsTestSuite()
-    : TestSuite("three-gpp-v2v-channel-condition-model", SYSTEM)
+    : TestSuite("three-gpp-v2v-channel-condition-model", Type::SYSTEM)
 {
     AddTestCase(new ThreeGppV2vBuildingsChCondModelTestCase,
-                TestCase::QUICK); // test for the deterministic procedure (NLOS vs LOS/NLOSv), based
-                                  // on buildings
+                TestCase::Duration::QUICK); // test for the deterministic procedure (NLOS vs
+                                            // LOS/NLOSv), based on buildings
     AddTestCase(new ThreeGppV2vUrbanLosNlosvChCondModelTestCase,
-                TestCase::QUICK); // test for the probabilistic procedure (LOS vs NLOSv), in V2V
-                                  // urban scenario
+                TestCase::Duration::QUICK); // test for the probabilistic procedure (LOS vs
+                                            // NLOSv), in V2V urban scenario
     AddTestCase(new ThreeGppV2vHighwayLosNlosvChCondModelTestCase,
-                TestCase::QUICK); // test for the probabilistic procedure (LOS vs NLOSv), in V2V
-                                  // highway scenario
+                TestCase::Duration::QUICK); // test for the probabilistic procedure (LOS vs
+                                            // NLOSv), in V2V highway scenario
 }
 
 /// Static variable for test initialization

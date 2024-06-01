@@ -189,6 +189,13 @@ TcpCubic::IncreaseWindow(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
 {
     NS_LOG_FUNCTION(this << tcb << segmentsAcked);
 
+    if (!tcb->m_isCwndLimited)
+    {
+        NS_LOG_DEBUG("No increase because current cwnd " << tcb->m_cWnd
+                                                         << " is not limiting the flow");
+        return;
+    }
+
     if (tcb->m_cWnd < tcb->m_ssThresh)
     {
         if (m_hystart && tcb->m_lastAckedSeq > m_endSeq)
@@ -490,7 +497,6 @@ TcpCubic::CubicReset(Ptr<const TcpSocketState> tcb)
 {
     NS_LOG_FUNCTION(this << tcb);
 
-    m_lastMaxCwnd = 0;
     m_bicOriginPoint = 0;
     m_bicK = 0;
     m_ackCnt = 0;

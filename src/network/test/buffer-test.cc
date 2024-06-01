@@ -408,9 +408,9 @@ class BufferTestSuite : public TestSuite
 };
 
 BufferTestSuite::BufferTestSuite()
-    : TestSuite("buffer", UNIT)
+    : TestSuite("buffer", Type::UNIT)
 {
-    AddTestCase(new BufferTest, TestCase::QUICK);
+    AddTestCase(new BufferTest, TestCase::Duration::QUICK);
 }
 
 static BufferTestSuite g_bufferTestSuite; //!< Static variable for test initialization

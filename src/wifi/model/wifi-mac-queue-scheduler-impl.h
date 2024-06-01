@@ -26,9 +26,11 @@
 
 #include <algorithm>
 #include <functional>
+#include <iterator>
 #include <list>
 #include <map>
 #include <numeric>
+#include <sstream>
 #include <unordered_map>
 #include <vector>
 
@@ -77,7 +79,9 @@ class WifiMacQueueSchedulerImpl : public WifiMacQueueScheduler
                                                 std::optional<uint8_t> linkId,
                                                 const WifiContainerQueueId& prevQueueId) final;
     /** \copydoc ns3::WifiMacQueueScheduler::GetLinkIds */
-    std::list<uint8_t> GetLinkIds(AcIndex ac, Ptr<const WifiMpdu> mpdu) final;
+    std::list<uint8_t> GetLinkIds(AcIndex ac,
+                                  Ptr<const WifiMpdu> mpdu,
+                                  const std::list<WifiQueueBlockedReason>& ignoredReasons) final;
     /** \copydoc ns3::WifiMacQueueScheduler::BlockQueues */
     void BlockQueues(WifiQueueBlockedReason reason,
                      AcIndex ac,
@@ -444,14 +448,23 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::SetPriority(AcIndex ac,
 
 template <class Priority, class Compare>
 std::list<uint8_t>
-WifiMacQueueSchedulerImpl<Priority, Compare>::GetLinkIds(AcIndex ac, Ptr<const WifiMpdu> mpdu)
+WifiMacQueueSchedulerImpl<Priority, Compare>::GetLinkIds(
+    AcIndex ac,
+    Ptr<const WifiMpdu> mpdu,
+    const std::list<WifiQueueBlockedReason>& ignoredReasons)
 {
     auto queueInfoIt = InitQueueInfo(ac, mpdu);
     std::list<uint8_t> linkIds;
 
     // include only links that are not blocked in the returned list
-    for (const auto& [linkId, mask] : queueInfoIt->second.linkIds)
+    for (auto [linkId, mask] : queueInfoIt->second.linkIds)
     {
+        // reset the bits of the mask corresponding to the reasons to ignore
+        for (const auto reason : ignoredReasons)
+        {
+            mask.reset(static_cast<std::size_t>(reason));
+        }
+
         if (mask.none())
         {
             linkIds.emplace_back(linkId);
@@ -473,7 +486,12 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::DoBlockQueues(
     const std::set<uint8_t>& tids,
     const std::set<uint8_t>& linkIds)
 {
-    NS_LOG_FUNCTION(this << block << reason << ac << rxAddress << txAddress);
+    std::stringstream ss;
+    if (g_log.IsEnabled(ns3::LOG_FUNCTION))
+    {
+        std::copy(linkIds.cbegin(), linkIds.cend(), std::ostream_iterator<uint16_t>(ss, " "));
+    }
+    NS_LOG_FUNCTION(this << block << reason << ac << rxAddress << txAddress << ss.str());
     std::list<WifiMacHeader> headers;
 
     for (const auto queueType : types)

@@ -45,7 +45,9 @@
 #include "ns3/simulator.h"
 #include "ns3/string.h"
 
+#include <iterator>
 #include <numeric>
+#include <sstream>
 
 namespace ns3
 {
@@ -207,6 +209,12 @@ StaWifiMac::~StaWifiMac()
     NS_LOG_FUNCTION(this);
 }
 
+void
+StaWifiMac::DoCompleteConfig()
+{
+    NS_LOG_FUNCTION(this);
+}
+
 StaWifiMac::StaLinkEntity::~StaLinkEntity()
 {
     NS_LOG_FUNCTION_NOARGS();
@@ -235,7 +243,9 @@ StaWifiMac::AssignStreams(int64_t stream)
 {
     NS_LOG_FUNCTION(this << stream);
     m_probeDelay->SetStream(stream);
-    return 1;
+    auto currentStream = stream + 1;
+    currentStream += WifiMac::AssignStreams(currentStream);
+    return (currentStream - stream);
 }
 
 void
@@ -309,13 +319,18 @@ StaWifiMac::GetCurrentChannel(uint8_t linkId) const
 void
 StaWifiMac::NotifyEmlsrModeChanged(const std::set<uint8_t>& linkIds)
 {
-    NS_LOG_FUNCTION(this << linkIds.size());
+    std::stringstream ss;
+    if (g_log.IsEnabled(ns3::LOG_FUNCTION))
+    {
+        std::copy(linkIds.cbegin(), linkIds.cend(), std::ostream_iterator<uint16_t>(ss, " "));
+    }
+    NS_LOG_FUNCTION(this << ss.str());
 
     for (const auto& [linkId, lnk] : GetLinks())
     {
         auto& link = GetStaLink(lnk);
 
-        if (linkIds.count(linkId) > 0)
+        if (linkIds.contains(linkId))
         {
             // EMLSR mode enabled
             link.emlsrEnabled = true;
@@ -356,7 +371,7 @@ StaWifiMac::SendProbeRequest(uint8_t linkId)
     auto supportedRates = GetSupportedRates(linkId);
     probe.Get<SupportedRates>() = supportedRates.rates;
     probe.Get<ExtendedSupportedRatesIE>() = supportedRates.extendedRates;
-    if (GetHtSupported())
+    if (GetHtSupported(linkId))
     {
         probe.Get<ExtendedCapabilities>() = GetExtendedCapabilities();
         probe.Get<HtCapabilities>() = GetHtCapabilities(linkId);
@@ -368,6 +383,10 @@ StaWifiMac::SendProbeRequest(uint8_t linkId)
     if (GetHeSupported())
     {
         probe.Get<HeCapabilities>() = GetHeCapabilities(linkId);
+        if (Is6GhzBand(linkId))
+        {
+            probe.Get<He6GhzBandCapabilities>() = GetHe6GhzBandCapabilities(linkId);
+        }
     }
     if (GetEhtSupported())
     {
@@ -418,7 +437,7 @@ StaWifiMac::GetAssociationRequest(bool isReassoc, uint8_t linkId) const
         frame.template Get<ExtendedSupportedRatesIE>() = supportedRates.extendedRates;
         frame.Capabilities() = GetCapabilities(linkId);
         frame.SetListenInterval(0);
-        if (GetHtSupported())
+        if (GetHtSupported(linkId))
         {
             frame.template Get<ExtendedCapabilities>() = GetExtendedCapabilities();
             frame.template Get<HtCapabilities>() = GetHtCapabilities(linkId);
@@ -430,6 +449,10 @@ StaWifiMac::GetAssociationRequest(bool isReassoc, uint8_t linkId) const
         if (GetHeSupported())
         {
             frame.template Get<HeCapabilities>() = GetHeCapabilities(linkId);
+            if (Is6GhzBand(linkId))
+            {
+                frame.template Get<He6GhzBandCapabilities>() = GetHe6GhzBandCapabilities(linkId);
+            }
         }
         if (GetEhtSupported())
         {
@@ -484,7 +507,7 @@ StaWifiMac::GetMultiLinkElement(bool isReassoc, uint8_t linkId) const
     EnumValue<WifiTidToLinkMappingNegSupport> negSupport;
     ehtConfiguration->GetAttributeFailSafe("TidToLinkMappingNegSupport", negSupport);
 
-    mldCapabilities->tidToLinkMappingSupport = negSupport.Get();
+    mldCapabilities->tidToLinkMappingSupport = static_cast<uint8_t>(negSupport.Get());
     mldCapabilities->freqSepForStrApMld = 0; // not supported yet
     mldCapabilities->aarSupport = 0;         // not supported yet
 
@@ -522,7 +545,7 @@ StaWifiMac::GetMultiLinkElement(bool isReassoc, uint8_t linkId) const
 }
 
 std::vector<TidToLinkMapping>
-StaWifiMac::GetTidToLinkMappingElements(uint8_t apNegSupport)
+StaWifiMac::GetTidToLinkMappingElements(WifiTidToLinkMappingNegSupport apNegSupport)
 {
     NS_LOG_FUNCTION(this << apNegSupport);
 
@@ -532,7 +555,7 @@ StaWifiMac::GetTidToLinkMappingElements(uint8_t apNegSupport)
     EnumValue<WifiTidToLinkMappingNegSupport> negSupport;
     ehtConfig->GetAttributeFailSafe("TidToLinkMappingNegSupport", negSupport);
 
-    NS_ABORT_MSG_IF(negSupport.Get() == 0,
+    NS_ABORT_MSG_IF(negSupport.Get() == WifiTidToLinkMappingNegSupport::NOT_SUPPORTED,
                     "Cannot request TID-to-Link Mapping if negotiation is not supported");
 
     // store the mappings, so that we can enforce them when the AP MLD accepts them
@@ -542,10 +565,11 @@ StaWifiMac::GetTidToLinkMappingElements(uint8_t apNegSupport)
     bool mappingValidForNegType1 = TidToLinkMappingValidForNegType1(m_dlTidLinkMappingInAssocReq,
                                                                     m_ulTidLinkMappingInAssocReq);
     NS_ABORT_MSG_IF(
-        negSupport.Get() == 1 && !mappingValidForNegType1,
+        negSupport.Get() == WifiTidToLinkMappingNegSupport::SAME_LINK_SET &&
+            !mappingValidForNegType1,
         "Mapping TIDs to distinct link sets is incompatible with negotiation support of 1");
 
-    if (apNegSupport == 1 && !mappingValidForNegType1)
+    if (apNegSupport == WifiTidToLinkMappingNegSupport::SAME_LINK_SET && !mappingValidForNegType1)
     {
         // If the TID-to-link Mapping Negotiation Support subfield value received from a peer
         // MLD is equal to 1, the MLD that initiates a TID-to-link mapping negotiation with the
@@ -635,10 +659,12 @@ StaWifiMac::SendAssociationRequest(bool isReassoc)
         };
         std::visit(addMle, frame);
 
-        uint8_t negSupport;
+        WifiTidToLinkMappingNegSupport negSupport;
         if (const auto& mldCapabilities =
                 GetWifiRemoteStationManager(linkId)->GetStationMldCapabilities(*link.bssid);
-            mldCapabilities && (negSupport = mldCapabilities->get().tidToLinkMappingSupport) > 0)
+            mldCapabilities && (negSupport = static_cast<WifiTidToLinkMappingNegSupport>(
+                                    mldCapabilities->get().tidToLinkMappingSupport)) >
+                                   WifiTidToLinkMappingNegSupport::NOT_SUPPORTED)
         {
             auto addTlm = [&](auto&& frame) {
                 frame.template Get<TidToLinkMapping>() = GetTidToLinkMappingElements(negSupport);
@@ -676,7 +702,7 @@ StaWifiMac::SendAssociationRequest(bool isReassoc)
         GetVOQueue()->Queue(packet, hdr);
     }
 
-    if (m_assocRequestEvent.IsRunning())
+    if (m_assocRequestEvent.IsPending())
     {
         m_assocRequestEvent.Cancel();
     }
@@ -711,7 +737,6 @@ StaWifiMac::TryToEnsureAssociated()
            wait until either assoc-request-timeout or until
            we get an association response.
          */
-        break;
     case REFUSED:
         /* we have sent an association request and received a negative
            association response. We wait until someone restarts an
@@ -837,7 +862,7 @@ StaWifiMac::MissedBeacons()
 
     if (m_beaconWatchdogEnd > Simulator::Now())
     {
-        if (m_beaconWatchdog.IsRunning())
+        if (m_beaconWatchdog.IsPending())
         {
             m_beaconWatchdog.Cancel();
         }
@@ -1055,14 +1080,18 @@ StaWifiMac::BlockTxOnLink(uint8_t linkId, WifiQueueBlockedReason reason)
 }
 
 void
-StaWifiMac::UnblockTxOnLink(uint8_t linkId, WifiQueueBlockedReason reason)
+StaWifiMac::UnblockTxOnLink(std::set<uint8_t> linkIds, WifiQueueBlockedReason reason)
 {
-    NS_LOG_FUNCTION(this << linkId << reason);
+    std::stringstream ss;
+    std::copy(linkIds.cbegin(), linkIds.cend(), std::ostream_iterator<uint16_t>(ss, " "));
+    NS_LOG_FUNCTION(this << ss.str() << reason);
 
-    auto bssid = GetBssid(linkId);
-    auto apAddress = GetWifiRemoteStationManager(linkId)->GetMldAddress(bssid).value_or(bssid);
+    const auto linkId = *linkIds.cbegin();
+    const auto bssid = GetBssid(linkId);
+    const auto apAddress =
+        GetWifiRemoteStationManager(linkId)->GetMldAddress(bssid).value_or(bssid);
 
-    UnblockUnicastTxOnLinks(reason, apAddress, {linkId});
+    UnblockUnicastTxOnLinks(reason, apAddress, linkIds);
     // the only type of broadcast frames that a non-AP STA can send are management frames
     for (const auto& [acIndex, ac] : wifiAcList)
     {
@@ -1072,7 +1101,7 @@ StaWifiMac::UnblockTxOnLink(uint8_t linkId, WifiQueueBlockedReason reason)
                                               Mac48Address::GetBroadcast(),
                                               GetFrameExchangeManager(linkId)->GetAddress(),
                                               {},
-                                              {linkId});
+                                              linkIds);
     }
 }
 
@@ -1116,7 +1145,7 @@ StaWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
         {
             apAddresses.insert(GetBssid(id));
         }
-        if (apAddresses.count(mpdu->GetHeader().GetAddr2()) == 0)
+        if (!apAddresses.contains(mpdu->GetHeader().GetAddr2()))
         {
             NS_LOG_LOGIC("Received data frame not from the BSS we are associated with: ignore");
             NotifyRxDrop(packet);
@@ -1132,7 +1161,7 @@ StaWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
         {
             if (hdr->IsQosAmsdu())
             {
-                NS_ASSERT(apAddresses.count(mpdu->GetHeader().GetAddr3()) != 0);
+                NS_ASSERT(apAddresses.contains(mpdu->GetHeader().GetAddr3()));
                 DeaggregateAmsduAndForward(mpdu);
                 packet = nullptr;
             }
@@ -1295,7 +1324,7 @@ StaWifiMac::ReceiveAssocResp(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
     std::optional<Mac48Address> apMldAddress;
     MgtAssocResponseHeader assocResp;
     mpdu->GetPacket()->PeekHeader(assocResp);
-    if (m_assocRequestEvent.IsRunning())
+    if (m_assocRequestEvent.IsPending())
     {
         m_assocRequestEvent.Cancel();
     }
@@ -1316,7 +1345,9 @@ StaWifiMac::ReceiveAssocResp(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
 
             if (const auto& mldCapabilities =
                     GetWifiRemoteStationManager(linkId)->GetStationMldCapabilities(hdr.GetAddr3());
-                mldCapabilities && mldCapabilities->get().tidToLinkMappingSupport > 0)
+                mldCapabilities && static_cast<WifiTidToLinkMappingNegSupport>(
+                                       mldCapabilities->get().tidToLinkMappingSupport) >
+                                       WifiTidToLinkMappingNegSupport::NOT_SUPPORTED)
             {
                 // the AP MLD supports TID-to-Link Mapping negotiation, hence we included
                 // TID-to-Link Mapping element(s) in the Association Request.
@@ -1456,7 +1487,7 @@ StaWifiMac::ReceiveAssocResp(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
                                             Txop::DIDNT_HAVE_FRAMES_TO_TRANSMIT,
                                             Txop::CHECK_MEDIUM_BUSY);
             }
-            for (const auto [acIndex, ac] : wifiAcList)
+            for (const auto& [acIndex, ac] : wifiAcList)
             {
                 if (const auto edca = GetQosTxop(acIndex))
                 {
@@ -1682,26 +1713,22 @@ StaWifiMac::UpdateApInfo(const MgtFrameType& frame,
         }
         GetWifiRemoteStationManager(linkId)->SetQosSupport(apAddr, qosSupported);
 
-        if (!GetHtSupported())
+        if (GetHtSupported(linkId))
         {
-            return;
-        }
-        /* HT station */
-        if (const auto& htCapabilities = frame.template Get<HtCapabilities>();
-            htCapabilities.has_value())
-        {
-            if (!htCapabilities->IsSupportedMcs(0))
-            {
-                GetWifiRemoteStationManager(linkId)->RemoveAllSupportedMcs(apAddr);
-            }
-            else
+            /* HT station */
+            if (const auto& htCapabilities = frame.template Get<HtCapabilities>();
+                htCapabilities.has_value())
             {
                 GetWifiRemoteStationManager(linkId)->AddStationHtCapabilities(apAddr,
                                                                               *htCapabilities);
             }
+            else
+            {
+                GetWifiRemoteStationManager(linkId)->RemoveAllSupportedMcs(apAddr);
+            }
+            // TODO: process ExtendedCapabilities
+            // ExtendedCapabilities extendedCapabilities = frame.GetExtendedCapabilities ();
         }
-        // TODO: process ExtendedCapabilities
-        // ExtendedCapabilities extendedCapabilities = frame.GetExtendedCapabilities ();
 
         // we do not return if VHT is not supported because HE STAs operating in
         // the 2.4 GHz band do not support VHT
@@ -1745,8 +1772,9 @@ StaWifiMac::UpdateApInfo(const MgtFrameType& frame,
             if (const auto& heOperation = frame.template Get<HeOperation>();
                 heOperation.has_value())
             {
-                GetHeConfiguration()->SetAttribute("BssColor",
-                                                   UintegerValue(heOperation->GetBssColor()));
+                GetHeConfiguration()->SetAttribute(
+                    "BssColor",
+                    UintegerValue(heOperation->m_bssColorInfo.m_bssColor));
             }
         }
 
@@ -1777,6 +1805,16 @@ StaWifiMac::UpdateApInfo(const MgtFrameType& frame,
                                  muEdcaParameters->GetMuAifsn(AC_VO),
                                  muEdcaParameters->GetMuEdcaTimer(AC_VO)},
                                 linkId);
+        }
+
+        if (Is6GhzBand(linkId))
+        {
+            if (const auto& he6GhzCapabilities = frame.template Get<He6GhzBandCapabilities>())
+            {
+                GetWifiRemoteStationManager(linkId)->AddStationHe6GhzCapabilities(
+                    apAddr,
+                    *he6GhzCapabilities);
+            }
         }
 
         if (!GetEhtSupported())
@@ -1923,7 +1961,7 @@ StaWifiMac::GetSupportedRates(uint8_t linkId) const
         NS_LOG_DEBUG("Adding supported rate of " << modeDataRate);
         rates.AddSupportedRate(modeDataRate);
     }
-    if (GetHtSupported())
+    if (GetHtSupported(linkId))
     {
         for (const auto& selector : GetWifiPhy(linkId)->GetBssMembershipSelectorList())
         {

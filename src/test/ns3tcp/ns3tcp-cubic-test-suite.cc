@@ -79,9 +79,7 @@ static constexpr bool WRITE_GNUPLOT = false; //!< Set to true to write out gnupl
 
 /**
  * \ingroup system-tests-tcp
- */
-
-/**
+ *
  * Add sample trace values to data structures
  * \param gnuplotTimeSeries Gnuplot data structure
  * \param timeSeries time series of cwnd changes
@@ -101,6 +99,7 @@ CubicCwndTracer(Gnuplot2dDataset* gnuplotTimeSeries,
 }
 
 /**
+ * \ingroup system-tests-tcp
  * Test Cubic response
  */
 class Ns3TcpCubicTestCase : public TestCase
@@ -364,7 +363,7 @@ Ns3TcpCubicTestCase::DoRun()
                               true,
                               "cwnd outside range");
         // Time just before a reduction does not have much variation
-        NS_TEST_ASSERT_MSG_EQ(CheckValues(Seconds(9), Seconds(9.7), 84, 89),
+        NS_TEST_ASSERT_MSG_EQ(CheckValues(Seconds(9), Seconds(9.6), 84, 89),
                               true,
                               "cwnd outside range");
     }
@@ -381,20 +380,20 @@ Ns3TcpCubicTestCase::DoRun()
     }
     else if (m_prefix == "ns3-tcp-cubic-no-friendly")
     {
-        // Between time 12 and 16, cwnd should be fairly constant
+        // Between time 11 and 15, cwnd should be fairly constant
         // because without TCP friendliness, Cubic does not respond quickly
-        NS_TEST_ASSERT_MSG_EQ(CheckValues(Seconds(12), Seconds(16), 107, 123),
+        NS_TEST_ASSERT_MSG_EQ(CheckValues(Seconds(11), Seconds(15), 107, 123),
                               true,
                               "cwnd outside range");
-        // After time 19.5, cwnd should have grown much higher
-        NS_TEST_ASSERT_MSG_EQ(CheckValues(Seconds(19.5), Seconds(20), 180, 210),
+        // After time 17.5, cwnd should have grown much higher
+        NS_TEST_ASSERT_MSG_EQ(CheckValues(Seconds(17.5), Seconds(18.5), 170, 215),
                               true,
                               "cwnd outside range");
     }
     else if (m_prefix == "ns3-tcp-cubic-friendly")
     {
         // In contrast to previous case, cwnd should grow above 150 much sooner
-        NS_TEST_ASSERT_MSG_EQ(CheckValues(Seconds(12), Seconds(14), 150, 210),
+        NS_TEST_ASSERT_MSG_EQ(CheckValues(Seconds(13), Seconds(15), 150, 210),
                               true,
                               "cwnd outside range");
     }
@@ -403,7 +402,7 @@ Ns3TcpCubicTestCase::DoRun()
 }
 
 /**
- * \ingroup tcp-cubic-tests
+ * \ingroup system-tests-tcp
  * TestSuite for module tcp-cubic
  */
 class Ns3TcpCubicTestSuite : public TestSuite
@@ -413,7 +412,7 @@ class Ns3TcpCubicTestSuite : public TestSuite
 };
 
 Ns3TcpCubicTestSuite::Ns3TcpCubicTestSuite()
-    : TestSuite("ns3-tcp-cubic", UNIT)
+    : TestSuite("ns3-tcp-cubic", Type::UNIT)
 {
     // Test Cubic with no fast convergence or TCP friendliness enabled
     // This results in a cwnd plot that has only the concave portion of
@@ -424,7 +423,7 @@ Ns3TcpCubicTestSuite::Ns3TcpCubicTestSuite()
                                         false,
                                         MilliSeconds(5),
                                         false),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     // Test Cubic with fast convergence but no TCP friendliness enabled
     // This results in a cwnd plot that has concave and convex regions, as
@@ -435,7 +434,7 @@ Ns3TcpCubicTestSuite::Ns3TcpCubicTestSuite()
                                         false,
                                         MilliSeconds(5),
                                         false),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     // Test Cubic with fast convergence but no TCP friendliness enabled
     // with a higher RTT (20ms) and a step change in capacity at time 10s.
@@ -446,7 +445,7 @@ Ns3TcpCubicTestSuite::Ns3TcpCubicTestSuite()
                                         false,
                                         MilliSeconds(20),
                                         true),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     // Test Cubic with fast convergence but with TCP friendliness enabled
     // with a higher RTT (20ms) and a step change in capacity at time 10s.
@@ -457,11 +456,10 @@ Ns3TcpCubicTestSuite::Ns3TcpCubicTestSuite()
                                         true,
                                         MilliSeconds(20),
                                         true),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 }
 
 /**
- * \ingroup tcp-cubic-tests
  * Static variable for test initialization
  */
 static Ns3TcpCubicTestSuite ns3TcpCubicTestSuite;

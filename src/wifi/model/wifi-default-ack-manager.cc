@@ -111,13 +111,10 @@ WifiDefaultAckManager::GetMaxDistFromStartingSeq(Ptr<const WifiMpdu> mpdu,
     NS_ABORT_MSG_IF(maxDistFromStartingSeq >= SEQNO_SPACE_HALF_SIZE,
                     "The given QoS data frame is too old");
 
-    const WifiTxParameters::PsduInfo* psduInfo = txParams.GetPsduInfo(receiver);
+    const auto* psduInfo = txParams.GetPsduInfo(receiver);
 
-    if (!psduInfo || psduInfo->seqNumbers.find(tid) == psduInfo->seqNumbers.end())
-    {
-        // there are no aggregated MPDUs (so far)
-        return maxDistFromStartingSeq;
-    }
+    NS_ASSERT_MSG(psduInfo && psduInfo->seqNumbers.contains(tid),
+                  "There must be at least an MPDU with tid " << +tid);
 
     for (const auto& seqNumber : psduInfo->seqNumbers.at(tid))
     {
@@ -193,7 +190,7 @@ WifiDefaultAckManager::ExistInflightOnSameLink(Ptr<const WifiMpdu> mpdu) const
                         "While searching for given MPDU ("
                             << *mpdu << "), found first another one (" << *item
                             << ") with higher sequence number");
-        if (auto linkIds = item->GetInFlightLinkIds(); linkIds.count(m_linkId) > 0)
+        if (auto linkIds = item->GetInFlightLinkIds(); linkIds.contains(m_linkId))
         {
             NS_LOG_DEBUG("Found MPDU inflight on the same link");
             return true;
@@ -280,7 +277,8 @@ WifiDefaultAckManager::TryAddMpdu(Ptr<const WifiMpdu> mpdu, const WifiTxParamete
 
     if (receiver.IsGroup())
     {
-        NS_ABORT_MSG_IF(txParams.GetSize(receiver) > 0, "Unicast frames only can be aggregated");
+        NS_ABORT_MSG_IF(!txParams.LastAddedIsFirstMpdu(receiver),
+                        "Unicast frames only can be aggregated");
         auto acknowledgment = std::make_unique<WifiNoAck>();
         if (hdr.IsQosData())
         {
@@ -327,7 +325,8 @@ WifiDefaultAckManager::TryAddMpdu(Ptr<const WifiMpdu> mpdu, const WifiTxParamete
 
     // we get here if a response is needed
     uint8_t tid = GetTid(mpdu->GetPacket(), hdr);
-    if (!hdr.IsBlockAckReq() && txParams.GetSize(receiver) == 0 && !ExistInflightOnSameLink(mpdu))
+    if (!hdr.IsBlockAckReq() && txParams.LastAddedIsFirstMpdu(receiver) &&
+        !ExistInflightOnSameLink(mpdu))
     {
         NS_LOG_DEBUG("Sending a single MPDU, no previous frame to ack: request Normal Ack");
         auto acknowledgment = std::make_unique<WifiNormalAck>();
@@ -338,7 +337,7 @@ WifiDefaultAckManager::TryAddMpdu(Ptr<const WifiMpdu> mpdu, const WifiTxParamete
     }
 
     // we get here if multiple MPDUs are being/have been sent
-    if (!hdr.IsBlockAckReq() && (txParams.GetSize(receiver) == 0 || m_useExplicitBar))
+    if (!hdr.IsBlockAckReq() && (txParams.LastAddedIsFirstMpdu(receiver) || m_useExplicitBar))
     {
         // in case of single MPDU, there are previous unacknowledged frames, thus
         // we cannot use Implicit Block Ack Request policy, otherwise we get a
@@ -385,8 +384,6 @@ WifiDefaultAckManager::GetAckInfoIfBarBaSequence(Ptr<const WifiMpdu> mpdu,
     const WifiMacHeader& hdr = mpdu->GetHeader();
     Mac48Address receiver = hdr.GetAddr1();
 
-    const WifiTxParameters::PsduInfo* psduInfo = txParams.GetPsduInfo(receiver);
-
     NS_ABORT_MSG_IF(!hdr.IsQosData(),
                     "QoS data frames only can be aggregated when transmitting a "
                     "DL MU PPDU acknowledged via a sequence of BAR and BA frames");
@@ -402,15 +399,13 @@ WifiDefaultAckManager::GetAckInfoIfBarBaSequence(Ptr<const WifiMpdu> mpdu,
         acknowledgment = static_cast<WifiDlMuBarBaSequence*>(txParams.m_acknowledgment.get());
     }
 
-    if (psduInfo)
+    if (!txParams.LastAddedIsFirstMpdu(receiver))
     {
         // an MPDU addressed to the same receiver has been already added
         NS_ASSERT(acknowledgment);
 
-        if ((acknowledgment->stationsSendBlockAckReqTo.find(receiver) !=
-             acknowledgment->stationsSendBlockAckReqTo.end()) ||
-            (acknowledgment->stationsReplyingWithBlockAck.find(receiver) !=
-             acknowledgment->stationsReplyingWithBlockAck.end()))
+        if (acknowledgment->stationsSendBlockAckReqTo.contains(receiver) ||
+            acknowledgment->stationsReplyingWithBlockAck.contains(receiver))
         {
             // the receiver either is already listed among the stations that will
             // receive a BlockAckReq frame or is the station that will immediately
@@ -510,8 +505,6 @@ WifiDefaultAckManager::GetAckInfoIfTfMuBar(Ptr<const WifiMpdu> mpdu,
     const WifiMacHeader& hdr = mpdu->GetHeader();
     Mac48Address receiver = hdr.GetAddr1();
 
-    const WifiTxParameters::PsduInfo* psduInfo = txParams.GetPsduInfo(receiver);
-
     NS_ASSERT(!txParams.m_acknowledgment ||
               txParams.m_acknowledgment->method == WifiAcknowledgment::DL_MU_TF_MU_BAR);
 
@@ -521,7 +514,7 @@ WifiDefaultAckManager::GetAckInfoIfTfMuBar(Ptr<const WifiMpdu> mpdu,
         acknowledgment = static_cast<WifiDlMuTfMuBar*>(txParams.m_acknowledgment.get());
     }
 
-    if (!psduInfo)
+    if (txParams.LastAddedIsFirstMpdu(receiver))
     {
         // we get here if this is the first MPDU for this receiver.
         Ptr<ApWifiMac> apMac = DynamicCast<ApWifiMac>(m_mac);
@@ -600,8 +593,6 @@ WifiDefaultAckManager::GetAckInfoIfAggregatedMuBar(Ptr<const WifiMpdu> mpdu,
     const WifiMacHeader& hdr = mpdu->GetHeader();
     Mac48Address receiver = hdr.GetAddr1();
 
-    const WifiTxParameters::PsduInfo* psduInfo = txParams.GetPsduInfo(receiver);
-
     NS_ASSERT(!txParams.m_acknowledgment ||
               txParams.m_acknowledgment->method == WifiAcknowledgment::DL_MU_AGGREGATE_TF);
 
@@ -611,7 +602,7 @@ WifiDefaultAckManager::GetAckInfoIfAggregatedMuBar(Ptr<const WifiMpdu> mpdu,
         acknowledgment = static_cast<WifiDlMuAggregateTf*>(txParams.m_acknowledgment.get());
     }
 
-    if (!psduInfo)
+    if (txParams.LastAddedIsFirstMpdu(receiver))
     {
         // we get here if this is the first MPDU for this receiver.
         Ptr<ApWifiMac> apMac = DynamicCast<ApWifiMac>(m_mac);
@@ -709,8 +700,9 @@ WifiDefaultAckManager::TryUlMuTransmission(Ptr<const WifiMpdu> mpdu,
             }
             NS_ABORT_MSG_IF(aid12 == 0 || aid12 > 2007, "Allocation of RA-RUs is not supported");
 
-            NS_ASSERT(apMac->GetStaList(m_linkId).find(aid12) != apMac->GetStaList(m_linkId).end());
-            Mac48Address staAddress = apMac->GetStaList(m_linkId).find(aid12)->second;
+            const auto it = apMac->GetStaList(m_linkId).find(aid12);
+            NS_ASSERT(it != apMac->GetStaList(m_linkId).end());
+            const auto staAddress = it->second;
 
             // find a TID for which a BA agreement exists with the given originator
             uint8_t tid = 0;

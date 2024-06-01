@@ -261,11 +261,11 @@ class BasicDataCalculatorsTestSuite : public TestSuite
 };
 
 BasicDataCalculatorsTestSuite::BasicDataCalculatorsTestSuite()
-    : TestSuite("basic-data-calculators", UNIT)
+    : TestSuite("basic-data-calculators", Type::UNIT)
 {
-    AddTestCase(new OneIntegerTestCase, TestCase::QUICK);
-    AddTestCase(new FiveIntegersTestCase, TestCase::QUICK);
-    AddTestCase(new FiveDoublesTestCase, TestCase::QUICK);
+    AddTestCase(new OneIntegerTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new FiveIntegersTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new FiveDoublesTestCase, TestCase::Duration::QUICK);
 }
 
 /// Static variable for test initialization

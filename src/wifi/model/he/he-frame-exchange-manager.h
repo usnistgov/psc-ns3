@@ -79,7 +79,8 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
     void SetWifiMac(const Ptr<WifiMac> mac) override;
     void CalculateAcknowledgmentTime(WifiAcknowledgment* acknowledgment) const override;
     void CalculateProtectionTime(WifiProtection* protection) const override;
-    void SetTxopHolder(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) override;
+    std::optional<Mac48Address> FindTxopHolder(const WifiMacHeader& hdr,
+                                               const WifiTxVector& txVector) override;
     bool VirtualCsMediumIdle() const override;
 
     /**
@@ -219,9 +220,9 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
      * \param trigger the MU-RTS Trigger Frame header
      * \param muRtsSnr the SNR of the MU-RTS in linear scale
      */
-    void SendCtsAfterMuRts(const WifiMacHeader& muRtsHdr,
-                           const CtrlTriggerHeader& trigger,
-                           double muRtsSnr);
+    virtual void SendCtsAfterMuRts(const WifiMacHeader& muRtsHdr,
+                                   const CtrlTriggerHeader& trigger,
+                                   double muRtsSnr);
 
     /**
      * \return the mode used to transmit a CTS after an MU-RTS.

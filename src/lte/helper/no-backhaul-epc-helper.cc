@@ -105,7 +105,7 @@ NoBackhaulEpcHelper::NoBackhaulEpcHelper()
     NetDeviceContainer tunDeviceContainer;
     tunDeviceContainer.Add(m_tunDevice);
     // the TUN device is on the same subnet as the UEs, so when a packet
-    // addressed to an UE arrives at the intenet to the WAN interface of
+    // addressed to an UE arrives at the internet to the WAN interface of
     // the PGW it will be forwarded to the TUN device.
     Ipv4InterfaceContainer tunDeviceIpv4IfContainer = AssignUeIpv4Address(tunDeviceContainer);
 
@@ -608,6 +608,20 @@ NoBackhaulEpcHelper::AssignStreams(int64_t stream)
     nc.Add(m_mme);
     currentStream += internet.AssignStreams(nc, currentStream);
     return (currentStream - stream);
+}
+
+void
+NoBackhaulEpcHelper::AddRemoteUe(uint64_t relayImsi, Ipv4Address ueAddr)
+{
+    NS_LOG_FUNCTION(this << relayImsi << ueAddr);
+    m_pgwApp->AddRemoteUe(relayImsi, ueAddr);
+}
+
+void
+NoBackhaulEpcHelper::RemoveRemoteUe(uint64_t relayImsi, Ipv4Address ueAddr)
+{
+    NS_LOG_FUNCTION(this << relayImsi << ueAddr);
+    m_pgwApp->RemoveRemoteUe(relayImsi, ueAddr);
 }
 
 } // namespace ns3

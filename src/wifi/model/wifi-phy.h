@@ -30,6 +30,18 @@
 
 #include <limits>
 
+#define WIFI_PHY_NS_LOG_APPEND_CONTEXT(phy)                                                        \
+    {                                                                                              \
+        if (DynamicCast<const WifiPhy>(phy))                                                       \
+        {                                                                                          \
+            std::clog << "[index=" << +phy->GetPhyId() << "][channel="                             \
+                      << (phy->GetOperatingChannel().IsSet()                                       \
+                              ? std::to_string(+phy->GetOperatingChannel().GetNumber())            \
+                              : "UNKNOWN")                                                         \
+                      << "][band=" << phy->GetPhyBand() << "] ";                                   \
+        }                                                                                          \
+    }
+
 namespace ns3
 {
 
@@ -596,11 +608,25 @@ class WifiPhy : public Object
      * Public method used to fire a PhyRxDrop trace.
      * Implemented for encapsulation purposes.
      *
+     * \note This method is called also by NotifyRxPpduDrop and is left
+     * in the public API for backward compatibility reasons.  Do not
+     * call both this method and the newer NotifyRxPpduDrop().  Instead,
+     * call NotifyRxPpduDrop() and it will call this method also.
+     *
      * \param psdu the PSDU being transmitted
      * \param reason the reason the packet was dropped
      */
     void NotifyRxDrop(Ptr<const WifiPsdu> psdu, WifiPhyRxfailureReason reason);
 
+    /**
+     * Public method used to fire a PhyRxPpduDrop trace.
+     * Implemented for encapsulation purposes.  This method also
+     * calls the PhyRxDrop trace.
+     *
+     * \param ppdu the PSDU being transmitted
+     * \param reason the reason the packet was dropped
+     */
+    void NotifyRxPpduDrop(Ptr<const WifiPpdu> ppdu, WifiPhyRxfailureReason reason);
     /**
      * Public method used to fire a MonitorSniffer trace for a wifi PSDU being received.
      * Implemented for encapsulation purposes.
@@ -730,6 +756,15 @@ class WifiPhy : public Object
      * \param psduDuration the duration of the PSDU
      */
     typedef void (*PhyRxPayloadBeginTracedCallback)(WifiTxVector txVector, Time psduDuration);
+
+    /**
+     * TracedCallback signature for start of PSDU reception events.
+     *
+     * \param txVector the TXVECTOR decoded from the PHY header
+     * \param psduDuration the duration of the PSDU
+     */
+    typedef void (*PhyRxPpduDropTracedCallback)(Ptr<const WifiPpdu> ppdu,
+                                                WifiPhyRxfailureReason reason);
 
     /**
      * Assign a fixed random variable stream number to the random variables
@@ -987,6 +1022,20 @@ class WifiPhy : public Object
     bool GetShortPhyPreambleSupported() const;
 
     /**
+     * Set the index allocated to this PHY
+     *
+     * \param phyId the ID allocated to this PHY
+     */
+    void SetPhyId(uint8_t phyId);
+
+    /**
+     * Get the index allocated to this PHY
+     *
+     * \return the ID allocated to this PHY
+     */
+    uint8_t GetPhyId() const;
+
+    /**
      * Sets the interference helper.
      *
      * \param helper the interference helper
@@ -1207,6 +1256,15 @@ class WifiPhy : public Object
      */
     uint32_t GetSubcarrierSpacing() const;
 
+    /**
+     * Callback invoked when the PHY model starts to transmit a signal
+     *
+     * \param ppdu The PPDU being transmitted
+     * \param txVector txVector used for transmitting the PPDU
+     */
+    typedef void (*SignalTransmissionCallback)(Ptr<const WifiPpdu> ppdu,
+                                               const WifiTxVector& txVector);
+
   protected:
     void DoInitialize() override;
     void DoDispose() override;
@@ -1256,6 +1314,8 @@ class WifiPhy : public Object
      */
     void AddPhyEntity(WifiModulationClass modulation, Ptr<PhyEntity> phyEntity);
 
+    uint8_t m_phyId; //!< the index of the PHY in the vector of PHYs held by the WifiNetDevice
+
     Ptr<InterferenceHelper>
         m_interference; //!< Pointer to a helper responsible for interference computations
 
@@ -1296,6 +1356,9 @@ class WifiPhy : public Object
      * WifiMode::IsMandatory() is true.
      */
     std::map<WifiModulationClass, Ptr<PhyEntity>> m_phyEntities;
+
+    TracedCallback<Ptr<const WifiPpdu>, const WifiTxVector&>
+        m_signalTransmissionCb; //!< Signal Transmission callback
 
   private:
     /**
@@ -1360,6 +1423,12 @@ class WifiPhy : public Object
      *
      */
     void AbortCurrentReception(WifiPhyRxfailureReason reason);
+
+    /**
+     * Callback function when a transmission is completed
+     * \param psdus the PSDUs that have been sent
+     */
+    void TxDone(const WifiConstPsduMap& psdus);
 
     /**
      * Get the PSDU addressed to that PHY in a PPDU (useful for MU PPDU).
@@ -1440,6 +1509,11 @@ class WifiPhy : public Object
     TracedCallback<Ptr<const Packet>, WifiPhyRxfailureReason> m_phyRxDropTrace;
 
     /**
+     * The trace source fired when the PHY layer drops a packet it has received.
+     */
+    TracedCallback<Ptr<const WifiPpdu>, WifiPhyRxfailureReason> m_phyRxPpduDropTrace;
+
+    /**
      * A trace source that emulates a Wi-Fi device in monitor mode
      * sniffing a packet being received.
      *
@@ -1500,7 +1574,7 @@ class WifiPhy : public Object
     Time m_ackTxTime;      //!< estimated Ack TX time
     Time m_blockAckTxTime; //!< estimated BlockAck TX time
 
-    double m_rxSensitivityW;  //!< Receive sensitivity threshold in watts
+    double m_rxSensitivityDbm; //!< Receive sensitivity threshold in dBm
     double m_ccaEdThresholdW; //!< Clear channel assessment (CCA) energy detection (ED) threshold in
                               //!< watts
     double m_ccaSensitivityThresholdW; //!< Clear channel assessment (CCA) modulation and coding

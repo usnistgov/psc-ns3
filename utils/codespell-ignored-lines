@@ -81,9 +81,13 @@ Network Animator nam.  It is not possible to run a simulation
  * Copyright (c) 2022 Universita' degli Studi di Napoli Federico II
  * Copyright (c) 2022 Universita' degli Studi di Napoli "Federico II"
  * Copyright (c) 2023 Universita' degli Studi di Napoli Federico II
+ * Copyright (c) 2024 Universita' degli Studi di Napoli Federico II
 
 ./src/core/examples/hash-example.cc
 6ed21de2  brand-newness       peripherial
+
+./src/core/model/trickle-timer.cc:120
+    return std::countr_zero(m_ticks);
 
 ./src/dsr/model/dsr-routing.cc:243, 246, 3360, 3363
             .AddAttribute("GratReplyHoldoff",
@@ -161,3 +165,6 @@ static ns3::GlobalValue g_rate("VRCrate",
   * (lte) Struct member `pfsFlowPerf_t::lastTtiBytesTrasmitted` in file `pf-ff-mac-scheduler.h` was renamed `fdbetsFlowPerf_t::lastTtiBytesTransmitted`.
 * The spelling of the attribute `IntialCellVoltage` from `LiIonEnergySource` was corrected to `InitialCellVoltage`; this will affect existing users who were using the attribute with the misspelling.
 * The attribute `Recievers` in class `YansWifiPhy` was misspelled, so this has been corrected to `Receivers`.
+
+./doc/manual/source/working-with-docker.rst
+    067a8b748816715d93ede9099132d943c04b13fcc23b3b8a7e21d23c1096cc2a

@@ -40,7 +40,7 @@ operator<<(std::ostream& os, const NrSlUeCmacSapProvider::SidelinkLogicalChannel
        << " mbr: " << p.mbr << " gbr: " << p.gbr
        << " castType: " << static_cast<uint16_t>(p.castType) << " harqEnabled: " << p.harqEnabled
        << " pdb: " << p.pdb.As(Time::MS) << " dynamic: " << p.dynamic
-       << " rri: " << p.rri.As(Time::MS) << " T2: " << p.t2.As(Time::MS);
+       << " rri: " << p.rri.As(Time::MS);
     return os;
 }
 

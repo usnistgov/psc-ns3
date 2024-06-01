@@ -226,9 +226,9 @@ class SequenceNumberTestSuite : public TestSuite
 {
   public:
     SequenceNumberTestSuite()
-        : TestSuite("sequence-number", UNIT)
+        : TestSuite("sequence-number", Type::UNIT)
     {
-        AddTestCase(new SequenceNumberTestCase(), TestCase::QUICK);
+        AddTestCase(new SequenceNumberTestCase(), TestCase::Duration::QUICK);
     }
 };
 

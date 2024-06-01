@@ -159,6 +159,21 @@ macro(process_options)
                                                         STREQUAL "default"
   )
     set(cmakeBuildType relwithdebinfo)
+    # Do not use optimized for size builds on MacOS See issue #1065:
+    # https://gitlab.com/nsnam/ns-3-dev/-/issues/1065
+    if(NOT (DEFINED APPLE))
+      string(REPLACE "-O2" "-Os" CMAKE_CXX_FLAGS_RELWITHDEBINFO
+                     "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}"
+      )
+    endif()
+    # Do not use -Os for gcc 9 default builds due to a bug in gcc that can
+    # result  in extreme memory usage. See MR !1955
+    # https://gitlab.com/nsnam/ns-3-dev/-/merge_requests/1955
+    if(GCC AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS "10.0.0")
+      string(REPLACE "-Os" "-O2" CMAKE_CXX_FLAGS_RELWITHDEBINFO
+                     "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}"
+      )
+    endif()
     set(CMAKE_CXX_FLAGS_DEFAULT ${CMAKE_CXX_FLAGS_RELWITHDEBINFO})
     add_definitions(-DNS3_BUILD_PROFILE_DEBUG)
   elseif(${cmakeBuildType} STREQUAL "release")
@@ -214,6 +229,9 @@ macro(process_options)
       endif()
     else()
       add_compile_options(-Wall) # -Wextra
+      if(${GCC_WORKING_PEDANTIC_SEMICOLON})
+        add_compile_options(-Wpedantic)
+      endif()
       if(${NS3_WARNINGS_AS_ERRORS})
         add_compile_options(-Werror -Wno-error=deprecated-declarations)
       endif()
@@ -371,7 +389,9 @@ macro(process_options)
   endif()
 
   if(${NS3_SANITIZE})
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address,leak,undefined")
+    set(CMAKE_CXX_FLAGS
+        "${CMAKE_CXX_FLAGS} -fsanitize=address,leak,undefined -fno-sanitize-recover=all"
+    )
   endif()
 
   if(${NS3_SANITIZE_MEMORY})
@@ -572,6 +592,7 @@ macro(process_options)
     endif()
   endif()
 
+  set(LIBXML2_FOUND FALSE)
   if(${NS3_STATIC})
     # Warn users that they may be using shared libraries, which won't produce a
     # standalone static library
@@ -965,7 +986,7 @@ macro(process_options)
   # return variable
   check_deps(
     sphinx_docs_missing_deps CMAKE_PACKAGES Sphinx
-    EXECUTABLES epstopdf pdflatex latexmk convert dvipng
+    EXECUTABLES epstopdf pdflatex latexmk convert dvipng dia
   )
   if(sphinx_docs_missing_deps)
     message(
@@ -1246,19 +1267,26 @@ macro(process_options)
         <cstdlib>
         <cstring>
         <exception>
+        <deque>
         <fstream>
+        <functional>
         <iostream>
         <limits>
         <list>
         <map>
         <math.h>
         <ostream>
+        <queue>
         <set>
         <sstream>
         <stdint.h>
         <stdlib.h>
         <string>
+        <tuple>
+        <typeinfo>
+        <type_traits>
         <unordered_map>
+        <utility>
         <vector>
     )
     add_library(
@@ -1269,7 +1297,11 @@ macro(process_options)
       stdlib_pch${build_profile_suffix} PUBLIC
       "${precompiled_header_libraries}"
     )
-    add_library(stdlib_pch ALIAS stdlib_pch${build_profile_suffix})
+
+    # Alias may collide with actual pch in builds without suffix (e.g. release)
+    if(NOT TARGET stdlib_pch)
+      add_library(stdlib_pch ALIAS stdlib_pch${build_profile_suffix})
+    endif()
 
     add_executable(
       stdlib_pch_exec ${PROJECT_SOURCE_DIR}/build-support/empty-main.cc

@@ -186,9 +186,9 @@ class IPv6L3ProtocolTestSuite : public TestSuite
 {
   public:
     IPv6L3ProtocolTestSuite()
-        : TestSuite("ipv6-protocol", UNIT)
+        : TestSuite("ipv6-protocol", Type::UNIT)
     {
-        AddTestCase(new Ipv6L3ProtocolTestCase(), TestCase::QUICK);
+        AddTestCase(new Ipv6L3ProtocolTestCase(), TestCase::Duration::QUICK);
     }
 };
 

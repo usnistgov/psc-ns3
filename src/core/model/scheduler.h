@@ -229,7 +229,7 @@ class Scheduler : public Object
 };
 
 /**
- * \ingroup Events
+ * \ingroup events
  * Compare (equal) two events by EventKey.
  *
  * \param [in] a The first event.
@@ -243,7 +243,7 @@ operator==(const Scheduler::EventKey& a, const Scheduler::EventKey& b)
 }
 
 /**
- * \ingroup Events
+ * \ingroup events
  * Compare (not equal) two events by EventKey.
  *
  * \param [in] a The first event.
@@ -257,7 +257,7 @@ operator!=(const Scheduler::EventKey& a, const Scheduler::EventKey& b)
 }
 
 /**
- * \ingroup Events
+ * \ingroup events
  * Compare (less than) two events by EventKey.
  *
  * Note the invariants which this function must provide:
@@ -272,18 +272,7 @@ operator!=(const Scheduler::EventKey& a, const Scheduler::EventKey& b)
 inline bool
 operator<(const Scheduler::EventKey& a, const Scheduler::EventKey& b)
 {
-    if (a.m_ts < b.m_ts)
-    {
-        return true;
-    }
-    else if (a.m_ts == b.m_ts && a.m_uid < b.m_uid)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    return (a.m_ts < b.m_ts || (a.m_ts == b.m_ts && a.m_uid < b.m_uid));
 }
 
 /**
@@ -296,18 +285,7 @@ operator<(const Scheduler::EventKey& a, const Scheduler::EventKey& b)
 inline bool
 operator>(const Scheduler::EventKey& a, const Scheduler::EventKey& b)
 {
-    if (a.m_ts > b.m_ts)
-    {
-        return true;
-    }
-    else if (a.m_ts == b.m_ts && a.m_uid > b.m_uid)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    return (a.m_ts > b.m_ts || (a.m_ts == b.m_ts && a.m_uid > b.m_uid));
 }
 
 /**

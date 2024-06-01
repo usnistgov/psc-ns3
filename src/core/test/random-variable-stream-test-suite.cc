@@ -26,6 +26,7 @@
 #include "ns3/log.h"
 #include "ns3/random-variable-stream.h"
 #include "ns3/rng-seed-manager.h"
+#include "ns3/shuffle.h"
 #include "ns3/string.h"
 #include "ns3/test.h"
 
@@ -2873,6 +2874,71 @@ BinomialAntitheticTestCase::DoRun()
 }
 
 /**
+ * \ingroup rng-test
+ * \ingroup tests
+ *
+ * \brief Test the Shuffle function
+ *
+ * Check that the Shuffle function actually shuffles the elements and does so in a portable way.
+ */
+class ShuffleElementsTest : public TestCase
+{
+  public:
+    ShuffleElementsTest();
+
+  private:
+    void DoRun() override;
+};
+
+ShuffleElementsTest::ShuffleElementsTest()
+    : TestCase("Check correct operation of the Shuffle function")
+{
+}
+
+void
+ShuffleElementsTest::DoRun()
+{
+    RngSeedManager::SetSeed(1);
+    RngSeedManager::SetRun(1);
+
+    auto rv = CreateObject<UniformRandomVariable>();
+    rv->SetStream(1);
+
+    // test empty vector
+    std::vector<uint8_t> vec{};
+
+    Shuffle(vec.begin(), vec.end(), rv);
+
+    NS_TEST_EXPECT_MSG_EQ(vec.empty(), true, "Expected an empty vector");
+
+    // test vector with one value
+    vec.push_back(3);
+
+    Shuffle(vec.begin(), vec.end(), rv);
+
+    NS_TEST_EXPECT_MSG_EQ((vec == std::vector<uint8_t>{3}), true, "Expected vector {3}");
+
+    // test vector with two values
+    vec.push_back(1);
+
+    Shuffle(vec.begin(), vec.end(), rv);
+
+    NS_TEST_EXPECT_MSG_EQ((vec == std::vector<uint8_t>{1, 3}), true, "Expected vector {1, 3}");
+
+    // test vector with multiple values
+    vec.push_back(7);
+    vec.push_back(2);
+    vec.push_back(4);
+    vec.push_back(9);
+
+    Shuffle(vec.begin(), vec.end(), rv);
+
+    NS_TEST_EXPECT_MSG_EQ((vec == std::vector<uint8_t>{4, 1, 9, 3, 2, 7}),
+                          true,
+                          "Expected vector {4, 1, 9, 3, 2, 7}");
+}
+
+/**
  * \ingroup rng-tests
  * RandomVariableStream test suite, covering all random number variable
  * stream generator types.
@@ -2885,7 +2951,7 @@ class RandomVariableSuite : public TestSuite
 };
 
 RandomVariableSuite::RandomVariableSuite()
-    : TestSuite("random-variable-stream-generators", UNIT)
+    : TestSuite("random-variable-stream-generators", Type::UNIT)
 {
     AddTestCase(new UniformTestCase);
     AddTestCase(new UniformAntitheticTestCase);
@@ -2928,6 +2994,7 @@ RandomVariableSuite::RandomVariableSuite()
     AddTestCase(new BernoulliAntitheticTestCase);
     AddTestCase(new BinomialTestCase);
     AddTestCase(new BinomialAntitheticTestCase);
+    AddTestCase(new ShuffleElementsTest);
 }
 
 static RandomVariableSuite randomVariableSuite; //!< Static variable for test initialization

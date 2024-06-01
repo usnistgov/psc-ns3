@@ -37,6 +37,9 @@
 
 #include <algorithm>
 
+#undef NS_LOG_APPEND_CONTEXT
+#define NS_LOG_APPEND_CONTEXT WIFI_PHY_NS_LOG_APPEND_CONTEXT(m_wifiPhy)
+
 namespace ns3
 {
 
@@ -158,7 +161,7 @@ PhyEntity::GetSigMode(WifiPpduField field, const WifiTxVector& txVector) const
 WifiPpduField
 PhyEntity::GetNextField(WifiPpduField currentField, WifiPreamble preamble) const
 {
-    auto ppduFormats = GetPpduFormats();
+    const auto& ppduFormats = GetPpduFormats();
     const auto itPpdu = ppduFormats.find(preamble);
     if (itPpdu != ppduFormats.end())
     {
@@ -337,7 +340,7 @@ PhyEntity::EndReceiveField(WifiPpduField field, Ptr<Event> event)
                     NanoSeconds(0)); // this callback (equivalent to PHY-RXSTART primitive) is also
                                      // triggered for filtered PPDUs
             }
-            m_wifiPhy->NotifyRxDrop(GetAddressedPsduInPpdu(ppdu), status.reason);
+            m_wifiPhy->NotifyRxPpduDrop(ppdu, status.reason);
             m_wifiPhy->NotifyCcaBusy(ppdu, GetRemainingDurationAfterField(ppdu, field));
         // no break
         case IGNORE:
@@ -368,7 +371,7 @@ PhyEntity::DoStartReceiveField(WifiPpduField field, Ptr<Event> event)
     NS_LOG_FUNCTION(this << field << *event);
     NS_ASSERT(field != WIFI_PPDU_FIELD_PREAMBLE &&
               field != WIFI_PPDU_FIELD_DATA); // handled apart for the time being
-    auto ppduFormats = GetPpduFormats();
+    const auto& ppduFormats = GetPpduFormats();
     auto itFormat = ppduFormats.find(event->GetPpdu()->GetPreamble());
     if (itFormat != ppduFormats.end())
     {
@@ -515,7 +518,7 @@ void
 PhyEntity::DropPreambleEvent(Ptr<const WifiPpdu> ppdu, WifiPhyRxfailureReason reason, Time endRx)
 {
     NS_LOG_FUNCTION(this << ppdu << reason << endRx);
-    m_wifiPhy->NotifyRxDrop(GetAddressedPsduInPpdu(ppdu), reason);
+    m_wifiPhy->NotifyRxPpduDrop(ppdu, reason);
     auto it = m_wifiPhy->m_currentPreambleEvents.find({ppdu->GetUid(), ppdu->GetPreamble()});
     if (it != m_wifiPhy->m_currentPreambleEvents.end())
     {
@@ -738,6 +741,7 @@ PhyEntity::EndReceivePayload(Ptr<Event> event)
         success = false;
     }
 
+    m_state->NotifyRxPpduOutcome(ppdu, rxSignalInfo, txVector, staId, statusPerMpduIt->second);
     DoEndReceivePayload(ppdu);
     m_wifiPhy->SwitchMaybeToCcaBusy(ppdu);
 
@@ -871,7 +875,11 @@ PhyEntity::CreateInterferenceEvent(Ptr<const WifiPpdu> ppdu,
                                    RxPowerWattPerChannelBand& rxPower,
                                    bool isStartHePortionRxing /* = false */)
 {
-    return m_wifiPhy->m_interference->Add(ppdu, duration, rxPower, isStartHePortionRxing);
+    return m_wifiPhy->m_interference->Add(ppdu,
+                                          duration,
+                                          rxPower,
+                                          m_wifiPhy->GetCurrentFrequencyRange(),
+                                          isStartHePortionRxing);
 }
 
 void
@@ -887,7 +895,7 @@ PhyEntity::HandleRxPpduWithSameContent(Ptr<Event> event,
         // interference
         event = CreateInterferenceEvent(ppdu, ppdu->GetTxDuration(), rxPower);
         NS_LOG_DEBUG("Drop PPDU that arrived too late");
-        m_wifiPhy->NotifyRxDrop(GetAddressedPsduInPpdu(ppdu), PPDU_TOO_LATE);
+        m_wifiPhy->NotifyRxPpduDrop(ppdu, PPDU_TOO_LATE);
         return;
     }
 
@@ -938,8 +946,9 @@ PhyEntity::StartPreambleDetectionPeriod(Ptr<Event> event)
 {
     NS_LOG_FUNCTION(this << *event);
     NS_LOG_DEBUG("Sync to signal (power=" << WToDbm(GetRxPowerWForPpdu(event)) << "dBm)");
-    m_wifiPhy->m_interference
-        ->NotifyRxStart(); // We need to notify it now so that it starts recording events
+    m_wifiPhy->m_interference->NotifyRxStart(
+        m_wifiPhy->GetCurrentFrequencyRange()); // We need to notify it now so that it starts
+                                                // recording events
     m_endPreambleDetectionEvents.push_back(
         Simulator::Schedule(m_wifiPhy->GetPreambleDetectionDuration(),
                             &PhyEntity::EndPreambleDetectionPeriod,
@@ -979,7 +988,8 @@ PhyEntity::EndPreambleDetectionPeriod(Ptr<Event> event)
                      << maxEvent->GetPpdu()->GetUid()
                      << " during preamble detection: drop packet with UID "
                      << event->GetPpdu()->GetUid());
-        m_wifiPhy->NotifyRxDrop(GetAddressedPsduInPpdu(event->GetPpdu()), BUSY_DECODING_PREAMBLE);
+        m_wifiPhy->NotifyRxPpduDrop(event->GetPpdu(), BUSY_DECODING_PREAMBLE);
+
         auto it = m_wifiPhy->m_currentPreambleEvents.find(
             {event->GetPpdu()->GetUid(), event->GetPpdu()->GetPreamble()});
         m_wifiPhy->m_currentPreambleEvents.erase(it);
@@ -988,7 +998,7 @@ PhyEntity::EndPreambleDetectionPeriod(Ptr<Event> event)
         m_wifiPhy->m_interference->NotifyRxEnd(maxEvent->GetStartTime(),
                                                m_wifiPhy->GetCurrentFrequencyRange());
         // Make sure InterferenceHelper keeps recording events
-        m_wifiPhy->m_interference->NotifyRxStart();
+        m_wifiPhy->m_interference->NotifyRxStart(m_wifiPhy->GetCurrentFrequencyRange());
         return;
     }
 
@@ -1035,7 +1045,8 @@ PhyEntity::EndPreambleDetectionPeriod(Ptr<Event> event)
                 {
                     reason = BUSY_DECODING_PREAMBLE;
                 }
-                m_wifiPhy->NotifyRxDrop(GetAddressedPsduInPpdu(it->second->GetPpdu()), reason);
+                m_wifiPhy->NotifyRxPpduDrop(it->second->GetPpdu(), reason);
+
                 it = m_wifiPhy->m_currentPreambleEvents.erase(it);
             }
             else
@@ -1045,7 +1056,7 @@ PhyEntity::EndPreambleDetectionPeriod(Ptr<Event> event)
         }
 
         // Make sure InterferenceHelper keeps recording events
-        m_wifiPhy->m_interference->NotifyRxStart();
+        m_wifiPhy->m_interference->NotifyRxStart(m_wifiPhy->GetCurrentFrequencyRange());
 
         m_wifiPhy->NotifyRxBegin(GetAddressedPsduInPpdu(m_wifiPhy->m_currentEvent->GetPpdu()),
                                  m_wifiPhy->m_currentEvent->GetRxPowerWPerBand());

@@ -27,6 +27,7 @@
 
 #include "ns3/data-rate.h"
 #include "ns3/eht-capabilities.h"
+#include "ns3/he-6ghz-band-capabilities.h"
 #include "ns3/he-capabilities.h"
 #include "ns3/ht-capabilities.h"
 #include "ns3/mac48-address.h"
@@ -49,6 +50,7 @@ class WifiMacHeader;
 class Packet;
 class WifiMpdu;
 class WifiTxVector;
+class WifiTxParameters;
 
 struct WifiRemoteStationState;
 struct RxSignalInfo;
@@ -111,6 +113,8 @@ struct WifiRemoteStationState
     Ptr<const HtCapabilities> m_htCapabilities;   //!< remote station HT capabilities
     Ptr<const VhtCapabilities> m_vhtCapabilities; //!< remote station VHT capabilities
     Ptr<const HeCapabilities> m_heCapabilities;   //!< remote station HE capabilities
+    Ptr<const He6GhzBandCapabilities>
+        m_he6GhzBandCapabilities;                 //!< remote station HE 6GHz band capabilities
     Ptr<const EhtCapabilities> m_ehtCapabilities; //!< remote station EHT capabilities
     /// remote station Multi-Link Element Common Info
     std::shared_ptr<CommonInfoBasicMle> m_mleCommonInfo;
@@ -261,6 +265,14 @@ class WifiRemoteStationManager : public Object
      */
     void AddStationHeCapabilities(Mac48Address from, HeCapabilities heCapabilities);
     /**
+     * Records HE 6 GHz Band Capabilities of a remote station
+     *
+     * \param from the address of the remote station
+     * \param he6GhzCapabilities the HE 6 GHz Band Capabilities of the remote station
+     */
+    void AddStationHe6GhzCapabilities(const Mac48Address& from,
+                                      const He6GhzBandCapabilities& he6GhzCapabilities);
+    /**
      * Records EHT capabilities of the remote station.
      *
      * \param from the address of the station being recorded
@@ -298,6 +310,13 @@ class WifiRemoteStationManager : public Object
      */
     Ptr<const HeCapabilities> GetStationHeCapabilities(Mac48Address from);
     /**
+     * Return the HE 6 GHz Band Capabilities sent by a remote station.
+     *
+     * \param from the address of the remote station
+     * \return the HE 6 GHz Band capabilities sent by the remote station
+     */
+    Ptr<const He6GhzBandCapabilities> GetStationHe6GhzCapabilities(const Mac48Address& from) const;
+    /**
      * Return the EHT capabilities sent by the remote station.
      *
      * \param from the address of the remote station
@@ -317,13 +336,17 @@ class WifiRemoteStationManager : public Object
     std::optional<std::reference_wrapper<CommonInfoBasicMle::MldCapabilities>>
     GetStationMldCapabilities(const Mac48Address& from);
     /**
-     * Return whether the device has HT capability support enabled.
+     * Return whether the device has HT capability support enabled on the link this manager is
+     * associated with. Note that this means that this function returns false if this is a
+     * 6 GHz link.
      *
      * \return true if HT capability support is enabled, false otherwise
      */
     bool GetHtSupported() const;
     /**
-     * Return whether the device has VHT capability support enabled.
+     * Return whether the device has VHT capability support enabled on the link this manager is
+     * associated with. Note that this means that this function returns false if this is a
+     * 2.4 or 6 GHz link.
      *
      * \return true if VHT capability support is enabled, false otherwise
      */
@@ -955,13 +978,13 @@ class WifiRemoteStationManager : public Object
     void ReportRxOk(Mac48Address address, RxSignalInfo rxSignalInfo, WifiTxVector txVector);
 
     /**
-     * \param header MAC header
-     * \param size the size of the frame to send in bytes
+     * \param header MAC header of the data frame to send
+     * \param txParams the TX parameters for the data frame to send
      *
      * \return true if we want to use an RTS/CTS handshake for this
      *         frame before sending it, false otherwise.
      */
-    bool NeedRts(const WifiMacHeader& header, uint32_t size);
+    bool NeedRts(const WifiMacHeader& header, const WifiTxParameters& txParams);
     /**
      * Return if we need to do CTS-to-self before sending a DATA.
      *
@@ -1494,6 +1517,7 @@ class WifiRemoteStationManager : public Object
     uint32_t m_maxSsrc;                //!< Maximum STA short retry count (SSRC)
     uint32_t m_maxSlrc;                //!< Maximum STA long retry count (SLRC)
     uint32_t m_rtsCtsThreshold;        //!< Threshold for RTS/CTS
+    Time m_rtsCtsTxDurationThresh;     //!< TX duration threshold for RTS/CTS
     uint32_t m_fragmentationThreshold; //!< Current threshold for fragmentation
     uint8_t m_defaultTxPowerLevel;     //!< Default transmission power level
     WifiMode m_nonUnicastMode;         //!< Transmission mode for non-unicast Data frames

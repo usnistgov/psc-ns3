@@ -170,7 +170,7 @@ class OptionWithAlignmentHeader : public Ipv6OptionHeader
 
     Alignment GetAlignment() const override
     {
-        return (Alignment){4, 0};
+        return Alignment{4, 0};
     }
 };
 
@@ -279,12 +279,12 @@ class Ipv6ExtensionHeaderTestSuite : public TestSuite
 {
   public:
     Ipv6ExtensionHeaderTestSuite()
-        : TestSuite("ipv6-extension-header", UNIT)
+        : TestSuite("ipv6-extension-header", Type::UNIT)
     {
-        AddTestCase(new TestEmptyOptionField, TestCase::QUICK);
-        AddTestCase(new TestOptionWithoutAlignment, TestCase::QUICK);
-        AddTestCase(new TestOptionWithAlignment, TestCase::QUICK);
-        AddTestCase(new TestFulfilledAlignment, TestCase::QUICK);
+        AddTestCase(new TestEmptyOptionField, TestCase::Duration::QUICK);
+        AddTestCase(new TestOptionWithoutAlignment, TestCase::Duration::QUICK);
+        AddTestCase(new TestOptionWithAlignment, TestCase::Duration::QUICK);
+        AddTestCase(new TestFulfilledAlignment, TestCase::Duration::QUICK);
     }
 };
 

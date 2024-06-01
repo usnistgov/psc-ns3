@@ -589,7 +589,7 @@ One of the predefined namespaces in the config system is "NodeList"
 which is a list of all of the nodes in the simulation.  Items in the
 list are referred to by indices into the list, so "/NodeList/7" refers
 to the eighth Node in the list of nodes created during the simulation
-(recall indices start at `0').  This reference is actually a
+(recall indices start at '0').  This reference is actually a
 ``Ptr<Node>`` and so is a subclass of an ``ns3::Object``.
 
 As described in the Object Model section of the |ns3| Manual, we make
@@ -1763,7 +1763,7 @@ creating simulation events.
   {
       m_running = false;
 
-      if (m_sendEvent.IsRunning())
+      if (m_sendEvent.IsPending())
       {
           Simulator::Cancel(m_sendEvent);
       }
@@ -1776,7 +1776,7 @@ creating simulation events.
 
 Every time a simulation event is scheduled, an ``Event`` is created.
 If the ``Event`` is pending execution or executing, its method
-``IsRunning`` will return ``true``.  In this code, if ``IsRunning()``
+``IsPending`` will return ``true``.  In this code, if ``IsPending()``
 returns true, we ``Cancel`` the event which removes it from the
 simulator event queue.  By doing this, we break the chain of events
 that the ``Application`` is using to keep sending its ``Packets`` and

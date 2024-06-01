@@ -21,7 +21,10 @@
 #define WIFI_MAC_HELPER_H
 
 #include "ns3/object-factory.h"
+#include "ns3/qos-utils.h"
 #include "ns3/wifi-standards.h"
+
+#include <map>
 
 namespace ns3
 {
@@ -67,6 +70,43 @@ class WifiMacHelper
      */
     template <typename... Args>
     void SetType(std::string type, Args&&... args);
+
+    /**
+     * Helper function used to create and set the Txop object.
+     *
+     * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * \param args A sequence of name-value pairs of the attributes to set.
+     */
+    template <typename... Args>
+    void SetDcf(Args&&... args);
+
+    /**
+     * Helper function used to create and set the QosTxop object corresponding to the given AC.
+     *
+     * \param aci the AC index
+     * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * \param args A sequence of name-value pairs of the attributes to set.
+     */
+    template <typename... Args>
+    void SetEdca(AcIndex aci, Args&&... args);
+
+    /**
+     * Helper function used to set the Channel Access Manager object.
+     *
+     * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * \param args A sequence of name-value pairs of the attributes to set.
+     */
+    template <typename... Args>
+    void SetChannelAccessManager(Args&&... args);
+
+    /**
+     * Helper function used to set the Frame Exchange Manager object.
+     *
+     * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * \param args A sequence of name-value pairs of the attributes to set.
+     */
+    template <typename... Args>
+    void SetFrameExchangeManager(Args&&... args);
 
     /**
      * Helper function used to set the Association Manager.
@@ -139,13 +179,17 @@ class WifiMacHelper
     virtual Ptr<WifiMac> Create(Ptr<WifiNetDevice> device, WifiStandard standard) const;
 
   protected:
-    ObjectFactory m_mac;               ///< MAC object factory
-    ObjectFactory m_assocManager;      ///< Association Manager
-    ObjectFactory m_queueScheduler;    ///< MAC queue scheduler
-    ObjectFactory m_protectionManager; ///< Factory to create a protection manager
-    ObjectFactory m_ackManager;        ///< Factory to create an acknowledgment manager
-    ObjectFactory m_muScheduler;       ///< Multi-user Scheduler object factory
-    ObjectFactory m_emlsrManager;      ///< EMLSR Manager object factory
+    ObjectFactory m_mac;                                     ///< MAC object factory
+    ObjectFactory m_dcf;                                     ///< Txop (DCF) object factory
+    std::map<AcIndex, ObjectFactory, std::greater<>> m_edca; ///< QosTxop (EDCA) object factories
+    ObjectFactory m_channelAccessManager; ///< Channel Access Manager object factory
+    ObjectFactory m_frameExchangeManager; ///< Frame Exchange Manager object factory
+    ObjectFactory m_assocManager;         ///< Association Manager
+    ObjectFactory m_queueScheduler;       ///< MAC queue scheduler
+    ObjectFactory m_protectionManager;    ///< Factory to create a protection manager
+    ObjectFactory m_ackManager;           ///< Factory to create an acknowledgment manager
+    ObjectFactory m_muScheduler;          ///< Multi-user Scheduler object factory
+    ObjectFactory m_emlsrManager;         ///< EMLSR Manager object factory
 };
 
 } // namespace ns3
@@ -163,6 +207,36 @@ WifiMacHelper::SetType(std::string type, Args&&... args)
 {
     m_mac.SetTypeId(type);
     m_mac.Set(args...);
+}
+
+template <typename... Args>
+void
+WifiMacHelper::SetDcf(Args&&... args)
+{
+    m_dcf.Set(args...);
+}
+
+template <typename... Args>
+void
+WifiMacHelper::SetEdca(AcIndex aci, Args&&... args)
+{
+    auto it = m_edca.find(aci);
+    NS_ASSERT_MSG(it != m_edca.cend(), "No object factory for " << aci);
+    it->second.Set(args...);
+}
+
+template <typename... Args>
+void
+WifiMacHelper::SetChannelAccessManager(Args&&... args)
+{
+    m_channelAccessManager.Set(args...);
+}
+
+template <typename... Args>
+void
+WifiMacHelper::SetFrameExchangeManager(Args&&... args)
+{
+    m_frameExchangeManager.Set(args...);
 }
 
 template <typename... Args>

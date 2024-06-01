@@ -45,46 +45,53 @@ NS_OBJECT_ENSURE_REGISTERED(V4TraceRoute);
 TypeId
 V4TraceRoute::GetTypeId()
 {
-    static TypeId tid = TypeId("ns3::V4TraceRoute")
-                            .SetParent<Application>()
-                            .SetGroupName("Internet-Apps")
-                            .AddConstructor<V4TraceRoute>()
-                            .AddAttribute("Remote",
-                                          "The address of the machine we want to trace.",
-                                          Ipv4AddressValue(),
-                                          MakeIpv4AddressAccessor(&V4TraceRoute::m_remote),
-                                          MakeIpv4AddressChecker())
-                            .AddAttribute("Verbose",
-                                          "Produce usual output.",
-                                          BooleanValue(true),
-                                          MakeBooleanAccessor(&V4TraceRoute::m_verbose),
-                                          MakeBooleanChecker())
-                            .AddAttribute("Interval",
-                                          "Wait interval between sent packets.",
-                                          TimeValue(Seconds(0)),
-                                          MakeTimeAccessor(&V4TraceRoute::m_interval),
-                                          MakeTimeChecker())
-                            .AddAttribute("Size",
-                                          "The number of data bytes to be sent, real packet will "
-                                          "be 8 (ICMP) + 20 (IP) bytes longer.",
-                                          UintegerValue(56),
-                                          MakeUintegerAccessor(&V4TraceRoute::m_size),
-                                          MakeUintegerChecker<uint32_t>())
-                            .AddAttribute("MaxHop",
-                                          "The maximum number of hops to trace.",
-                                          UintegerValue(30),
-                                          MakeUintegerAccessor(&V4TraceRoute::m_maxTtl),
-                                          MakeUintegerChecker<uint32_t>())
-                            .AddAttribute("ProbeNum",
-                                          "The number of packets send to each hop.",
-                                          UintegerValue(3),
-                                          MakeUintegerAccessor(&V4TraceRoute::m_maxProbes),
-                                          MakeUintegerChecker<uint16_t>())
-                            .AddAttribute("Timeout",
-                                          "The waiting time for a route response before a timeout.",
-                                          TimeValue(Seconds(5)),
-                                          MakeTimeAccessor(&V4TraceRoute::m_waitIcmpReplyTimeout),
-                                          MakeTimeChecker());
+    static TypeId tid =
+        TypeId("ns3::V4TraceRoute")
+            .SetParent<Application>()
+            .SetGroupName("Internet-Apps")
+            .AddConstructor<V4TraceRoute>()
+            .AddAttribute("Remote",
+                          "The address of the machine we want to trace.",
+                          Ipv4AddressValue(),
+                          MakeIpv4AddressAccessor(&V4TraceRoute::m_remote),
+                          MakeIpv4AddressChecker())
+            .AddAttribute("Tos",
+                          "The Type of Service used to send IPv4 packets. "
+                          "All 8 bits of the TOS byte are set (including ECN bits).",
+                          UintegerValue(0),
+                          MakeUintegerAccessor(&V4TraceRoute::m_tos),
+                          MakeUintegerChecker<uint8_t>())
+            .AddAttribute("Verbose",
+                          "Produce usual output.",
+                          BooleanValue(true),
+                          MakeBooleanAccessor(&V4TraceRoute::m_verbose),
+                          MakeBooleanChecker())
+            .AddAttribute("Interval",
+                          "Wait interval between sent packets.",
+                          TimeValue(Seconds(0)),
+                          MakeTimeAccessor(&V4TraceRoute::m_interval),
+                          MakeTimeChecker())
+            .AddAttribute("Size",
+                          "The number of data bytes to be sent, real packet will "
+                          "be 8 (ICMP) + 20 (IP) bytes longer.",
+                          UintegerValue(56),
+                          MakeUintegerAccessor(&V4TraceRoute::m_size),
+                          MakeUintegerChecker<uint32_t>())
+            .AddAttribute("MaxHop",
+                          "The maximum number of hops to trace.",
+                          UintegerValue(30),
+                          MakeUintegerAccessor(&V4TraceRoute::m_maxTtl),
+                          MakeUintegerChecker<uint32_t>())
+            .AddAttribute("ProbeNum",
+                          "The number of packets send to each hop.",
+                          UintegerValue(3),
+                          MakeUintegerAccessor(&V4TraceRoute::m_maxProbes),
+                          MakeUintegerChecker<uint16_t>())
+            .AddAttribute("Timeout",
+                          "The waiting time for a route response before a timeout.",
+                          TimeValue(Seconds(5)),
+                          MakeTimeAccessor(&V4TraceRoute::m_waitIcmpReplyTimeout),
+                          MakeTimeChecker());
     return tid;
 }
 
@@ -121,6 +128,8 @@ V4TraceRoute::StartApplication()
     NS_LOG_LOGIC("Application started");
     m_started = Simulator::Now();
 
+    NS_ABORT_MSG_IF(!m_remote.IsInitialized(), "'Remote' attribute not properly set");
+
     if (m_verbose)
     {
         NS_LOG_UNCOND("Traceroute to " << m_remote << ", " << m_maxTtl << " hops Max, " << m_size
@@ -135,6 +144,7 @@ V4TraceRoute::StartApplication()
 
     m_socket = Socket::CreateSocket(GetNode(), TypeId::LookupByName("ns3::Ipv4RawSocketFactory"));
     m_socket->SetAttribute("Protocol", UintegerValue(Icmpv4L4Protocol::PROT_NUMBER));
+    m_socket->SetIpTos(m_tos); // Affects only IPv4 sockets.
 
     NS_ASSERT(m_socket);
     m_socket->SetRecvCallback(MakeCallback(&V4TraceRoute::Receive, this));
@@ -152,12 +162,12 @@ V4TraceRoute::StopApplication()
 {
     NS_LOG_FUNCTION(this);
 
-    if (m_next.IsRunning())
+    if (m_next.IsPending())
     {
         m_next.Cancel();
     }
 
-    if (m_waitIcmpReplyTimer.IsRunning())
+    if (m_waitIcmpReplyTimer.IsPending())
     {
         m_waitIcmpReplyTimer.Cancel();
     }
@@ -183,7 +193,7 @@ V4TraceRoute::DoDispose()
 {
     NS_LOG_FUNCTION(this);
 
-    if (m_next.IsRunning() || m_waitIcmpReplyTimer.IsRunning())
+    if (m_next.IsPending() || m_waitIcmpReplyTimer.IsPending())
     {
         StopApplication();
     }
@@ -412,7 +422,7 @@ void
 V4TraceRoute::StartWaitReplyTimer()
 {
     NS_LOG_FUNCTION(this);
-    if (!m_waitIcmpReplyTimer.IsRunning())
+    if (!m_waitIcmpReplyTimer.IsPending())
     {
         NS_LOG_LOGIC("Starting WaitIcmpReplyTimer at " << Simulator::Now() << " for "
                                                        << m_waitIcmpReplyTimeout);

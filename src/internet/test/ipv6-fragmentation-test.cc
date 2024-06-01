@@ -623,9 +623,9 @@ class Ipv6FragmentationTestSuite : public TestSuite
 {
   public:
     Ipv6FragmentationTestSuite()
-        : TestSuite("ipv6-fragmentation", UNIT)
+        : TestSuite("ipv6-fragmentation", Type::UNIT)
     {
-        AddTestCase(new Ipv6FragmentationTest, TestCase::QUICK);
+        AddTestCase(new Ipv6FragmentationTest, TestCase::Duration::QUICK);
     }
 };
 

@@ -33,6 +33,7 @@
 #include <ns3/test.h>
 
 using namespace ns3;
+using namespace ns3::lrwpan;
 
 NS_LOG_COMPONENT_DEFINE("lr-wpan-error-model-test");
 
@@ -207,10 +208,10 @@ class LrWpanErrorModelTestSuite : public TestSuite
 };
 
 LrWpanErrorModelTestSuite::LrWpanErrorModelTestSuite()
-    : TestSuite("lr-wpan-error-model", UNIT)
+    : TestSuite("lr-wpan-error-model", Type::UNIT)
 {
-    AddTestCase(new LrWpanErrorModelTestCase, TestCase::QUICK);
-    AddTestCase(new LrWpanErrorDistanceTestCase, TestCase::QUICK);
+    AddTestCase(new LrWpanErrorModelTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new LrWpanErrorDistanceTestCase, TestCase::Duration::QUICK);
 }
 
 static LrWpanErrorModelTestSuite

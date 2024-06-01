@@ -24,6 +24,7 @@
 #include "matrix-based-channel-model.h"
 
 #include "ns3/angles.h"
+#include "ns3/deprecated.h"
 #include <ns3/boolean.h>
 #include <ns3/channel-condition-model.h>
 
@@ -250,11 +251,27 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
      * \param hUT the height of the UT
      * \param distance2D the 2D distance between tx and rx
      * \return the parameters table
+     * \deprecated Use GetThreeGppTable(const Ptr<const MobilityModel> aMob, const Ptr<const
+     *  MobilityModel> bMob, Ptr<const ChannelCondition> channelCondition) instead
      */
-    virtual Ptr<const ParamsTable> GetThreeGppTable(Ptr<const ChannelCondition> channelCondition,
-                                                    double hBS,
-                                                    double hUT,
-                                                    double distance2D) const;
+    NS_DEPRECATED_3_41("Use GetThreeGppTable(const Ptr<const MobilityModel>, const Ptr<const "
+                       "MobilityModel>, Ptr<const ChannelCondition>) instead")
+    Ptr<const ParamsTable> GetThreeGppTable(Ptr<const ChannelCondition> channelCondition,
+                                            double hBS,
+                                            double hUT,
+                                            double distance2D) const;
+
+    /**
+     * Get the parameters needed to apply the channel generation procedure
+     * \param aMob the mobility model of node A
+     * \param bMob the mobility model of node B
+     * \param channelCondition the channel condition
+     * \return the parameters table
+     */
+    virtual Ptr<const ParamsTable> GetThreeGppTable(
+        const Ptr<const MobilityModel> aMob,
+        const Ptr<const MobilityModel> bMob,
+        Ptr<const ChannelCondition> channelCondition) const;
 
     /**
      * Prepare 3gpp channel parameters among the nodes a and b.
@@ -334,6 +351,18 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
      */
     bool ChannelMatrixNeedsUpdate(Ptr<const ThreeGppChannelParams> channelParams,
                                   Ptr<const ChannelMatrix> channelMatrix);
+
+    /**
+     * Check if the channel matrix has to be updated due to
+     * changes in the number of antenna ports
+     * \param aAntenna the antenna array of node a
+     * \param bAntenna the antenna array of node b
+     * \param channelMatrix channel matrix structure
+     * \return true if the channel matrix has to be updated, false otherwise
+     */
+    bool AntennaSetupChanged(Ptr<const PhasedArrayModel> aAntenna,
+                             Ptr<const PhasedArrayModel> bAntenna,
+                             Ptr<const ChannelMatrix> channelMatrix);
 
     std::unordered_map<uint64_t, Ptr<ChannelMatrix>>
         m_channelMatrixMap; //!< map containing the channel realizations per pair of

@@ -35,6 +35,7 @@
 #include "wifi-psdu.h"
 #include "wifi-tx-parameters.h"
 
+#include "ns3/ht-configuration.h"
 #include "ns3/ht-frame-exchange-manager.h"
 #include "ns3/log.h"
 #include "ns3/pointer.h"
@@ -42,11 +43,7 @@
 #include "ns3/simulator.h"
 
 #undef NS_LOG_APPEND_CONTEXT
-#define NS_LOG_APPEND_CONTEXT                                                                      \
-    if (m_mac)                                                                                     \
-    {                                                                                              \
-        std::clog << "[mac=" << m_mac->GetAddress() << "] ";                                       \
-    }
+#define NS_LOG_APPEND_CONTEXT WIFI_TXOP_NS_LOG_APPEND_CONTEXT
 
 namespace ns3
 {
@@ -103,12 +100,18 @@ QosTxop::GetTypeId()
     return tid;
 }
 
-QosTxop::QosTxop(AcIndex ac)
-    : Txop(CreateObject<WifiMacQueue>(ac)),
-      m_ac(ac)
+QosTxop::QosTxop()
 {
     NS_LOG_FUNCTION(this);
     m_baManager = CreateObject<BlockAckManager>();
+}
+
+void
+QosTxop::CreateQueue(AcIndex aci)
+{
+    NS_LOG_FUNCTION(this << aci);
+    Txop::CreateQueue(aci);
+    m_ac = aci;
     m_baManager->SetQueue(m_queue);
     m_baManager->SetBlockDestinationCallback(
         Callback<void, Mac48Address, uint8_t>([this](Mac48Address recipient, uint8_t tid) {
@@ -334,10 +337,14 @@ QosTxop::HasFramesToTransmit(uint8_t linkId)
 {
     // remove MSDUs with expired lifetime starting from the head of the queue
     m_queue->WipeAllExpiredMpdus();
-    bool queueIsNotEmpty = (bool)(m_queue->PeekFirstAvailable(linkId));
+    auto hasFramesToTransmit = static_cast<bool>(m_queue->PeekFirstAvailable(linkId));
 
-    NS_LOG_FUNCTION(this << queueIsNotEmpty);
-    return queueIsNotEmpty;
+    // Print the number of packets that are actually in the queue (which might not be
+    // eligible for transmission for some reason, e.g., TID not mapped to the link, etc.)
+    NS_LOG_DEBUG(m_ac << " on link " << +linkId << (hasFramesToTransmit ? " has" : " has not")
+                      << " frames to transmit with " << m_queue->GetNPackets()
+                      << " packets in the queue");
+    return hasFramesToTransmit;
 }
 
 uint16_t
@@ -387,7 +394,7 @@ QosTxop::PeekNextMpdu(uint8_t linkId, uint8_t tid, Mac48Address recipient, Ptr<c
         }
         WifiContainerQueueId queueId(WIFI_QOSDATA_QUEUE, WIFI_UNICAST, recipient, tid);
         if (auto mask = m_mac->GetMacQueueScheduler()->GetQueueLinkMask(m_ac, queueId, linkId);
-            !mask || mask->none())
+            mask && mask->none())
         {
             return m_queue->PeekByQueueId(queueId, mpdu);
         }
@@ -425,7 +432,7 @@ QosTxop::PeekNextMpdu(uint8_t linkId, uint8_t tid, Mac48Address recipient, Ptr<c
             // if the MPDU is not already in-flight on the link for which we are requesting an
             // MPDU and the number of links on which the MPDU is in-flight is less than the
             // maximum number, then we can transmit this MPDU
-            if (linkIds.count(linkId) == 0 && linkIds.size() < m_nMaxInflights)
+            if (!linkIds.contains(linkId) && (linkIds.size() < m_nMaxInflights))
             {
                 break;
             }
@@ -535,7 +542,7 @@ QosTxop::GetNextMpdu(uint8_t linkId,
 
         // try A-MSDU aggregation if the MPDU does not contain an A-MSDU and does not already
         // have a sequence number assigned (may be a retransmission)
-        if (m_mac->GetHtSupported() && !recipient.IsBroadcast() &&
+        if (m_mac->GetHtConfiguration() && !recipient.IsBroadcast() &&
             !peekedItem->GetHeader().IsQosAmsdu() && !peekedItem->HasSeqNoAssigned() &&
             !peekedItem->IsFragment())
         {

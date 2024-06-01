@@ -20,6 +20,7 @@
 #define NR_SL_UE_CPHY_SAP_H
 
 #include <ns3/ptr.h>
+#include <ns3/simulator.h>
 
 #include <stdint.h>
 
@@ -68,24 +69,14 @@ class NrSlUeCphySapProvider
      * \return the bandwidth in RBs
      */
     virtual uint32_t GetBwInRbs() const = 0;
-};
-
-/**
- * \ingroup lte
- *
- * Service Access Point (SAP) offered by the UE PHY to the UE RRC
- * for control purposes of NR Sidelink
- *
- * This is the CPHY SAP User, i.e., the part of the SAP that contains the RRC
- * methods called by the PHY
- */
-class NrSlUeCphySapUser
-{
-  public:
     /**
-     * \brief Destructor
+     * \brief Ask the PHY to enable the RSRP measurements
      */
-    virtual ~NrSlUeCphySapUser();
+    virtual void EnableUeSlRsrpMeasurements() = 0;
+    /**
+     * \brief Ask the PHY to disable the RSRP measurements
+     */
+    virtual void DisableUeSlRsrpMeasurements() = 0;
 };
 
 /**
@@ -115,6 +106,8 @@ class MemberNrSlUeCphySapProvider : public NrSlUeCphySapProvider
     void AddNrSlCommTxPool(Ptr<const NrSlCommResourcePool> txPool) override;
     void AddNrSlCommRxPool(Ptr<const NrSlCommResourcePool> rxPool) override;
     uint32_t GetBwInRbs() const override;
+    void EnableUeSlRsrpMeasurements() override;
+    void DisableUeSlRsrpMeasurements() override;
 
   private:
     C* m_owner; ///< the owner class
@@ -149,6 +142,71 @@ MemberNrSlUeCphySapProvider<C>::GetBwInRbs() const
     return m_owner->DoGetBwInRbs();
 }
 
+template <class C>
+void
+MemberNrSlUeCphySapProvider<C>::EnableUeSlRsrpMeasurements()
+{
+    m_owner->DoEnableUeSlRsrpMeasurements();
+}
+
+template <class C>
+void
+MemberNrSlUeCphySapProvider<C>::DisableUeSlRsrpMeasurements()
+{
+    m_owner->DoDisableUeSlRsrpMeasurements();
+}
+
+/**
+ * \ingroup lte
+ *
+ * Service Access Point (SAP) offered by the UE PHY to the UE RRC
+ * for control purposes of NR Sidelink
+ *
+ * This is the CPHY SAP User, i.e., the part of the SAP that contains the RRC
+ * methods called by the PHY
+ */
+class NrSlUeCphySapUser
+{
+  public:
+    /**
+     * \brief Destructor
+     */
+    virtual ~NrSlUeCphySapUser();
+
+    /**
+     *  Structure used by the Phy to report RSRP measurements to the RRC
+     *  for relay selection purposes
+     */
+    struct RsrpElement
+    {
+        uint32_t l2Id;
+        double rsrp;
+    };
+
+    /**
+     *  Structure used to store RSRP measurements to be reported to the RRC by the PHY
+     *  for relay selection purposes
+     */
+    struct RsrpElementsList
+    {
+        std::vector<struct RsrpElement> rsrpMeasurementsList; ///< List of the RSRP measurements
+    };
+
+    /**
+     *  \brief Repot RSRP measurements to the RRC
+     *
+     *  \param l the structure containing a list of RSRP measuremnet elements,
+     *           including the peer UE L2ID (relay) and related RSRP value
+     */
+    virtual void ReceiveUeSlRsrpMeasurements(RsrpElementsList l) = 0;
+    /**
+     * \brief Set L1 measurement period in the RRC
+     *
+     * \param period L1 RSRP filter period
+     */
+    virtual void SetRsrpFilterPeriod(Time period) = 0;
+};
+
 /**
  * \ingroup lte
  *
@@ -171,6 +229,8 @@ class MemberNrSlUeCphySapUser : public NrSlUeCphySapUser
     MemberNrSlUeCphySapUser(C* owner);
 
     // methods inherited from NrSlUeCphySapUser go here
+    void ReceiveUeSlRsrpMeasurements(RsrpElementsList l) override;
+    void SetRsrpFilterPeriod(Time period) override;
 
   private:
     C* m_owner; ///< the owner class
@@ -180,6 +240,20 @@ template <class C>
 MemberNrSlUeCphySapUser<C>::MemberNrSlUeCphySapUser(C* owner)
     : m_owner(owner)
 {
+}
+
+template <class C>
+void
+MemberNrSlUeCphySapUser<C>::ReceiveUeSlRsrpMeasurements(RsrpElementsList l)
+{
+    m_owner->DoReceiveUeSlRsrpMeasurements(l);
+}
+
+template <class C>
+void
+MemberNrSlUeCphySapUser<C>::SetRsrpFilterPeriod(Time period)
+{
+    m_owner->DoSetRsrpFilterPeriod(period);
 }
 
 } // namespace ns3

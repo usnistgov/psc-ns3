@@ -52,9 +52,6 @@ class UdpEchoServer : public Application
     UdpEchoServer();
     ~UdpEchoServer() override;
 
-  protected:
-    void DoDispose() override;
-
   private:
     void StartApplication() override;
     void StopApplication() override;
@@ -69,6 +66,7 @@ class UdpEchoServer : public Application
     void HandleRead(Ptr<Socket> socket);
 
     uint16_t m_port;       //!< Port on which we listen for incoming packets.
+    uint8_t m_tos;         //!< The packets Type of Service
     Ptr<Socket> m_socket;  //!< IPv4 Socket
     Ptr<Socket> m_socket6; //!< IPv6 Socket
     Address m_local;       //!< local multicast address

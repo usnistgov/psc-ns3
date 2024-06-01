@@ -56,6 +56,13 @@ class NoBackhaulEpcHelper : public EpcHelper
      */
     ~NoBackhaulEpcHelper() override;
 
+    /**
+     * Deregister a remote UE that previously connected to a UE-to-Network relay UE
+     * \param relayImsi IMSI of the relay UE
+     * \param ueAddr The IPv4 address of the remote UE
+     */
+    void RemoveRemoteUe(uint64_t relayImsi, Ipv4Address ueAddr);
+
     // inherited from Object
     /**
      * Register this type.
@@ -86,6 +93,7 @@ class NoBackhaulEpcHelper : public EpcHelper
     Ipv4Address GetUeDefaultGatewayAddress() override;
     Ipv6Address GetUeDefaultGatewayAddress6() override;
     int64_t AssignStreams(int64_t stream) override;
+    virtual void AddRemoteUe(uint64_t relayImsi, Ipv4Address ueAddr) override;
 
   protected:
     /**

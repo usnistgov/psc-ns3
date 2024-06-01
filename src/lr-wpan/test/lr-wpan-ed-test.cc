@@ -32,6 +32,7 @@
 #include <iostream>
 
 using namespace ns3;
+using namespace ns3::lrwpan;
 
 NS_LOG_COMPONENT_DEFINE("lr-wpan-energy-detection-test");
 
@@ -54,10 +55,10 @@ class LrWpanEdTestCase : public TestCase
      * \param status The PHY status.
      * \param level The ED level.
      */
-    void PlmeEdConfirm(LrWpanPhyEnumeration status, uint8_t level);
+    void PlmeEdConfirm(PhyEnumeration status, uint8_t level);
 
-    LrWpanPhyEnumeration m_status; //!< PHY status.
-    uint8_t m_level;               //!< ED level.
+    PhyEnumeration m_status; //!< PHY status.
+    uint8_t m_level;         //!< ED level.
 };
 
 LrWpanEdTestCase::LrWpanEdTestCase()
@@ -68,7 +69,7 @@ LrWpanEdTestCase::LrWpanEdTestCase()
 }
 
 void
-LrWpanEdTestCase::PlmeEdConfirm(LrWpanPhyEnumeration status, uint8_t level)
+LrWpanEdTestCase::PlmeEdConfirm(PhyEnumeration status, uint8_t level)
 {
     NS_LOG_UNCOND("Energy Detection completed with status "
                   << LrWpanHelper::LrWpanPhyEnumerationPrinter(status) << " and energy level "
@@ -168,7 +169,7 @@ LrWpanEdTestCase::DoRun()
     NS_TEST_EXPECT_MSG_EQ(m_status, IEEE_802_15_4_PHY_SUCCESS, "ED status SUCCESS (as expected)");
     NS_TEST_EXPECT_MSG_EQ(m_level, 0, "ED reported signal level 0 (as expected)");
 
-    // Configure the RX Power to be -106.58 dBm, i.e. exectly to receiver sensitivity.
+    // Configure the RX Power to be -106.58 dBm, i.e. exactly to receiver sensitivity.
     propModel->SetRss(-106.58);
 
     m_status = IEEE_802_15_4_PHY_UNSPECIFIED;
@@ -266,9 +267,9 @@ class LrWpanEdTestSuite : public TestSuite
 };
 
 LrWpanEdTestSuite::LrWpanEdTestSuite()
-    : TestSuite("lr-wpan-energy-detection", UNIT)
+    : TestSuite("lr-wpan-energy-detection", Type::UNIT)
 {
-    AddTestCase(new LrWpanEdTestCase, TestCase::QUICK);
+    AddTestCase(new LrWpanEdTestCase, TestCase::Duration::QUICK);
 }
 
 static LrWpanEdTestSuite g_lrWpanEdTestSuite; //!< Static variable for test initialization

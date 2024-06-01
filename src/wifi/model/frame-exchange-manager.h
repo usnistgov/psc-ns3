@@ -37,6 +37,9 @@
 
 #include "ns3/object.h"
 
+#define WIFI_FEM_NS_LOG_APPEND_CONTEXT                                                             \
+    std::clog << "[link=" << +m_linkId << "][mac=" << m_self << "] "
+
 namespace ns3
 {
 
@@ -547,7 +550,7 @@ class FrameExchangeManager : public Object
      * \param rtsTxMode the TX mode used to transmit the RTS
      * \param rtsSnr the SNR of the RTS in linear scale
      */
-    void SendCtsAfterRts(const WifiMacHeader& rtsHdr, WifiMode rtsTxMode, double rtsSnr);
+    virtual void SendCtsAfterRts(const WifiMacHeader& rtsHdr, WifiMode rtsTxMode, double rtsSnr);
 
     /**
      * Send CTS after receiving RTS.

@@ -205,9 +205,9 @@ class SwitchTestSuite : public TestSuite
 };
 
 SwitchTestSuite::SwitchTestSuite()
-    : TestSuite("openflow", UNIT)
+    : TestSuite("openflow", Type::UNIT)
 {
-    AddTestCase(new SwitchFlowTableTestCase, TestCase::QUICK);
+    AddTestCase(new SwitchFlowTableTestCase, TestCase::Duration::QUICK);
 }
 
 /// Do not forget to allocate an instance of this TestSuite

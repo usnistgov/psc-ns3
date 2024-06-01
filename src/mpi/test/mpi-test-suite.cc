@@ -116,9 +116,9 @@ class MpiTestSuite : public TestSuite
                  const std::string dataDir,
                  const int ranks,
                  const std::string args = "",
-                 const TestDuration duration = QUICK,
+                 const Duration duration = Duration::QUICK,
                  const bool shouldNotErr = true)
-        : TestSuite(name, EXAMPLE)
+        : TestSuite(name, Type::EXAMPLE)
     {
         AddTestCase(new MpiTestCase(name, program, dataDir, ranks, args, shouldNotErr), duration);
     }

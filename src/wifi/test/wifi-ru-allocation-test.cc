@@ -688,9 +688,9 @@ class WifiRuAllocationTestSuite : public TestSuite
 };
 
 WifiRuAllocationTestSuite::WifiRuAllocationTestSuite()
-    : TestSuite("wifi-ru-allocation", UNIT)
+    : TestSuite("wifi-ru-allocation", Type::UNIT)
 {
-    AddTestCase(new Wifi20MHzIndicesCoveringRuTest(), TestCase::QUICK);
+    AddTestCase(new Wifi20MHzIndicesCoveringRuTest(), TestCase::Duration::QUICK);
 }
 
 static WifiRuAllocationTestSuite g_wifiRuAllocationTestSuite; ///< the test suite

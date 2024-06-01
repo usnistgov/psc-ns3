@@ -205,12 +205,6 @@ class MeshWifiInterfaceMac : public WifiMac
      */
     void SetBeaconGeneration(bool enable);
     /**
-     * Finish configuration based on the WifiStandard being provided
-     *
-     * \param standard the WifiStandard being configured
-     */
-    void ConfigureStandard(WifiStandard standard) override;
-    /**
      * \param cwMin the minimum contention window size
      * \param cwMax the maximum contention window size
      *
@@ -227,9 +221,11 @@ class MeshWifiInterfaceMac : public WifiMac
      * \param stream first stream index to use
      * \return the number of stream indices assigned by this model
      */
-    int64_t AssignStreams(int64_t stream);
+    int64_t AssignStreams(int64_t stream) override;
 
   private:
+    void DoCompleteConfig() override;
+
     /**
      * Frame receive handler
      *
@@ -312,9 +308,6 @@ class MeshWifiInterfaceMac : public WifiMac
     };
 
     Statistics m_stats; ///< statistics
-
-    /// Current standard: needed to configure metric
-    WifiStandard m_standard;
 
     /// Add randomness to beacon generation
     Ptr<UniformRandomVariable> m_coefficient;

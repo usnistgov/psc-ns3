@@ -25,6 +25,8 @@
 #include "mgt-headers.h"
 #include "wifi-mac.h"
 
+#include "ns3/eht-configuration.h"
+
 #include <set>
 #include <variant>
 
@@ -108,7 +110,7 @@ enum WifiPowerManagementMode : uint8_t
      │                │ ┌─────────────────────────────────────┐  │    │
      │                │ │                                     │  │    │
      │  ┌─────────────▼─▼──┐       ┌──────────────┐       ┌───┴──▼────┴───────────────────┐
-     └──►   Unassociated   ├───────►   Scanning   ├───────►   Wait AssociationiResponse   │
+     └──►   Unassociated   ├───────►   Scanning   ├───────►   Wait Association Response   │
         └──────────────────┘       └──────┬──▲────┘       └───────────────┬──▲────────────┘
                                           │  │                            │  │
                                           │  │                            │  │
@@ -195,6 +197,7 @@ class StaWifiMac : public WifiMac
      */
     void Enqueue(Ptr<Packet> packet, Mac48Address to) override;
     bool CanForwardPacketsTo(Mac48Address to) const override;
+    int64_t AssignStreams(int64_t stream) override;
 
     /**
      * \param phys the physical layers attached to this MAC.
@@ -320,23 +323,12 @@ class StaWifiMac : public WifiMac
     void BlockTxOnLink(uint8_t linkId, WifiQueueBlockedReason reason);
 
     /**
-     * Unblock transmissions on the given link for the given reason.
+     * Unblock transmissions on the given links for the given reason.
      *
-     * \param linkId the ID of the given link
-     * \param reason the reason for unblocking transmissions on the given link
+     * \param linkIds the IDs of the given links
+     * \param reason the reason for unblocking transmissions on the given links
      */
-    void UnblockTxOnLink(uint8_t linkId, WifiQueueBlockedReason reason);
-
-    /**
-     * Assign a fixed random variable stream number to the random variables
-     * used by this model.  Return the number of streams (possibly zero) that
-     * have been assigned.
-     *
-     * \param stream first stream index to use
-     *
-     * \return the number of stream indices assigned by this model
-     */
-    int64_t AssignStreams(int64_t stream);
+    void UnblockTxOnLink(std::set<uint8_t> linkIds, WifiQueueBlockedReason reason);
 
   protected:
     /**
@@ -388,6 +380,8 @@ class StaWifiMac : public WifiMac
     };
 
   private:
+    void DoCompleteConfig() override;
+
     /**
      * Enable or disable active probing.
      *
@@ -534,7 +528,8 @@ class StaWifiMac : public WifiMac
      * \param apNegSupport the negotiation type supported by the AP MLD
      * \return the TID-to-Link Mapping element(s) to include in Association Request frame.
      */
-    std::vector<TidToLinkMapping> GetTidToLinkMappingElements(uint8_t apNegSupport);
+    std::vector<TidToLinkMapping> GetTidToLinkMappingElements(
+        WifiTidToLinkMappingNegSupport apNegSupport);
 
     /**
      * Set the current MAC state.

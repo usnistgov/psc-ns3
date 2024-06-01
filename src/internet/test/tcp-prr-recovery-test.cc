@@ -152,7 +152,7 @@ class PrrRecoveryTestSuite : public TestSuite
 {
   public:
     PrrRecoveryTestSuite()
-        : TestSuite("tcp-prr-recovery-test", UNIT)
+        : TestSuite("tcp-prr-recovery-test", Type::UNIT)
     {
         AddTestCase(new PrrRecoveryTest(
                         3000,
@@ -164,7 +164,7 @@ class PrrRecoveryTestSuite : public TestSuite
                         1000,
                         "SSRB",
                         "Prr test on cWnd when bytesInFlight is greater than ssThresh with SSRB"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new PrrRecoveryTest(
                         1000,
                         500,
@@ -175,7 +175,7 @@ class PrrRecoveryTestSuite : public TestSuite
                         1000,
                         "SSRB",
                         "Prr test on cWnd when bytesInFlight is lower than ssThresh with SSRB"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new PrrRecoveryTest(
                         3000,
                         500,
@@ -186,7 +186,7 @@ class PrrRecoveryTestSuite : public TestSuite
                         1000,
                         "CRB",
                         "Prr test on cWnd when bytesInFlight is greater than ssThresh with CRB"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new PrrRecoveryTest(
                         1000,
                         500,
@@ -197,7 +197,7 @@ class PrrRecoveryTestSuite : public TestSuite
                         1000,
                         "CRB",
                         "Prr test on cWnd when bytesInFlight is lower than ssThresh with CRB"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
     }
 };
 

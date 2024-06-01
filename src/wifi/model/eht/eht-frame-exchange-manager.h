@@ -104,6 +104,9 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
     void ForwardPsduMapDown(WifiConstPsduMap psduMap, WifiTxVector& txVector) override;
     void SendMuRts(const WifiTxParameters& txParams) override;
     void CtsAfterMuRtsTimeout(Ptr<WifiMpdu> muRts, const WifiTxVector& txVector) override;
+    void SendCtsAfterMuRts(const WifiMacHeader& muRtsHdr,
+                           const CtrlTriggerHeader& trigger,
+                           double muRtsSnr) override;
     void TransmissionSucceeded() override;
     void TransmissionFailed() override;
     void NotifyChannelReleased(Ptr<Txop> txop) override;
@@ -115,6 +118,7 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
                      bool inAmpdu) override;
     void NavResetTimeout() override;
     void IntraBssNavResetTimeout() override;
+    void SendCtsAfterRts(const WifiMacHeader& rtsHdr, WifiMode rtsTxMode, double rtsSnr) override;
 
     /**
      * This method is intended to be called when an AP MLD detects that an EMLSR client previously
@@ -129,6 +133,19 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
     void EmlsrSwitchToListening(const Mac48Address& address, const Time& delay);
 
   private:
+    /**
+     * Check if the frame received (or being received) is sent by an EMLSR client to start an
+     * UL TXOP. If so, take the appropriate actions (e.g., block transmission to the EMLSR client
+     * on the other links). This method is intended to be called when an MPDU (possibly within
+     * an A-MPDU) is received or when the reception of the MAC header in an MPDU is notified.
+     *
+     * \param hdr the MAC header of the received (or being received) MPDU
+     * \param txVector the TXVECTOR used to transmit the frame received (or being received)
+     * \return whether the frame received (or being received) is sent by an EMLSR client to start
+     *         an UL TXOP
+     */
+    bool CheckEmlsrClientStartingTxop(const WifiMacHeader& hdr, const WifiTxVector& txVector);
+
     /**
      * Update the TXOP end timer when starting a frame transmission.
      *
@@ -153,8 +170,10 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
 
     /**
      * Take actions when a TXOP (of which we are not the holder) ends.
+     *
+     * \param txopHolder the holder of the TXOP (if any)
      */
-    void TxopEnd();
+    void TxopEnd(const std::optional<Mac48Address>& txopHolder);
 
     EventId m_ongoingTxopEnd; //!< event indicating the possible end of the current TXOP (of which
                               //!< we are not the holder)

@@ -740,7 +740,7 @@ RipNg::InvalidateRoute(RipNgRoutingTableEntry* route)
             route->SetRouteStatus(RipNgRoutingTableEntry::RIPNG_INVALID);
             route->SetRouteMetric(m_linkDown);
             route->SetRouteChanged(true);
-            if (it->second.IsRunning())
+            if (it->second.IsPending())
             {
                 it->second.Cancel();
             }
@@ -1242,11 +1242,8 @@ RipNg::DoSendRouteUpdate(bool periodic)
                         rte.SetRouteMetric(rtIter->first->GetRouteMetric());
                     }
                     rte.SetRouteTag(rtIter->first->GetRouteTag());
-                    if (m_splitHorizonStrategy == SPLIT_HORIZON && !splitHorizoning)
-                    {
-                        hdr.AddRte(rte);
-                    }
-                    else if (m_splitHorizonStrategy != SPLIT_HORIZON)
+                    if ((m_splitHorizonStrategy == SPLIT_HORIZON && !splitHorizoning) ||
+                        (m_splitHorizonStrategy != SPLIT_HORIZON))
                     {
                         hdr.AddRte(rte);
                     }
@@ -1279,7 +1276,7 @@ RipNg::SendTriggeredRouteUpdate()
 {
     NS_LOG_FUNCTION(this);
 
-    if (m_nextTriggeredUpdate.IsRunning())
+    if (m_nextTriggeredUpdate.IsPending())
     {
         NS_LOG_LOGIC("Skipping Triggered Update due to cooldown");
         return;
@@ -1311,7 +1308,7 @@ RipNg::SendUnsolicitedRouteUpdate()
 {
     NS_LOG_FUNCTION(this);
 
-    if (m_nextTriggeredUpdate.IsRunning())
+    if (m_nextTriggeredUpdate.IsPending())
     {
         m_nextTriggeredUpdate.Cancel();
     }

@@ -124,9 +124,9 @@ class MobilityTraceTestSuite : public TestSuite
 };
 
 MobilityTraceTestSuite::MobilityTraceTestSuite()
-    : TestSuite("mobility-trace", UNIT)
+    : TestSuite("mobility-trace", Type::UNIT)
 {
-    AddTestCase(new MobilityTraceTestCase, TestCase::QUICK);
+    AddTestCase(new MobilityTraceTestCase, TestCase::Duration::QUICK);
 }
 
 /**

@@ -109,9 +109,9 @@ class Ipv6AddressTestSuite : public TestSuite
 };
 
 Ipv6AddressTestSuite::Ipv6AddressTestSuite()
-    : TestSuite("ipv6-address", UNIT)
+    : TestSuite("ipv6-address", Type::UNIT)
 {
-    AddTestCase(new Ipv6AddressTestCase, TestCase::QUICK);
+    AddTestCase(new Ipv6AddressTestCase, TestCase::Duration::QUICK);
 }
 
 static Ipv6AddressTestSuite ipv6AddressTestSuite; //!< Static variable for test initialization

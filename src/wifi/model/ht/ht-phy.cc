@@ -29,6 +29,9 @@
 #include "ns3/wifi-psdu.h"
 #include "ns3/wifi-utils.h"
 
+#undef NS_LOG_APPEND_CONTEXT
+#define NS_LOG_APPEND_CONTEXT WIFI_PHY_NS_LOG_APPEND_CONTEXT(m_wifiPhy)
+
 namespace ns3
 {
 
@@ -821,7 +824,6 @@ HtPhy::GetMaxPsduSize() const
 PhyEntity::CcaIndication
 HtPhy::GetCcaIndication(const Ptr<const WifiPpdu> ppdu)
 {
-    NS_LOG_FUNCTION(this);
     if (m_wifiPhy->GetChannelWidth() < 40)
     {
         return OfdmPhy::GetCcaIndication(ppdu);

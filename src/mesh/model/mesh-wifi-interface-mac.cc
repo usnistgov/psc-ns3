@@ -32,6 +32,7 @@
 #include "ns3/random-variable-stream.h"
 #include "ns3/simulator.h"
 #include "ns3/socket.h"
+#include "ns3/string.h"
 #include "ns3/trace-source-accessor.h"
 #include "ns3/wifi-mac-queue-scheduler.h"
 #include "ns3/wifi-mac-queue.h"
@@ -75,7 +76,6 @@ MeshWifiInterfaceMac::GetTypeId()
 }
 
 MeshWifiInterfaceMac::MeshWifiInterfaceMac()
-    : m_standard(WIFI_STANDARD_80211a)
 {
     NS_LOG_FUNCTION(this);
 
@@ -149,7 +149,7 @@ MeshWifiInterfaceMac::DoInitialize()
     {
         Time randomStart = Seconds(m_coefficient->GetValue());
         // Now start sending beacons after some random delay (to avoid collisions)
-        NS_ASSERT(!m_beaconSendEvent.IsRunning());
+        NS_ASSERT(!m_beaconSendEvent.IsPending());
         m_beaconSendEvent =
             Simulator::Schedule(randomStart, &MeshWifiInterfaceMac::SendBeacon, this);
         m_tbtt = Simulator::Now() + randomStart;
@@ -165,7 +165,7 @@ int64_t
 MeshWifiInterfaceMac::AssignStreams(int64_t stream)
 {
     NS_LOG_FUNCTION(this << stream);
-    int64_t currentStream = stream;
+    int64_t currentStream = stream + WifiMac::AssignStreams(stream);
     m_coefficient->SetStream(currentStream++);
     for (auto i = m_plugins.begin(); i < m_plugins.end(); i++)
     {
@@ -387,7 +387,7 @@ MeshWifiInterfaceMac::SetBeaconGeneration(bool enable)
 bool
 MeshWifiInterfaceMac::GetBeaconGeneration() const
 {
-    return m_beaconSendEvent.IsRunning();
+    return m_beaconSendEvent.IsPending();
 }
 
 Time
@@ -423,7 +423,7 @@ MeshWifiInterfaceMac::SendBeacon()
     NS_LOG_FUNCTION(this);
     NS_LOG_DEBUG(GetAddress() << " is sending beacon");
 
-    NS_ASSERT(!m_beaconSendEvent.IsRunning());
+    NS_ASSERT(!m_beaconSendEvent.IsPending());
 
     // Form & send beacon
     MeshWifiBeacon beacon(GetSsid(), GetSupportedRates(), m_beaconInterval.GetMicroSeconds());
@@ -597,11 +597,9 @@ MeshWifiInterfaceMac::ResetStats()
 }
 
 void
-MeshWifiInterfaceMac::ConfigureStandard(WifiStandard standard)
+MeshWifiInterfaceMac::DoCompleteConfig()
 {
     NS_ABORT_IF(!GetQosSupported());
-    WifiMac::ConfigureStandard(standard);
-    m_standard = standard;
 }
 
 void
@@ -611,7 +609,7 @@ MeshWifiInterfaceMac::ConfigureContentionWindow(uint32_t cwMin, uint32_t cwMax)
     // We use the single DCF provided by WifiMac for the purpose of
     // Beacon transmission. For this we need to reconfigure the channel
     // access parameters slightly, and do so here.
-    m_txop = CreateObject<Txop>();
+    m_txop = CreateObjectWithAttributes<Txop>("AcIndex", StringValue("AC_BE_NQOS"));
     m_txop->SetWifiMac(this);
     GetLink(0).channelAccessManager->Add(m_txop);
     m_txop->SetTxMiddle(m_txMiddle);

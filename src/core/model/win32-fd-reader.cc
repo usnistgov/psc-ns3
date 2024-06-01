@@ -41,7 +41,10 @@ namespace ns3
 
 NS_LOG_COMPONENT_DEFINE("FdReader");
 
+// conditional compilation to avoid Doxygen errors
+#ifdef __WIN32__
 bool FdReader::winsock_initialized = false;
+#endif
 
 FdReader::FdReader()
     : m_fd(-1),
@@ -101,7 +104,7 @@ FdReader::Start(int fd, Callback<void, uint8_t*, ssize_t> readCallback)
     // scheduling a "destroy time" method to make sure the thread exits before
     // proceeding.
     //
-    if (!m_destroyEvent.IsRunning())
+    if (!m_destroyEvent.IsPending())
     {
         // hold a reference to ensure that this object is not
         // deallocated before the destroy-time event fires

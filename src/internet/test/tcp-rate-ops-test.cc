@@ -36,7 +36,7 @@ NS_LOG_COMPONENT_DEFINE("TcpRateOpsTestSuite");
 class MimicCongControl;
 
 /**
- * \ingroup internet-tests
+ * \ingroup internet-test
  * \ingroup tests
  *
  * \brief The TcpRateLinux Basic Test
@@ -217,7 +217,7 @@ MimicCongControl::GetTypeId()
 }
 
 /**
- * \ingroup internet-tests
+ * \ingroup internet-test
  * \ingroup tests
  *
  * \brief The TcpRateLinux Test uses sender-receiver model to test its functionality.
@@ -435,7 +435,7 @@ TcpRateLinuxWithSocketsTest::FinalChecks()
 }
 
 /**
- * \ingroup internet-tests
+ * \ingroup internet-test
  * \ingroup tests
  *
  * \brief The TcpRateLinuxWithBufferTest tests rate sample functionality with arbitrary SACK
@@ -601,21 +601,21 @@ class TcpRateOpsTestSuite : public TestSuite
 {
   public:
     TcpRateOpsTestSuite()
-        : TestSuite("tcp-rate-ops", UNIT)
+        : TestSuite("tcp-rate-ops", Type::UNIT)
     {
         AddTestCase(new TcpRateLinuxBasicTest(1000,
                                               SequenceNumber32(20),
                                               SequenceNumber32(11),
                                               1,
                                               "Testing SkbDelivered and SkbSent"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(
             new TcpRateLinuxBasicTest(1000,
                                       SequenceNumber32(11),
                                       SequenceNumber32(11),
                                       2,
                                       "Testing SkbDelivered and SkbSent with app limited data"),
-            TestCase::QUICK);
+            TestCase::Duration::QUICK);
 
         std::vector<uint32_t> toDrop;
         toDrop.push_back(4001);
@@ -623,35 +623,35 @@ class TcpRateOpsTestSuite : public TestSuite
             new TcpRateLinuxWithSocketsTest("Checking Rate sample value without SACK, one drop",
                                             false,
                                             toDrop),
-            TestCase::QUICK);
+            TestCase::Duration::QUICK);
 
         AddTestCase(
             new TcpRateLinuxWithSocketsTest("Checking Rate sample value with SACK, one drop",
                                             true,
                                             toDrop),
-            TestCase::QUICK);
+            TestCase::Duration::QUICK);
         toDrop.push_back(4001);
         AddTestCase(
             new TcpRateLinuxWithSocketsTest("Checking Rate sample value without SACK, two drop",
                                             false,
                                             toDrop),
-            TestCase::QUICK);
+            TestCase::Duration::QUICK);
 
         AddTestCase(
             new TcpRateLinuxWithSocketsTest("Checking Rate sample value with SACK, two drop",
                                             true,
                                             toDrop),
-            TestCase::QUICK);
+            TestCase::Duration::QUICK);
 
         AddTestCase(
             new TcpRateLinuxWithBufferTest(1000,
                                            "Checking rate sample values with arbitrary SACK Block"),
-            TestCase::QUICK);
+            TestCase::Duration::QUICK);
 
         AddTestCase(
             new TcpRateLinuxWithBufferTest(500,
                                            "Checking rate sample values with arbitrary SACK Block"),
-            TestCase::QUICK);
+            TestCase::Duration::QUICK);
     }
 };
 

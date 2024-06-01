@@ -148,14 +148,12 @@ class ThreeGppHttpServer : public Application
                                                   Ptr<Socket> socket);
 
   protected:
-    // Inherited from Object base class
     void DoDispose() override;
 
-    // Inherited from Application base class
+  private:
     void StartApplication() override;
     void StopApplication() override;
 
-  private:
     // SOCKET CALLBACK METHODS
 
     /**
@@ -272,6 +270,8 @@ class ThreeGppHttpServer : public Application
     Address m_localAddress;
     /// The `LocalPort` attribute.
     uint16_t m_localPort;
+    /// The `Tos` attribute.
+    uint8_t m_tos;
     /// The `Mtu` attribute.
     uint32_t m_mtuSize;
 

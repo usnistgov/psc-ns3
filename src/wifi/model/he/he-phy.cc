@@ -38,6 +38,9 @@
 
 #include <algorithm>
 
+#undef NS_LOG_APPEND_CONTEXT
+#define NS_LOG_APPEND_CONTEXT WIFI_PHY_NS_LOG_APPEND_CONTEXT(m_wifiPhy)
+
 namespace ns3
 {
 
@@ -382,7 +385,7 @@ HePhy::StartReceivePreamble(Ptr<const WifiPpdu> ppdu,
                         << GetDuration(WIFI_PPDU_FIELD_TRAINING, txVector).As(Time::NS));
             auto event = CreateInterferenceEvent(ppdu, rxDuration, rxPowersW, !hePortionStarted);
             uint16_t staId = GetStaId(ppdu);
-            NS_ASSERT(m_beginMuPayloadRxEvents.find(staId) == m_beginMuPayloadRxEvents.end());
+            NS_ASSERT(!m_beginMuPayloadRxEvents.contains(staId));
             m_beginMuPayloadRxEvents[staId] =
                 Simulator::Schedule(GetDuration(WIFI_PPDU_FIELD_TRAINING, txVector),
                                     &HePhy::StartReceiveMuPayload,
@@ -530,14 +533,14 @@ HePhy::HandleRxPpduWithSameContent(Ptr<Event> event,
         (GetCurrentEvent()->GetPpdu()->GetUid() != ppdu->GetUid()))
     {
         NS_LOG_DEBUG("Drop packet because already receiving another HE TB PPDU");
-        m_wifiPhy->NotifyRxDrop(GetAddressedPsduInPpdu(ppdu), RXING);
+        m_wifiPhy->NotifyRxPpduDrop(ppdu, RXING);
     }
     else if (const auto isResponseToTrigger = (m_previouslyTxPpduUid == ppdu->GetUid());
              isResponseToTrigger && GetCurrentEvent() &&
              (GetCurrentEvent()->GetPpdu()->GetUid() != ppdu->GetUid()))
     {
         NS_LOG_DEBUG("Drop packet because already receiving another response to a trigger frame");
-        m_wifiPhy->NotifyRxDrop(GetAddressedPsduInPpdu(ppdu), RXING);
+        m_wifiPhy->NotifyRxPpduDrop(ppdu, RXING);
     }
 }
 
@@ -668,8 +671,7 @@ HePhy::ProcessSigA(Ptr<Event> event, PhyFieldRxStatus status)
                 return PhyFieldRxStatus(false, FILTERED, DROP);
             }
             uint16_t staId = ppdu->GetStaId();
-            if (m_trigVector->GetHeMuUserInfoMap().find(staId) ==
-                m_trigVector->GetHeMuUserInfoMap().end())
+            if (!m_trigVector->GetHeMuUserInfoMap().contains(staId))
             {
                 NS_LOG_DEBUG("TB PPDU received from un unexpected STA ID");
                 return PhyFieldRxStatus(false, FILTERED, DROP);
@@ -830,7 +832,7 @@ HePhy::DoStartReceivePayload(Ptr<Event> event)
             Simulator::Schedule(timeToEndRx, &HePhy::ResetReceive, this, event));
         // Cancel all scheduled events for MU payload reception
         NS_ASSERT(!m_beginMuPayloadRxEvents.empty() &&
-                  m_beginMuPayloadRxEvents.begin()->second.IsRunning());
+                  m_beginMuPayloadRxEvents.begin()->second.IsPending());
         for (auto& beginMuPayloadRxEvent : m_beginMuPayloadRxEvents)
         {
             beginMuPayloadRxEvent.second.Cancel();
@@ -848,7 +850,7 @@ HePhy::DoStartReceivePayload(Ptr<Event> event)
         NS_ASSERT(!m_beginMuPayloadRxEvents.empty());
         for (auto& beginMuPayloadRxEvent : m_beginMuPayloadRxEvents)
         {
-            NS_ASSERT(beginMuPayloadRxEvent.second.IsRunning());
+            NS_ASSERT(beginMuPayloadRxEvent.second.IsPending());
         }
     }
 
@@ -1517,8 +1519,7 @@ HePhy::CalculateTxDuration(WifiConstPsduMap psduMap,
         if (txVector.IsDlMu())
         {
             NS_ASSERT(txVector.GetModulationClass() >= WIFI_MOD_CLASS_HE);
-            WifiTxVector::HeMuUserInfoMap userInfoMap = txVector.GetHeMuUserInfoMap();
-            NS_ABORT_MSG_IF(userInfoMap.find(staIdPsdu.first) == userInfoMap.end(),
+            NS_ABORT_MSG_IF(!txVector.GetHeMuUserInfoMap().contains(staIdPsdu.first),
                             "STA-ID in psduMap (" << staIdPsdu.first
                                                   << ") should be referenced in txVector");
         }

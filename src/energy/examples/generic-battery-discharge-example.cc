@@ -26,6 +26,7 @@
 #include <string>
 
 using namespace ns3;
+using namespace ns3::energy;
 
 /**
  * This example shows the use of batteries in ns-3.
@@ -44,8 +45,10 @@ using namespace ns3;
  *
  * Plot files are produced as a result of this example.
  * Graphs can be obtained from the plot using:
+ * \code{.sh}
+   $> gnuplot <plotname>.plt
+   \endcode
  *
- * $> gnuplot <plotname>.plt
  */
 
 Gnuplot battDischPlot1 = Gnuplot("BattDisch1.eps");

@@ -22,9 +22,11 @@
 #include "ns3/frame-exchange-manager.h"
 #include "ns3/interference-helper.h"
 #include "ns3/multi-model-spectrum-channel.h"
+#include "ns3/pointer.h"
 #include "ns3/qos-txop.h"
 #include "ns3/simulator.h"
 #include "ns3/spectrum-wifi-phy.h"
+#include "ns3/string.h"
 #include "ns3/test.h"
 
 #include <list>
@@ -638,7 +640,9 @@ ChannelAccessManagerTest<TxopType>::AddTxop(uint32_t aifsn)
     m_txop.push_back(txop);
     m_ChannelAccessManager->Add(txop);
     // the following causes the creation of a link for the txop object
-    auto mac = CreateObject<AdhocWifiMac>();
+    auto mac = CreateObjectWithAttributes<AdhocWifiMac>(
+        "Txop",
+        PointerValue(CreateObjectWithAttributes<Txop>("AcIndex", StringValue("AC_BE_NQOS"))));
     mac->SetWifiPhys({nullptr});
     txop->SetWifiMac(mac);
     txop->SetAifsn(aifsn);
@@ -1538,9 +1542,9 @@ class TxopTestSuite : public TestSuite
 };
 
 TxopTestSuite::TxopTestSuite()
-    : TestSuite("wifi-devices-dcf", UNIT)
+    : TestSuite("wifi-devices-dcf", Type::UNIT)
 {
-    AddTestCase(new ChannelAccessManagerTest<Txop>, TestCase::QUICK);
+    AddTestCase(new ChannelAccessManagerTest<Txop>, TestCase::Duration::QUICK);
 }
 
 static TxopTestSuite g_dcfTestSuite;
@@ -1558,9 +1562,9 @@ class QosTxopTestSuite : public TestSuite
 };
 
 QosTxopTestSuite::QosTxopTestSuite()
-    : TestSuite("wifi-devices-edca", UNIT)
+    : TestSuite("wifi-devices-edca", Type::UNIT)
 {
-    AddTestCase(new ChannelAccessManagerTest<QosTxop>, TestCase::QUICK);
+    AddTestCase(new ChannelAccessManagerTest<QosTxop>, TestCase::Duration::QUICK);
 }
 
 static QosTxopTestSuite g_edcaTestSuite;
@@ -1578,9 +1582,9 @@ class ChannelAccessManagerTestSuite : public TestSuite
 };
 
 ChannelAccessManagerTestSuite::ChannelAccessManagerTestSuite()
-    : TestSuite("wifi-channel-access-manager", UNIT)
+    : TestSuite("wifi-channel-access-manager", Type::UNIT)
 {
-    AddTestCase(new LargestIdlePrimaryChannelTest, TestCase::QUICK);
+    AddTestCase(new LargestIdlePrimaryChannelTest, TestCase::Duration::QUICK);
 }
 
 static ChannelAccessManagerTestSuite g_camTestSuite;

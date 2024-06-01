@@ -1877,6 +1877,64 @@ class LteRrcSap
     // {
     //   SidelinkPreconfigNr sidelinkPreconfigNr;
     // };
+
+    /**
+     * \brief SlReselectionConfig
+     */
+    struct SlReselectionConfig
+    {
+        double slRsrpThres; //!< ndicates the threshold of SL communication/ discovery RSRP for a
+                            //!< U2N remote UE to perform relay UE selection/ reselection.
+        double slFilterCoefficientRsrp; //!< Specifies L3 filter coefficient for SL communication/
+                                        //!< discovery RSRP measurement results from L1 filter.
+        uint8_t slHystMin;
+    };
+
+    // SL-RelayUe-Config IE structure is defined but the logic to determine eligibility to serve as
+    // a relay is not implemented
+    /**
+     * \brief SL-RelayUe-Config Information Element
+     * The IE SL-RelayUE-Config specifies the configuration information for NR sidelink U2N Relay
+     * UE.
+     */
+    struct SlRelayUeConfig
+    {
+        double thresHighRelay; //!< Indicates the upper threshold of Uu RSRP for a UE that is in
+                               //!< network coverage to evaluate AS layer conditions for U2N relay
+                               //!< UE operation.
+        double
+            thresLowRelay; //!< Indicates the lower threshold of Uu RSRP for a UE that is in network
+                           //!< coverage to evaluate AS layer conditions for U2N relay UE operation
+        uint8_t hystMaxRelay;
+        uint8_t hystMinRelay;
+    };
+
+    // SL-RemoteUe-Config IE structure is defined but is only used to define relay (re)selection
+    // criteria
+    /**
+     * \brief SL-RemoteUe-Config Information Element
+     * The IE SL-RemoteUE-Config specifies the configuration information for NR sidelink U2N Remote
+     * UE.
+     */
+    struct SlRemoteUeConfig
+    {
+        double thresHighRemote; //!< Indicates the threshold of Uu RSRP for a UE that is in network
+                                //!< coverage to evaluate AS layer conditions for U2N remote UE
+                                //!< operation.
+        uint8_t hystMaxRemote;  //!<  Indicates the hysteresis defining how far below the threshold
+                                //!<  the input is required to be
+        SlReselectionConfig slReselectionConfig; //!< Includes the parameters used by the U2N remote
+                                                 //!< UE when selecting/ reselecting a U2N relay UE.
+    };
+
+    /**
+     * \brief SL-DiscConfigCommon Information Element
+     */
+    struct SlDiscConfigCommon
+    {
+        SlRelayUeConfig slRelayUeConfigCommon;
+        SlRemoteUeConfig slRemoteUeConfigCommon;
+    };
 };
 
 /**

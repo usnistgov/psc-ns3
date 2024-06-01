@@ -29,6 +29,7 @@
 #include "ns3/test.h"
 
 #include <iomanip>
+#include <vector>
 
 using namespace ns3;
 
@@ -49,13 +50,12 @@ class TestUtils
      */
     static std::string sprintPacketContentsHex(Ptr<Packet> pkt)
     {
-        uint32_t psize = pkt->GetSize();
-        uint8_t buffer[psize];
+        std::vector<uint8_t> buffer(pkt->GetSize());
         std::ostringstream oss(std::ostringstream::out);
-        pkt->CopyData(buffer, psize);
-        for (uint32_t i = 0; i < psize; i++)
+        pkt->CopyData(buffer.data(), buffer.size());
+        for (auto b : buffer)
         {
-            oss << std::setfill('0') << std::setw(2) << std::hex << +(buffer[i]) << " ";
+            oss << std::setfill('0') << std::setw(2) << std::hex << +b << " ";
         }
         return std::string(oss.str() + "\n");
     }
@@ -67,13 +67,12 @@ class TestUtils
      */
     static std::string sprintPacketContentsBin(Ptr<Packet> pkt)
     {
-        uint32_t psize = pkt->GetSize();
-        uint8_t buffer[psize];
+        std::vector<uint8_t> buffer(pkt->GetSize());
         std::ostringstream oss(std::ostringstream::out);
-        pkt->CopyData(buffer, psize);
-        for (uint32_t i = 0; i < psize; i++)
+        pkt->CopyData(buffer.data(), buffer.size());
+        for (auto b : buffer)
         {
-            oss << (std::bitset<8>(buffer[i]));
+            oss << (std::bitset<8>(b));
         }
         return std::string(oss.str() + "\n");
     }
@@ -561,7 +560,7 @@ RrcConnectionReconfigurationTestCase::DoRun()
     packet = Create<Packet>();
     NS_LOG_DEBUG("============= RrcConnectionReconfigurationTestCase ===========");
 
-    LteRrcSap::RrcConnectionReconfiguration msg;
+    LteRrcSap::RrcConnectionReconfiguration msg{};
     msg.rrcTransactionIdentifier = 2;
 
     msg.haveMeasConfig = true;
@@ -1256,20 +1255,20 @@ class Asn1EncodingSuite : public TestSuite
 };
 
 Asn1EncodingSuite::Asn1EncodingSuite()
-    : TestSuite("test-asn1-encoding", UNIT)
+    : TestSuite("test-asn1-encoding", Type::UNIT)
 {
     NS_LOG_FUNCTION(this);
-    AddTestCase(new RrcConnectionRequestTestCase(), TestCase::QUICK);
-    AddTestCase(new RrcConnectionSetupTestCase(), TestCase::QUICK);
-    AddTestCase(new RrcConnectionSetupCompleteTestCase(), TestCase::QUICK);
-    AddTestCase(new RrcConnectionReconfigurationCompleteTestCase(), TestCase::QUICK);
-    AddTestCase(new RrcConnectionReconfigurationTestCase(), TestCase::QUICK);
-    AddTestCase(new HandoverPreparationInfoTestCase(), TestCase::QUICK);
-    AddTestCase(new RrcConnectionReestablishmentRequestTestCase(), TestCase::QUICK);
-    AddTestCase(new RrcConnectionReestablishmentTestCase(), TestCase::QUICK);
-    AddTestCase(new RrcConnectionReestablishmentCompleteTestCase(), TestCase::QUICK);
-    AddTestCase(new RrcConnectionRejectTestCase(), TestCase::QUICK);
-    AddTestCase(new MeasurementReportTestCase(), TestCase::QUICK);
+    AddTestCase(new RrcConnectionRequestTestCase(), TestCase::Duration::QUICK);
+    AddTestCase(new RrcConnectionSetupTestCase(), TestCase::Duration::QUICK);
+    AddTestCase(new RrcConnectionSetupCompleteTestCase(), TestCase::Duration::QUICK);
+    AddTestCase(new RrcConnectionReconfigurationCompleteTestCase(), TestCase::Duration::QUICK);
+    AddTestCase(new RrcConnectionReconfigurationTestCase(), TestCase::Duration::QUICK);
+    AddTestCase(new HandoverPreparationInfoTestCase(), TestCase::Duration::QUICK);
+    AddTestCase(new RrcConnectionReestablishmentRequestTestCase(), TestCase::Duration::QUICK);
+    AddTestCase(new RrcConnectionReestablishmentTestCase(), TestCase::Duration::QUICK);
+    AddTestCase(new RrcConnectionReestablishmentCompleteTestCase(), TestCase::Duration::QUICK);
+    AddTestCase(new RrcConnectionRejectTestCase(), TestCase::Duration::QUICK);
+    AddTestCase(new MeasurementReportTestCase(), TestCase::Duration::QUICK);
 }
 
 /**

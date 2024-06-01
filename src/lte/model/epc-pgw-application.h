@@ -159,6 +159,22 @@ class EpcPgwApplication : public Application
     void SetUeAddress6(uint64_t imsi, Ipv6Address ueAddr);
 
     /**
+     * Register a remote UE that connected to a UE-to-Network relay UE
+     *
+     * \param relayImsi IMSI of the relay UE
+     * \param ueAddr The IPv4 address of the remote UE
+     */
+    void AddRemoteUe(uint64_t relayImsi, Ipv4Address ueAddr);
+
+    /**
+     * Deregister a remote UE that previously connected to a UE-to-Network relay UE
+     *
+     * \param relayImsi IMSI of the relay UE
+     * \param ueAddr The IPv4 address of the remote UE
+     */
+    void RemoveRemoteUe(uint64_t relayImsi, Ipv4Address ueAddr);
+
+    /**
      * TracedCallback signature for data Packet reception event.
      *
      * \param [in] packet The data packet sent from the internet.
@@ -312,6 +328,11 @@ class EpcPgwApplication : public Application
      * UeInfo stored by IMSI
      */
     std::map<uint64_t, Ptr<UeInfo>> m_ueInfoByImsiMap;
+
+    /**
+     * UE-to-Network relay UE info indexed by remote UE IPv4 address
+     */
+    std::map<Ipv4Address, Ptr<UeInfo>> m_ueInfoByRemoteUeAddrMap;
 
     /**
      * UDP port to be used for GTP-U

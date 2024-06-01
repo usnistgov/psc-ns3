@@ -46,6 +46,7 @@ SOURCES = \
 	source/troubleshoot.rst \
 	source/utilities.rst \
 	source/working-with-cmake.rst \
+	source/working-with-docker.rst \
 	source/working-with-git.rst \
 	source/working-with-gitlab-ci-local.rst \
 	${SRC}/stats/doc/data-collection.rst \
@@ -135,7 +136,7 @@ RESCALE = ../../utils/rescale-pdf.sh
 	@if test x$($@_width) != x; then $(RESCALE) $($@_width) $@ ; fi
 
 # You can set these variables from the command line.
-SPHINXOPTS    =
+SPHINXOPTS    = -W --keep-going
 SPHINXBUILD   = sphinx-build
 PAPER         =
 BUILDDIR      = build

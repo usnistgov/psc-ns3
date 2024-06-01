@@ -181,7 +181,7 @@ class TvSpectrumTransmitterTestSuite : public TestSuite
 };
 
 TvSpectrumTransmitterTestSuite::TvSpectrumTransmitterTestSuite()
-    : TestSuite("tv-spectrum-transmitter", UNIT)
+    : TestSuite("tv-spectrum-transmitter", Type::UNIT)
 {
     NS_LOG_INFO("creating TvSpectrumTransmitterTestSuite");
     for (double startFreq = 100; startFreq < 1e15; startFreq *= 10)
@@ -194,7 +194,7 @@ TvSpectrumTransmitterTestSuite::TvSpectrumTransmitterTestSuite()
                                                               bandwidth,
                                                               psd,
                                                               TvSpectrumTransmitter::TVTYPE_8VSB),
-                            TestCase::QUICK);
+                            TestCase::Duration::QUICK);
             }
         }
     }
@@ -208,7 +208,7 @@ TvSpectrumTransmitterTestSuite::TvSpectrumTransmitterTestSuite()
                                                               bandwidth,
                                                               psd,
                                                               TvSpectrumTransmitter::TVTYPE_COFDM),
-                            TestCase::QUICK);
+                            TestCase::Duration::QUICK);
             }
         }
     }
@@ -222,7 +222,7 @@ TvSpectrumTransmitterTestSuite::TvSpectrumTransmitterTestSuite()
                                                               bandwidth,
                                                               psd,
                                                               TvSpectrumTransmitter::TVTYPE_ANALOG),
-                            TestCase::QUICK);
+                            TestCase::Duration::QUICK);
             }
         }
     }

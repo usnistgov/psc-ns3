@@ -85,23 +85,15 @@ class Radvd : public Application
      */
     void AddConfiguration(Ptr<RadvdInterface> routerInterface);
 
-    /**
-     * Assign a fixed random variable stream number to the random variables
-     * used by this model.  Return the number of streams (possibly zero) that
-     * have been assigned.
-     *
-     * \param stream first stream index to use
-     * \return the number of stream indices assigned by this model
-     */
-    int64_t AssignStreams(int64_t stream);
+    int64_t AssignStreams(int64_t stream) override;
 
   protected:
-    /**
-     * \brief Dispose the instance.
-     */
     void DoDispose() override;
 
   private:
+    void StartApplication() override;
+    void StopApplication() override;
+
     /// Container: Ptr to RadvdInterface
     typedef std::list<Ptr<RadvdInterface>> RadvdInterfaceList;
     /// Container Iterator: Ptr to RadvdInterface
@@ -122,16 +114,6 @@ class Radvd : public Application
     typedef std::map<uint32_t, Ptr<Socket>>::iterator SocketMapI;
     /// Container Const Iterator: interface number, Socket
     typedef std::map<uint32_t, Ptr<Socket>>::const_iterator SocketMapCI;
-
-    /**
-     * \brief Start the application.
-     */
-    void StartApplication() override;
-
-    /**
-     * \brief Stop the application.
-     */
-    void StopApplication() override;
 
     /**
      * \brief Send a packet.

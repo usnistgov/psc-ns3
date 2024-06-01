@@ -65,7 +65,6 @@ class NrSlUeCmacSapProvider
         Time pdb;                //!< Packet Delay Budget
         bool dynamic{false};     //!< flag for whether it is dynamic or SPS
         Time rri;                //!< Resource Reservation Interval
-        Time t2;                 //!< T2 parameter for selection window
     };
 
     /**
@@ -133,6 +132,12 @@ class NrSlUeCmacSapProvider
      * \param dstL2Id The Sidelink layer 2 id of the destination to listen to.
      */
     virtual void AddNrSlRxDstL2Id(uint32_t dstL2Id) = 0;
+    /**
+     * \brief Remove NR Sidelink destination layer 2 id for reception
+     *
+     * \param dstL2Id The Sidelink layer 2 id of the destination to be removed.
+     */
+    virtual void RemoveNrSlRxDstL2Id(uint32_t dstL2Id) = 0;
 };
 
 /**
@@ -175,6 +180,7 @@ class MemberNrSlUeCmacSapProvider : public NrSlUeCmacSapProvider
     void SetSlMaxTxTransNumPssch(uint8_t maxTxPssch) override;
     void SetSourceL2Id(uint32_t srcL2Id) override;
     void AddNrSlRxDstL2Id(uint32_t dstL2Id) override;
+    void RemoveNrSlRxDstL2Id(uint32_t dstL2Id) override;
 
   private:
     C* m_mac; ///< the MAC class
@@ -250,6 +256,13 @@ MemberNrSlUeCmacSapProvider<C>::AddNrSlRxDstL2Id(uint32_t dstL2Id)
     m_mac->DoAddNrSlRxDstL2Id(dstL2Id);
 }
 
+template <class C>
+void
+MemberNrSlUeCmacSapProvider<C>::RemoveNrSlRxDstL2Id(uint32_t dstL2Id)
+{
+    m_mac->DoRemoveNrSlRxDstL2Id(dstL2Id);
+}
+
 /**
  * Service Access Point (SAP) offered by the UE MAC to the UE RRC
  *
@@ -284,13 +297,6 @@ class NrSlUeCmacSapUser
      * Notify the RRC that the MAC does not have data to send in the PSSCH
      */
     //  virtual void NotifyMacHasNoSlDataToSend () = 0;
-
-    /**
-     * Notify the RRC that the MAC has detected a new incoming flow for discovery reception
-     *
-     * \param p The packet containing the discovery message
-     */
-    // virtual void NotifyDiscoveryReception (Ptr<Packet> p) = 0;
 };
 
 /**

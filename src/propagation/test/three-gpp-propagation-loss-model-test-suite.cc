@@ -167,10 +167,8 @@ ThreeGppRmaPropagationLossModelTestCase::DoRun()
         CreateObject<ThreeGppRmaPropagationLossModel>();
     lossModel->SetAttribute("ShadowingEnabled", BooleanValue(false)); // disable the shadow fading
 
-    for (std::size_t i = 0; i < m_testVectors.GetN(); i++)
+    for (const auto& testVector : m_testVectors)
     {
-        TestVector testVector = m_testVectors.Get(i);
-
         Vector posBs = Vector(0.0, 0.0, 35.0);
         Vector posUt = Vector(testVector.m_distance, 0.0, 1.5);
 
@@ -1325,15 +1323,15 @@ class ThreeGppPropagationLossModelsTestSuite : public TestSuite
 };
 
 ThreeGppPropagationLossModelsTestSuite::ThreeGppPropagationLossModelsTestSuite()
-    : TestSuite("three-gpp-propagation-loss-model", UNIT)
+    : TestSuite("three-gpp-propagation-loss-model", Type::UNIT)
 {
-    AddTestCase(new ThreeGppRmaPropagationLossModelTestCase, TestCase::QUICK);
-    AddTestCase(new ThreeGppUmaPropagationLossModelTestCase, TestCase::QUICK);
-    AddTestCase(new ThreeGppUmiPropagationLossModelTestCase, TestCase::QUICK);
-    AddTestCase(new ThreeGppIndoorOfficePropagationLossModelTestCase, TestCase::QUICK);
-    AddTestCase(new ThreeGppV2vUrbanPropagationLossModelTestCase, TestCase::QUICK);
-    AddTestCase(new ThreeGppV2vHighwayPropagationLossModelTestCase, TestCase::QUICK);
-    AddTestCase(new ThreeGppShadowingTestCase, TestCase::QUICK);
+    AddTestCase(new ThreeGppRmaPropagationLossModelTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppUmaPropagationLossModelTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppUmiPropagationLossModelTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppIndoorOfficePropagationLossModelTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppV2vUrbanPropagationLossModelTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppV2vHighwayPropagationLossModelTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppShadowingTestCase, TestCase::Duration::QUICK);
 }
 
 /// Static variable for test initialization

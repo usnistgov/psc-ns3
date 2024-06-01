@@ -63,6 +63,12 @@ BulkSendApplication::GetTypeId()
                           AddressValue(),
                           MakeAddressAccessor(&BulkSendApplication::m_local),
                           MakeAddressChecker())
+            .AddAttribute("Tos",
+                          "The Type of Service used to send IPv4 packets. "
+                          "All 8 bits of the TOS byte are set (including ECN bits).",
+                          UintegerValue(0),
+                          MakeUintegerAccessor(&BulkSendApplication::m_tos),
+                          MakeUintegerChecker<uint8_t>())
             .AddAttribute("MaxBytes",
                           "The total number of bytes to send. "
                           "Once these bytes are sent, "
@@ -153,6 +159,8 @@ BulkSendApplication::StartApplication() // Called at time specified by Start
                            "In other words, use TCP instead of UDP.");
         }
 
+        NS_ABORT_MSG_IF(m_peer.IsInvalid(), "'Remote' attribute not properly set");
+
         if (!m_local.IsInvalid())
         {
             NS_ABORT_MSG_IF((Inet6SocketAddress::IsMatchingType(m_peer) &&
@@ -179,6 +187,10 @@ BulkSendApplication::StartApplication() // Called at time specified by Start
             NS_FATAL_ERROR("Failed to bind socket");
         }
 
+        if (InetSocketAddress::IsMatchingType(m_peer))
+        {
+            m_socket->SetIpTos(m_tos); // Affects only IPv4 sockets.
+        }
         m_socket->Connect(m_peer);
         m_socket->ShutdownRecv();
         m_socket->SetConnectCallback(MakeCallback(&BulkSendApplication::ConnectionSucceeded, this),

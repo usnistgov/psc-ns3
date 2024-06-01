@@ -75,7 +75,6 @@ struct SidelinkInfo
     Time m_rri{0};                          //!< Resource Reservation Interval
     uint8_t m_lcId{0};                      //!< Logical channel ID
     uint8_t m_priority{0};                  //!< Priority
-    Time m_t2{0};                           //!< Selection window T2 value
 };
 
 /**

@@ -380,7 +380,7 @@ Address
 SimpleNetDevice::GetBroadcast() const
 {
     NS_LOG_FUNCTION(this);
-    return Mac48Address("ff:ff:ff:ff:ff:ff");
+    return Mac48Address::GetBroadcast();
 }
 
 bool
@@ -450,7 +450,7 @@ SimpleNetDevice::SendFrom(Ptr<Packet> p,
 
     if (m_queue->Enqueue(p))
     {
-        if (m_queue->GetNPackets() == 1 && !FinishTransmissionEvent.IsRunning())
+        if (m_queue->GetNPackets() == 1 && !FinishTransmissionEvent.IsPending())
         {
             StartTransmission();
         }
@@ -467,7 +467,7 @@ SimpleNetDevice::StartTransmission()
     {
         return;
     }
-    NS_ASSERT_MSG(!FinishTransmissionEvent.IsRunning(),
+    NS_ASSERT_MSG(!FinishTransmissionEvent.IsPending(),
                   "Tried to transmit a packet while another transmission was in progress");
     Ptr<Packet> packet = m_queue->Dequeue();
 
@@ -544,7 +544,7 @@ SimpleNetDevice::DoDispose()
     m_node = nullptr;
     m_receiveErrorModel = nullptr;
     m_queue->Dispose();
-    if (FinishTransmissionEvent.IsRunning())
+    if (FinishTransmissionEvent.IsPending())
     {
         FinishTransmissionEvent.Cancel();
     }

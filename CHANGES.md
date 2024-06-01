@@ -13,6 +13,50 @@ Note that users who upgrade the simulator across versions, or who work directly 
 
 This file is a best-effort approach to solving this issue; we will do our best but can guarantee that there will be things that fall through the cracks, unfortunately. If you, as a user, can suggest improvements to this file based on your experience, please contribute a patch or drop us a note on ns-developers mailing list.
 
+Changes from ns-3.41 to ns-3.42
+-------------------------------
+
+### New API
+* (antenna) Added `CircularApertureAntennaModel` class which characterizes the antenna gain pattern of the reflector antenna with circular aperture described in 3GPP TR 38.811 v15.4.0, Section 6.4.1
+* (core) Objects now can be aggregated to multiple objects though the `Object::UnidirectionalAggregateObject` function. Objects aggregated in such a way can not use `GetObject` to access the objects they are aggregated to.
+* (core) Added `TestVector` iterators and dot product operator for `Vector2D` and `Vector3D` types
+* (mobility) Added a new mobility model `GeocentricConstantPositionMobilityModel` for orbital and/or aerial nodes, and coordinate conversion methods between geocentric and topocentric coordinate systems
+* (propagation, spectrum)  Added 3GPP 38.811 Non-Terrestrial Networks (NTNs) channel model. Specifically, the large-scale phenomena have been implemented by extending `ThreeGppPropagationLossModel` with classes representing the various NTN propagation scenarios  (Dense Urban, Urban, Rural and Suburban), while the frequency-dependent phenomena have been implemented by defining the corresponding scenarios in `ThreeGppChannelModel`.
+* (network) Added `ApplicationHelper` helper class to create and install applications, removing redundant code in existing helpers and reducing the burden to add yet another helper when a new application model is added.
+* (wifi) Added a new **SingleRtsPerTxop** attribute to `WifiDefaultProtectionManager`, which, if set to true, prevents to use protection mechanisms (RTS or MU-RTS) more than once in a TXOP (unless required for specific purposes, such as transmitting an Initial Control Frame to an EMLSR client).
+* (wifi) Added a new **RtsCtsTxDurationThresh** to `WifiRemoteStationManager` to enable RTS/CTS protection based on the TX duration of the data frame. Both the value of this attribute and the value of the existing **RtsCtsThreshold** attribute are evaluated: if either of the thresholds (or both) is exceeded, RTS/CTS is used.
+* (wifi) New trace helper `WifiPhyRxTraceHelper` for detailed tracing of Wi-Fi Phy reception events
+* (wifi) New trace sources `WifiPhy::SignalTransmission`, `SpectrumWifiPhy::SignalArrival`, and `YansWifiPhy::SignalArrival`
+* (wifi) New trace sources `WifiPhyStateHelper::RxOutcome` and`WifiPhy::PhyRxPpduDrop`, to support additional tracing.
+
+### Changes to existing API
+
+* (applications) Applications have a new Attribute to set the IPv4 ToS field.
+* (core) Deprecated enum `TestDuration` in `TestCase` class. It has been replaced by enum class `Duration`.
+* (core) In `TestSuite` class, deprecated `ALL`, `UNIT`, `SYSTEM`, `EXAMPLE` and `PERFORMANCE`. They have been replaced by `Type::ALL`, `Type::UNIT`, `Type::SYSTEM`, `Type::EXAMPLE` and `Type::PERFORMANCE`, respectively.
+* (core) Deprecated `EventId::IsRunning()`. It has been replaced with `EventId::IsPending()`.
+* (energy) The model library code of the energy module now uses the nested namespace `energy`.
+* (lr-wpan) `MacPibAttributeIdentifier` attribute ids are now standard compliant.
+* (lr-wpan) Multiple new identifiers added to `MacPibAttributeIdentifier`.
+* (lr-wpan) Adds standard version comments to `MLME-GET.request` function.
+* (lr-wpan) In the MAC layer, renamed `m_selfExt` to the variable `m_macExtendedAddress` to make it consistent with the standard specification.
+* (lr-wpan) The Lr-wpan module now uses the namespace `lrwpan`.
+* (lr-wpan) The model library code of the lr-wpan module now uses the nested namespace `lrwpan`.
+* (lr-wpan) The `LrWpan` prefix of variables, structs and enumerations in the PHY and MAC was shorten to reflect the recent namespace change.
+* (wifi) Deprecated `WIFI_TID_TO_LINK_MAPPING_{NOT_SUPPORTED,SAME_LINK_SET,ANY_LINK_SET}`. They have been replaced by `WifiTidToLinkMappingNegSupport::{NOT_SUPPORTED,SAME_LINK_SET,ANY_LINK_SET}`, respectively.
+* (wifi) Deprecated `{IDLE, CCA_BUSY, TX, RX, SWITCHING, SLEEP, OFF}`. They have been replaced by `WifiPhyState::{IDLE, CCA_BUSY, TX, RX, SWITCHING, SLEEP, OFF}`, respectively.
+* (wifi) Obsoleted **Txop** attributes `MinCw`, `MaxCw`, `Aifsn` and `TxopLimit`. The corresponding attributes for multi-link devices (`MinCws`, `MaxCws`, `Aifsns` and `TxopLimits`) can be used instead.
+
+### Changes to build system
+
+* Removed support of the `experimental/filesystem` library, in favor of the official `filesystem` library.
+* Fixed static and monolib builds when linking to a non ns-3 module library.
+
+### Changed behavior
+
+* (mobility) Fixed the corner rebound direction in `RandomWalk2d[Outdoor]MobilityModel` and the initial direction in case of node starting from a border or corner.
+* (tcp) TcpCubic and TcpLinuxReno will no longer grow their congestion window when application-limited, now matching Linux behavior
+
 Changes from ns-3.40 to ns-3.41
 -------------------------------
 
@@ -41,6 +85,7 @@ Changes from ns-3.40 to ns-3.41
   ```cpp
   MakeEnumAccessor<Test_e>(&AttributeObjectTest::m_enum),
   ```
+
 * (internet) Deprecated `Ipv4::WeakEsModel` and `Ipv4::GetWeakEsModel()`, `Ipv4::SetWeakEsModel(bool)` methods. Moved `Ipv6L3Protocol::StrongEndSystemModel` to `Ipv6::StrongEndSystemModel` and added `Ipv4::StrongEndSystemModel` with corresponding `GetStrongEndSystemModel()` and `SetStrongEndSystemModel(bool)` methods to improve end system model configuration options.
 * (lr-wpan) Change the CapabilityField parameter in `LrWpanMac::MlmeAssociateRequest` and `LrWpanMac::MlmeAssociateIndication` to a standard bitmap.
 * (lr-wpan) Change the MAC SuperframeField usage to a standard bitmap, this change impact parameters in the `BeaconPayloadHeader`.
@@ -68,6 +113,7 @@ Changes from ns-3.40 to ns-3.41
 * Added guard rails for scratch targets missing or containing more than one `main` function.
 
 ### Changed behavior
+
 * (sixlowpan) Now uses RFC 7973 Ethertype by default
 * (spectrum) SpectrumChannel objects and the loss/delay models attached are now automatically initialized (Object::Initialize) at time zero
 * (tcp) TCP Cubic (the default congestion control in ns-3) now supports TCP-friendliness by default (see RFC 9438 Section 4.3), making the congestion window growth somewhat more aggressive.  This follows the default Linux behavior.

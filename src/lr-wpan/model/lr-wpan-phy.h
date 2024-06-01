@@ -35,8 +35,6 @@ namespace ns3
 
 class Packet;
 class SpectrumValue;
-class LrWpanErrorModel;
-struct LrWpanSpectrumSignalParameters;
 class MobilityModel;
 class SpectrumChannel;
 class SpectrumModel;
@@ -45,12 +43,18 @@ class NetDevice;
 class UniformRandomVariable;
 class ErrorModel;
 
+namespace lrwpan
+{
+
+class LrWpanErrorModel;
+struct LrWpanSpectrumSignalParameters;
+
 /**
  * \ingroup lr-wpan
  *
  * Helper structure to manage the power measurement during ED.
  */
-struct LrWpanEdPower
+struct EdPower
 {
     double averagePower;    //!< Average measured power
     Time lastUpdate;        //!< Last update time
@@ -63,7 +67,7 @@ struct LrWpanEdPower
  * This data structure provides the Bit rate and Symbol rate for a given channel
  * See IEEE802.15.4-2006 Table 1 and 2 in section 6.1.1 and 6.1.2
  */
-struct LrWpanPhyDataAndSymbolRates
+struct PhyDataAndSymbolRates
 {
     double bitRate;    //!< bit rate
     double symbolRate; //!< symbol rate
@@ -75,7 +79,7 @@ struct LrWpanPhyDataAndSymbolRates
  * This data structure provides number of symbols for the PPDU headers: SHR and PHR
  * See IEEE802.15.4-2006 Figure 16, Table 19 and 20 in section 6.3
  */
-struct LrWpanPhyPpduHeaderSymbolNumber
+struct PhyPpduHeaderSymbolNumber
 {
     double shrPreamble; //!< Number of symbols for the SHR preamble
     double shrSfd;      //!< Number of symbols for the SHR SFD
@@ -87,7 +91,7 @@ struct LrWpanPhyPpduHeaderSymbolNumber
  *
  * This Phy option will be used to index various Tables in IEEE802.15.4-2011
  */
-enum LrWpanPhyOption
+enum PhyOption
 {
     IEEE_802_15_4_868MHZ_BPSK,
     IEEE_802_15_4_915MHZ_BPSK,
@@ -107,7 +111,7 @@ enum LrWpanPhyOption
  * IEEE802.15.4-2006 PHY Emumerations Table 18
  * in section 6.2.3
  */
-enum LrWpanPhyEnumeration
+enum PhyEnumeration
 {
     IEEE_802_15_4_PHY_BUSY = 0x00,
     IEEE_802_15_4_PHY_BUSY_RX = 0x01,
@@ -125,33 +129,33 @@ enum LrWpanPhyEnumeration
 };
 
 /**
- *  Overloaded operator to print the value of a LrWpanPhyEnumeration.
+ *  Overloaded operator to print the value of a PhyEnumeration.
  *
  *  \param os The output stream
  *  \param state The text value of the PHY state
  *  \return The output stream with text value of the PHY state
  */
-std::ostream& operator<<(std::ostream& os, const LrWpanPhyEnumeration& state);
+std::ostream& operator<<(std::ostream& os, const PhyEnumeration& state);
 
 /**
- *  Overloaded operator to print the value of a TracedValue<LrWpanPhyEnumeration>.
+ *  Overloaded operator to print the value of a TracedValue<PhyEnumeration>.
  *
  *  \param os The output stream
  *  \param state The text value of the PHY state
  *  \return The output stream with text value of the PHY state
  */
-std::ostream& operator<<(std::ostream& os, const TracedValue<LrWpanPhyEnumeration>& state);
+std::ostream& operator<<(std::ostream& os, const TracedValue<PhyEnumeration>& state);
 
 namespace TracedValueCallback
 {
 /**
  * \ingroup lr-wpan
- * TracedValue callback signature for LrWpanPhyEnumeration.
+ * TracedValue callback signature for PhyEnumeration.
  *
  * \param [in] oldValue original value of the traced variable
  * \param [in] newValue new value of the traced variable
  */
-typedef void (*LrWpanPhyEnumeration)(LrWpanPhyEnumeration oldValue, LrWpanPhyEnumeration newValue);
+typedef void (*PhyEnumeration)(PhyEnumeration oldValue, PhyEnumeration newValue);
 } // namespace TracedValueCallback
 
 /**
@@ -159,7 +163,7 @@ typedef void (*LrWpanPhyEnumeration)(LrWpanPhyEnumeration oldValue, LrWpanPhyEnu
  *
  * IEEE802.15.4-2006 PHY PIB Attribute Identifiers Table 23 in section 6.4.2
  */
-enum LrWpanPibAttributeIdentifier
+enum PhyPibAttributeIdentifier
 {
     phyCurrentChannel = 0x00,
     phyChannelsSupported = 0x01,
@@ -176,7 +180,7 @@ enum LrWpanPibAttributeIdentifier
  *
  * IEEE802.15.4-2006 PHY PIB Attributes Table 23 in section 6.4.2
  */
-struct LrWpanPhyPibAttributes : public SimpleRefCount<LrWpanPhyPibAttributes>
+struct PhyPibAttributes : public SimpleRefCount<PhyPibAttributes>
 {
     uint8_t phyCurrentChannel;         //!< The RF channel to use
     uint32_t phyChannelsSupported[32]; //!< BitField representing the available channels supported
@@ -208,7 +212,7 @@ typedef Callback<void, uint32_t, Ptr<Packet>, uint8_t> PdDataIndicationCallback;
  *
  * @param status the status to be transmitted
  */
-typedef Callback<void, LrWpanPhyEnumeration> PdDataConfirmCallback;
+typedef Callback<void, PhyEnumeration> PdDataConfirmCallback;
 
 /**
  * \ingroup lr-wpan
@@ -217,7 +221,7 @@ typedef Callback<void, LrWpanPhyEnumeration> PdDataConfirmCallback;
  *
  * @param status the status of CCA
  */
-typedef Callback<void, LrWpanPhyEnumeration> PlmeCcaConfirmCallback;
+typedef Callback<void, PhyEnumeration> PlmeCcaConfirmCallback;
 
 /**
  * \ingroup lr-wpan
@@ -227,7 +231,7 @@ typedef Callback<void, LrWpanPhyEnumeration> PlmeCcaConfirmCallback;
  * @param status the status of ED
  * @param energyLevel the energy level of ED
  */
-typedef Callback<void, LrWpanPhyEnumeration, uint8_t> PlmeEdConfirmCallback;
+typedef Callback<void, PhyEnumeration, uint8_t> PlmeEdConfirmCallback;
 
 /**
  * \ingroup lr-wpan
@@ -238,10 +242,7 @@ typedef Callback<void, LrWpanPhyEnumeration, uint8_t> PlmeEdConfirmCallback;
  * @param id the identifier of attribute
  * @param attribute the pointer to attribute struct
  */
-typedef Callback<void,
-                 LrWpanPhyEnumeration,
-                 LrWpanPibAttributeIdentifier,
-                 Ptr<LrWpanPhyPibAttributes>>
+typedef Callback<void, PhyEnumeration, PhyPibAttributeIdentifier, Ptr<PhyPibAttributes>>
     PlmeGetAttributeConfirmCallback;
 
 /**
@@ -251,7 +252,7 @@ typedef Callback<void,
  *
  * @param status the status of PlmeSetTRXStateRequest
  */
-typedef Callback<void, LrWpanPhyEnumeration> PlmeSetTRXStateConfirmCallback;
+typedef Callback<void, PhyEnumeration> PlmeSetTRXStateConfirmCallback;
 
 /**
  * \ingroup lr-wpan
@@ -261,8 +262,7 @@ typedef Callback<void, LrWpanPhyEnumeration> PlmeSetTRXStateConfirmCallback;
  * @param status the status of PlmeSetAttributeRequest
  * @param id the identifier of attribute
  */
-typedef Callback<void, LrWpanPhyEnumeration, LrWpanPibAttributeIdentifier>
-    PlmeSetAttributeConfirmCallback;
+typedef Callback<void, PhyEnumeration, PhyPibAttributeIdentifier> PlmeSetAttributeConfirmCallback;
 
 /**
  * \ingroup lr-wpan
@@ -337,7 +337,7 @@ class LrWpanPhy : public SpectrumPhy
      *
      * @param phyOption The phy modulation option used by the model.
      */
-    void SetPhyOption(LrWpanPhyOption phyOption);
+    void SetPhyOption(PhyOption phyOption);
 
     /**
      * Set the receiver power sensitivity used by this device in dBm.
@@ -400,7 +400,7 @@ class LrWpanPhy : public SpectrumPhy
      * Get attributes per definition from Table 23 in section 6.4.2
      * \param id the attributed identifier
      */
-    void PlmeGetAttributeRequest(LrWpanPibAttributeIdentifier id);
+    void PlmeGetAttributeRequest(PhyPibAttributeIdentifier id);
 
     /**
      * IEEE 802.15.4-2006 section 6.2.2.7
@@ -408,7 +408,7 @@ class LrWpanPhy : public SpectrumPhy
      * Set PHY state
      * \param state in RX_ON,TRX_OFF,FORCE_TRX_OFF,TX_ON
      */
-    void PlmeSetTRXStateRequest(LrWpanPhyEnumeration state);
+    void PlmeSetTRXStateRequest(PhyEnumeration state);
 
     /**
      * IEEE 802.15.4-2006 section 6.2.2.9
@@ -417,8 +417,7 @@ class LrWpanPhy : public SpectrumPhy
      * \param id the attributed identifier
      * \param attribute the attribute value
      */
-    void PlmeSetAttributeRequest(LrWpanPibAttributeIdentifier id,
-                                 Ptr<LrWpanPhyPibAttributes> attribute);
+    void PlmeSetAttributeRequest(PhyPibAttributeIdentifier id, Ptr<PhyPibAttributes> attribute);
 
     /**
      * set the callback for the end of a RX, as part of the
@@ -569,8 +568,8 @@ class LrWpanPhy : public SpectrumPhy
      * be removed in a future release.
      */
     typedef void (*StateTracedCallback)(Time time,
-                                        LrWpanPhyEnumeration oldState,
-                                        LrWpanPhyEnumeration newState);
+                                        PhyEnumeration oldState,
+                                        PhyEnumeration newState);
 
   private:
     /**
@@ -587,7 +586,7 @@ class LrWpanPhy : public SpectrumPhy
      *
      * \param newState the new state
      */
-    void ChangeTrxState(LrWpanPhyEnumeration newState);
+    void ChangeTrxState(PhyEnumeration newState);
 
     /**
      * Get the currently configured PHY option.
@@ -595,11 +594,11 @@ class LrWpanPhy : public SpectrumPhy
      *
      * \return the PHY option
      */
-    LrWpanPhyOption GetMyPhyOption();
+    PhyOption GetMyPhyOption();
 
     /**
      * Finish the transmission of a frame. This is called at the end of a frame
-     * transmission, applying possibly pending PHY state changes and fireing the
+     * transmission, applying possibly pending PHY state changes and firing the
      * appropriate trace sources and confirm callbacks to the MAC.
      */
     void EndTx();
@@ -612,7 +611,7 @@ class LrWpanPhy : public SpectrumPhy
 
     /**
      * Finish the reception of a frame. This is called at the end of a frame
-     * reception, applying possibly pending PHY state changes and fireing the
+     * reception, applying possibly pending PHY state changes and firing the
      * appropriate trace sources and indication callbacks to the MAC. A frame
      * destroyed by noise/interference is dropped here, but not during reception.
      * This method is also called for every packet which only contributes to
@@ -629,7 +628,7 @@ class LrWpanPhy : public SpectrumPhy
      *
      * \param state the new state which is the cause for canceling ED
      */
-    void CancelEd(LrWpanPhyEnumeration state);
+    void CancelEd(PhyEnumeration state);
 
     /**
      * Called at the end of the ED procedure. The average energy detected is
@@ -746,11 +745,11 @@ class LrWpanPhy : public SpectrumPhy
      * The trace source fired when the phy layer changes the transceiver state.
      *
      * \see class CallBackTraceSource
-     * \deprecated The LrWpanPhyEnumeration state is now accessible as the
+     * \deprecated The PhyEnumeration state is now accessible as the
      * TracedValue \c TrxStateValue.  This TracedCallback will
      * be removed in a future release.
      */
-    TracedCallback<Time, LrWpanPhyEnumeration, LrWpanPhyEnumeration> m_trxStateLogger;
+    TracedCallback<Time, PhyEnumeration, PhyEnumeration> m_trxStateLogger;
 
     /**
      * Calculates the nominal transmit power of the device in decibels relative to 1 mW
@@ -824,19 +823,19 @@ class LrWpanPhy : public SpectrumPhy
     /**
      * The current PHY PIB attributes.
      */
-    LrWpanPhyPibAttributes m_phyPIBAttributes;
+    PhyPibAttributes m_phyPIBAttributes;
 
     // State variables
     /**
      * The current transceiver state.
      */
-    TracedValue<LrWpanPhyEnumeration> m_trxState;
+    TracedValue<PhyEnumeration> m_trxState;
 
     /**
      * The next pending state to applied after the current action of the PHY is
      * completed.
      */
-    LrWpanPhyEnumeration m_trxStatePending;
+    PhyEnumeration m_trxStatePending;
 
     // Callbacks
     /**
@@ -884,12 +883,12 @@ class LrWpanPhy : public SpectrumPhy
     /**
      * The currently configured PHY type.
      */
-    LrWpanPhyOption m_phyOption;
+    PhyOption m_phyOption;
 
     /**
      * Helper value for tracking the average power during ED.
      */
-    LrWpanEdPower m_edPower;
+    EdPower m_edPower;
 
     /**
      * Helper value for the peak power value during CCA.
@@ -962,6 +961,7 @@ class LrWpanPhy : public SpectrumPhy
     Ptr<ErrorModel> m_postReceptionErrorModel; //!< Error model for receive packet events
 };
 
+} // namespace lrwpan
 } // namespace ns3
 
 #endif /* LR_WPAN_PHY_H */

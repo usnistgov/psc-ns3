@@ -321,9 +321,9 @@ class TupleValueTestSuite : public TestSuite
 };
 
 TupleValueTestSuite::TupleValueTestSuite()
-    : TestSuite("tuple-value-test-suite", UNIT)
+    : TestSuite("tuple-value-test-suite", Type::UNIT)
 {
-    AddTestCase(new TupleValueTestCase(), TestCase::QUICK);
+    AddTestCase(new TupleValueTestCase(), TestCase::Duration::QUICK);
 }
 
 static TupleValueTestSuite g_tupleValueTestSuite; //!< Static variable for test initialization

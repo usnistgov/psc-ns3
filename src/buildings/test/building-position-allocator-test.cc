@@ -35,13 +35,13 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("BuildingPositionAllocatorTest");
 
 /**
- * \ingroup propagation
+ * \ingroup buildings
+ * \ingroup tests
  * \defgroup building-test Buildings module tests
  */
 
 /**
  * \ingroup building-test
- * \ingroup tests
  *
  * Room coordinates
  */
@@ -75,7 +75,6 @@ operator<(const Room& a, const Room& b)
 
 /**
  * \ingroup building-test
- * \ingroup tests
  *
  * RandomRoomPositionAllocator test
  */
@@ -153,7 +152,6 @@ RandomRoomPositionAllocatorTestCase::DoRun()
 
 /**
  * \ingroup building-test
- * \ingroup tests
  *
  * SameRoomPositionAllocator test
  */
@@ -227,7 +225,6 @@ SameRoomPositionAllocatorTestCase::DoRun()
 
 /**
  * \ingroup building-test
- * \ingroup tests
  *
  * \brief RandomRoomPositionAllocator TestSuite
  */
@@ -238,12 +235,12 @@ class BuildingPositionAllocatorTestSuite : public TestSuite
 };
 
 BuildingPositionAllocatorTestSuite::BuildingPositionAllocatorTestSuite()
-    : TestSuite("building-position-allocator", UNIT)
+    : TestSuite("building-position-allocator", Type::UNIT)
 {
     NS_LOG_FUNCTION(this);
 
-    AddTestCase(new RandomRoomPositionAllocatorTestCase, TestCase::QUICK);
-    AddTestCase(new SameRoomPositionAllocatorTestCase, TestCase::QUICK);
+    AddTestCase(new RandomRoomPositionAllocatorTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new SameRoomPositionAllocatorTestCase, TestCase::Duration::QUICK);
 }
 
 /// Static variable for test initialization

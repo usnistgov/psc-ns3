@@ -103,17 +103,11 @@ TimestampTestCase::CreateSenderSocket(Ptr<Node> node)
     switch (m_configuration)
     {
     case DISABLED:
-        socket->SetAttribute("Timestamp", BooleanValue(false));
-        break;
-
     case ENABLED_RECEIVER:
         socket->SetAttribute("Timestamp", BooleanValue(false));
         break;
 
     case ENABLED_SENDER:
-        socket->SetAttribute("Timestamp", BooleanValue(true));
-        break;
-
     case ENABLED:
         socket->SetAttribute("Timestamp", BooleanValue(true));
         break;
@@ -199,12 +193,12 @@ TimestampTestCase::Tx(const Ptr<const Packet> p, const TcpHeader& h, SocketWho w
 void
 TimestampTestCase::Rx(const Ptr<const Packet> p, const TcpHeader& h, SocketWho who)
 {
-    if (who == SENDER)
-    {
-    }
-    else if (who == RECEIVER)
-    {
-    }
+    // if (who == SENDER)
+    // {
+    // }
+    // else if (who == RECEIVER)
+    // {
+    // }
 }
 
 /**
@@ -296,17 +290,20 @@ class TcpTimestampTestSuite : public TestSuite
 {
   public:
     TcpTimestampTestSuite()
-        : TestSuite("tcp-timestamp", UNIT)
+        : TestSuite("tcp-timestamp", Type::UNIT)
     {
-        AddTestCase(new TimestampTestCase(TimestampTestCase::DISABLED), TestCase::QUICK);
-        AddTestCase(new TimestampTestCase(TimestampTestCase::ENABLED_RECEIVER), TestCase::QUICK);
-        AddTestCase(new TimestampTestCase(TimestampTestCase::ENABLED_SENDER), TestCase::QUICK);
-        AddTestCase(new TimestampTestCase(TimestampTestCase::ENABLED), TestCase::QUICK);
-        AddTestCase(new TimestampValueTestCase(0.0, 0.01, "Value Check"), TestCase::QUICK);
-        AddTestCase(new TimestampValueTestCase(3.0, 0.5, "Value Check"), TestCase::QUICK);
-        AddTestCase(new TimestampValueTestCase(5.5, 1.0, "Value Check"), TestCase::QUICK);
-        AddTestCase(new TimestampValueTestCase(6.0, 2.0, "Value Check"), TestCase::QUICK);
-        AddTestCase(new TimestampValueTestCase(2.4, 0.7, "Value Check"), TestCase::QUICK);
+        AddTestCase(new TimestampTestCase(TimestampTestCase::DISABLED), TestCase::Duration::QUICK);
+        AddTestCase(new TimestampTestCase(TimestampTestCase::ENABLED_RECEIVER),
+                    TestCase::Duration::QUICK);
+        AddTestCase(new TimestampTestCase(TimestampTestCase::ENABLED_SENDER),
+                    TestCase::Duration::QUICK);
+        AddTestCase(new TimestampTestCase(TimestampTestCase::ENABLED), TestCase::Duration::QUICK);
+        AddTestCase(new TimestampValueTestCase(0.0, 0.01, "Value Check"),
+                    TestCase::Duration::QUICK);
+        AddTestCase(new TimestampValueTestCase(3.0, 0.5, "Value Check"), TestCase::Duration::QUICK);
+        AddTestCase(new TimestampValueTestCase(5.5, 1.0, "Value Check"), TestCase::Duration::QUICK);
+        AddTestCase(new TimestampValueTestCase(6.0, 2.0, "Value Check"), TestCase::Duration::QUICK);
+        AddTestCase(new TimestampValueTestCase(2.4, 0.7, "Value Check"), TestCase::Duration::QUICK);
     }
 };
 

@@ -57,13 +57,12 @@ class WifiDefaultProtectionManager : public WifiProtectionManager
      * Select the protection method for a single PSDU.
      *
      * \param hdr the MAC header of the PSDU
-     * \param size the size in bytes of the PSDU
-     * \param txVector the TxVector used to transmit the PSDU
+     * \param txParams the TX parameters describing the PSDU
      * \return the selected protection method
      */
-    virtual std::unique_ptr<WifiProtection> GetPsduProtection(const WifiMacHeader& hdr,
-                                                              uint32_t size,
-                                                              const WifiTxVector& txVector) const;
+    virtual std::unique_ptr<WifiProtection> GetPsduProtection(
+        const WifiMacHeader& hdr,
+        const WifiTxParameters& txParams) const;
 
   private:
     /**
@@ -99,7 +98,8 @@ class WifiDefaultProtectionManager : public WifiProtectionManager
     virtual std::unique_ptr<WifiProtection> TryUlMuTransmission(Ptr<const WifiMpdu> mpdu,
                                                                 const WifiTxParameters& txParams);
 
-    bool m_sendMuRts; //!< true for sending an MU-RTS to protect DL MU PPDUs
+    bool m_sendMuRts;        //!< true for sending an MU-RTS to protect DL MU PPDUs
+    bool m_singleRtsPerTxop; //!< true for using protection only once in a TXOP
 };
 
 } // namespace ns3

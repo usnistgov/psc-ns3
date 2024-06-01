@@ -295,7 +295,7 @@ static class LteHandoverDelayTestSuite : public TestSuite
 {
   public:
     LteHandoverDelayTestSuite()
-        : TestSuite("lte-handover-delay", TestSuite::SYSTEM)
+        : TestSuite("lte-handover-delay", Type::SYSTEM)
     {
         // LogComponentEnable ("LteHandoverDelayTest", LOG_PREFIX_TIME);
         // LogComponentEnable ("LteHandoverDelayTest", LOG_DEBUG);
@@ -309,13 +309,13 @@ static class LteHandoverDelayTestSuite : public TestSuite
             // arguments: useIdealRrc, handoverTime, delayThreshold, simulationDuration
             AddTestCase(
                 new LteHandoverDelayTestCase(1, true, handoverTime, Seconds(0.005), Seconds(0.200)),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
             AddTestCase(
                 new LteHandoverDelayTestCase(2, true, handoverTime, Seconds(0.005), Seconds(0.200)),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
             AddTestCase(
                 new LteHandoverDelayTestCase(4, true, handoverTime, Seconds(0.005), Seconds(0.200)),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
         }
 
         // HANDOVER DELAY TEST CASES WITH REAL RRC (THRESHOLD = 0.020 sec)
@@ -329,19 +329,19 @@ static class LteHandoverDelayTestSuite : public TestSuite
                                                      handoverTime,
                                                      Seconds(0.020),
                                                      Seconds(0.200)),
-                        TestCase::QUICK);
+                        TestCase::Duration::QUICK);
             AddTestCase(new LteHandoverDelayTestCase(2,
                                                      false,
                                                      handoverTime,
                                                      Seconds(0.020),
                                                      Seconds(0.200)),
-                        TestCase::QUICK);
+                        TestCase::Duration::QUICK);
             AddTestCase(new LteHandoverDelayTestCase(4,
                                                      false,
                                                      handoverTime,
                                                      Seconds(0.020),
                                                      Seconds(0.200)),
-                        TestCase::QUICK);
+                        TestCase::Duration::QUICK);
         }
     }
 } g_lteHandoverDelayTestSuite; ///< the test suite

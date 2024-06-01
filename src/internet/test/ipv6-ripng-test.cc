@@ -702,14 +702,16 @@ class Ipv6RipngTestSuite : public TestSuite
 {
   public:
     Ipv6RipngTestSuite()
-        : TestSuite("ipv6-ripng", UNIT)
+        : TestSuite("ipv6-ripng", Type::UNIT)
     {
-        AddTestCase(new Ipv6RipngTest, TestCase::QUICK);
-        AddTestCase(new Ipv6RipngCountToInfinityTest, TestCase::QUICK);
-        AddTestCase(new Ipv6RipngSplitHorizonStrategyTest(RipNg::POISON_REVERSE), TestCase::QUICK);
-        AddTestCase(new Ipv6RipngSplitHorizonStrategyTest(RipNg::SPLIT_HORIZON), TestCase::QUICK);
+        AddTestCase(new Ipv6RipngTest, TestCase::Duration::QUICK);
+        AddTestCase(new Ipv6RipngCountToInfinityTest, TestCase::Duration::QUICK);
+        AddTestCase(new Ipv6RipngSplitHorizonStrategyTest(RipNg::POISON_REVERSE),
+                    TestCase::Duration::QUICK);
+        AddTestCase(new Ipv6RipngSplitHorizonStrategyTest(RipNg::SPLIT_HORIZON),
+                    TestCase::Duration::QUICK);
         AddTestCase(new Ipv6RipngSplitHorizonStrategyTest(RipNg::NO_SPLIT_HORIZON),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
     }
 };
 

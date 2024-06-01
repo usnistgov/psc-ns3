@@ -148,9 +148,9 @@ class InternetStackHelperTestSuite : public TestSuite
 {
   public:
     InternetStackHelperTestSuite()
-        : TestSuite("internet-stack-helper", UNIT)
+        : TestSuite("internet-stack-helper", Type::UNIT)
     {
-        AddTestCase(new InternetStackHelperTestCase(), TestCase::QUICK);
+        AddTestCase(new InternetStackHelperTestCase(), TestCase::Duration::QUICK);
     }
 };
 

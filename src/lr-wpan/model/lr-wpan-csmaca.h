@@ -33,12 +33,15 @@ namespace ns3
 
 class UniformRandomVariable;
 
+namespace lrwpan
+{
+
 /**
  * \ingroup lr-wpan
  *
  * This method informs the MAC whether the channel is idle or busy.
  */
-typedef Callback<void, LrWpanMacState> LrWpanMacStateCallback;
+typedef Callback<void, MacState> LrWpanMacStateCallback;
 /**
  * \ingroup lr-wpan
  *
@@ -198,7 +201,7 @@ class LrWpanCsmaCa : public Object
      * permitting transmission (step 5). If channel is busy, either backoff and perform CCA again or
      * treat as channel access failure (step 4).
      */
-    void PlmeCcaConfirm(LrWpanPhyEnumeration status);
+    void PlmeCcaConfirm(PhyEnumeration status);
     /**
      * Set the callback function to report a transaction cost in slotted CSMA-CA. The callback is
      * triggered in CanProceed() after calculating the transaction cost (2 CCA checks,transmission
@@ -331,6 +334,7 @@ class LrWpanCsmaCa : public Object
     bool m_coorDest;
 };
 
+} // namespace lrwpan
 } // namespace ns3
 
 // namespace ns-3

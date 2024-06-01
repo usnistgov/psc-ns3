@@ -156,8 +156,8 @@ SteadyStateRandomWaypointTest::DistribCompare()
 struct SteadyStateRandomWaypointTestSuite : public TestSuite
 {
     SteadyStateRandomWaypointTestSuite()
-        : TestSuite("steady-state-rwp-mobility-model", UNIT)
+        : TestSuite("steady-state-rwp-mobility-model", Type::UNIT)
     {
-        AddTestCase(new SteadyStateRandomWaypointTest, TestCase::QUICK);
+        AddTestCase(new SteadyStateRandomWaypointTest, TestCase::Duration::QUICK);
     }
 } g_steadyStateRandomWaypointTestSuite; ///< the test suite

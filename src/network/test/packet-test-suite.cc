@@ -1281,10 +1281,10 @@ class PacketTestSuite : public TestSuite
 };
 
 PacketTestSuite::PacketTestSuite()
-    : TestSuite("packet", UNIT)
+    : TestSuite("packet", Type::UNIT)
 {
-    AddTestCase(new PacketTest, TestCase::QUICK);
-    AddTestCase(new PacketTagListTest, TestCase::QUICK);
+    AddTestCase(new PacketTest, TestCase::Duration::QUICK);
+    AddTestCase(new PacketTagListTest, TestCase::Duration::QUICK);
 }
 
 static PacketTestSuite g_packetTestSuite; //!< Static variable for test initialization

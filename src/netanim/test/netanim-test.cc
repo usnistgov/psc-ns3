@@ -32,6 +32,7 @@
 #include <iostream>
 
 using namespace ns3;
+using namespace ns3::energy;
 
 /**
  * \ingroup netanim
@@ -248,9 +249,9 @@ static class AnimationInterfaceTestSuite : public TestSuite
 {
   public:
     AnimationInterfaceTestSuite()
-        : TestSuite("animation-interface", UNIT)
+        : TestSuite("animation-interface", Type::UNIT)
     {
-        AddTestCase(new AnimationInterfaceTestCase(), TestCase::QUICK);
-        AddTestCase(new AnimationRemainingEnergyTestCase(), TestCase::QUICK);
+        AddTestCase(new AnimationInterfaceTestCase(), TestCase::Duration::QUICK);
+        AddTestCase(new AnimationRemainingEnergyTestCase(), TestCase::Duration::QUICK);
     }
 } g_animationInterfaceTestSuite; ///< the test suite

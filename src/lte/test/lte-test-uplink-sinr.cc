@@ -43,7 +43,7 @@ NS_LOG_COMPONENT_DEFINE("LteUplinkSinrTest");
  * TestSuite
  */
 LteUplinkSinrTestSuite::LteUplinkSinrTestSuite()
-    : TestSuite("lte-uplink-sinr", SYSTEM)
+    : TestSuite("lte-uplink-sinr", Type::SYSTEM)
 {
     /**
      * Build Spectrum Model values for the TX signal
@@ -85,13 +85,13 @@ LteUplinkSinrTestSuite::LteUplinkSinrTestSuite()
                                               rxPsd2,
                                               theoreticalSinr1,
                                               "sdBm = [-46 -inf] and [-inf -48]"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     AddTestCase(new LteUplinkSrsSinrTestCase(rxPsd1,
                                              rxPsd2,
                                              theoreticalSinr1,
                                              "sdBm = [-46 -inf] and [-inf -48]"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     /**
      * TX signals #2: Power Spectral Density of the signals of interest = [-63 -inf] and [-inf -61]
@@ -113,13 +113,13 @@ LteUplinkSinrTestSuite::LteUplinkSinrTestSuite()
                                               rxPsd4,
                                               theoreticalSinr2,
                                               "sdBm = [-63 -inf] and [-inf -61]"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     AddTestCase(new LteUplinkSrsSinrTestCase(rxPsd3,
                                              rxPsd4,
                                              theoreticalSinr2,
                                              "sdBm = [-63 -inf] and [-inf -61]"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 }
 
 /**
@@ -177,12 +177,12 @@ LteUplinkDataSinrTestCase::DoRun()
      */
 
     // Number of packet bursts (2 data + 4 interferences)
-    const int numOfDataPbs = 2;
-    const int numOfIntfPbs = 4;
-    const int numOfPbs = numOfDataPbs + numOfIntfPbs;
+    constexpr int numOfDataPbs = 2;
+    constexpr int numOfIntfPbs = 4;
+    constexpr int numOfPbs = numOfDataPbs + numOfIntfPbs;
 
     // Number of packets in the packet bursts
-    const int numOfPkts = 10;
+    constexpr int numOfPkts = 10;
 
     // Packet bursts
     Ptr<PacketBurst> packetBursts[numOfPbs];
@@ -382,9 +382,9 @@ LteUplinkSrsSinrTestCase::DoRun()
      */
 
     // Number of packet bursts (2 data + 4 interferences)
-    int numOfDataSignals = 2;
-    int numOfIntfSignals = 4;
-    int numOfSignals = numOfDataSignals + numOfIntfSignals;
+    constexpr int numOfDataSignals = 2;
+    constexpr int numOfIntfSignals = 4;
+    constexpr int numOfSignals = numOfDataSignals + numOfIntfSignals;
 
     uint16_t pbCellId[numOfSignals];
 

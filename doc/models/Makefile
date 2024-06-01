@@ -111,6 +111,7 @@ SOURCEFIGS = \
 	figures/testbed.dia \
 	figures/emulated-channel.dia \
 	$(SRC)/antenna/doc/source/figures/antenna-coordinate-system.dia	\
+	$(SRC)/antenna/doc/source/figures/circular-antenna-pattern.png	\
 	$(SRC)/applications/doc/http-embedded-object-size.png \
 	$(SRC)/applications/doc/http-main-object-size.png \
 	$(SRC)/applications/doc/http-num-of-embedded-objects.png \
@@ -141,6 +142,7 @@ SOURCEFIGS = \
 	$(SRC)/wifi/doc/source/figures/PhyEntityHierarchy.dia \
 	$(SRC)/wifi/doc/source/figures/WifiPpduHierarchy.dia \
 	$(SRC)/wifi/doc/source/figures/FemHierarchy.dia \
+	$(SRC)/wifi/doc/source/figures/wifi-phy-rx-trace-helper.dia \
 	$(SRC)/wifi/doc/source/figures/snir.dia \
 	$(SRC)/wifi/doc/source/figures/ack-su-format.pdf \
 	$(SRC)/wifi/doc/source/figures/ack-su-format.png \
@@ -388,6 +390,7 @@ IMAGES_EPS = \
 	$(FIGURES)/PhyEntityHierarchy.eps \
 	$(FIGURES)/WifiPpduHierarchy.eps \
 	$(FIGURES)/FemHierarchy.eps \
+	$(FIGURES)/wifi-phy-rx-trace-helper.eps \
 	$(FIGURES)/snir.eps \
 	$(FIGURES)/WimaxArchitecture.eps \
 	$(FIGURES)/epc-ctrl-arch.eps \
@@ -577,7 +580,7 @@ RESCALE = ../../utils/rescale-pdf.sh
 	@if test x$($@_width) != x; then $(RESCALE) $($@_width) $@ ; fi
 
 # You can set these variables from the command line.
-SPHINXOPTS    =
+SPHINXOPTS    = -W --keep-going
 SPHINXBUILD   = sphinx-build
 PAPER         =
 BUILDDIR      = build

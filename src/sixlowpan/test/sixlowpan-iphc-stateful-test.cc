@@ -390,9 +390,9 @@ class SixlowpanIphcStatefulTestSuite : public TestSuite
 };
 
 SixlowpanIphcStatefulTestSuite::SixlowpanIphcStatefulTestSuite()
-    : TestSuite("sixlowpan-iphc-stateful", UNIT)
+    : TestSuite("sixlowpan-iphc-stateful", Type::UNIT)
 {
-    AddTestCase(new SixlowpanIphcStatefulImplTest(), TestCase::QUICK);
+    AddTestCase(new SixlowpanIphcStatefulImplTest(), TestCase::Duration::QUICK);
 }
 
 static SixlowpanIphcStatefulTestSuite

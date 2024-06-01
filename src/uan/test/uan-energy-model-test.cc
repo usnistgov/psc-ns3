@@ -36,6 +36,7 @@
 #include "ns3/uan-prop-model-ideal.h"
 
 using namespace ns3;
+using namespace ns3::energy;
 
 NS_LOG_COMPONENT_DEFINE("UanEnergyModelTestSuite");
 
@@ -334,10 +335,10 @@ class UanEnergyModelTestSuite : public TestSuite
 };
 
 UanEnergyModelTestSuite::UanEnergyModelTestSuite()
-    : TestSuite("uan-energy-model", UNIT)
+    : TestSuite("uan-energy-model", Type::UNIT)
 {
-    AddTestCase(new AcousticModemEnergyTestCase, TestCase::QUICK);
-    AddTestCase(new AcousticModemEnergyDepletionTestCase, TestCase::QUICK);
+    AddTestCase(new AcousticModemEnergyTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new AcousticModemEnergyDepletionTestCase, TestCase::Duration::QUICK);
 }
 
 // create an instance of the test suite

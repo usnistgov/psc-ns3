@@ -32,11 +32,11 @@ class FlameRegressionSuite : public TestSuite
 {
   public:
     FlameRegressionSuite()
-        : TestSuite("devices-mesh-flame-regression", SYSTEM)
+        : TestSuite("devices-mesh-flame-regression", Type::SYSTEM)
     {
         // We do not use NS_TEST_SOURCEDIR variable here since mesh/test has
         // subdirectories
         SetDataDir(std::string("src/mesh/test/flame"));
-        AddTestCase(new FlameRegressionTest, TestCase::QUICK);
+        AddTestCase(new FlameRegressionTest, TestCase::Duration::QUICK);
     }
 } g_flameRegressionSuite; ///< the test suite

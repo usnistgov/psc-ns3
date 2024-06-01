@@ -510,23 +510,23 @@ class Ns3TcpLossTestSuite : public TestSuite
 };
 
 Ns3TcpLossTestSuite::Ns3TcpLossTestSuite()
-    : TestSuite("ns3-tcp-loss", SYSTEM)
+    : TestSuite("ns3-tcp-loss", Type::SYSTEM)
 {
     // We can't use NS_TEST_SOURCEDIR variable here because we use subdirectories
     SetDataDir("src/test/ns3tcp/response-vectors");
     Packet::EnablePrinting(); // Enable packet metadata for all test cases
 
-    AddTestCase(new Ns3TcpLossTestCase("NewReno", 0), TestCase::QUICK);
-    AddTestCase(new Ns3TcpLossTestCase("NewReno", 1), TestCase::QUICK);
-    AddTestCase(new Ns3TcpLossTestCase("NewReno", 2), TestCase::QUICK);
-    AddTestCase(new Ns3TcpLossTestCase("NewReno", 3), TestCase::QUICK);
-    AddTestCase(new Ns3TcpLossTestCase("NewReno", 4), TestCase::QUICK);
+    AddTestCase(new Ns3TcpLossTestCase("NewReno", 0), TestCase::Duration::QUICK);
+    AddTestCase(new Ns3TcpLossTestCase("NewReno", 1), TestCase::Duration::QUICK);
+    AddTestCase(new Ns3TcpLossTestCase("NewReno", 2), TestCase::Duration::QUICK);
+    AddTestCase(new Ns3TcpLossTestCase("NewReno", 3), TestCase::Duration::QUICK);
+    AddTestCase(new Ns3TcpLossTestCase("NewReno", 4), TestCase::Duration::QUICK);
 
-    AddTestCase(new Ns3TcpLossTestCase("WestwoodPlus", 0), TestCase::QUICK);
-    AddTestCase(new Ns3TcpLossTestCase("WestwoodPlus", 1), TestCase::QUICK);
-    AddTestCase(new Ns3TcpLossTestCase("WestwoodPlus", 2), TestCase::QUICK);
-    AddTestCase(new Ns3TcpLossTestCase("WestwoodPlus", 3), TestCase::QUICK);
-    AddTestCase(new Ns3TcpLossTestCase("WestwoodPlus", 4), TestCase::QUICK);
+    AddTestCase(new Ns3TcpLossTestCase("WestwoodPlus", 0), TestCase::Duration::QUICK);
+    AddTestCase(new Ns3TcpLossTestCase("WestwoodPlus", 1), TestCase::Duration::QUICK);
+    AddTestCase(new Ns3TcpLossTestCase("WestwoodPlus", 2), TestCase::Duration::QUICK);
+    AddTestCase(new Ns3TcpLossTestCase("WestwoodPlus", 3), TestCase::Duration::QUICK);
+    AddTestCase(new Ns3TcpLossTestCase("WestwoodPlus", 4), TestCase::Duration::QUICK);
 }
 
 /// Do not forget to allocate an instance of this TestSuite.

@@ -668,7 +668,8 @@ WifiSpectrumValueHelper::CreateSpectrumMaskForOfdm(
         {
             txPowerW = DbmToW(txPowerMiddleBandMinDbm + ((i - middleBandLeft.first) * middleSlope));
         }
-        else if (i <= flatJunctionLeft.second && i >= flatJunctionLeft.first)
+        else if ((i <= flatJunctionLeft.second && i >= flatJunctionLeft.first) ||
+                 (i <= flatJunctionRight.second && i >= flatJunctionRight.first))
         {
             txPowerW = DbmToW(txPowerInnerBandMinDbm);
         }
@@ -736,10 +737,6 @@ WifiSpectrumValueHelper::CreateSpectrumMaskForOfdm(
                 DbmToW(txPowerRefDbm - ((i - innerBandRight.first + 1) *
                                         innerSlope))); // +1 so as to be symmetric with left slope
         }
-        else if (i <= flatJunctionRight.second && i >= flatJunctionRight.first)
-        {
-            txPowerW = DbmToW(txPowerInnerBandMinDbm);
-        }
         else if (i <= middleBandRight.second && i >= middleBandRight.first)
         {
             txPowerW = DbmToW(txPowerInnerBandMinDbm -
@@ -790,16 +787,27 @@ WifiSpectrumValueHelper::DbmToW(double dBm)
 double
 WifiSpectrumValueHelper::GetBandPowerW(Ptr<SpectrumValue> psd, const WifiSpectrumBandIndices& band)
 {
-    double powerWattPerHertz = 0.0;
     auto valueIt = psd->ConstValuesBegin() + band.first;
     auto end = psd->ConstValuesBegin() + band.second;
-    auto bandIt = psd->ConstBandsBegin() + band.first;
+    auto bandIt = psd->ConstBandsBegin() + band.first; // all bands have same width
+    const auto bandWidth = (bandIt->fh - bandIt->fl);
+    NS_ASSERT_MSG(bandWidth >= 0.0,
+                  "Invalid width for subband [" << bandIt->fl << ";" << bandIt->fh << "]");
+    uint32_t index{0};
+    auto powerWattPerHertz{0.0};
     while (valueIt <= end)
     {
+        NS_ASSERT_MSG(*valueIt >= 0.0,
+                      "Invalid power value " << *valueIt << " in subband " << index);
         powerWattPerHertz += *valueIt;
         ++valueIt;
+        ++index;
     }
-    return powerWattPerHertz * (bandIt->fh - bandIt->fl);
+    const auto power = powerWattPerHertz * bandWidth;
+    NS_ASSERT_MSG(power >= 0.0,
+                  "Invalid calculated power " << power << " for band [" << band.first << ";"
+                                              << band.second << "]");
+    return power;
 }
 
 bool

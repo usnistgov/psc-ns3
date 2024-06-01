@@ -543,19 +543,19 @@ class TcpTestSuite : public TestSuite
 {
   public:
     TcpTestSuite()
-        : TestSuite("tcp", UNIT)
+        : TestSuite("tcp", Type::UNIT)
     {
         // Arguments to these test cases are 1) totalStreamSize,
         // 2) source write size, 3) source read size
         // 4) server write size, and 5) server read size
         // with units of bytes
-        AddTestCase(new TcpTestCase(13, 200, 200, 200, 200, false), TestCase::QUICK);
-        AddTestCase(new TcpTestCase(13, 1, 1, 1, 1, false), TestCase::QUICK);
-        AddTestCase(new TcpTestCase(100000, 100, 50, 100, 20, false), TestCase::QUICK);
+        AddTestCase(new TcpTestCase(13, 200, 200, 200, 200, false), TestCase::Duration::QUICK);
+        AddTestCase(new TcpTestCase(13, 1, 1, 1, 1, false), TestCase::Duration::QUICK);
+        AddTestCase(new TcpTestCase(100000, 100, 50, 100, 20, false), TestCase::Duration::QUICK);
 
-        AddTestCase(new TcpTestCase(13, 200, 200, 200, 200, true), TestCase::QUICK);
-        AddTestCase(new TcpTestCase(13, 1, 1, 1, 1, true), TestCase::QUICK);
-        AddTestCase(new TcpTestCase(100000, 100, 50, 100, 20, true), TestCase::QUICK);
+        AddTestCase(new TcpTestCase(13, 200, 200, 200, 200, true), TestCase::Duration::QUICK);
+        AddTestCase(new TcpTestCase(13, 1, 1, 1, 1, true), TestCase::Duration::QUICK);
+        AddTestCase(new TcpTestCase(100000, 100, 50, 100, 20, true), TestCase::Duration::QUICK);
     }
 };
 

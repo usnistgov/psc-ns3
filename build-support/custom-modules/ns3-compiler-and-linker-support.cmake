@@ -47,6 +47,7 @@ if(CLANG)
 endif()
 
 set(GCC FALSE)
+set(GCC_WORKING_PEDANTIC_SEMICOLON 1)
 if("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
   if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS ${GNU_MinVersion})
     message(
@@ -54,6 +55,26 @@ if("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
         "GNU ${CMAKE_CXX_COMPILER_VERSION} ${below_minimum_msg} ${GNU_MinVersion}"
     )
   endif()
+
+  # Check if pedantic throws warning in trailing semicolon after {} scope
+  # (frequently used to make macros look like functions)
+  unset(GCC_WORKING_PEDANTIC_SEMICOLON)
+  include(CheckCXXSourceCompiles)
+  set(CMAKE_REQUIRED_FLAGS "-Wall -Wpedantic -Werror")
+  check_cxx_source_compiles(
+    "
+      int test(){ return 0; };
+      int main(){
+        return test();
+      }
+  "
+    GCC_WORKING_PEDANTIC_SEMICOLON
+  )
+  unset(CMAKE_REQUIRED_FLAGS)
+  if("${GCC_WORKING_PEDANTIC_SEMICOLON}" STREQUAL "")
+    set(GCC_WORKING_PEDANTIC_SEMICOLON 0)
+  endif()
+
   if((CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "12.2.0"))
     # PCH causes weird errors on certain versions of GCC when C++20 is enabled
     # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=106799
