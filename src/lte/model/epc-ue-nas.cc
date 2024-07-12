@@ -721,6 +721,9 @@ EpcUeNas::DoConfigureNrSlDataRadioBearersForU2nRelay(
 
         // Ask RRC to create and activate an SL data bearer to transmit to the Remote UE
         {
+            NS_LOG_INFO("Creating a transmit bearer to the remote UE "
+                        << ipInfo.peerIpv4Addr << " slInfo.dstL2Id " << slInfo.m_dstL2Id
+                        << " slInfo.lcId " << +slInfo.m_lcId);
             auto slTft =
                 Create<LteSlTft>(LteSlTft::Direction::TRANSMIT, ipInfo.peerIpv4Addr, slInfo);
             DoActivateSvcNrSlDataRadioBearer(slTft);
@@ -778,9 +781,24 @@ EpcUeNas::ClassifyRecvPacketForU2nRelay(Ptr<Packet> packet)
     Ipv4Header ipv4Header;
     pCopy->RemoveHeader(ipv4Header);
 
+    uint8_t protocol = ipv4Header.GetProtocol();
+    uint16_t remotePort = 0;
+    if (protocol == UdpL4Protocol::PROT_NUMBER)
+    {
+        UdpHeader udpHeader;
+        pCopy->RemoveHeader(udpHeader);
+        remotePort = udpHeader.GetDestinationPort();
+    }
+    else if (protocol == TcpL4Protocol::PROT_NUMBER)
+    {
+        TcpHeader tcpHeader;
+        pCopy->RemoveHeader(tcpHeader);
+        remotePort = tcpHeader.GetDestinationPort();
+    }
+
     NS_LOG_DEBUG("My IPv4 address: " << m_u2nRelayConfig.selfIpv4Addr
                                      << ", Packet IPv4 destination address : "
-                                     << ipv4Header.GetDestination()
+                                     << ipv4Header.GetDestination() << ":" << remotePort
                                      << " Packet IPv4 source address: " << ipv4Header.GetSource());
 
     // Check for SL involvement - iterate over the active SL data radio bearers
@@ -788,10 +806,13 @@ EpcUeNas::ClassifyRecvPacketForU2nRelay(Ptr<Packet> packet)
          it != m_slBearersActivatedList.end();
          it++)
     {
-        if ((*it)->Matches(ipv4Header.GetDestination()))
+        if ((*it)->Matches(ipv4Header.GetDestination(), remotePort))
         {
             // U2N relay case - Downward packet - From network to the Remote UE - Send on the SL
-            NS_LOG_INFO("Relaying packet to SL");
+            NS_LOG_INFO("Relaying packet to ipv4 destination "
+                        << ipv4Header.GetDestination() << " port " << remotePort
+                        << " to SL dstL2Id " << (*it)->GetSidelinkInfo().m_dstL2Id << " lcId "
+                        << +(*it)->GetSidelinkInfo().m_lcId);
             m_relayRxPacketTrace(m_u2nRelayConfig.selfIpv4Addr,
                                  ipv4Header.GetSource(),
                                  ipv4Header.GetDestination(),
