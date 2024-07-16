@@ -285,12 +285,19 @@ set(test_sources
     test/test-nr-sl-sci-headers.cc
 )
 
+# Create a list of your required modules to link
+set(libraries_to_link "${liblte};${libinternet-apps}")
+# If it's there, then it's safe to add to the library list
+if(HAS_NETSIMULYZER)
+   list(APPEND libraries_to_link ${libnetsimulyzer})
+   add_definitions(-DHAS_NETSIMULYZER)
+endif()
+
+# Use the `libraries_to_link` list as your dependency list
 build_lib(
   LIBNAME nr
   SOURCE_FILES ${source_files}
   HEADER_FILES ${header_files}
-  LIBRARIES_TO_LINK
-    ${liblte}
-    ${libinternet-apps}
+  LIBRARIES_TO_LINK ${libraries_to_link}
   TEST_SOURCES ${test_sources}
 )

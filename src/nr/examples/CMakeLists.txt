@@ -63,6 +63,7 @@ set(nr-prose-examples_examples
     nr-prose-discovery
     nr-prose-discovery-l3-relay
     nr-prose-discovery-l3-relay-selection
+    nr-prose-discovery-l3-relay-selection-netsimulyzer
 )
 set(nr-prose-examples_flowmon_examples
     nr-prose-unicast-multi-link
