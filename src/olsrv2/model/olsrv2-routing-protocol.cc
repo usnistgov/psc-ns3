@@ -250,6 +250,7 @@ RoutingProtocol::RoutingProtocol()
       m_hnaTimer(Timer::CANCEL_ON_DESTROY),
       m_queuedMessagesTimer(Timer::CANCEL_ON_DESTROY)
 {
+    NS_LOG_FUNCTION(this);
     m_uniformRandomVariable = CreateObject<UniformRandomVariable>();
 
     m_hnaRoutingTable = Create<Ipv4StaticRouting>();
@@ -262,6 +263,7 @@ RoutingProtocol::~RoutingProtocol()
 void
 RoutingProtocol::SetIpv4(Ptr<Ipv4> ipv4)
 {
+    NS_LOG_FUNCTION(this);
     NS_ASSERT(ipv4);
     NS_ASSERT(!m_ipv4);
     NS_LOG_DEBUG("Created olsrv2::RoutingProtocol");
@@ -285,6 +287,7 @@ RoutingProtocol::SetIpv4(Ptr<Ipv4> ipv4)
 void
 RoutingProtocol::DoDispose()
 {
+    NS_LOG_FUNCTION(this);
     m_ipv4 = nullptr;
     m_hnaRoutingTable = nullptr;
     m_routingTableAssociation = nullptr;
@@ -362,6 +365,7 @@ RoutingProtocol::PrintRoutingTable(Ptr<OutputStreamWrapper> stream, Time::Unit u
 void
 RoutingProtocol::DoInitialize()
 {
+    NS_LOG_FUNCTION(this);
     if (m_mainAddress == Ipv4Address())
     {
         Ipv4Address loopback("127.0.0.1");
@@ -455,12 +459,14 @@ RoutingProtocol::DoInitialize()
 void
 RoutingProtocol::SetMainInterface(uint32_t interface)
 {
+    NS_LOG_FUNCTION(this << interface);
     m_mainAddress = m_ipv4->GetAddress(interface, 0).GetLocal();
 }
 
 void
 RoutingProtocol::SetInterfaceExclusions(std::set<uint32_t> exceptions)
 {
+    NS_LOG_FUNCTION(this << exceptions.size());
     m_interfaceExclusions = exceptions;
 }
 
@@ -469,6 +475,7 @@ RoutingProtocol::SetInterfaceExclusions(std::set<uint32_t> exceptions)
 void
 RoutingProtocol::RecvOlsr(Ptr<Socket> socket)
 {
+    NS_LOG_FUNCTION(this << socket);
     Ptr<Packet> receivedPacket;
     Address sourceAddress;
     receivedPacket = socket->RecvFrom(sourceAddress);
@@ -500,7 +507,7 @@ RoutingProtocol::RecvOlsr(Ptr<Socket> socket)
 
     Ipv4Address receiverIfaceAddr = m_ipv4->GetAddress(recvInterfaceIndex, 0).GetLocal();
     NS_ASSERT(receiverIfaceAddr != Ipv4Address());
-    NS_LOG_DEBUG("OLSR node " << m_mainAddress << " received a OLSR packet from " << senderIfaceAddr
+    NS_LOG_INFO("OLSR node " << m_mainAddress << " received a OLSR packet from " << senderIfaceAddr
                               << " to " << receiverIfaceAddr);
 
     // All routing messages are sent from and to port RT_PORT,
@@ -647,6 +654,7 @@ RoutingProtocol::RecvOlsr(Ptr<Socket> socket)
 int
 RoutingProtocol::Degree(const NeighborTuple& tuple)
 {
+    NS_LOG_FUNCTION(this);
     int degree = 0;
     for (auto it = m_state.GetTwoHopNeighbors().begin(); it != m_state.GetTwoHopNeighbors().end();
          it++)
@@ -1000,6 +1008,7 @@ RoutingProtocol::GetMainAddress(Ipv4Address iface_addr) const
 void
 RoutingProtocol::RoutingTableComputation()
 {
+    NS_LOG_FUNCTION(this);
     NS_LOG_DEBUG(Simulator::Now().As(Time::S)
                  << " : Node " << m_mainAddress << ": RoutingTableComputation begin...");
 
@@ -1360,6 +1369,7 @@ RoutingProtocol::ProcessHello(const olsrv2::MessageHeader& msg,
 void
 RoutingProtocol::ProcessTc(const olsrv2::MessageHeader& msg, const Ipv4Address& senderIface)
 {
+    NS_LOG_FUNCTION(this << msg << senderIface);
     const olsrv2::MessageHeader::Tc& tc = msg.GetTc();
     Time now = Simulator::Now();
 
@@ -1446,6 +1456,7 @@ RoutingProtocol::ProcessTc(const olsrv2::MessageHeader& msg, const Ipv4Address& 
 void
 RoutingProtocol::ProcessMid(const olsrv2::MessageHeader& msg, const Ipv4Address& senderIface)
 {
+    NS_LOG_FUNCTION(this << msg << senderIface);
     const olsrv2::MessageHeader::Mid& mid = msg.GetMid();
     Time now = Simulator::Now();
 
@@ -1514,6 +1525,7 @@ RoutingProtocol::ProcessMid(const olsrv2::MessageHeader& msg, const Ipv4Address&
 void
 RoutingProtocol::ProcessHna(const olsrv2::MessageHeader& msg, const Ipv4Address& senderIface)
 {
+    NS_LOG_FUNCTION(this << msg << senderIface);
     const olsrv2::MessageHeader::Hna& hna = msg.GetHna();
     Time now = Simulator::Now();
 
@@ -1574,6 +1586,7 @@ RoutingProtocol::ForwardDefault(olsrv2::MessageHeader olsrMessage,
                                 const Ipv4Address& localIface,
                                 const Ipv4Address& senderAddress)
 {
+    NS_LOG_FUNCTION(this << olsrMessage << localIface << senderAddress);
     Time now = Simulator::Now();
 
     // If the sender interface address is not in the symmetric
@@ -1644,6 +1657,7 @@ RoutingProtocol::ForwardDefault(olsrv2::MessageHeader olsrMessage,
 void
 RoutingProtocol::QueueMessage(const olsrv2::MessageHeader& message, Time delay)
 {
+    NS_LOG_FUNCTION(this << message << delay.As(Time::S));
     m_queuedMessages.push_back(message);
     if (not m_queuedMessagesTimer.IsRunning())
     {
@@ -1655,6 +1669,7 @@ RoutingProtocol::QueueMessage(const olsrv2::MessageHeader& message, Time delay)
 void
 RoutingProtocol::SendPacket(Ptr<Packet> packet, const MessageList& containedMessages)
 {
+    NS_LOG_FUNCTION(this << packet);
     NS_LOG_DEBUG("OLSR node " << m_mainAddress << " sending a OLSR packet");
 
     // Add a header
@@ -1678,6 +1693,7 @@ RoutingProtocol::SendPacket(Ptr<Packet> packet, const MessageList& containedMess
 void
 RoutingProtocol::SendQueuedMessages()
 {
+    NS_LOG_FUNCTION(this);
     Ptr<Packet> packet = Create<Packet>();
     int numMessages = 0;
 
@@ -1847,6 +1863,7 @@ RoutingProtocol::SendTc()
 void
 RoutingProtocol::SendMid()
 {
+    NS_LOG_FUNCTION(this);
     olsrv2::MessageHeader msg;
     olsrv2::MessageHeader::Mid& mid = msg.GetMid();
 
@@ -1893,6 +1910,7 @@ RoutingProtocol::SendMid()
 void
 RoutingProtocol::SendHna()
 {
+    NS_LOG_FUNCTION(this);
     olsrv2::MessageHeader msg;
 
     msg.SetVTime(OLSR_HNA_HOLD_TIME);
@@ -1924,6 +1942,7 @@ RoutingProtocol::SendHna()
 void
 RoutingProtocol::AddHostNetworkAssociation(Ipv4Address networkAddr, Ipv4Mask netmask)
 {
+    NS_LOG_FUNCTION(this << networkAddr << netmask);
     // Check if the (networkAddr, netmask) tuple already exist
     // in the list of local HNA associations
     const Associations& localHnaAssociations = m_state.GetAssociations();
@@ -1947,6 +1966,7 @@ RoutingProtocol::AddHostNetworkAssociation(Ipv4Address networkAddr, Ipv4Mask net
 void
 RoutingProtocol::RemoveHostNetworkAssociation(Ipv4Address networkAddr, Ipv4Mask netmask)
 {
+    NS_LOG_FUNCTION(this << networkAddr << netmask);
     NS_LOG_INFO("Removing HNA association for network " << networkAddr << "/" << netmask << ".");
     m_state.EraseAssociation(Association{networkAddr, netmask});
 }
@@ -1954,6 +1974,7 @@ RoutingProtocol::RemoveHostNetworkAssociation(Ipv4Address networkAddr, Ipv4Mask 
 void
 RoutingProtocol::SetRoutingTableAssociation(Ptr<Ipv4StaticRouting> routingTable)
 {
+    NS_LOG_FUNCTION(this << routingTable);
     // If a routing table has already been associated, remove
     // corresponding entries from the list of local HNA associations
     if (m_routingTableAssociation)
@@ -2001,6 +2022,7 @@ RoutingProtocol::SetRoutingTableAssociation(Ptr<Ipv4StaticRouting> routingTable)
 bool
 RoutingProtocol::UsesNonOlsrOutgoingInterface(const Ipv4RoutingTableEntry& route)
 {
+    NS_LOG_FUNCTION(this << route);
     auto ci = m_interfaceExclusions.find(route.GetInterface());
     // The outgoing interface is a non-OLSR interface if a match is found
     // before reaching the end of the list of excluded interfaces
@@ -2013,6 +2035,7 @@ RoutingProtocol::LinkSensing(const olsrv2::MessageHeader& msg,
                              const Ipv4Address& receiverIface,
                              const Ipv4Address& senderIface)
 {
+    NS_LOG_FUNCTION(this << msg << receiverIface << senderIface);
     Time now = Simulator::Now();
     bool updated = false;
     bool created = false;
@@ -2119,6 +2142,7 @@ void
 RoutingProtocol::PopulateNeighborSet(const olsrv2::MessageHeader& msg,
                                      const olsrv2::MessageHeader::Hello& hello)
 {
+    NS_LOG_FUNCTION(this << msg);
     NeighborTuple* nb_tuple = m_state.FindNeighborTuple(msg.GetOriginatorAddress());
     if (nb_tuple != nullptr)
     {
@@ -2130,6 +2154,7 @@ void
 RoutingProtocol::PopulateTwoHopNeighborSet(const olsrv2::MessageHeader& msg,
                                            const olsrv2::MessageHeader::Hello& hello)
 {
+    NS_LOG_FUNCTION(this << msg);
     Time now = Simulator::Now();
 
     NS_LOG_DEBUG("Olsr node " << m_mainAddress << ": PopulateTwoHopNeighborSet BEGIN");
@@ -2234,7 +2259,7 @@ void
 RoutingProtocol::PopulateMprSelectorSet(const olsrv2::MessageHeader& msg,
                                         const olsrv2::MessageHeader::Hello& hello)
 {
-    NS_LOG_FUNCTION(this);
+    NS_LOG_FUNCTION(this << msg);
 
     Time now = Simulator::Now();
 
@@ -2324,6 +2349,7 @@ OLSR::mac_failed(Ptr<Packet> p)
 void
 RoutingProtocol::NeighborLoss(const LinkTuple& tuple)
 {
+    NS_LOG_FUNCTION(this);
     NS_LOG_DEBUG(Simulator::Now().As(Time::S) << ": OLSR Node " << m_mainAddress << " LinkTuple "
                                               << tuple.neighborIfaceAddr << " -> neighbor loss.");
     LinkTupleUpdated(tuple, Willingness::DEFAULT);
@@ -2337,6 +2363,7 @@ RoutingProtocol::NeighborLoss(const LinkTuple& tuple)
 void
 RoutingProtocol::AddDuplicateTuple(const DuplicateTuple& tuple)
 {
+    NS_LOG_FUNCTION(this);
     /*debug("%f: Node %d adds dup tuple: addr = %d seq_num = %d\n",
             Simulator::Now (),
             OLSR::node_id(ra_addr()),
@@ -2348,6 +2375,7 @@ RoutingProtocol::AddDuplicateTuple(const DuplicateTuple& tuple)
 void
 RoutingProtocol::RemoveDuplicateTuple(const DuplicateTuple& tuple)
 {
+    NS_LOG_FUNCTION(this);
     /*debug("%f: Node %d removes dup tuple: addr = %d seq_num = %d\n",
       Simulator::Now (),
       OLSR::node_id(ra_addr()),
@@ -2359,6 +2387,7 @@ RoutingProtocol::RemoveDuplicateTuple(const DuplicateTuple& tuple)
 void
 RoutingProtocol::LinkTupleAdded(const LinkTuple& tuple, Willingness willingness)
 {
+    NS_LOG_FUNCTION(this);
     // Creates associated neighbor tuple
     NeighborTuple nb_tuple;
     nb_tuple.neighborMainAddr = GetMainAddress(tuple.neighborIfaceAddr);
@@ -2379,6 +2408,7 @@ RoutingProtocol::LinkTupleAdded(const LinkTuple& tuple, Willingness willingness)
 void
 RoutingProtocol::RemoveLinkTuple(const LinkTuple& tuple)
 {
+    NS_LOG_FUNCTION(this);
     NS_LOG_DEBUG(Simulator::Now().As(Time::S)
                  << ": OLSR Node " << m_mainAddress << " LinkTuple " << tuple << " REMOVED.");
 
@@ -2389,6 +2419,7 @@ RoutingProtocol::RemoveLinkTuple(const LinkTuple& tuple)
 void
 RoutingProtocol::LinkTupleUpdated(const LinkTuple& tuple, Willingness willingness)
 {
+    NS_LOG_FUNCTION(this);
     // Each time a link tuple changes, the associated neighbor tuple must be recomputed
 
     NS_LOG_DEBUG(Simulator::Now().As(Time::S)
@@ -2442,6 +2473,7 @@ RoutingProtocol::LinkTupleUpdated(const LinkTuple& tuple, Willingness willingnes
 void
 RoutingProtocol::AddNeighborTuple(const NeighborTuple& tuple)
 {
+    NS_LOG_FUNCTION(this);
     //   debug("%f: Node %d adds neighbor tuple: nb_addr = %d status = %s\n",
     //         Simulator::Now (),
     //         OLSR::node_id(ra_addr()),
@@ -2455,6 +2487,7 @@ RoutingProtocol::AddNeighborTuple(const NeighborTuple& tuple)
 void
 RoutingProtocol::RemoveNeighborTuple(const NeighborTuple& tuple)
 {
+    NS_LOG_FUNCTION(this);
     //   debug("%f: Node %d removes neighbor tuple: nb_addr = %d status = %s\n",
     //         Simulator::Now (),
     //         OLSR::node_id(ra_addr()),
@@ -2468,6 +2501,7 @@ RoutingProtocol::RemoveNeighborTuple(const NeighborTuple& tuple)
 void
 RoutingProtocol::AddTwoHopNeighborTuple(const TwoHopNeighborTuple& tuple)
 {
+    NS_LOG_FUNCTION(this);
     //   debug("%f: Node %d adds 2-hop neighbor tuple: nb_addr = %d nb2hop_addr = %d\n",
     //         Simulator::Now (),
     //         OLSR::node_id(ra_addr()),
@@ -2480,6 +2514,7 @@ RoutingProtocol::AddTwoHopNeighborTuple(const TwoHopNeighborTuple& tuple)
 void
 RoutingProtocol::RemoveTwoHopNeighborTuple(const TwoHopNeighborTuple& tuple)
 {
+    NS_LOG_FUNCTION(this);
     //   debug("%f: Node %d removes 2-hop neighbor tuple: nb_addr = %d nb2hop_addr = %d\n",
     //         Simulator::Now (),
     //         OLSR::node_id(ra_addr()),
@@ -2498,6 +2533,7 @@ RoutingProtocol::IncrementAnsn()
 void
 RoutingProtocol::AddMprSelectorTuple(const MprSelectorTuple& tuple)
 {
+    NS_LOG_FUNCTION(this);
     //   debug("%f: Node %d adds MPR selector tuple: nb_addr = %d\n",
     //         Simulator::Now (),
     //         OLSR::node_id(ra_addr()),
@@ -2510,6 +2546,7 @@ RoutingProtocol::AddMprSelectorTuple(const MprSelectorTuple& tuple)
 void
 RoutingProtocol::RemoveMprSelectorTuple(const MprSelectorTuple& tuple)
 {
+    NS_LOG_FUNCTION(this);
     //   debug("%f: Node %d removes MPR selector tuple: nb_addr = %d\n",
     //         Simulator::Now (),
     //         OLSR::node_id(ra_addr()),
@@ -2522,6 +2559,7 @@ RoutingProtocol::RemoveMprSelectorTuple(const MprSelectorTuple& tuple)
 void
 RoutingProtocol::AddTopologyTuple(const TopologyTuple& tuple)
 {
+    NS_LOG_FUNCTION(this);
     //   debug("%f: Node %d adds topology tuple: dest_addr = %d last_addr = %d seq = %d\n",
     //         Simulator::Now (),
     //         OLSR::node_id(ra_addr()),
@@ -2535,6 +2573,7 @@ RoutingProtocol::AddTopologyTuple(const TopologyTuple& tuple)
 void
 RoutingProtocol::RemoveTopologyTuple(const TopologyTuple& tuple)
 {
+    NS_LOG_FUNCTION(this);
     //   debug("%f: Node %d removes topology tuple: dest_addr = %d last_addr = %d seq = %d\n",
     //         Simulator::Now (),
     //         OLSR::node_id(ra_addr()),
@@ -2548,6 +2587,7 @@ RoutingProtocol::RemoveTopologyTuple(const TopologyTuple& tuple)
 void
 RoutingProtocol::AddIfaceAssocTuple(const IfaceAssocTuple& tuple)
 {
+    NS_LOG_FUNCTION(this);
     //   debug("%f: Node %d adds iface association tuple: main_addr = %d iface_addr = %d\n",
     //         Simulator::Now (),
     //         OLSR::node_id(ra_addr()),
@@ -2560,6 +2600,7 @@ RoutingProtocol::AddIfaceAssocTuple(const IfaceAssocTuple& tuple)
 void
 RoutingProtocol::RemoveIfaceAssocTuple(const IfaceAssocTuple& tuple)
 {
+    NS_LOG_FUNCTION(this);
     //   debug("%f: Node %d removes iface association tuple: main_addr = %d iface_addr = %d\n",
     //         Simulator::Now (),
     //         OLSR::node_id(ra_addr()),
@@ -2572,12 +2613,14 @@ RoutingProtocol::RemoveIfaceAssocTuple(const IfaceAssocTuple& tuple)
 void
 RoutingProtocol::AddAssociationTuple(const AssociationTuple& tuple)
 {
+    NS_LOG_FUNCTION(this);
     m_state.InsertAssociationTuple(tuple);
 }
 
 void
 RoutingProtocol::RemoveAssociationTuple(const AssociationTuple& tuple)
 {
+    NS_LOG_FUNCTION(this);
     m_state.EraseAssociationTuple(tuple);
 }
 
@@ -2598,6 +2641,7 @@ RoutingProtocol::GetMessageSequenceNumber()
 void
 RoutingProtocol::HelloTimerExpire()
 {
+    NS_LOG_FUNCTION(this);
     SendHello();
     m_helloTimer.Schedule(m_helloInterval);
 }
@@ -2605,6 +2649,7 @@ RoutingProtocol::HelloTimerExpire()
 void
 RoutingProtocol::TcTimerExpire()
 {
+    NS_LOG_FUNCTION(this);
     if (!m_state.GetMprSelectors().empty())
     {
         SendTc();
@@ -2619,6 +2664,7 @@ RoutingProtocol::TcTimerExpire()
 void
 RoutingProtocol::MidTimerExpire()
 {
+    NS_LOG_FUNCTION(this);
     SendMid();
     m_midTimer.Schedule(m_midInterval);
 }
@@ -2626,6 +2672,7 @@ RoutingProtocol::MidTimerExpire()
 void
 RoutingProtocol::HnaTimerExpire()
 {
+    NS_LOG_FUNCTION(this);
     if (!m_state.GetAssociations().empty())
     {
         SendHna();
@@ -2640,6 +2687,7 @@ RoutingProtocol::HnaTimerExpire()
 void
 RoutingProtocol::DupTupleTimerExpire(Ipv4Address address, uint16_t sequenceNumber)
 {
+    NS_LOG_FUNCTION(this << address << sequenceNumber);
     DuplicateTuple* tuple = m_state.FindDuplicateTuple(address, sequenceNumber);
     if (tuple == nullptr)
     {
@@ -2662,6 +2710,7 @@ RoutingProtocol::DupTupleTimerExpire(Ipv4Address address, uint16_t sequenceNumbe
 void
 RoutingProtocol::LinkTupleTimerExpire(Ipv4Address neighborIfaceAddr)
 {
+    NS_LOG_FUNCTION(this << neighborIfaceAddr);
     Time now = Simulator::Now();
 
     // the tuple parameter may be a stale copy; get a newer version from m_state
@@ -2703,6 +2752,7 @@ void
 RoutingProtocol::Nb2hopTupleTimerExpire(Ipv4Address neighborMainAddr,
                                         Ipv4Address twoHopNeighborAddr)
 {
+    NS_LOG_FUNCTION(this << neighborMainAddr << twoHopNeighborAddr);
     TwoHopNeighborTuple* tuple;
     tuple = m_state.FindTwoHopNeighborTuple(neighborMainAddr, twoHopNeighborAddr);
     if (tuple == nullptr)
@@ -2726,6 +2776,7 @@ RoutingProtocol::Nb2hopTupleTimerExpire(Ipv4Address neighborMainAddr,
 void
 RoutingProtocol::MprSelTupleTimerExpire(Ipv4Address mainAddr)
 {
+    NS_LOG_FUNCTION(this << mainAddr);
     MprSelectorTuple* tuple = m_state.FindMprSelectorTuple(mainAddr);
     if (tuple == nullptr)
     {
@@ -2747,6 +2798,7 @@ RoutingProtocol::MprSelTupleTimerExpire(Ipv4Address mainAddr)
 void
 RoutingProtocol::TopologyTupleTimerExpire(Ipv4Address destAddr, Ipv4Address lastAddr)
 {
+    NS_LOG_FUNCTION(this << destAddr << lastAddr);
     TopologyTuple* tuple = m_state.FindTopologyTuple(destAddr, lastAddr);
     if (tuple == nullptr)
     {
@@ -2769,6 +2821,7 @@ RoutingProtocol::TopologyTupleTimerExpire(Ipv4Address destAddr, Ipv4Address last
 void
 RoutingProtocol::IfaceAssocTupleTimerExpire(Ipv4Address ifaceAddr)
 {
+    NS_LOG_FUNCTION(this << ifaceAddr);
     IfaceAssocTuple* tuple = m_state.FindIfaceAssocTuple(ifaceAddr);
     if (tuple == nullptr)
     {
@@ -2792,6 +2845,7 @@ RoutingProtocol::AssociationTupleTimerExpire(Ipv4Address gatewayAddr,
                                              Ipv4Address networkAddr,
                                              Ipv4Mask netmask)
 {
+    NS_LOG_FUNCTION(this << gatewayAddr << networkAddr << netmask);
     AssociationTuple* tuple = m_state.FindAssociationTuple(gatewayAddr, networkAddr, netmask);
     if (tuple == nullptr)
     {
@@ -2815,7 +2869,7 @@ RoutingProtocol::AssociationTupleTimerExpire(Ipv4Address gatewayAddr,
 void
 RoutingProtocol::Clear()
 {
-    NS_LOG_FUNCTION_NOARGS();
+    NS_LOG_FUNCTION(this);
     m_table.clear();
 }
 
@@ -3058,21 +3112,25 @@ RoutingProtocol::RouteInput(Ptr<const Packet> p,
 void
 RoutingProtocol::NotifyInterfaceUp(uint32_t i)
 {
+    NS_LOG_FUNCTION(this << i);
 }
 
 void
 RoutingProtocol::NotifyInterfaceDown(uint32_t i)
 {
+    NS_LOG_FUNCTION(this << i);
 }
 
 void
 RoutingProtocol::NotifyAddAddress(uint32_t interface, Ipv4InterfaceAddress address)
 {
+    NS_LOG_FUNCTION(this << interface << address);
 }
 
 void
 RoutingProtocol::NotifyRemoveAddress(uint32_t interface, Ipv4InterfaceAddress address)
 {
+    NS_LOG_FUNCTION(this << interface << address);
 }
 
 void
