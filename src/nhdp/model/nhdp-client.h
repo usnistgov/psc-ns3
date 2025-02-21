@@ -49,13 +49,13 @@ class TimeCompare
 };
 
 /**
- * \ingroup applications
- * \defgroup nhdp NHDP
+ * @ingroup applications
+ * @defgroup nhdp NHDP
  */
 
 /**
- * \ingroup nhdp
- * \brief A NHDP client
+ * @ingroup nhdp
+ * @brief A NHDP client
  */
 class NhdpClient : public Application
 {
@@ -74,16 +74,16 @@ class NhdpClient : public Application
     /* End Information Bases */
 
     /**
-     * \brief Adds a PacketBB message to be sent out with the next hello message.
-     * \param message a PacketBB message to include
+     * @brief Adds a PacketBB message to be sent out with the next hello message.
+     * @param message a PacketBB message to include
      */
     // void QueueMessage (Ptr<PbbMessage> message);
 
     /**
-     * \brief Sets a callback for a particular message type.
+     * @brief Sets a callback for a particular message type.
      *
-     * \param messageType the PbbMessage message type to listen for
-     * \param cb the callback to call when a message is received
+     * @param messageType the PbbMessage message type to listen for
+     * @param cb the callback to call when a message is received
      *
      * On reception of a message of that type, the callback will be called.
      * Multiple callbacks can be registered to one message type.
@@ -134,6 +134,7 @@ class NhdpClient : public Application
     std::set<uint32_t> m_nonManetSet;
     Ptr<UniformRandomVariable> m_rng;
     std::map<Ptr<Socket>, Ipv4Address> m_socketAddresses;
+    Ptr<Socket> m_recvSocket; //!< Receiving socket
 
     /*
     std::map< uint32_t, Ptr<Socket> > m_indexSockets;

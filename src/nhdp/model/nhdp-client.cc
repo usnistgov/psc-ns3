@@ -15,6 +15,7 @@
 #include "ns3/double.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/ipv4-address.h"
+#include "ns3/ipv4-packet-info-tag.h"
 #include "ns3/ipv4.h"
 #include "ns3/log.h"
 #include "ns3/nstime.h"
@@ -173,6 +174,19 @@ NhdpClient::DoInitialize()
         m_rng = CreateObject<UniformRandomVariable>();
         m_rng->SetAttribute("Max", DoubleValue(DEFAULT_HP_MAX_JITTER.GetSeconds()));
     }
+    if (!m_recvSocket)
+    {
+        m_recvSocket = Socket::CreateSocket(GetNode(), UdpSocketFactory::GetTypeId());
+        m_recvSocket->SetAllowBroadcast(true);
+        InetSocketAddress inetAddr(Ipv4Address::GetAny(), UDP_PORT_MANET);
+        m_recvSocket->SetRecvCallback(MakeCallback(&NhdpClient::HandleRecv, this));
+        if (m_recvSocket->Bind(inetAddr))
+        {
+            NS_FATAL_ERROR("Failed to bind() NHDP receive socket");
+        }
+        m_recvSocket->SetRecvPktInfo(true);
+        m_recvSocket->ShutdownSend();
+    }
     Application::DoInitialize();
 }
 
@@ -229,7 +243,10 @@ NhdpClient::HandleRecv(Ptr<Socket> socket)
     NS_LOG_FUNCTION(this << socket);
     Address from;
     Ptr<Packet> packet = socket->RecvFrom(from);
-    NS_LOG_INFO("To: " << m_socketAddresses[socket]
+    Ipv4PacketInfoTag tag;
+    auto found = packet->RemovePacketTag(tag);
+    NS_ASSERT_MSG(found, "Did not find Ipv4PacketInfoTag");
+    NS_LOG_INFO("To: " << tag.GetAddress()
                        << " From: " << InetSocketAddress::ConvertFrom(from).GetIpv4());
 }
 
@@ -237,6 +254,16 @@ void
 NhdpClient::DoDispose()
 {
     NS_LOG_FUNCTION(this);
+    if (m_recvSocket)
+    {
+        m_recvSocket->Close();
+        m_recvSocket = nullptr;
+    }
+    for (auto& [socket, addr] : m_socketAddresses)
+    {
+        socket->Close();
+    }
+    m_socketAddresses.clear();
     Application::DoDispose();
 }
 
@@ -263,11 +290,9 @@ NhdpClient::StartApplication()
         }
 
         Ptr<Socket> socket = Socket::CreateSocket(GetNode(), UdpSocketFactory::GetTypeId());
-
-        NS_LOG_INFO("Binding to " << address);
+        socket->SetAllowBroadcast(true);
         socket->Bind(InetSocketAddress(address, m_port));
-        socket->SetRecvCallback(MakeCallback(&NhdpClient::HandleRecv, this));
-        socket->Connect(InetSocketAddress(Ipv4Address::GetBroadcast(), m_port));
+        socket->Connect(InetSocketAddress(LL_MANET_ROUTERS_IPV4, m_port));
 
         m_socketAddresses[socket] = address;
         ScheduleHello(socket);
@@ -330,7 +355,8 @@ NhdpClient::SendHello(Ptr<Socket> socket)
     Ptr<Packet> packet = Create<Packet>();
     packet->AddHeader(pbb);
 
-    NS_LOG_INFO("Send HELLO from " << m_socketAddresses[socket]);
+    NS_LOG_INFO("Send HELLO from " << m_socketAddresses[socket] << " to " << LL_MANET_ROUTERS_IPV4
+                                   << ":" << UDP_PORT_MANET);
     socket->Send(packet);
     ScheduleHello(socket);
 }
@@ -368,6 +394,7 @@ NhdpClient::BuildLocalAddressBlock(Ptr<Socket> socket)
         Ipv4InterfaceAddress ifaceAddr = ipv4->GetAddress(localIface, i);
         addrBlock->AddressPushBack(ifaceAddr.GetLocal());
         addrBlock->PrefixPushBack(ifaceAddr.GetMask().GetPrefixLength());
+        NS_LOG_DEBUG("Adding address " << ifaceAddr.GetLocal() << " to address block");
     }
 
     /* Put in the addresses belonging to all the other interfaces */
