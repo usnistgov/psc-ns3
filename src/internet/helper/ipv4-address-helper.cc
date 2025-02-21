@@ -176,6 +176,68 @@ Ipv4AddressHelper::Assign(const NetDeviceContainer& c)
     return retval;
 }
 
+Ipv4InterfaceContainer
+Ipv4AddressHelper::AssignManet(const NetDeviceContainer& c, Ipv4Address addr)
+{
+    NS_LOG_FUNCTION(this << c.GetN() << addr);
+    Ipv4InterfaceContainer retval;
+    for (uint32_t i = 0; i < c.GetN(); ++i)
+    {
+        auto device = c.Get(i);
+        auto node = device->GetNode();
+        NS_ASSERT_MSG(node,
+                      "Ipv4AddressHelper::AssignManet(): NetDevice is not not associated "
+                      "with any node -> fail");
+
+        auto ipv4 = node->GetObject<Ipv4>();
+        NS_ASSERT_MSG(ipv4,
+                      "Ipv4AddressHelper::AssignManet(): NetDevice is associated"
+                      " with a node without IPv4 stack installed -> fail "
+                      "(maybe need to use InternetStackHelper?)");
+
+        auto interface = ipv4->GetInterfaceForDevice(device);
+        if (interface == -1)
+        {
+            interface = ipv4->AddInterface(device);
+        }
+        NS_ASSERT_MSG(interface >= 0,
+                      "Ipv4AddressHelper::AssignManet(): "
+                      "Interface index not found");
+
+        NS_ASSERT_MSG(addr.Get() % 256, "Error: address " << addr << " about to overflow");
+        auto ipv4Addr = Ipv4InterfaceAddress(addr, "/32");
+        addr.Set(addr.Get() + 1);
+        ipv4->AddAddress(interface, ipv4Addr);
+        ipv4->SetMetric(interface, 1);
+        ipv4->SetUp(interface);
+        retval.Add(ipv4, interface);
+        NS_LOG_INFO("Assigned " << ipv4Addr << " to node " << node->GetId() << " device "
+                                << device->GetIfIndex());
+
+        // Install the default traffic control configuration if the traffic
+        // control layer has been aggregated, if this is not
+        // a loopback interface, and there is no queue disc installed already
+        auto tc = node->GetObject<TrafficControlLayer>();
+        if (tc && !DynamicCast<LoopbackNetDevice>(device) && !tc->GetRootQueueDiscOnDevice(device))
+        {
+            auto ndqi = device->GetObject<NetDeviceQueueInterface>();
+            // It is useless to install a queue disc if the device has no
+            // NetDeviceQueueInterface attached: the device queue is never
+            // stopped and every packet enqueued in the queue disc is
+            // immediately dequeued, hence there will never be backlog
+            if (ndqi)
+            {
+                auto nTxQueues = ndqi->GetNTxQueues();
+                NS_LOG_LOGIC("Installing default traffic control configuration ("
+                             << nTxQueues << " device queue(s))");
+                auto tcHelper = TrafficControlHelper::Default(nTxQueues);
+                tcHelper.Install(device);
+            }
+        }
+    }
+    return retval;
+}
+
 const uint32_t N_BITS = 32; //!< number of bits in a IPv4 address
 
 uint32_t
