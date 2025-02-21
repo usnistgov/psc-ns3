@@ -17,53 +17,33 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE("NhdpExample");
 
+NetDeviceContainer CreateAdhocNetwork(NodeContainer c, Ssid ssid);
+
 int
 main(int argc, char* argv[])
 {
-    LogComponentEnable("NhdpClient", LOG_LEVEL_ALL);
-    LogComponentEnable("NhdpExample", LOG_LEVEL_ALL);
+    bool verbose{true};
+    Time startTime{Seconds(1)};
+    Time stopTime{Seconds(10)};
 
     CommandLine cmd;
+    cmd.AddValue("verbose", "turn on log components", verbose);
     cmd.Parse(argc, argv);
+
+    if (verbose)
+    {
+        LogComponentEnableAll(
+            LogLevel(LOG_PREFIX_FUNC | LOG_PREFIX_LEVEL | LOG_PREFIX_TIME | LOG_PREFIX_NODE));
+        LogComponentEnable("NhdpClient", LOG_LEVEL_ALL);
+    }
+    // Create node index zero but do not use it; this allows the subsequent
+    // node IDs to align with the last octet of the IP address, for help
+    // in correlating IP addresses to nodes
+    Ptr<Node> unusedNode [[maybe_unused]] = CreateObject<Node>();
 
     NS_LOG_INFO("Creating nodes...");
     NodeContainer nodes;
     nodes.Create(2);
-
-    NS_LOG_INFO("Installing internet stack...");
-    InternetStackHelper internet;
-    internet.Install(nodes);
-
-    /*
-      NS_LOG_INFO ("Creating wifi channel...");
-      YansWifiChannelHelper wifiChannelHelper = YansWifiChannelHelper::Default ();
-
-      NS_LOG_INFO ("Creating wifi phy...");
-      YansWifiPhyHelper wifiPhyHelper = YansWifiPhyHelper::Default ();
-      wifiPhyHelper.SetChannel (wifiChannelHelper.Create ());
-
-      NS_LOG_INFO ("Creating wifi mac...");
-      NqosWifiMacHelper wifiMacHelper = NqosWifiMacHelper::Default ();
-      wifiMacHelper.SetType ("ns3::AdhocWifiMac");
-
-      WifiHelper wifiHelper = WifiHelper::Default ();
-      wifiHelper.SetStandard (WIFI_PHY_STANDARD_80211a);
-      wifiHelper.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
-          "DataMode", StringValue ("wifia-54mbs"));
-
-      NS_LOG_INFO ("Creating wifi devices...");
-      NetDeviceContainer wifiContainer = wifiHelper.Install (wifiPhyHelper,
-          wifiMacHelper, nodes);
-      NetDeviceContainer wifiContainer2 = wifiHelper.Install (wifiPhyHelper,
-          wifiMacHelper, nodes);
-
-      NS_LOG_INFO ("Assigning IP addresses.");
-      Ipv4AddressHelper ipv4 ("10.1.1.0", "255.255.255.0");
-      Ipv4InterfaceContainer ipv4container = ipv4.Assign (wifiContainer);
-
-      Ipv4AddressHelper ipv4b ("10.1.2.0", "255.255.255.0");
-      Ipv4InterfaceContainer ipv4container2 = ipv4b.Assign (wifiContainer2);
-    */
 
     NS_LOG_INFO("Creating mobility model...");
     MobilityHelper mobility;
@@ -73,6 +53,15 @@ main(int argc, char* argv[])
     mobility.SetPositionAllocator(positionAlloc);
     mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
     mobility.Install(nodes);
+
+    auto devices = CreateAdhocNetwork(nodes, Ssid("nhdp-example"));
+
+    NS_LOG_INFO("Installing internet stack...");
+    InternetStackHelper internet;
+    internet.Install(nodes);
+
+    Ipv4AddressHelper ipv4;
+    auto ipInterfaces = ipv4.AssignManet(devices, Ipv4Address("7.0.0.1"));
 
     NS_LOG_INFO("Installing applications...");
     NhdpHelper nhdpHelper;
@@ -89,12 +78,31 @@ main(int argc, char* argv[])
       }
     */
 
-    NS_LOG_INFO("Starting simulation...");
-    apps.Start(Seconds(1));
-    apps.Stop(Seconds(10));
+    YansWifiPhyHelper phy;
+    phy.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
+    phy.EnablePcap("nhdp-example", devices);
 
-    Simulator::Stop(Seconds(20));
+    NS_LOG_INFO("Starting simulation...");
+    apps.Start(startTime);
+    apps.Stop(stopTime);
+
+    Simulator::Stop(stopTime + Seconds(1));
     Simulator::Run();
-    std::cout << Now().GetSeconds() << std::endl;
     Simulator::Destroy();
+}
+
+NetDeviceContainer
+CreateAdhocNetwork(NodeContainer c, Ssid ssid)
+{
+    WifiHelper wifi;
+    wifi.SetStandard(WIFI_STANDARD_80211a);
+    WifiMacHelper wifiMac;
+    YansWifiPhyHelper wifiPhy;
+    YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default();
+    wifiPhy.SetChannel(wifiChannel.Create());
+    wifiMac.SetType("ns3::AdhocWifiMac");
+    wifi.SetRemoteStationManager("ns3::ConstantRateWifiManager",
+                                 "DataMode",
+                                 StringValue("OfdmRate54Mbps"));
+    return wifi.Install(wifiPhy, wifiMac, c);
 }
