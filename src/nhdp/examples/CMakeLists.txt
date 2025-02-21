@@ -8,3 +8,16 @@ build_lib_example(
     ${libnhdp}
     ${libwifi}
 )
+
+build_lib_example(
+  NAME manet-routing
+  SOURCE_FILES manet-routing.cc
+  LIBRARIES_TO_LINK
+    ${libwifi}
+    ${libnhdp}
+    ${libolsr}
+    ${libinternet}
+    ${libapplications}
+    ${libflow-monitor}
+)
+
