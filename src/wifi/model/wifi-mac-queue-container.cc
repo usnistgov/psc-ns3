@@ -80,7 +80,8 @@ WifiMacQueueContainer::GetQueueId(Ptr<const WifiMpdu> mpdu)
     else if (hdr.GetAddr1().IsGroup())
     {
         addrType = WIFI_GROUPCAST;
-        address = hdr.IsQosAmsdu() ? mpdu->begin()->second.GetDestinationAddr() : hdr.GetAddr1();
+        address = (hdr.IsQosData() && hdr.IsQosAmsdu()) ? mpdu->begin()->second.GetDestinationAddr()
+                                                        : hdr.GetAddr1();
     }
     else
     {
