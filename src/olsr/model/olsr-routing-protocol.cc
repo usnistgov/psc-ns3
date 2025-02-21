@@ -1670,8 +1670,8 @@ RoutingProtocol::SendPacket(Ptr<Packet> packet, const MessageList& containedMess
     for (auto i = m_sendSockets.begin(); i != m_sendSockets.end(); i++)
     {
         Ptr<Packet> pkt = packet->Copy();
-        Ipv4Address bcast = i->second.GetLocal().GetSubnetDirectedBroadcast(i->second.GetMask());
-        i->first->SendTo(pkt, 0, InetSocketAddress(bcast, OLSR_PORT_NUMBER));
+        auto llManetRouters = Ipv4Address("224.0.0.109");
+        i->first->SendTo(pkt, 0, InetSocketAddress(llManetRouters, OLSR_PORT_NUMBER));
     }
 }
 
