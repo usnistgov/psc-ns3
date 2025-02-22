@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2009 Drexel University
  *
- * SPDX-License-Identifier: GPL-2.0-only
+ * SPDX-License-Identifier: GPL-2.0-only and NIST-Software
  *
  * Author: Tom Wambold <tom5760@gmail.com>
  */
@@ -252,6 +252,41 @@ NhdpClient::HandleRecv(Ptr<Socket> socket)
     NS_ASSERT_MSG(found, "Did not find Ipv4PacketInfoTag");
     NS_LOG_INFO("To: " << tag.GetAddress()
                        << " From: " << InetSocketAddress::ConvertFrom(from).GetIpv4());
+    PbbPacket pbb;
+    packet->RemoveHeader(pbb);
+    NS_LOG_INFO("Message size " << pbb.MessageSize());
+    for (auto itMsg = pbb.MessageBegin(); itMsg != pbb.MessageEnd(); ++itMsg)
+    {
+        auto msg = pbb.MessageFront();
+        NS_LOG_INFO("size " << msg->AddressBlockSize() << " type " << +msg->GetType() << " hops "
+                            << msg->HasHopLimit() << " seq " << msg->HasSequenceNumber());
+        for (int i = 0; i < msg->AddressBlockSize(); i++)
+        {
+            auto addressBlock = msg->AddressBlockFront();
+            for (int j = 0; j < addressBlock->AddressSize(); j++)
+            {
+                auto addr [[maybe_unused]] = addressBlock->AddressFront();
+                if (Ipv4Address::IsMatchingType(addr))
+                {
+                    auto ipv4Addr = Ipv4Address::ConvertFrom(addr);
+                    auto itNeigh = m_neighborInfoBase.find(ipv4Addr);
+                    if (itNeigh == m_neighborInfoBase.end())
+                    {
+                        NS_LOG_DEBUG("Found a new neighbor " << ipv4Addr);
+                        m_neighborInfoBase.emplace(ipv4Addr, NeighborTuple(ipv4Addr));
+                        m_linkInfoBase.emplace(ipv4Addr, LinkTuple(ipv4Addr, 0));
+                    }
+                    else
+                    {
+                        NS_LOG_INFO("Heard from an existing neighbor " << ipv4Addr);
+                    }
+                }
+                addressBlock->AddressPopFront();
+            }
+            msg->AddressBlockPopFront();
+        }
+    }
+    NS_LOG_INFO("Tlv size " << pbb.TlvSize());
 }
 
 void

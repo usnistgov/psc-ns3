@@ -21,14 +21,34 @@ namespace ns3
 namespace nhdp
 {
 
+enum class LinkStatus
+{
+    PENDING,
+    HEARD,
+    SYMMETRIC,
+    LOST
+};
+
 struct NeighborTuple
 {
+    NeighborTuple(Ipv4Address addr)
+    {
+        m_neighborAddrList.push_back(addr);
+    }
+
     std::vector<Ipv4Address> m_neighborAddrList;
     bool m_symmetric{false};
 };
 
 struct LinkTuple
 {
+    LinkTuple(Ipv4Address addr, double quality)
+    {
+        m_neighborAddrList.push_back(addr);
+    }
+
+    LinkStatus GetLinkStatus() const;
+
     std::vector<Ipv4Address> m_neighborAddrList;
     Time m_heardTime;
     Time m_symTime;

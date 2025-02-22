@@ -129,6 +129,10 @@ class NhdpClient : public Application
     Time m_nHoldTime;
     Time m_iHoldTime;
 
+    /* Information bases */
+    std::map<Ipv4Address, NeighborTuple> m_neighborInfoBase;
+    std::map<Ipv4Address, LinkTuple> m_linkInfoBase;
+
     /* Other attributes */
     bool m_running{false};
     std::set<uint32_t> m_nonManetSet;
