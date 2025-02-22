@@ -17,6 +17,9 @@ NS_LOG_COMPONENT_DEFINE("NhdpHelper");
 namespace ns3
 {
 
+namespace nhdp
+{
+
 NhdpHelper::NhdpHelper()
 {
     NS_LOG_FUNCTION(this);
@@ -63,5 +66,7 @@ NhdpHelper::InstallPriv(Ptr<Node> node) const
 
     return app;
 }
+
+} // namespace nhdp
 
 } // namespace ns3

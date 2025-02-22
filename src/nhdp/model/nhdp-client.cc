@@ -33,6 +33,11 @@
 namespace ns3
 {
 
+NS_LOG_COMPONENT_DEFINE("NhdpClient");
+
+namespace nhdp
+{
+
 /* From RFC 5498 */
 static const Ipv4Address LL_MANET_ROUTERS_IPV4("224.0.0.109");
 /* From RFC 5498 */
@@ -60,7 +65,6 @@ static const Time DEFAULT_N_HOLD_TIME = DEFAULT_L_HOLD_TIME;
 static const Time DEFAULT_I_HOLD_TIME = DEFAULT_N_HOLD_TIME;
 
 NS_OBJECT_ENSURE_REGISTERED(NhdpClient);
-NS_LOG_COMPONENT_DEFINE("NhdpClient");
 
 NhdpClient::NhdpClient()
 {
@@ -71,7 +75,7 @@ TypeId
 NhdpClient::GetTypeId()
 {
     static TypeId tid =
-        TypeId("ns3::NhdpClient")
+        TypeId("ns3::nhdp::NhdpClient")
             .SetParent<Application>()
             .AddConstructor<NhdpClient>()
 
@@ -444,4 +448,6 @@ NhdpClient::BuildLocalAddressBlock(Ptr<Socket> socket)
     return addrBlock;
 }
 
-} /* Namespace ns3 */
+} // namespace nhdp
+
+} // namespace ns3

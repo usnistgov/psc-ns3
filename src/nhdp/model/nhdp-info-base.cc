@@ -11,6 +11,9 @@
 namespace ns3
 {
 
+namespace nhdp
+{
+
 void
 TupleBase::Ref() const
 {
@@ -26,5 +29,7 @@ TupleBase::Unref() const
         delete this;
     }
 }
+
+} // namespace nhdp
 
 } // namespace ns3

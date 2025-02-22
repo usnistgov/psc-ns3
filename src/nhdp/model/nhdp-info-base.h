@@ -18,6 +18,9 @@
 namespace ns3
 {
 
+namespace nhdp
+{
+
 /** Just so I don't need to duplicate all the Ptr methods */
 class TupleBase
 {
@@ -73,6 +76,8 @@ struct NhdpLostNeighborTuple : public TupleBase
     Ipv4InterfaceAddress address;
     Time time;
 };
+
+} // namespace nhdp
 
 } // namespace ns3
 

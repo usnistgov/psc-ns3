@@ -14,6 +14,7 @@
 #include "ns3/wifi-module.h"
 
 using namespace ns3;
+using namespace nhdp;
 
 NS_LOG_COMPONENT_DEFINE("NhdpExample");
 

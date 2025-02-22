@@ -29,6 +29,9 @@
 namespace ns3
 {
 
+namespace nhdp
+{
+
 /* PacketBB Types */
 const uint8_t ADDR_TLV_LOCAL_IF = 1;
 
@@ -144,6 +147,8 @@ class NhdpClient : public Application
     std::multimap< uint8_t, Callback<PbbMessage> > m_callbacks;
     */
 };
+
+} // namespace nhdp
 
 } // namespace ns3
 

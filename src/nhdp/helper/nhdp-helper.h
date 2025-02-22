@@ -16,6 +16,9 @@
 namespace ns3
 {
 
+namespace nhdp
+{
+
 class NhdpHelper
 {
   public:
@@ -32,6 +35,8 @@ class NhdpHelper
 
     ObjectFactory m_factory;
 };
+
+} // namespace nhdp
 
 } // namespace ns3
 #endif /* NHDP_HELPER_H */
