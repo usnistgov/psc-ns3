@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2009 Drexel University
  *
- * SPDX-License-Identifier: GPL-2.0-only
+ * SPDX-License-Identifier: GPL-2.0-only and NIST-Software
  *
  * Author: Tom Wambold <tom5760@gmail.com>
  */
@@ -9,7 +9,7 @@
 #ifndef NHDP_INFO_BASE_H
 #define NHDP_INFO_BASE_H
 
-#include "ns3/ipv4-interface-address.h"
+#include "ns3/ipv4-address.h"
 #include "ns3/nstime.h"
 
 #include <stdint.h>
@@ -21,60 +21,28 @@ namespace ns3
 namespace nhdp
 {
 
-/** Just so I don't need to duplicate all the Ptr methods */
-class TupleBase
+struct NeighborTuple
 {
-  public:
-    void Ref() const;
-    void Unref() const;
-
-  private:
-    mutable uint32_t m_refCount;
+    std::vector<Ipv4Address> m_neighborAddrList;
+    bool m_symmetric{false};
 };
 
-typedef std::vector<Ipv4InterfaceAddress>::iterator NhdpTupleAddressIterator;
-typedef std::vector<Ipv4InterfaceAddress>::const_iterator ConstNhdpTupleAddressIterator;
-
-struct NhdpLocalInterfaceTuple : public TupleBase
+struct LinkTuple
 {
-    std::vector<Ipv4InterfaceAddress> addrList;
-    bool isManet;
+    std::vector<Ipv4Address> m_neighborAddrList;
+    Time m_heardTime;
+    Time m_symTime;
+    double m_quality{0};
+    bool m_pending{false};
+    bool m_lost{false};
+    Time m_expirationTime;
 };
 
-struct NhdpRemovedInterfaceAddressTuple : public TupleBase
+struct TwoHopTuple
 {
-    Ipv4InterfaceAddress addr;
-    Time time;
-};
-
-struct NhdpLinkTuple : public TupleBase
-{
-    std::vector<Ipv4InterfaceAddress> neighborIfaceAddrList;
-    Time heardTime;
-    Time symTime;
-    float quality;
-    bool pending;
-    bool lost;
-    Time time;
-};
-
-struct NhdpTwoHopTuple : public TupleBase
-{
-    std::vector<Ipv4InterfaceAddress> neighborIfaceAddrList;
-    Ipv4InterfaceAddress twoHopAddr;
-    Time time;
-};
-
-struct NhdpNeighborTuple : public TupleBase
-{
-    std::vector<Ipv4InterfaceAddress> neighborAddrList;
-    bool symmetric;
-};
-
-struct NhdpLostNeighborTuple : public TupleBase
-{
-    Ipv4InterfaceAddress address;
-    Time time;
+    std::vector<Ipv4Address> m_neighborAddrList;
+    Ipv4Address m_twoHopAddr;
+    Time m_expirationTime;
 };
 
 } // namespace nhdp

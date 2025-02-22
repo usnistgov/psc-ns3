@@ -14,22 +14,6 @@ namespace ns3
 namespace nhdp
 {
 
-void
-TupleBase::Ref() const
-{
-    m_refCount++;
-}
-
-void
-TupleBase::Unref() const
-{
-    m_refCount--;
-    if (m_refCount == 0)
-    {
-        delete this;
-    }
-}
-
 } // namespace nhdp
 
 } // namespace ns3

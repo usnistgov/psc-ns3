@@ -63,9 +63,6 @@ class TimeCompare
 class NhdpClient : public Application
 {
   public:
-    typedef std::map<uint32_t, Ptr<NhdpLocalInterfaceTuple>>::const_iterator
-        ConstLocalInterfaceIterator;
-
     NhdpClient();
 
     static TypeId GetTypeId();
