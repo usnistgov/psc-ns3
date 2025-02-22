@@ -53,6 +53,23 @@ if(applications
         csma-system-test-suite.cc
     )
   endif()
+  if((nhdp
+      IN_LIST
+      ns3-all-enabled-modules
+     )
+     AND (internet
+          IN_LIST
+          ns3-all-enabled-modules
+         )
+     AND (wifi
+          IN_LIST
+          ns3-all-enabled-modules
+         )
+  )
+    set(nhdp_sources
+        nhdp-system-test-suite.cc
+    )
+  endif()
 endif()
 
 set(internet_sources)
@@ -98,6 +115,7 @@ add_library(
   ${dsr_sources}
   ${internet_sources}
   ${network_sources}
+  ${nhdp_sources}
   ${traffic-control_sources}
   ${wifi_sources}
 )
