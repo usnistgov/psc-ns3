@@ -60,6 +60,12 @@ struct LinkTuple
 
 struct TwoHopTuple
 {
+    TwoHopTuple(Ipv4Address addr, Ipv4Address twoHopAddr)
+    {
+        m_neighborAddrList.push_back(addr);
+        m_twoHopAddr = twoHopAddr;
+    }
+
     std::vector<Ipv4Address> m_neighborAddrList;
     Ipv4Address m_twoHopAddr;
     Time m_expirationTime;
