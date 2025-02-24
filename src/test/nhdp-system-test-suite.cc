@@ -32,7 +32,7 @@
 using namespace ns3;
 using namespace nhdp;
 
-NS_LOG_COMPONENT_DEFINE("NhdpSystemTestSuite");
+NS_LOG_COMPONENT_DEFINE("NhdpSystem");
 
 /**
  * @defgroup nhdp-tests Tests for nhdp
@@ -62,7 +62,11 @@ class NhdpTestCase : public TestCase
     void DoRun() override;
     NetDeviceContainer CreateAdhocNetwork(NodeContainer c, Ssid ssid);
     void NeighborChange(std::string context, bool newNeighbor, const NeighborTuple& neighborTuple);
+    void LinkChange(std::string context, LinkStatus oldLinkStatus, const LinkTuple& linkTuple);
+    void TwoHopChange(std::string context, bool newTwoHop, const TwoHopTuple& linkTuple);
     std::vector<NeighborTuple> m_neighborChanges;
+    std::vector<LinkTuple> m_linkChanges;
+    std::vector<TwoHopTuple> m_twoHopChanges;
     std::vector<NeighborTuple> m_symmetricNeighbors;
 };
 
@@ -76,17 +80,43 @@ NhdpTestCase::NeighborChange(std::string context,
                              bool newNeighbor,
                              const NeighborTuple& neighborTuple)
 {
-    std::cout << "Neighbor change " << context << " " << newNeighbor << " "
-              << neighborTuple.m_neighborAddrList[0] << std::endl;
-    m_neighborChanges.emplace_back(neighborTuple);
-    if (neighborTuple.m_symmetric)
+    if (newNeighbor)
     {
-        std::cout << "Neighbor symmetric change " << context << " " << newNeighbor << " "
-                  << neighborTuple.m_neighborAddrList[0] << " " << neighborTuple.m_symmetric
-                  << std::endl;
+        NS_LOG_INFO(context <<  " New neighbor " << neighborTuple.m_neighborAddrList[0]);
+    }
+    else if (neighborTuple.m_symmetric)
+    {
+        NS_LOG_INFO(context <<  " Symmetric neighbor " << neighborTuple.m_neighborAddrList[0]);
         m_symmetricNeighbors.emplace_back(neighborTuple);
     }
+    m_neighborChanges.emplace_back(neighborTuple);
 }
+
+void
+NhdpTestCase::LinkChange(std::string context,
+                             LinkStatus oldLinkStatus,
+                             const LinkTuple& linkTuple)
+{
+    NS_LOG_INFO(context << " Link old status " << oldLinkStatus << " new status " << linkTuple.GetLinkStatus() << " " << linkTuple.m_neighborAddrList[0]);
+    m_linkChanges.emplace_back(linkTuple);
+}
+
+void
+NhdpTestCase::TwoHopChange(std::string context,
+                             bool newTwoHop,
+                             const TwoHopTuple& twoHopTuple)
+{
+    if (newTwoHop)
+    {
+        NS_LOG_INFO(context <<  " New two-hop neighbor " << twoHopTuple.m_twoHopAddr << " from " << twoHopTuple.m_neighborAddrList[0]);
+    }
+    else
+    {
+        NS_LOG_INFO(context <<  " Existing two-hop neighbor " << twoHopTuple.m_twoHopAddr << " from " << twoHopTuple.m_neighborAddrList[0]);
+    }
+    m_twoHopChanges.emplace_back(twoHopTuple);
+}
+
 
 void
 NhdpTestCase::DoRun()
@@ -99,11 +129,9 @@ NhdpTestCase::DoRun()
     // in correlating IP addresses to nodes
     Ptr<Node> unusedNode [[maybe_unused]] = CreateObject<Node>();
 
-    NS_LOG_INFO("Creating nodes...");
     NodeContainer nodes;
     nodes.Create(4);
 
-    NS_LOG_INFO("Creating mobility model...");
     MobilityHelper mobility;
     Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator>();
     positionAlloc->Add(Vector(0.0, 0.0, 0.0));
@@ -141,23 +169,23 @@ NhdpTestCase::DoRun()
                                  StringValue("OfdmRate54Mbps"));
     auto devices = wifi.Install(wifiPhy, wifiMac, nodes);
 
-    NS_LOG_INFO("Installing internet stack...");
     InternetStackHelper internet;
     internet.Install(nodes);
 
     Ipv4AddressHelper ipv4;
     auto ipInterfaces = ipv4.AssignManet(devices, Ipv4Address("7.0.0.1"));
 
-    NS_LOG_INFO("Installing applications...");
     NhdpHelper nhdpHelper;
     ApplicationContainer apps = nhdpHelper.Install(nodes);
     auto nhdp1 = apps.Get(0)->GetObject<NhdpClient>();
     nhdp1->TraceConnect("NeighborChange", "1", MakeCallback(&NhdpTestCase::NeighborChange, this));
+    nhdp1->TraceConnect("LinkChange", "1", MakeCallback(&NhdpTestCase::LinkChange, this));
+    nhdp1->TraceConnect("TwoHopChange", "1", MakeCallback(&NhdpTestCase::TwoHopChange, this));
 
-    NS_LOG_INFO("Starting simulation...");
     apps.Start(startTime);
     apps.Stop(stopTime);
 
+    NS_LOG_INFO("Start simulation for " << (stopTime + Seconds(1)).As(Time::S) << " duration");
     Simulator::Stop(stopTime + Seconds(1));
     Simulator::Run();
     Simulator::Destroy();
