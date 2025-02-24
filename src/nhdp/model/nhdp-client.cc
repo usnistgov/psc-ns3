@@ -64,6 +64,8 @@ static const Time DEFAULT_HT_MAX_JITTER = DEFAULT_HP_MAX_JITTER;
 static const Time DEFAULT_N_HOLD_TIME = DEFAULT_L_HOLD_TIME;
 static const Time DEFAULT_I_HOLD_TIME = DEFAULT_N_HOLD_TIME;
 
+static const Time EXPIRED = Seconds(0);
+
 NS_OBJECT_ENSURE_REGISTERED(NhdpClient);
 
 NhdpClient::NhdpClient()
@@ -165,7 +167,19 @@ NhdpClient::GetTypeId()
                           "Time to record recently used local interface addresses.",
                           TimeValue(DEFAULT_I_HOLD_TIME),
                           MakeTimeAccessor(&NhdpClient::m_iHoldTime),
-                          MakeTimeChecker());
+                          MakeTimeChecker())
+            .AddTraceSource("NeighborChange",
+                            "Notification that neighbor information base changed",
+                            MakeTraceSourceAccessor(&NhdpClient::m_neighborChange),
+                            "ns3::nhdp::NhdpClient::NeighborChangeTracedCallback")
+            .AddTraceSource("LinkChange",
+                            "Notification that link information base changed",
+                            MakeTraceSourceAccessor(&NhdpClient::m_linkChange),
+                            "ns3::nhdp::NhdpClient::LinkChangeTracedCallback")
+            .AddTraceSource("TwoHopChange",
+                            "Notification that two-hop information base changed",
+                            MakeTraceSourceAccessor(&NhdpClient::m_twoHopChange),
+                            "ns3::nhdp::NhdpClient::TwoHopChangeTracedCallback");
     return tid;
 }
 
@@ -250,43 +264,166 @@ NhdpClient::HandleRecv(Ptr<Socket> socket)
     Ipv4PacketInfoTag tag;
     auto found = packet->RemovePacketTag(tag);
     NS_ASSERT_MSG(found, "Did not find Ipv4PacketInfoTag");
-    NS_LOG_INFO("To: " << tag.GetAddress()
-                       << " From: " << InetSocketAddress::ConvertFrom(from).GetIpv4());
+    NS_LOG_INFO("Receive HELLO to: " << tag.GetAddress() << " from: "
+                                     << InetSocketAddress::ConvertFrom(from).GetIpv4());
     PbbPacket pbb;
     packet->RemoveHeader(pbb);
-    NS_LOG_INFO("Message size " << pbb.MessageSize());
-    for (auto itMsg = pbb.MessageBegin(); itMsg != pbb.MessageEnd(); ++itMsg)
+    int16_t seq(-1);
+    if (pbb.HasSequenceNumber())
     {
-        auto msg = pbb.MessageFront();
-        NS_LOG_INFO("size " << msg->AddressBlockSize() << " type " << +msg->GetType() << " hops "
-                            << msg->HasHopLimit() << " seq " << msg->HasSequenceNumber());
-        for (int i = 0; i < msg->AddressBlockSize(); i++)
-        {
-            auto addressBlock = msg->AddressBlockFront();
-            for (int j = 0; j < addressBlock->AddressSize(); j++)
-            {
-                auto addr [[maybe_unused]] = addressBlock->AddressFront();
-                if (Ipv4Address::IsMatchingType(addr))
-                {
-                    auto ipv4Addr = Ipv4Address::ConvertFrom(addr);
-                    auto itNeigh = m_neighborInfoBase.find(ipv4Addr);
-                    if (itNeigh == m_neighborInfoBase.end())
-                    {
-                        NS_LOG_DEBUG("Found a new neighbor " << ipv4Addr);
-                        m_neighborInfoBase.emplace(ipv4Addr, NeighborTuple(ipv4Addr));
-                        m_linkInfoBase.emplace(ipv4Addr, LinkTuple(ipv4Addr, 0));
-                    }
-                    else
-                    {
-                        NS_LOG_INFO("Heard from an existing neighbor " << ipv4Addr);
-                    }
-                }
-                addressBlock->AddressPopFront();
-            }
-            msg->AddressBlockPopFront();
-        }
+        seq = pbb.GetSequenceNumber();
     }
-    NS_LOG_INFO("Tlv size " << pbb.TlvSize());
+    NS_LOG_DEBUG("Pbb message size " << pbb.MessageSize() << " TLV size " << pbb.TlvSize()
+                                     << " seq. no. " << seq);
+    // TODO:  placeholder for HandlePbbTlv (VALIDITY_TIME and INTERVAL_TIME) handling
+    //        They both are PacketBB messages; when added, below assert can be removed.
+    NS_ASSERT_MSG(pbb.MessageSize() == 1, "There should be one message in a HELLO");
+    HandlePbbMessage(pbb.MessageFront());
+}
+
+void
+NhdpClient::HandlePbbMessage(Ptr<PbbMessage> msg)
+{
+    NS_LOG_FUNCTION(this << msg);
+    NS_LOG_INFO("PbbMessage address block size "
+                << msg->AddressBlockSize() << " type " << +msg->GetType() << " hops "
+                << msg->HasHopLimit() << " seq " << msg->HasSequenceNumber());
+    NS_ASSERT_MSG(msg->GetType() == 0, "HELLO should be message type 0");
+    int msgAddressBlockSize{msg->AddressBlockSize()};
+    Ipv4Address neighborIpv4Addr;
+    for (int i = 0; i < msgAddressBlockSize; i++)
+    {
+        auto addressBlock = msg->AddressBlockFront();
+        NS_ASSERT_MSG(addressBlock->TlvSize() == 1, "Expected AddressBlock TLV size of 1");
+        auto addressTlv = addressBlock->TlvFront();
+        NS_LOG_INFO("Address block size " << addressBlock->AddressSize() << " TLV type "
+                                          << +addressTlv->GetType());
+        if (addressTlv->GetType() == ADDR_TLV_LOCAL_IF)
+        {
+            neighborIpv4Addr = HandleLocalAddressBlock(addressBlock, addressTlv);
+        }
+        else if (addressTlv->GetType() == ADDR_TLV_LINK_STATUS)
+        {
+            HandleLinkStatusAddressBlock(addressBlock, addressTlv, neighborIpv4Addr);
+        }
+        else if (addressTlv->GetType() == ADDR_TLV_OTHER_NEIGHB)
+        {
+            NS_FATAL_ERROR("OTHER_NEIGHB type not yet supported");
+            // HandleOtherNeighbAddressBlock(addressBlock, addressTlv, neighborIpv4Addr);
+        }
+        else
+        {
+            NS_FATAL_ERROR("Unknown type: " << +addressTlv->GetType());
+        }
+        msg->AddressBlockPopFront();
+    }
+}
+
+Ipv4Address
+NhdpClient::HandleLocalAddressBlock(Ptr<PbbAddressBlock> addressBlock, Ptr<PbbAddressTlv> addrTlv)
+{
+    NS_LOG_FUNCTION(this << addressBlock << addrTlv);
+    Ipv4Address neighborIpv4Addr;
+    for (int j = 0; j < addressBlock->AddressSize(); j++)
+    {
+        auto addr = addressBlock->AddressFront();
+        NS_ASSERT_MSG(Ipv4Address::IsMatchingType(addr), "Only supporting IPv6 for now");
+        neighborIpv4Addr = Ipv4Address::ConvertFrom(addr);
+        auto itNeigh = m_neighborInfoBase.find(neighborIpv4Addr);
+        if (itNeigh == m_neighborInfoBase.end())
+        {
+            NS_LOG_INFO("Creating new NeighborTuple and LinkTuple to " << neighborIpv4Addr);
+            NeighborTuple neighborTuple(neighborIpv4Addr);
+            m_neighborInfoBase.emplace(neighborIpv4Addr, neighborTuple);
+            m_neighborChange(true, neighborTuple);
+            LinkTuple linkTuple(neighborIpv4Addr, 0);
+            linkTuple.m_heardTime = Simulator::Now() + m_hHoldTime;
+            linkTuple.m_expirationTime = Simulator::Now() + m_hHoldTime;
+            m_linkInfoBase.emplace(neighborIpv4Addr, linkTuple);
+            m_linkChange(true, linkTuple);
+        }
+        else
+        {
+            NS_LOG_DEBUG("Heard from an existing neighbor " << neighborIpv4Addr);
+        }
+        addressBlock->AddressPopFront();
+    }
+    return neighborIpv4Addr;
+}
+
+void
+NhdpClient::HandleLinkStatusAddressBlock(Ptr<PbbAddressBlock> addressBlock,
+                                         Ptr<PbbAddressTlv> addrTlv,
+                                         Ipv4Address neighborIpv4Addr)
+{
+    NS_LOG_FUNCTION(this << addressBlock << addrTlv << neighborIpv4Addr);
+    NS_ASSERT_MSG(addrTlv->GetValue().GetSize() == 1, "TLV should have one byte of value data");
+    uint8_t value = addrTlv->GetValue().Begin().ReadU8();
+    uint16_t numAddress = addressBlock->AddressSize();
+    if (addrTlv->HasIndexStop())
+    {
+        numAddress = addrTlv->GetIndexStop() - addrTlv->GetIndexStart() + 1;
+    }
+    Ptr<Ipv4> ipv4 = GetNode()->GetObject<Ipv4>();
+    for (int j = 0; j < numAddress; j++)
+    {
+        auto addr = addressBlock->AddressFront();
+        NS_ASSERT_MSG(Ipv4Address::IsMatchingType(addr), "Only supporting IPv6 for now");
+        auto ipv4Addr = Ipv4Address::ConvertFrom(addr);
+        if (ipv4Addr == m_localIpv4Address)
+        {
+            if (value == ADDR_TLV_LINK_STATUS_HEARD || value == ADDR_TLV_LINK_STATUS_SYMMETRIC)
+            {
+                std::string valueStr =
+                    (value == ADDR_TLV_LINK_STATUS_HEARD) ? "HEARD" : "SYMMETRIC";
+                NS_LOG_DEBUG("Neighbor " << neighborIpv4Addr << " lists my address as "
+                                         << valueStr);
+                auto itNeigh = m_neighborInfoBase.find(neighborIpv4Addr);
+                if (!itNeigh->second.m_symmetric)
+                {
+                    // change neighbor to symmetric
+                    NS_LOG_DEBUG("Changing neighbor " << neighborIpv4Addr
+                                                      << " from HEARD to SYMMETRIC");
+                    itNeigh->second.m_symmetric = true;
+                    m_neighborChange(false, itNeigh->second);
+                }
+                auto itLink = m_linkInfoBase.find(neighborIpv4Addr);
+                NS_ASSERT_MSG(itLink != m_linkInfoBase.end(), "Error: LinkTuple not found");
+                itLink->second.m_symTime = Simulator::Now() + m_hHoldTime;
+                itLink->second.m_expirationTime = Simulator::Now() + m_hHoldTime;
+                NS_LOG_DEBUG("Changing link sym time to " << itLink->second.m_symTime.GetSeconds());
+                m_linkChange(false, itLink->second);
+            }
+            else if (value == ADDR_TLV_LINK_STATUS_LOST)
+            {
+                NS_FATAL_ERROR("Not yet");
+            }
+            else
+            {
+                NS_FATAL_ERROR("Value " << +value << " unsupported");
+            }
+        }
+        else
+        {
+            // TODO clarify if need to check symmetric state on the one hop link
+            auto itTwoHop = m_twoHopInfoBase.find(neighborIpv4Addr);
+            if (itTwoHop == m_twoHopInfoBase.end())
+            {
+                TwoHopTuple twoHopTuple(neighborIpv4Addr, ipv4Addr);
+                twoHopTuple.m_expirationTime = Simulator::Now() + m_hHoldTime;
+                m_twoHopInfoBase.emplace(neighborIpv4Addr, twoHopTuple);
+                m_twoHopChange(true, twoHopTuple);
+                NS_LOG_INFO("Creating new TwoHopTuple to " << ipv4Addr << " via "
+                                                           << neighborIpv4Addr);
+            }
+            else
+            {
+                NS_LOG_DEBUG("Updating TwoHopTuple to " << ipv4Addr << " via " << neighborIpv4Addr);
+                itTwoHop->second.m_expirationTime = Simulator::Now() + m_hHoldTime;
+            }
+        }
+        addressBlock->AddressPopFront();
+    }
 }
 
 void
@@ -379,9 +516,23 @@ NhdpClient::SendHello(Ptr<Socket> socket)
 
     /* Validity time message TLV */
 
-    Ptr<PbbAddressBlock> addrBlock = BuildLocalAddressBlock(socket);
-    message->AddressBlockPushBack(addrBlock);
+    if (!m_localAddrBlock)
+    {
+        m_localAddrBlock = BuildLocalAddressBlock(socket);
+    }
+    NS_ASSERT_MSG(m_localAddrBlock, "Local address block is required");
+    message->AddressBlockPushBack(m_localAddrBlock);
 
+    auto addrBlock = BuildLinkStatusAddressBlock(socket);
+    if (addrBlock)
+    {
+        NS_LOG_DEBUG("Adding LinkStatus Address Block");
+        message->AddressBlockPushBack(addrBlock);
+    }
+    else
+    {
+        NS_LOG_DEBUG("Not sending an empty LinkStatus address block");
+    }
     /* Add any other messages other protocols want to send */
     /*
     while (!m_messages.empty ())
@@ -434,6 +585,7 @@ NhdpClient::BuildLocalAddressBlock(Ptr<Socket> socket)
         addrBlock->AddressPushBack(ifaceAddr.GetLocal());
         addrBlock->PrefixPushBack(ifaceAddr.GetMask().GetPrefixLength());
         NS_LOG_DEBUG("Adding address " << ifaceAddr.GetLocal() << " to address block");
+        m_localIpv4Address = ifaceAddr.GetLocal();
     }
 
     /* Put in the addresses belonging to all the other interfaces */
@@ -461,7 +613,7 @@ NhdpClient::BuildLocalAddressBlock(Ptr<Socket> socket)
     Ptr<PbbAddressTlv> addrTlv = Create<PbbAddressTlv>();
     addrBlock->TlvPushBack(addrTlv);
     addrTlv->SetType(ADDR_TLV_LOCAL_IF);
-    addrTlv->SetValue(&ADDR_TLV_LOCAL_IF_THIS, sizeof(ADDR_TLV_LOCAL_IF_THIS));
+    addrTlv->SetValue(&ADDR_TLV_LOCAL_IF_THIS_IF, sizeof(ADDR_TLV_LOCAL_IF_THIS_IF));
     addrTlv->SetIndexStart(0);
     /* We only need to set an index stop if there is more than one local address */
     if (numLocalAddrs > 1)
@@ -475,11 +627,84 @@ NhdpClient::BuildLocalAddressBlock(Ptr<Socket> socket)
         addrTlv = Create<PbbAddressTlv>();
         addrBlock->TlvPushBack(addrTlv);
         addrTlv->SetType(ADDR_TLV_LOCAL_IF);
-        addrTlv->SetValue(&ADDR_TLV_LOCAL_IF_OTHER, sizeof(ADDR_TLV_LOCAL_IF_OTHER));
+        addrTlv->SetValue(&ADDR_TLV_LOCAL_IF_OTHER_IF, sizeof(ADDR_TLV_LOCAL_IF_OTHER_IF));
         addrTlv->SetIndexStart(numLocalAddrs);
         addrTlv->SetIndexStop(addrBlock->AddressSize() - 1);
     }
 
+    return addrBlock;
+}
+
+Ptr<PbbAddressBlock>
+NhdpClient::BuildLinkStatusAddressBlock(Ptr<Socket> socket)
+{
+    NS_LOG_FUNCTION(this << m_socketAddresses[socket]);
+
+    std::vector<Ipv4Address> heard;
+    std::vector<Ipv4Address> symmetric;
+
+    for (auto& [addr, linkTuple] : m_linkInfoBase)
+    {
+        // o  Network addresses of MANET interfaces of 1-hop neighbors from the
+        // Link Set of the Interface Information Base for this MANET
+        // interface (i.e., from an L_neighbor_iface_addr_list), other than
+        // those from Link Tuples with L_status = PENDING.
+        NS_LOG_DEBUG("LinkTuple neighbor "
+                     << linkTuple.m_neighborAddrList[0] << " heardTime "
+                     << linkTuple.m_heardTime.GetSeconds() << " symTime "
+                     << linkTuple.m_symTime.GetSeconds() << " quality " << linkTuple.m_quality
+                     << " pending " << linkTuple.m_pending << " lost " << linkTuple.m_lost
+                     << " expiration " << linkTuple.m_expirationTime.GetSeconds());
+        if (!linkTuple.m_pending)
+        {
+            if (linkTuple.m_symTime >= Simulator::Now())
+            {
+                symmetric.push_back(linkTuple.m_neighborAddrList[0]);
+            }
+            else if (linkTuple.m_heardTime >= Simulator::Now())
+            {
+                heard.push_back(linkTuple.m_neighborAddrList[0]);
+            }
+        }
+    }
+    if (heard.empty() && symmetric.empty())
+    {
+        return nullptr;
+    }
+    Ptr<PbbAddressBlock> addrBlock = Create<PbbAddressBlockIpv4>();
+    for (const auto& it : heard)
+    {
+        addrBlock->AddressPushBack(it);
+        NS_LOG_DEBUG("Adding HEARD address " << it);
+    }
+    for (const auto& it : symmetric)
+    {
+        addrBlock->AddressPushBack(it);
+        NS_LOG_DEBUG("Adding SYMMETRIC address " << it);
+    }
+    uint32_t index = 0;
+    if (!heard.empty())
+    {
+        Ptr<PbbAddressTlv> addrTlv = Create<PbbAddressTlv>();
+        addrTlv->SetType(ADDR_TLV_LINK_STATUS);
+        addrTlv->SetValue(&ADDR_TLV_LINK_STATUS_HEARD, sizeof(ADDR_TLV_LINK_STATUS_HEARD));
+        addrTlv->SetIndexStart(0);
+        addrTlv->SetIndexStop(heard.size() - 1);
+        addrBlock->TlvPushBack(addrTlv);
+        NS_LOG_DEBUG("Adding PbbAddressTlv for HEARD address from index 0 to " << heard.size() - 1);
+    }
+    index += heard.size();
+    if (!symmetric.empty())
+    {
+        Ptr<PbbAddressTlv> addrTlv = Create<PbbAddressTlv>();
+        addrTlv->SetType(ADDR_TLV_LINK_STATUS);
+        addrTlv->SetValue(&ADDR_TLV_LINK_STATUS_SYMMETRIC, sizeof(ADDR_TLV_LINK_STATUS_SYMMETRIC));
+        addrTlv->SetIndexStart(index);
+        addrTlv->SetIndexStop(index + symmetric.size() - 1);
+        addrBlock->TlvPushBack(addrTlv);
+        NS_LOG_DEBUG("Adding PbbAddressTlv for SYMMETRIC address from index 0 to "
+                     << heard.size() - 1);
+    }
     return addrBlock;
 }
 

@@ -21,6 +21,7 @@
 #include "ns3/ptr.h"
 #include "ns3/random-variable-stream.h"
 #include "ns3/socket.h"
+#include "ns3/traced-callback.h"
 
 #include <map>
 #include <queue>
@@ -32,12 +33,19 @@ namespace ns3
 namespace nhdp
 {
 
-/* PacketBB Types */
-const uint8_t ADDR_TLV_LOCAL_IF = 1;
+/* PacketBB Address Block Types */
+const uint8_t ADDR_TLV_LOCAL_IF = 2;
+const uint8_t ADDR_TLV_LINK_STATUS = 3;
+const uint8_t ADDR_TLV_OTHER_NEIGHB = 4;
 
-/* PacketBB Values */
-const uint8_t ADDR_TLV_LOCAL_IF_THIS = 1;
-const uint8_t ADDR_TLV_LOCAL_IF_OTHER = 2;
+/* PacketBB Address Block Values */
+const uint8_t ADDR_TLV_LOCAL_IF_THIS_IF = 0;
+const uint8_t ADDR_TLV_LOCAL_IF_OTHER_IF = 1;
+const uint8_t ADDR_TLV_LINK_STATUS_LOST = 0;
+const uint8_t ADDR_TLV_LINK_STATUS_SYMMETRIC = 1;
+const uint8_t ADDR_TLV_LINK_STATUS_HEARD = 2;
+const uint8_t ADDR_TLV_OTHER_NEIGHB_LOST = 0;
+const uint8_t ADDR_TLV_OTHER_NEIGHB_SYMMETRIC = 1;
 
 /** Used as the comparator when making heaps out of tuples with expiration
  * times. */
@@ -92,6 +100,30 @@ class NhdpClient : public Application
 
     void HandleRecv(Ptr<Socket> socket);
 
+    /**
+     * TracedCallback signature for neighbor information base change event.
+     *
+     * @param [in] newNeighbor Whether this is a new or modified neighbor
+     * @param [in] newValue The new or modified NeighborTuple
+     */
+    typedef void (*NeighborChangeTracedCallback)(bool newNeighbor, const NeighborTuple& newValue);
+
+    /**
+     * TracedCallback signature for link information base change event.
+     *
+     * @param [in] newLink Whether this is a new or modified link
+     * @param [in] newValue The new or modified LinkTuple
+     */
+    typedef void (*LinkChangeTracedCallback)(bool newLink, const LinkTuple& newValue);
+
+    /**
+     * TracedCallback signature for two-hop information base change event.
+     *
+     * @param [in] newTwoHopNeighbor Whether this is a new or modified two-hop neighbor
+     * @param [in] newValue The new or modified TwoHopTuple
+     */
+    typedef void (*TwoHopChangeTracedCallback)(bool newTwoHopNeighbor, const TwoHopTuple& newValue);
+
   protected:
     void DoDispose() override;
     void DoInitialize() override;
@@ -100,12 +132,19 @@ class NhdpClient : public Application
     void StartApplication() override;
     void StopApplication() override;
 
+    void HandlePbbMessage(Ptr<PbbMessage> msg);
+    Ipv4Address HandleLocalAddressBlock(Ptr<PbbAddressBlock> addressBlock,
+                                        Ptr<PbbAddressTlv> addrTlv);
+    void HandleLinkStatusAddressBlock(Ptr<PbbAddressBlock> addressBlock,
+                                      Ptr<PbbAddressTlv> addrTlv,
+                                      Ipv4Address neighborIpv4Addr);
     void ScheduleHello(Ptr<Socket> socket);
     void SendHello(Ptr<Socket> socket);
 
     // void CleanRemovedInterfaceAddressSet (void);
 
     Ptr<PbbAddressBlock> BuildLocalAddressBlock(Ptr<Socket> socket);
+    Ptr<PbbAddressBlock> BuildLinkStatusAddressBlock(Ptr<Socket> socket);
 
     /* Configuration paramters */
     Ipv4Address m_address;
@@ -131,7 +170,9 @@ class NhdpClient : public Application
 
     /* Information bases */
     std::map<Ipv4Address, NeighborTuple> m_neighborInfoBase;
+    std::map<Ipv4Address, NeighborTuple> m_lostNeighborInfoBase;
     std::map<Ipv4Address, LinkTuple> m_linkInfoBase;
+    std::map<Ipv4Address, TwoHopTuple> m_twoHopInfoBase;
 
     /* Other attributes */
     bool m_running{false};
@@ -139,6 +180,12 @@ class NhdpClient : public Application
     Ptr<UniformRandomVariable> m_rng;
     std::map<Ptr<Socket>, Ipv4Address> m_socketAddresses;
     Ptr<Socket> m_recvSocket; //!< Receiving socket
+    Ipv4Address m_localIpv4Address;
+    Ptr<PbbAddressBlock> m_localAddrBlock;
+
+    TracedCallback<bool, const NeighborTuple&> m_neighborChange;
+    TracedCallback<bool, const LinkTuple&> m_linkChange;
+    TracedCallback<bool, const TwoHopTuple&> m_twoHopChange;
 
     /*
     std::map< uint32_t, Ptr<Socket> > m_indexSockets;
