@@ -109,12 +109,13 @@ class NhdpClient : public Application
     typedef void (*NeighborChangeTracedCallback)(bool newNeighbor, const NeighborTuple& newValue);
 
     /**
-     * TracedCallback signature for link information base change event.
+     * TracedCallback signature for link information base change event.  The new LinkStatus
+     * can be obtained by calling GetStatus() on the returned LinkTuple.
      *
-     * @param [in] newLink Whether this is a new or modified link
+     * @param [in] oldStatus The old LinkStatus
      * @param [in] newValue The new or modified LinkTuple
      */
-    typedef void (*LinkChangeTracedCallback)(bool newLink, const LinkTuple& newValue);
+    typedef void (*LinkChangeTracedCallback)(LinkStatus oldStatus, const LinkTuple& newValue);
 
     /**
      * TracedCallback signature for two-hop information base change event.
@@ -184,7 +185,7 @@ class NhdpClient : public Application
     Ptr<PbbAddressBlock> m_localAddrBlock;
 
     TracedCallback<bool, const NeighborTuple&> m_neighborChange;
-    TracedCallback<bool, const LinkTuple&> m_linkChange;
+    TracedCallback<LinkStatus, const LinkTuple&> m_linkChange;
     TracedCallback<bool, const TwoHopTuple&> m_twoHopChange;
 
     /*

@@ -337,10 +337,14 @@ NhdpClient::HandleLocalAddressBlock(Ptr<PbbAddressBlock> addressBlock, Ptr<PbbAd
             m_neighborInfoBase.emplace(neighborIpv4Addr, neighborTuple);
             m_neighborChange(true, neighborTuple);
             LinkTuple linkTuple(neighborIpv4Addr, 0);
+            const auto oldStatus = linkTuple.GetLinkStatus();
             linkTuple.m_heardTime = Simulator::Now() + m_hHoldTime;
             linkTuple.m_expirationTime = Simulator::Now() + m_hHoldTime;
             m_linkInfoBase.emplace(neighborIpv4Addr, linkTuple);
-            m_linkChange(true, linkTuple);
+            if (oldStatus != linkTuple.GetLinkStatus())
+            {
+                m_linkChange(oldStatus, linkTuple);
+            }
         }
         else
         {
@@ -389,10 +393,14 @@ NhdpClient::HandleLinkStatusAddressBlock(Ptr<PbbAddressBlock> addressBlock,
                 }
                 auto itLink = m_linkInfoBase.find(neighborIpv4Addr);
                 NS_ASSERT_MSG(itLink != m_linkInfoBase.end(), "Error: LinkTuple not found");
+                const auto oldStatus = itLink->second.GetLinkStatus();
                 itLink->second.m_symTime = Simulator::Now() + m_hHoldTime;
                 itLink->second.m_expirationTime = Simulator::Now() + m_hHoldTime;
                 NS_LOG_DEBUG("Changing link sym time to " << itLink->second.m_symTime.GetSeconds());
-                m_linkChange(false, itLink->second);
+                if (oldStatus != itLink->second.GetLinkStatus())
+                {
+                    m_linkChange(oldStatus, itLink->second);
+                }
             }
             else if (value == ADDR_TLV_LINK_STATUS_LOST)
             {
