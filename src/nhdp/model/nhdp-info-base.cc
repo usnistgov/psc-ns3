@@ -39,6 +39,28 @@ LinkTuple::GetLinkStatus() const
     return LinkStatus::LOST;
 }
 
+std::ostream&
+operator<<(std::ostream& os, const LinkStatus& status)
+{
+    if (status == LinkStatus::PENDING)
+    {
+        os << "PENDING";
+    }
+    else if (status == LinkStatus::LOST)
+    {
+        os << "LOST";
+    }
+    else if (status == LinkStatus::SYMMETRIC)
+    {
+        os << "SYMMETRIC";
+    }
+    else if (status == LinkStatus::HEARD)
+    {
+        os << "HEARD";
+    }
+    return os;
+}
+
 } // namespace nhdp
 
 } // namespace ns3

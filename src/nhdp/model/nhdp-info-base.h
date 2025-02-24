@@ -71,6 +71,8 @@ struct TwoHopTuple
     Time m_expirationTime;
 };
 
+std::ostream& operator<<(std::ostream& os, const LinkStatus& status);
+
 } // namespace nhdp
 
 } // namespace ns3
