@@ -441,11 +441,11 @@ RoutingExperiment::Run()
                               MakeCallback(&RoutingExperiment::OlsrRx, this));
 
     std::ofstream olsrTracePdrCsv{"packet-delivery-ratio_olsr-traces-" + std::to_string(m_scenarioId) + ".csv"};
-    olsrTracePdrCsv << "TimeSeconds, TotalTx, TotalRx, PacketDeliveryRatio\n";
+    olsrTracePdrCsv << "TimeSeconds,TotalTx,TotalRx,PacketDeliveryRatio\n";
     auto writeOlsrTraces = [&olsrTracePdrCsv, this] {
-        olsrTracePdrCsv << Simulator::Now().ToInteger(Time::S) << ", "
-        << m_txPacketsOlsrTrace << ", "
-        << m_rxPacketsOlsrTrace << ", "
+        olsrTracePdrCsv << Simulator::Now().ToInteger(Time::S) << ','
+        << m_txPacketsOlsrTrace << ','
+        << m_rxPacketsOlsrTrace << ','
         << (m_txPacketsOlsrTrace > 0u ? static_cast<double>(m_rxPacketsOlsrTrace)/m_txPacketsOlsrTrace : 0u)
         << '\n';
     };
@@ -460,10 +460,10 @@ RoutingExperiment::Run()
                               MakeCallback(&RoutingExperiment::OlsrRoutingTableChange, this));
 
     std::ofstream olsrRoutingChangesCsv{"routing-table-changes-" + std::to_string(m_scenarioId) + ".csv"};
-    olsrRoutingChangesCsv << "TimeSeconds, PeriodRoutingTableChanges, TotalRoutingTableChanges\n";
+    olsrRoutingChangesCsv << "TimeSeconds,PeriodRoutingTableChanges,TotalRoutingTableChanges\n";
     auto writeOlsrRoutingTableChanges = [this, &olsrRoutingChangesCsv] {
-        olsrRoutingChangesCsv << Simulator::Now().ToInteger(Time::S) << ", "
-        << m_periodRoutingTableChanges << ", "
+        olsrRoutingChangesCsv << Simulator::Now().ToInteger(Time::S) << ','
+        << m_periodRoutingTableChanges << ','
         << m_totalRoutingTableChanges << '\n';
 
         m_periodRoutingTableChanges = 0u;
@@ -476,35 +476,53 @@ RoutingExperiment::Run()
 
     FlowMonitorHelper flowmonHelper;
     Ptr<FlowMonitor> flowmon;
-    std::ofstream packetDeliveryRatioCsv;
+    std::ofstream flowmonTotalsCsv;
+    std::ofstream flowmonPerFlowCsv;
     if (m_flowMonitor)
     {
-        packetDeliveryRatioCsv.open("packet-delivery-ratio-flowmon-" + std::to_string(m_scenarioId) + ".csv");
-        packetDeliveryRatioCsv << "TimeSeconds, TotalTx, TotalRx, PacketDeliveryRatio\n";
+        flowmonTotalsCsv.open("flowmonitor-totals-" + std::to_string(m_scenarioId) + ".csv");
+        flowmonTotalsCsv << "TimeSeconds,TotalTx,TotalRx,PacketDeliveryRatio\n";
+
+        flowmonPerFlowCsv.open("flowmon-per-flow-"+ std::to_string(m_scenarioId) + ".csv");
+        flowmonPerFlowCsv << "TimeSeconds,FlowId,SourceIp,DestinationIp,Tx,Rx,PacketDeliveryRatio\n";
 
         flowmon = flowmonHelper.InstallAll();
-        auto writePdrCallback = [&flowmon, &packetDeliveryRatioCsv] () {
+        auto writeFlowmonStats = [&flowmon, &flowmonTotalsCsv, &flowmonPerFlowCsv, &flowmonHelper] () {
             flowmon->CheckForLostPackets();
             const auto &flowStats = flowmon->GetFlowStats();
+            const auto classifier = DynamicCast<Ipv4FlowClassifier>(flowmonHelper.GetClassifier());
 
+            // Totals
             uint64_t totalTx{0u};
             uint64_t totalRx{0u};
-            for (const auto &stats: std::views::values(flowStats))
+
+            for (const auto &[flowId, stats]: flowStats)
             {
+                const auto &flow = classifier->FindFlow(flowId);
+                const auto packetDeliveryRatio = stats.txPackets > 0 ? static_cast<double>(stats.rxPackets) / stats.txPackets : 0.0;
+
+                flowmonPerFlowCsv << Simulator::Now().ToInteger(Time::S) << ','
+                << flowId << ','
+                << flow.sourceAddress << ','
+                << flow.destinationAddress << ','
+                << stats.txPackets << ','
+                << stats.rxPackets << ','
+                << packetDeliveryRatio << '\n';
+
                 totalTx += stats.txPackets;
                 totalRx += stats.rxPackets;
             }
 
-            packetDeliveryRatioCsv << Simulator::Now().ToInteger(Time::S) << ", "
-            << totalTx << ", "
-            << totalRx << ", "
+            flowmonTotalsCsv << Simulator::Now().ToInteger(Time::S) << ','
+            << totalTx << ','
+            << totalRx << ','
             << (totalTx > 0u ? static_cast<double>(totalRx)/totalTx : 0u)
             << '\n';
         };
 
         for (auto i = 1; i < m_simulationTime.ToInteger(Time::S); i++)
         {
-            Simulator::Schedule(Seconds(i), writePdrCallback);
+            Simulator::Schedule(Seconds(i), writeFlowmonStats);
         }
     }
 
