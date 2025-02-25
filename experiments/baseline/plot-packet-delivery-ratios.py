@@ -11,6 +11,7 @@ for flowmon_total_csv in flowmon_totals:
     flowmon_frame.plot(x="TimeSeconds", y="PacketDeliveryRatio",
                        title=f"Packet Delivery Ratio - Flow Monitor-{scenario_id}")
     plt.savefig(f"packet-delivery-ratio_flowmon-{scenario_id}.png")
+    plt.close()
 
 
 packet_delivery_ratio_olsr_csvs = glob("packet-delivery-ratio_olsr-traces-*.csv")
@@ -21,6 +22,7 @@ for olsr_csv in packet_delivery_ratio_olsr_csvs:
                     title=f"Packet Delivery Ratio - OLSR Traces- Scenario: {scenario_id}")
 
     plt.savefig(f"packet-delivery-ratio_olsr-traces-{scenario_id}.png")
+    plt.close()
 
 
 flowmon_per_flow_csvs = glob("flowmon-per-flow-*.csv")
@@ -37,4 +39,5 @@ for flowmon_per_flow_csv in flowmon_per_flow_csvs:
         one_flow.plot(x="TimeSeconds", y="PacketDeliveryRatio", title=f"Flow {flow_id} - Src: {source_ip} - Dst: {destination_ip}")
 
         plt.savefig(f"flow-scenario-{scenario_id}-id-{flow_id}.png")
+        plt.close()
 
