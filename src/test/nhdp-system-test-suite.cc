@@ -61,13 +61,19 @@ class NhdpTestCase : public TestCase
   private:
     void DoRun() override;
     NetDeviceContainer CreateAdhocNetwork(NodeContainer c, Ssid ssid);
-    void NeighborChange(std::string context, bool newNeighbor, const NeighborTuple& neighborTuple);
+    void NeighborChange(std::string context,
+                        NeighborStatus neighborStatus,
+                        const NeighborTuple& neighborTuple);
     void LinkChange(std::string context, LinkStatus oldLinkStatus, const LinkTuple& linkTuple);
-    void TwoHopChange(std::string context, bool newTwoHop, const TwoHopTuple& linkTuple);
+    void TwoHopChange(std::string context, TwoHopStatus twoHopStatus, const TwoHopTuple& linkTuple);
+    void Disable(Ptr<Node> a, Ptr<Node> b);
+    void Enable(Ptr<Node> a, Ptr<Node> b);
+    void Print(Ptr<NhdpClient> client);
     std::vector<NeighborTuple> m_neighborChanges;
     std::vector<LinkTuple> m_linkChanges;
     std::vector<TwoHopTuple> m_twoHopChanges;
     std::vector<NeighborTuple> m_symmetricNeighbors;
+    Ptr<MatrixPropagationLossModel> m_matrixLossModel;
 };
 
 NhdpTestCase::NhdpTestCase()
@@ -76,53 +82,99 @@ NhdpTestCase::NhdpTestCase()
 }
 
 void
+NhdpTestCase::Print(Ptr<NhdpClient> client)
+{
+    for (const auto& [addr, tuple] : client->GetNeighborInfoBase())
+    {
+        NS_LOG_INFO(client->GetNode()->GetId()
+                    << " Neighbor tuple " << addr << " symmetric " << tuple.m_symmetric);
+    }
+    for (const auto& [addr, tuple] : client->GetLinkInfoBase())
+    {
+        NS_LOG_INFO(client->GetNode()->GetId()
+                    << " Link tuple " << addr << " status " << tuple.GetLinkStatus() << " lost "
+                    << tuple.m_lost << " expiration time " << tuple.m_expirationTime.As(Time::S));
+    }
+    for (const auto& [addr, tuple] : client->GetTwoHopInfoBase())
+    {
+        NS_LOG_INFO(client->GetNode()->GetId()
+                    << " Two hop neighbor " << tuple.m_twoHopAddr << " via " << addr
+                    << " expiration time " << tuple.m_expirationTime.As(Time::S));
+    }
+}
+
+void
 NhdpTestCase::NeighborChange(std::string context,
-                             bool newNeighbor,
+                             NeighborStatus neighborStatus,
                              const NeighborTuple& neighborTuple)
 {
-    if (newNeighbor)
+    if (neighborStatus == NeighborStatus::NEW)
     {
-        NS_LOG_INFO(context <<  " New neighbor " << neighborTuple.m_neighborAddrList[0]);
+        NS_LOG_INFO(context << " New neighbor " << neighborTuple.m_neighborAddrList[0]);
     }
-    else if (neighborTuple.m_symmetric)
+    else if (neighborStatus == NeighborStatus::MODIFIED && neighborTuple.m_symmetric)
     {
-        NS_LOG_INFO(context <<  " Symmetric neighbor " << neighborTuple.m_neighborAddrList[0]);
+        NS_LOG_INFO(context << " Symmetric neighbor " << neighborTuple.m_neighborAddrList[0]);
         m_symmetricNeighbors.emplace_back(neighborTuple);
+    }
+    else if (neighborStatus == NeighborStatus::REMOVED)
+    {
+        NS_LOG_INFO(context << " Removed neighbor " << neighborTuple.m_neighborAddrList[0]);
     }
     m_neighborChanges.emplace_back(neighborTuple);
 }
 
 void
-NhdpTestCase::LinkChange(std::string context,
-                             LinkStatus oldLinkStatus,
-                             const LinkTuple& linkTuple)
+NhdpTestCase::LinkChange(std::string context, LinkStatus oldLinkStatus, const LinkTuple& linkTuple)
 {
-    NS_LOG_INFO(context << " Link old status " << oldLinkStatus << " new status " << linkTuple.GetLinkStatus() << " " << linkTuple.m_neighborAddrList[0]);
+    NS_LOG_INFO(context << " Link old status " << oldLinkStatus << " new status "
+                        << linkTuple.GetLinkStatus() << " " << linkTuple.m_neighborAddrList[0]);
     m_linkChanges.emplace_back(linkTuple);
 }
 
 void
 NhdpTestCase::TwoHopChange(std::string context,
-                             bool newTwoHop,
-                             const TwoHopTuple& twoHopTuple)
+                           TwoHopStatus twoHopStatus,
+                           const TwoHopTuple& twoHopTuple)
 {
-    if (newTwoHop)
+    if (twoHopStatus == TwoHopStatus::NEW)
     {
-        NS_LOG_INFO(context <<  " New two-hop neighbor " << twoHopTuple.m_twoHopAddr << " from " << twoHopTuple.m_neighborAddrList[0]);
+        NS_LOG_INFO(context << " New two-hop neighbor " << twoHopTuple.m_twoHopAddr << " from "
+                            << twoHopTuple.m_neighborAddrList[0]);
     }
     else
     {
-        NS_LOG_INFO(context <<  " Existing two-hop neighbor " << twoHopTuple.m_twoHopAddr << " from " << twoHopTuple.m_neighborAddrList[0]);
+        NS_LOG_INFO(context << " Existing two-hop neighbor " << twoHopTuple.m_twoHopAddr << " from "
+                            << twoHopTuple.m_neighborAddrList[0]);
     }
     m_twoHopChanges.emplace_back(twoHopTuple);
 }
 
+void
+NhdpTestCase::Disable(Ptr<Node> a, Ptr<Node> b)
+{
+    NS_LOG_INFO("Disabling link between " << a->GetId() << " and " << b->GetId());
+    m_matrixLossModel->SetLoss(a->GetObject<MobilityModel>(),
+                               b->GetObject<MobilityModel>(),
+                               100,
+                               true);
+}
+
+void
+NhdpTestCase::Enable(Ptr<Node> a, Ptr<Node> b)
+{
+    NS_LOG_INFO("Enabling link between " << a->GetId() << " and " << b->GetId());
+    m_matrixLossModel->SetLoss(a->GetObject<MobilityModel>(),
+                               b->GetObject<MobilityModel>(),
+                               0,
+                               true);
+}
 
 void
 NhdpTestCase::DoRun()
 {
     Time startTime{Seconds(1)};
-    Time stopTime{Seconds(10)};
+    Time stopTime{Seconds(51)};
 
     // Create node index zero but do not use it; this allows the subsequent
     // node IDs to align with the last octet of the IP address, for help
@@ -149,19 +201,19 @@ NhdpTestCase::DoRun()
     YansWifiChannelHelper wifiChannel;
     auto channel = CreateObject<YansWifiChannel>();
     auto delayModel = CreateObject<ConstantSpeedPropagationDelayModel>();
-    auto matrixLossModel = CreateObject<MatrixPropagationLossModel>();
+    m_matrixLossModel = CreateObject<MatrixPropagationLossModel>();
     channel->SetPropagationDelayModel(delayModel);
-    channel->SetPropagationLossModel(matrixLossModel);
+    channel->SetPropagationLossModel(m_matrixLossModel);
     // Create 100 dB loss on the diagonals so that each node has two neighbors
-    matrixLossModel->SetDefaultLoss(0);
-    matrixLossModel->SetLoss(nodes.Get(0)->GetObject<MobilityModel>(),
-                             nodes.Get(2)->GetObject<MobilityModel>(),
-                             100,
-                             true);
-    matrixLossModel->SetLoss(nodes.Get(1)->GetObject<MobilityModel>(),
-                             nodes.Get(3)->GetObject<MobilityModel>(),
-                             100,
-                             true);
+    m_matrixLossModel->SetDefaultLoss(0);
+    m_matrixLossModel->SetLoss(nodes.Get(0)->GetObject<MobilityModel>(),
+                               nodes.Get(3)->GetObject<MobilityModel>(),
+                               100,
+                               true);
+    m_matrixLossModel->SetLoss(nodes.Get(1)->GetObject<MobilityModel>(),
+                               nodes.Get(2)->GetObject<MobilityModel>(),
+                               100,
+                               true);
     wifiPhy.SetChannel(channel);
     wifiMac.SetType("ns3::AdhocWifiMac");
     wifi.SetRemoteStationManager("ns3::ConstantRateWifiManager",
@@ -184,6 +236,18 @@ NhdpTestCase::DoRun()
 
     apps.Start(startTime);
     apps.Stop(stopTime);
+
+    // Schedule losses
+    // Simulator::Schedule(Seconds(3), &NhdpTestCase::Disable, this, nodes.Get(0), nodes.Get(1));
+    Simulator::Schedule(Seconds(19), &NhdpTestCase::Print, this, nhdp1);
+    // Simulator::Schedule(Seconds(20), &NhdpTestCase::Enable, this, nodes.Get(0), nodes.Get(1));
+    Simulator::Schedule(Seconds(30), &NhdpTestCase::Print, this, nhdp1);
+    Simulator::Schedule(Seconds(31), &NhdpTestCase::Disable, this, nodes.Get(0), nodes.Get(1));
+    Simulator::Schedule(Seconds(31), &NhdpTestCase::Disable, this, nodes.Get(0), nodes.Get(2));
+    Simulator::Schedule(Seconds(40), &NhdpTestCase::Print, this, nhdp1);
+    Simulator::Schedule(Seconds(41), &NhdpTestCase::Disable, this, nodes.Get(0), nodes.Get(1));
+    Simulator::Schedule(Seconds(41), &NhdpTestCase::Disable, this, nodes.Get(0), nodes.Get(2));
+    Simulator::Schedule(Seconds(50), &NhdpTestCase::Print, this, nhdp1);
 
     NS_LOG_INFO("Start simulation for " << (stopTime + Seconds(1)).As(Time::S) << " duration");
     Simulator::Stop(stopTime + Seconds(1));
