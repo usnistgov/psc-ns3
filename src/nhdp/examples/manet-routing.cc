@@ -248,6 +248,37 @@ RoutingExperiment::Run()
     NodeContainer adhocNodes;
     adhocNodes.Create(m_nodes);
 
+    MobilityHelper mobilityAdhoc;
+    int64_t streamIndex = 0;        // used to get consistent mobility across scenarios
+    int64_t streamIncrement = 1000; // used to decouple stream assignments
+
+    ObjectFactory pos;
+    pos.SetTypeId("ns3::RandomRectanglePositionAllocator");
+    pos.Set("X", StringValue("ns3::UniformRandomVariable[Min=0.0|Max=300.0]"));
+    pos.Set("Y", StringValue("ns3::UniformRandomVariable[Min=0.0|Max=1500.0]"));
+
+    Ptr<PositionAllocator> taPositionAlloc = pos.Create()->GetObject<PositionAllocator>();
+    auto streamsUsed = taPositionAlloc->AssignStreams(streamIndex);
+    NS_LOG_DEBUG("Streams used by position allocator: " << streamsUsed);
+    streamIndex += streamIncrement;
+
+    std::stringstream ssSpeed;
+    ssSpeed << "ns3::UniformRandomVariable[Min=0.0|Max=" << nodeSpeed << "]";
+    std::stringstream ssPause;
+    ssPause << "ns3::ConstantRandomVariable[Constant=" << nodePause << "]";
+    mobilityAdhoc.SetMobilityModel("ns3::RandomWaypointMobilityModel",
+                                   "Speed",
+                                   StringValue(ssSpeed.str()),
+                                   "Pause",
+                                   StringValue(ssPause.str()),
+                                   "PositionAllocator",
+                                   PointerValue(taPositionAlloc));
+    mobilityAdhoc.SetPositionAllocator(taPositionAlloc);
+    mobilityAdhoc.Install(adhocNodes);
+    streamsUsed = mobilityAdhoc.AssignStreams(adhocNodes, streamIndex);
+    NS_LOG_DEBUG("Streams used by mobility models: " << streamsUsed);
+    streamIndex += streamIncrement;
+
     // setting up wifi phy and channel using helpers
     WifiHelper wifi;
     wifi.SetStandard(WIFI_STANDARD_80211b);
@@ -271,32 +302,9 @@ RoutingExperiment::Run()
 
     wifiMac.SetType("ns3::AdhocWifiMac");
     NetDeviceContainer adhocDevices = wifi.Install(wifiPhy, wifiMac, adhocNodes);
-
-    MobilityHelper mobilityAdhoc;
-    int64_t streamIndex = 0; // used to get consistent mobility across scenarios
-
-    ObjectFactory pos;
-    pos.SetTypeId("ns3::RandomRectanglePositionAllocator");
-    pos.Set("X", StringValue("ns3::UniformRandomVariable[Min=0.0|Max=300.0]"));
-    pos.Set("Y", StringValue("ns3::UniformRandomVariable[Min=0.0|Max=1500.0]"));
-
-    Ptr<PositionAllocator> taPositionAlloc = pos.Create()->GetObject<PositionAllocator>();
-    streamIndex += taPositionAlloc->AssignStreams(streamIndex);
-
-    std::stringstream ssSpeed;
-    ssSpeed << "ns3::UniformRandomVariable[Min=0.0|Max=" << nodeSpeed << "]";
-    std::stringstream ssPause;
-    ssPause << "ns3::ConstantRandomVariable[Constant=" << nodePause << "]";
-    mobilityAdhoc.SetMobilityModel("ns3::RandomWaypointMobilityModel",
-                                   "Speed",
-                                   StringValue(ssSpeed.str()),
-                                   "Pause",
-                                   StringValue(ssPause.str()),
-                                   "PositionAllocator",
-                                   PointerValue(taPositionAlloc));
-    mobilityAdhoc.SetPositionAllocator(taPositionAlloc);
-    mobilityAdhoc.Install(adhocNodes);
-    streamIndex += mobilityAdhoc.AssignStreams(adhocNodes, streamIndex);
+    streamsUsed = WifiHelper::AssignStreams(adhocDevices, streamIndex);
+    NS_LOG_DEBUG("Streams used by wifi models: " << streamsUsed);
+    streamIndex += streamIncrement;
 
     OlsrHelper olsr;
     Ipv4ListRoutingHelper list;
@@ -312,6 +320,12 @@ RoutingExperiment::Run()
     {
         NS_FATAL_ERROR("No such protocol:" << m_protocolName);
     }
+    streamsUsed = internet.AssignStreams(adhocNodes, streamIndex);
+    NS_LOG_DEBUG("Streams used by internet models: " << streamsUsed);
+    streamIndex += streamIncrement;
+    streamsUsed = olsr.AssignStreams(adhocNodes, streamIndex);
+    NS_LOG_DEBUG("Streams used by OLSR models: " << streamsUsed);
+    streamIndex += streamIncrement;
 
     NS_LOG_INFO("assigning ip address");
 
@@ -332,6 +346,7 @@ RoutingExperiment::Run()
         onoff1.SetAttribute("Remote", remoteAddress);
 
         Ptr<UniformRandomVariable> var = CreateObject<UniformRandomVariable>();
+        var->SetStream(streamIndex++);
         ApplicationContainer temp = onoff1.Install(adhocNodes.Get(i + m_nSinks));
         temp.Start(Seconds(var->GetValue(100.0, 101.0)));
         temp.Stop(Seconds(TotalTime));
