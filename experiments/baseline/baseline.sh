@@ -74,6 +74,7 @@ then
 		fi
 	fi
 	#cp plot-latency.py ${resultsDir}/.
+	cp plot-packet-delivery-ratios.py "${resultsDir}"/
 	cp $0 ${resultsDir}/.
 	cd ${resultsDir}
 	mkdir temp
@@ -112,7 +113,6 @@ function run-scenario () {
 		> $logfile  2>&1
 
 	#python3 plot-latency.py ${numTcpDownloads} ${numTcpUploads} ${numTcpDashStreams} ${numDctcpDownloads} ${numDctcpUploads} ${numDctcpDashStreams} ${numWebUsers} ${heading} ${simulationEndTime} --fileNameCm=${fileNameCm} --fileNameCmts=${fileNameCmts} --plotNameCm=${pdfNameCm} --plotNameCmts=${pdfNameCmts} --plotNameRtt=${pdfNameRtt} --imageNameRtt=${imageNameRtt} --fileNameSummary=${fileNameSummary} --scenarioId=${scenario_id} >/dev/null  &
-
 	wait
 
 	echo finished scenario $scenario_id
@@ -143,6 +143,7 @@ else
 fi
 
 wait
+python3 plot-packet-delivery-ratios.py
 
 if ! $saveDatFiles
 then
