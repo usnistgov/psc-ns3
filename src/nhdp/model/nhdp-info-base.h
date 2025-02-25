@@ -21,12 +21,25 @@ namespace ns3
 namespace nhdp
 {
 
+enum class NeighborStatus
+{
+    NEW,
+    MODIFIED,
+    REMOVED
+};
+
 enum class LinkStatus
 {
     PENDING,
     HEARD,
     SYMMETRIC,
     LOST
+};
+
+enum class TwoHopStatus
+{
+    NEW,
+    REMOVED
 };
 
 struct NeighborTuple
@@ -38,6 +51,12 @@ struct NeighborTuple
 
     std::vector<Ipv4Address> m_neighborAddrList;
     bool m_symmetric{false};
+};
+
+struct LostNeighborTuple
+{
+    Ipv4Address m_neighborAddr;
+    Time m_expirationTime;
 };
 
 struct LinkTuple
@@ -72,6 +91,8 @@ struct TwoHopTuple
 };
 
 std::ostream& operator<<(std::ostream& os, const LinkStatus& status);
+std::ostream& operator<<(std::ostream& os, const NeighborStatus& status);
+std::ostream& operator<<(std::ostream& os, const TwoHopStatus& status);
 
 } // namespace nhdp
 

@@ -61,6 +61,38 @@ operator<<(std::ostream& os, const LinkStatus& status)
     return os;
 }
 
+std::ostream&
+operator<<(std::ostream& os, const NeighborStatus& status)
+{
+    if (status == NeighborStatus::NEW)
+    {
+        os << "NEW";
+    }
+    else if (status == NeighborStatus::MODIFIED)
+    {
+        os << "MODIFIED";
+    }
+    else if (status == NeighborStatus::REMOVED)
+    {
+        os << "REMOVED";
+    }
+    return os;
+}
+
+std::ostream&
+operator<<(std::ostream& os, const TwoHopStatus& status)
+{
+    if (status == TwoHopStatus::NEW)
+    {
+        os << "NEW";
+    }
+    else if (status == TwoHopStatus::REMOVED)
+    {
+        os << "REMOVED";
+    }
+    return os;
+}
+
 } // namespace nhdp
 
 } // namespace ns3
