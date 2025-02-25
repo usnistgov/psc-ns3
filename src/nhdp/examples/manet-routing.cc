@@ -119,6 +119,7 @@ class RoutingExperiment
     bool m_traceMobility{false};                    //!< Enable mobility tracing.
     uint32_t m_nodes{50};                           //!< Number of nodes
     bool m_flowMonitor{false};                      //!< Enable FlowMonitor.
+    Time m_simulationTime{Seconds(200)};            //!< Simulation time
 };
 
 RoutingExperiment::RoutingExperiment()
@@ -194,6 +195,7 @@ RoutingExperiment::CommandSetup(int argc, char** argv)
     cmd.AddValue("protocol", "Routing protocol (OLSR)", m_protocolName);
     cmd.AddValue("nodes", "Number of nodes", m_nodes);
     cmd.AddValue("flowMonitor", "enable FlowMonitor", m_flowMonitor);
+    cmd.AddValue("simulationTime", "simulation time", m_simulationTime);
     cmd.Parse(argc, argv);
 
     NS_ABORT_MSG_IF(m_nodes < 20, "Number of nodes " << m_nodes << " must be >= 20");
@@ -232,7 +234,6 @@ RoutingExperiment::Run()
         << "TransmissionPower" << std::endl;
     out.close();
 
-    double TotalTime = 200.0;
     std::string rate("2048bps");
     std::string phyMode("DsssRate11Mbps");
     std::string tr_name("manet-routing");
@@ -349,7 +350,7 @@ RoutingExperiment::Run()
         var->SetStream(streamIndex++);
         ApplicationContainer temp = onoff1.Install(adhocNodes.Get(i + m_nSinks));
         temp.Start(Seconds(var->GetValue(20.0, 21.0)));
-        temp.Stop(Seconds(TotalTime));
+        temp.Stop(m_simulationTime);
     }
 
     std::stringstream ss;
@@ -392,7 +393,7 @@ RoutingExperiment::Run()
 
     CheckThroughput();
 
-    Simulator::Stop(Seconds(TotalTime));
+    Simulator::Stop(m_simulationTime);
     Simulator::Run();
 
     if (m_flowMonitor)
