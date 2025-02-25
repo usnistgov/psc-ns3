@@ -64,6 +64,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <ranges>
 
 using namespace ns3;
 
@@ -118,7 +119,7 @@ class RoutingExperiment
     double m_txp{7.5};                              //!< Tx power.
     bool m_traceMobility{false};                    //!< Enable mobility tracing.
     uint32_t m_nodes{50};                           //!< Number of nodes
-    bool m_flowMonitor{false};                      //!< Enable FlowMonitor.
+    bool m_flowMonitor{true};                      //!< Enable FlowMonitor.
     Time m_simulationTime{Seconds(200)};            //!< Simulation time
     int m_nodeSpeed{20};                            //!< Node speed in m/s
     double m_scale{1};                              //!< Scale factor for waypoint coordinates
@@ -391,9 +392,36 @@ RoutingExperiment::Run()
 
     FlowMonitorHelper flowmonHelper;
     Ptr<FlowMonitor> flowmon;
+    std::ofstream packetDeliveryRatioCsv;
     if (m_flowMonitor)
     {
+        packetDeliveryRatioCsv.open("packet-delivery-ratio-flowmon.csv");
+        packetDeliveryRatioCsv << "TimeSeconds, TotalTx, TotalRx, PacketDeliveryRatio\n";
+
         flowmon = flowmonHelper.InstallAll();
+        auto writePdrCallback = [&flowmon, &packetDeliveryRatioCsv] () {
+            flowmon->CheckForLostPackets();
+            const auto &flowStats = flowmon->GetFlowStats();
+
+            uint64_t totalTx{0u};
+            uint64_t totalRx{0u};
+            for (const auto &stats: std::views::values(flowStats))
+            {
+                totalTx += stats.txPackets;
+                totalRx += stats.rxPackets;
+            }
+
+            packetDeliveryRatioCsv << Simulator::Now().ToInteger(Time::S) << ", "
+            << totalTx << ", "
+            << totalRx << ", "
+            << (totalTx > 0u ? static_cast<double>(totalRx)/totalTx : 0u)
+            << '\n';
+        };
+
+        for (auto i = 1; i < m_simulationTime; i++)
+        {
+            Simulator::Schedule(Seconds(i), writePdrCallback);
+        }
     }
 
     NS_LOG_INFO("Run Simulation.");
