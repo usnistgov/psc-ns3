@@ -109,6 +109,9 @@ class RoutingExperiment
      */
     void CheckThroughput();
 
+    void OlsrTx(const olsr::PacketHeader& header, const olsr::MessageList& messages);
+    void OlsrRx(const olsr::PacketHeader& header, const olsr::MessageList& messages);
+
     uint32_t port{9};            //!< Receiving port number.
     uint32_t bytesTotal{0};      //!< Total received bytes.
     uint32_t packetsReceived{0}; //!< Total received packets.
@@ -119,7 +122,9 @@ class RoutingExperiment
     double m_txp{7.5};                              //!< Tx power.
     bool m_traceMobility{false};                    //!< Enable mobility tracing.
     uint32_t m_nodes{50};                           //!< Number of nodes
-    bool m_flowMonitor{true};                      //!< Enable FlowMonitor.
+    bool m_flowMonitor{true};                      //!< Enable FlowMonitor
+    uint64_t m_txPacketsOlsrTrace{0u};
+    uint64_t m_rxPacketsOlsrTrace{0u};
     Time m_simulationTime{Seconds(200)};            //!< Simulation time
     int m_nodeSpeed{20};                            //!< Node speed in m/s
     double m_scale{1};                              //!< Scale factor for waypoint coordinates
@@ -213,6 +218,19 @@ RoutingExperiment::CommandSetup(int argc, char** argv)
         NS_FATAL_ERROR("No such protocol:" << m_protocolName);
     }
 }
+
+void
+RoutingExperiment::OlsrTx(const olsr::PacketHeader&, const olsr::MessageList&)
+{
+    m_txPacketsOlsrTrace++;
+}
+
+void
+RoutingExperiment::OlsrRx(const olsr::PacketHeader&, const olsr::MessageList&)
+{
+    m_rxPacketsOlsrTrace++;
+}
+
 
 int
 main(int argc, char* argv[])
@@ -388,6 +406,27 @@ RoutingExperiment::Run()
     if (m_traceMobility)
     {
         MobilityHelper::EnableAsciiAll(ascii.CreateFileStream(tr_name + ".mob"));
+    }
+
+    Config::ConnectWithoutContext("/NodeList/*/$ns3::olsr::RoutingProtocol/Tx",
+                                  MakeCallback(&RoutingExperiment::OlsrTx, this));
+
+    Config::ConnectWithoutContext("/NodeList/*/$ns3::olsr::RoutingProtocol/Rx",
+                              MakeCallback(&RoutingExperiment::OlsrRx, this));
+
+    std::ofstream olsrTracePdrCsv{"packet-delivery-ratio_olsr-traces.csv"};
+    olsrTracePdrCsv << "TimeSeconds, TotalTx, TotalRx, PacketDeliveryRatio\n";
+    auto writeOlsrTraces = [&olsrTracePdrCsv, this] {
+        olsrTracePdrCsv << Simulator::Now().ToInteger(Time::S) << ", "
+        << m_txPacketsOlsrTrace << ", "
+        << m_rxPacketsOlsrTrace << ", "
+        << (m_txPacketsOlsrTrace > 0u ? static_cast<double>(m_rxPacketsOlsrTrace)/m_txPacketsOlsrTrace : 0u)
+        << '\n';
+    };
+
+    for (auto i = 0; i < m_simulationTime.ToInteger(Time::S); i++)
+    {
+        Simulator::Schedule(Seconds(i), writeOlsrTraces);
     }
 
     FlowMonitorHelper flowmonHelper;
