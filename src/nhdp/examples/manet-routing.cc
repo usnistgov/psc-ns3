@@ -131,7 +131,8 @@ class RoutingExperiment
     int m_nodeSpeed{20};                            //!< Node speed in m/s
     double m_scale{1};                              //!< Scale factor for waypoint coordinates
 
-    uint64_t m_routingTableChanges{0u};
+    uint64_t m_totalRoutingTableChanges{0u};
+    uint64_t m_periodRoutingTableChanges{0u};
 };
 
 RoutingExperiment::RoutingExperiment()
@@ -238,7 +239,8 @@ RoutingExperiment::OlsrRx(const olsr::PacketHeader&, const olsr::MessageList&)
 void
 RoutingExperiment::OlsrRoutingTableChange(uint32_t)
 {
-    m_routingTableChanges++;
+    m_totalRoutingTableChanges++;
+    m_periodRoutingTableChanges++;
 }
 
 
@@ -445,10 +447,13 @@ RoutingExperiment::Run()
                               MakeCallback(&RoutingExperiment::OlsrRoutingTableChange, this));
 
     std::ofstream olsrRoutingChangesCsv{"routing-table-changes.csv"};
-    olsrRoutingChangesCsv << "TimeSeconds, TotalRoutingTableChanges\n";
+    olsrRoutingChangesCsv << "TimeSeconds, PeriodRoutingTableChanges, TotalRoutingTableChanges\n";
     auto writeOlsrRoutingTableChanges = [this, &olsrRoutingChangesCsv] {
         olsrRoutingChangesCsv << Simulator::Now().ToInteger(Time::S) << ", "
-        << m_routingTableChanges << '\n';
+        << m_periodRoutingTableChanges << ", "
+        << m_totalRoutingTableChanges << '\n';
+
+        m_periodRoutingTableChanges = 0u;
     };
 
     for (auto i = 0; i < m_simulationTime.ToInteger(Time::S); i++)
