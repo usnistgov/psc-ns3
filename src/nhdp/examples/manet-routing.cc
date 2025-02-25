@@ -120,6 +120,8 @@ class RoutingExperiment
     uint32_t m_nodes{50};                           //!< Number of nodes
     bool m_flowMonitor{false};                      //!< Enable FlowMonitor.
     Time m_simulationTime{Seconds(200)};            //!< Simulation time
+    int m_nodeSpeed{20};                            //!< Node speed in m/s
+    double m_scale{1};                              //!< Scale factor for waypoint coordinates
 };
 
 RoutingExperiment::RoutingExperiment()
@@ -196,6 +198,8 @@ RoutingExperiment::CommandSetup(int argc, char** argv)
     cmd.AddValue("nodes", "Number of nodes", m_nodes);
     cmd.AddValue("flowMonitor", "enable FlowMonitor", m_flowMonitor);
     cmd.AddValue("simulationTime", "simulation time", m_simulationTime);
+    cmd.AddValue("speed", "Node speed in m/s", m_nodeSpeed);
+    cmd.AddValue("scale", "Scale factor for waypoint coordinates", m_scale);
     cmd.Parse(argc, argv);
 
     NS_ABORT_MSG_IF(m_nodes < 20, "Number of nodes " << m_nodes << " must be >= 20");
@@ -237,8 +241,7 @@ RoutingExperiment::Run()
     std::string rate("2048bps");
     std::string phyMode("DsssRate11Mbps");
     std::string tr_name("manet-routing");
-    int nodeSpeed = 20; // in m/s
-    int nodePause = 0;  // in s
+    int nodePause = 0; // in s
 
     Config::SetDefault("ns3::OnOffApplication::PacketSize", StringValue("64"));
     Config::SetDefault("ns3::OnOffApplication::DataRate", StringValue(rate));
@@ -255,8 +258,12 @@ RoutingExperiment::Run()
 
     ObjectFactory pos;
     pos.SetTypeId("ns3::RandomRectanglePositionAllocator");
-    pos.Set("X", StringValue("ns3::UniformRandomVariable[Min=0.0|Max=300.0]"));
-    pos.Set("Y", StringValue("ns3::UniformRandomVariable[Min=0.0|Max=1500.0]"));
+    double xMax = 300 * m_scale;
+    double yMax = 1500 * m_scale;
+    pos.Set("X",
+            StringValue("ns3::UniformRandomVariable[Min=0.0|Max=" + std::to_string(xMax) + "]"));
+    pos.Set("Y",
+            StringValue("ns3::UniformRandomVariable[Min=0.0|Max=" + std::to_string(yMax) + "]"));
 
     Ptr<PositionAllocator> taPositionAlloc = pos.Create()->GetObject<PositionAllocator>();
     auto streamsUsed = taPositionAlloc->AssignStreams(streamIndex);
@@ -264,7 +271,7 @@ RoutingExperiment::Run()
     streamIndex += streamIncrement;
 
     std::stringstream ssSpeed;
-    ssSpeed << "ns3::UniformRandomVariable[Min=0.0|Max=" << nodeSpeed << "]";
+    ssSpeed << "ns3::UniformRandomVariable[Min=0.0|Max=" << m_nodeSpeed << "]";
     std::stringstream ssPause;
     ssPause << "ns3::ConstantRandomVariable[Constant=" << nodePause << "]";
     mobilityAdhoc.SetMobilityModel("ns3::RandomWaypointMobilityModel",
@@ -358,7 +365,7 @@ RoutingExperiment::Run()
     std::string nodes = ss.str();
 
     std::stringstream ss2;
-    ss2 << nodeSpeed;
+    ss2 << m_nodeSpeed;
     std::string sNodeSpeed = ss2.str();
 
     std::stringstream ss3;
