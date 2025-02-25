@@ -214,6 +214,7 @@ RoutingExperiment::CommandSetup(int argc, char** argv)
     cmd.AddValue("speed", "Node speed in m/s", m_nodeSpeed);
     cmd.AddValue("scale", "Scale factor for waypoint coordinates", m_scale);
     cmd.AddValue("scenarioId", "", m_scenarioId);
+    cmd.AddValue("nodeSpeed", "", m_nodeSpeed);
 
     cmd.Parse(argc, argv);
 
@@ -305,18 +306,26 @@ RoutingExperiment::Run()
     NS_LOG_DEBUG("Streams used by position allocator: " << streamsUsed);
     streamIndex += streamIncrement;
 
-    std::stringstream ssSpeed;
-    ssSpeed << "ns3::UniformRandomVariable[Min=0.0|Max=" << m_nodeSpeed << "]";
-    std::stringstream ssPause;
-    ssPause << "ns3::ConstantRandomVariable[Constant=" << nodePause << "]";
-    mobilityAdhoc.SetMobilityModel("ns3::RandomWaypointMobilityModel",
-                                   "Speed",
-                                   StringValue(ssSpeed.str()),
-                                   "Pause",
-                                   StringValue(ssPause.str()),
-                                   "PositionAllocator",
-                                   PointerValue(taPositionAlloc));
-    mobilityAdhoc.SetPositionAllocator(taPositionAlloc);
+    if (m_nodeSpeed == 0)
+    {
+        mobilityAdhoc.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+        mobilityAdhoc.SetPositionAllocator(taPositionAlloc);
+    }
+    else
+    {
+        std::stringstream ssSpeed;
+        ssSpeed << "ns3::UniformRandomVariable[Min=0.0|Max=" << m_nodeSpeed << "]";
+        std::stringstream ssPause;
+        ssPause << "ns3::ConstantRandomVariable[Constant=" << nodePause << "]";
+        mobilityAdhoc.SetMobilityModel("ns3::RandomWaypointMobilityModel",
+                                       "Speed",
+                                       StringValue(ssSpeed.str()),
+                                       "Pause",
+                                       StringValue(ssPause.str()),
+                                       "PositionAllocator",
+                                       PointerValue(taPositionAlloc));
+    }
+
     mobilityAdhoc.Install(adhocNodes);
     streamsUsed = mobilityAdhoc.AssignStreams(adhocNodes, streamIndex);
     NS_LOG_DEBUG("Streams used by mobility models: " << streamsUsed);
@@ -493,7 +502,7 @@ RoutingExperiment::Run()
             << '\n';
         };
 
-        for (auto i = 1; i < m_simulationTime; i++)
+        for (auto i = 1; i < m_simulationTime.ToInteger(Time::S); i++)
         {
             Simulator::Schedule(Seconds(i), writePdrCallback);
         }
