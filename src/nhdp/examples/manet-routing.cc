@@ -112,6 +112,8 @@ class RoutingExperiment
     void OlsrTx(const olsr::PacketHeader& header, const olsr::MessageList& messages);
     void OlsrRx(const olsr::PacketHeader& header, const olsr::MessageList& messages);
 
+    void OlsrRoutingTableChange(uint32_t tableSize);
+
     uint32_t port{9};            //!< Receiving port number.
     uint32_t bytesTotal{0};      //!< Total received bytes.
     uint32_t packetsReceived{0}; //!< Total received packets.
@@ -128,6 +130,8 @@ class RoutingExperiment
     Time m_simulationTime{Seconds(200)};            //!< Simulation time
     int m_nodeSpeed{20};                            //!< Node speed in m/s
     double m_scale{1};                              //!< Scale factor for waypoint coordinates
+
+    uint64_t m_routingTableChanges{0u};
 };
 
 RoutingExperiment::RoutingExperiment()
@@ -229,6 +233,12 @@ void
 RoutingExperiment::OlsrRx(const olsr::PacketHeader&, const olsr::MessageList&)
 {
     m_rxPacketsOlsrTrace++;
+}
+
+void
+RoutingExperiment::OlsrRoutingTableChange(uint32_t)
+{
+    m_routingTableChanges++;
 }
 
 
@@ -408,6 +418,7 @@ RoutingExperiment::Run()
         MobilityHelper::EnableAsciiAll(ascii.CreateFileStream(tr_name + ".mob"));
     }
 
+    // ---- packet-delivery-ratio_olsr-traces.csv ----
     Config::ConnectWithoutContext("/NodeList/*/$ns3::olsr::RoutingProtocol/Tx",
                                   MakeCallback(&RoutingExperiment::OlsrTx, this));
 
@@ -427,6 +438,22 @@ RoutingExperiment::Run()
     for (auto i = 0; i < m_simulationTime.ToInteger(Time::S); i++)
     {
         Simulator::Schedule(Seconds(i), writeOlsrTraces);
+    }
+
+    // ---- routing-table-changes.csv ----
+    Config::ConnectWithoutContext("/NodeList/*/$ns3::olsr::RoutingProtocol/RoutingTableChanged",
+                              MakeCallback(&RoutingExperiment::OlsrRoutingTableChange, this));
+
+    std::ofstream olsrRoutingChangesCsv{"routing-table-changes.csv"};
+    olsrRoutingChangesCsv << "TimeSeconds, TotalRoutingTableChanges\n";
+    auto writeOlsrRoutingTableChanges = [this, &olsrRoutingChangesCsv] {
+        olsrRoutingChangesCsv << Simulator::Now().ToInteger(Time::S) << ", "
+        << m_routingTableChanges << '\n';
+    };
+
+    for (auto i = 0; i < m_simulationTime.ToInteger(Time::S); i++)
+    {
+        Simulator::Schedule(Seconds(i), writeOlsrRoutingTableChanges);
     }
 
     FlowMonitorHelper flowmonHelper;
