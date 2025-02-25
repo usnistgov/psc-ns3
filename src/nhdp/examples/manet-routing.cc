@@ -348,7 +348,7 @@ RoutingExperiment::Run()
         Ptr<UniformRandomVariable> var = CreateObject<UniformRandomVariable>();
         var->SetStream(streamIndex++);
         ApplicationContainer temp = onoff1.Install(adhocNodes.Get(i + m_nSinks));
-        temp.Start(Seconds(var->GetValue(100.0, 101.0)));
+        temp.Start(Seconds(var->GetValue(20.0, 21.0)));
         temp.Stop(Seconds(TotalTime));
     }
 
