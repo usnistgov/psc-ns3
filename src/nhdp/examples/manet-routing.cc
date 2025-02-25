@@ -133,6 +133,8 @@ class RoutingExperiment
 
     uint64_t m_totalRoutingTableChanges{0u};
     uint64_t m_periodRoutingTableChanges{0u};
+
+    int m_scenarioId{};
 };
 
 RoutingExperiment::RoutingExperiment()
@@ -211,6 +213,8 @@ RoutingExperiment::CommandSetup(int argc, char** argv)
     cmd.AddValue("simulationTime", "simulation time", m_simulationTime);
     cmd.AddValue("speed", "Node speed in m/s", m_nodeSpeed);
     cmd.AddValue("scale", "Scale factor for waypoint coordinates", m_scale);
+    cmd.AddValue("scenarioId", "", m_scenarioId);
+
     cmd.Parse(argc, argv);
 
     NS_ABORT_MSG_IF(m_nodes < 20, "Number of nodes " << m_nodes << " must be >= 20");
@@ -427,7 +431,7 @@ RoutingExperiment::Run()
     Config::ConnectWithoutContext("/NodeList/*/$ns3::olsr::RoutingProtocol/Rx",
                               MakeCallback(&RoutingExperiment::OlsrRx, this));
 
-    std::ofstream olsrTracePdrCsv{"packet-delivery-ratio_olsr-traces.csv"};
+    std::ofstream olsrTracePdrCsv{"packet-delivery-ratio_olsr-traces-" + std::to_string(m_scenarioId) + ".csv"};
     olsrTracePdrCsv << "TimeSeconds, TotalTx, TotalRx, PacketDeliveryRatio\n";
     auto writeOlsrTraces = [&olsrTracePdrCsv, this] {
         olsrTracePdrCsv << Simulator::Now().ToInteger(Time::S) << ", "
@@ -446,7 +450,7 @@ RoutingExperiment::Run()
     Config::ConnectWithoutContext("/NodeList/*/$ns3::olsr::RoutingProtocol/RoutingTableChanged",
                               MakeCallback(&RoutingExperiment::OlsrRoutingTableChange, this));
 
-    std::ofstream olsrRoutingChangesCsv{"routing-table-changes.csv"};
+    std::ofstream olsrRoutingChangesCsv{"routing-table-changes-" + std::to_string(m_scenarioId) + ".csv"};
     olsrRoutingChangesCsv << "TimeSeconds, PeriodRoutingTableChanges, TotalRoutingTableChanges\n";
     auto writeOlsrRoutingTableChanges = [this, &olsrRoutingChangesCsv] {
         olsrRoutingChangesCsv << Simulator::Now().ToInteger(Time::S) << ", "
@@ -466,7 +470,7 @@ RoutingExperiment::Run()
     std::ofstream packetDeliveryRatioCsv;
     if (m_flowMonitor)
     {
-        packetDeliveryRatioCsv.open("packet-delivery-ratio-flowmon.csv");
+        packetDeliveryRatioCsv.open("packet-delivery-ratio-flowmon-" + std::to_string(m_scenarioId) + ".csv");
         packetDeliveryRatioCsv << "TimeSeconds, TotalTx, TotalRx, PacketDeliveryRatio\n";
 
         flowmon = flowmonHelper.InstallAll();

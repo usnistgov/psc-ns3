@@ -108,6 +108,7 @@ function run-scenario () {
 		--csvFileName=$csvFileName \
 		--nodes=$nodes \
 		--RngRun=${RngRun} \
+		--scenarioId="${scenario_id}" \
 		> $logfile  2>&1
 
 	#python3 plot-latency.py ${numTcpDownloads} ${numTcpUploads} ${numTcpDashStreams} ${numDctcpDownloads} ${numDctcpUploads} ${numDctcpDashStreams} ${numWebUsers} ${heading} ${simulationEndTime} --fileNameCm=${fileNameCm} --fileNameCmts=${fileNameCmts} --plotNameCm=${pdfNameCm} --plotNameCmts=${pdfNameCmts} --plotNameRtt=${pdfNameRtt} --imageNameRtt=${imageNameRtt} --fileNameSummary=${fileNameSummary} --scenarioId=${scenario_id} >/dev/null  &
