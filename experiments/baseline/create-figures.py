@@ -56,6 +56,7 @@ plt.close()
 
 # olsr-overhead-*.csv
 olsr_overhead = pd.read_csv(f"olsr-overhead-{scenario_id}.csv")
-olsr_overhead.plot(x='TimeSeconds', xlabel="Seconds", y='TxBytesPeriod', ylabel='Bytes per Second', legend=False)
+olsr_overhead.plot(x='TimeSeconds', xlabel="Seconds", y='TxBytesPeriod', ylabel='Bytes per Second',
+                   title=f"OLSR Overhead - Scenario {scenario_id}", legend=False)
 plt.savefig(f"olsr-overhead-{scenario_id}.png")
 plt.close()
