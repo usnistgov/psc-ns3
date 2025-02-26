@@ -41,3 +41,16 @@ for flowmon_per_flow_csv in flowmon_per_flow_csvs:
         plt.savefig(f"flow-scenario-{scenario_id}-id-{flow_id}.png")
         plt.close()
 
+
+
+routing_table_changes_csvs = glob("routing-table-changes-*.csv")
+for routing_table_changes_csv in routing_table_changes_csvs:
+    scenario_id = re.search(r'\d+', routing_table_changes_csv).group()
+    routing_table_changes = pd.read_csv(routing_table_changes_csv)
+    routing_table_changes.plot(x="TimeSeconds", xlabel="Seconds", y="PeriodRoutingTableChanges", ylabel="Changes",
+                               title="Routing Table Changes Per Second", legend=False)
+
+    plt.savefig(f"routing-table-changes-scenario-{scenario_id}.png")
+    plt.close()
+
+
