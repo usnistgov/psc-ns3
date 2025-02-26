@@ -66,7 +66,7 @@ HelloRegressionTest::CreateNodes()
     NodeContainer c;
     c.Create(2);
     // install TCP/IP & OLSR
-    OlsrHelper olsr;
+    Olsrv2Helper olsr;
     InternetStackHelper internet;
     internet.SetRoutingHelper(olsr);
     internet.Install(c);

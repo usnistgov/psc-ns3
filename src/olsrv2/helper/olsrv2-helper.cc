@@ -16,25 +16,25 @@
 namespace ns3
 {
 
-OlsrHelper::OlsrHelper()
+Olsrv2Helper::Olsrv2Helper()
 {
     m_agentFactory.SetTypeId("ns3::olsrv2::RoutingProtocol");
 }
 
-OlsrHelper::OlsrHelper(const OlsrHelper& o)
+Olsrv2Helper::Olsrv2Helper(const Olsrv2Helper& o)
     : m_agentFactory(o.m_agentFactory)
 {
     m_interfaceExclusions = o.m_interfaceExclusions;
 }
 
-OlsrHelper*
-OlsrHelper::Copy() const
+Olsrv2Helper*
+Olsrv2Helper::Copy() const
 {
-    return new OlsrHelper(*this);
+    return new Olsrv2Helper(*this);
 }
 
 void
-OlsrHelper::ExcludeInterface(Ptr<Node> node, uint32_t interface)
+Olsrv2Helper::ExcludeInterface(Ptr<Node> node, uint32_t interface)
 {
     auto it = m_interfaceExclusions.find(node);
 
@@ -52,7 +52,7 @@ OlsrHelper::ExcludeInterface(Ptr<Node> node, uint32_t interface)
 }
 
 Ptr<Ipv4RoutingProtocol>
-OlsrHelper::Create(Ptr<Node> node) const
+Olsrv2Helper::Create(Ptr<Node> node) const
 {
     Ptr<olsrv2::RoutingProtocol> agent = m_agentFactory.Create<olsrv2::RoutingProtocol>();
 
@@ -68,13 +68,13 @@ OlsrHelper::Create(Ptr<Node> node) const
 }
 
 void
-OlsrHelper::Set(std::string name, const AttributeValue& value)
+Olsrv2Helper::Set(std::string name, const AttributeValue& value)
 {
     m_agentFactory.Set(name, value);
 }
 
 int64_t
-OlsrHelper::AssignStreams(NodeContainer c, int64_t stream)
+Olsrv2Helper::AssignStreams(NodeContainer c, int64_t stream)
 {
     int64_t currentStream = stream;
     Ptr<Node> node;

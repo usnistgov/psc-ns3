@@ -18,8 +18,8 @@
 #include "ns3/ipv4-interface-container.h"
 #include "ns3/ipv4-list-routing-helper.h"
 #include "ns3/log.h"
-#include "ns3/olsr-helper.h"
-#include "ns3/olsr-routing-protocol.h"
+#include "ns3/olsrv2-helper.h"
+#include "ns3/olsrv2-routing-protocol.h"
 #include "ns3/rng-seed-manager.h"
 #include "ns3/simple-net-device-helper.h"
 #include "ns3/simple-net-device.h"
@@ -66,7 +66,7 @@ Bug780Test::CreateNodes()
     c.Create(3);
 
     // install TCP/IP & OLSR
-    OlsrHelper olsr;
+    Olsrv2Helper olsr;
     InternetStackHelper internet;
     internet.SetRoutingHelper(olsr);
     internet.Install(c);
