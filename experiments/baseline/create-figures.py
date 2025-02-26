@@ -1,6 +1,5 @@
 import pandas as pd
 from matplotlib import pyplot as plt
-import multiprocessing as mp
 import argparse
 
 parser = argparse.ArgumentParser("OLSR Study Plotting Helper")
@@ -41,8 +40,8 @@ def plot_flow(flow_id: int):
 flowmon_per_flow = pd.read_csv(f"flowmon-per-flow-{scenario_id}.csv")
 flows = flowmon_per_flow["FlowId"].unique()
 
-with mp.Pool(mp.cpu_count()) as pool:
-    pool.map_async(plot_flow, flows).get()
+for flow in flows:
+    plot_flow(flow)
 
 
 # routing-table-changes-*.csv
