@@ -119,10 +119,12 @@ class RoutingExperiment
 
     void OlsrRoutingTableChange(uint32_t tableSize);
 
+    void AppTx(Ptr<const Packet> packet, const Address& src, const Address& dst);
     uint32_t port{9};                 //!< Receiving port number.
     uint32_t bytesReceived{0};        //!< Received bytes in throughput interval.
     uint32_t packetsReceived{0};      //!< Received packets in throughput interval.
     uint32_t packetsReceivedTotal{0}; //!< Total received packets in simulation.
+    uint64_t m_packetsSent{}; //! Totall application packets sent
 
     std::string m_csvFileName{"manet-routing.csv"}; //!< CSV filename.
     int m_nSinks{10};                               //!< Number of sink nodes.
@@ -270,6 +272,12 @@ RoutingExperiment::OlsrRoutingTableChange(uint32_t)
 {
     m_totalRoutingTableChanges++;
     m_periodRoutingTableChanges++;
+}
+
+void
+RoutingExperiment::AppTx(Ptr<const Packet>, const Address&, const Address&)
+{
+    m_packetsSent++;
 }
 
 int
@@ -610,6 +618,19 @@ RoutingExperiment::Run()
         {
             Simulator::Schedule(Seconds(i), writeFlowmonStats);
         }
+    }
+
+    // ---- app-tx-rx.csv -----
+    std::ofstream appPackets{"app-tx-rx-" + std::to_string(m_scenarioId) + ".csv"};
+    appPackets << "TimeSeconds,TxPackets,RxPackets\n";
+    auto writeAppTxRx = [this, &appPackets] {
+        appPackets << Simulator::Now().ToInteger(Time::S) << ','
+        << m_packetsSent << ','
+        << packetsReceived << '\n';
+    };
+    for (auto i = m_startTime.ToInteger(Time::S); i < m_simulationTime.ToInteger(Time::S); i++)
+    {
+        Simulator::Schedule(Seconds(i), writeAppTxRx);
     }
 
     NS_LOG_INFO("Run Simulation.");
