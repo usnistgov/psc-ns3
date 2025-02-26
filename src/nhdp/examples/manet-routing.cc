@@ -131,7 +131,6 @@ class RoutingExperiment
     Time m_simulationTime{Seconds(200)};            //!< Simulation time
     int m_nodeSpeed{20};                            //!< Node speed in m/s
     double m_scale{1};                              //!< Scale factor for waypoint coordinates
-    Time m_startTime{Seconds{50}};  //! Time to start applications
 
     uint64_t m_totalRoutingTableChanges{0u};
     uint64_t m_periodRoutingTableChanges{0u};
@@ -217,7 +216,6 @@ RoutingExperiment::CommandSetup(int argc, char** argv)
     cmd.AddValue("scale", "Scale factor for waypoint coordinates", m_scale);
     cmd.AddValue("scenarioId", "", m_scenarioId);
     cmd.AddValue("nodeSpeed", "", m_nodeSpeed);
-    cmd.AddValue("startTime", "", m_startTime);
 
     cmd.Parse(argc, argv);
 
@@ -404,8 +402,7 @@ RoutingExperiment::Run()
         Ptr<UniformRandomVariable> var = CreateObject<UniformRandomVariable>();
         var->SetStream(streamIndex++);
         ApplicationContainer temp = onoff1.Install(adhocNodes.Get(i + m_nSinks));
-        const auto startTime = m_startTime.ToInteger(Time::S);
-        temp.Start(Seconds(var->GetValue(startTime, startTime + 1)));
+        temp.Start(Seconds(var->GetValue(20.0, 21.0)));
         temp.Stop(m_simulationTime);
     }
 
