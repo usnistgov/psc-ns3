@@ -59,7 +59,9 @@
 #include "ns3/internet-module.h"
 #include "ns3/mobility-module.h"
 #include "ns3/network-module.h"
+#include "ns3/nhdp-module.h"
 #include "ns3/olsr-module.h"
+#include "ns3/olsrv2-module.h"
 #include "ns3/yans-wifi-helper.h"
 
 #include <fstream>
@@ -67,6 +69,7 @@
 #include <ranges>
 
 using namespace ns3;
+using namespace nhdp;
 
 NS_LOG_COMPONENT_DEFINE("ManetRoutingExample");
 
@@ -223,7 +226,7 @@ RoutingExperiment::CommandSetup(int argc, char** argv)
 
     NS_ABORT_MSG_IF(m_nodes < 20, "Number of nodes " << m_nodes << " must be >= 20");
 
-    std::vector<std::string> allowedProtocols{"OLSR"};
+    std::vector<std::string> allowedProtocols{"OLSR", "OLSRv2"};
 
     if (std::find(std::begin(allowedProtocols), std::end(allowedProtocols), m_protocolName) ==
         std::end(allowedProtocols))
@@ -363,14 +366,24 @@ RoutingExperiment::Run()
     streamIndex += streamIncrement;
 
     OlsrHelper olsr;
+    Olsrv2Helper olsrv2;
     Ipv4ListRoutingHelper list;
     InternetStackHelper internet;
+    NhdpHelper nhdpHelper;
+    ApplicationContainer nhdpApps;
 
     if (m_protocolName == "OLSR")
     {
         list.Add(olsr, 100);
         internet.SetRoutingHelper(list);
         internet.Install(adhocNodes);
+    }
+    else if (m_protocolName == "OLSRv2")
+    {
+        list.Add(olsrv2, 100);
+        internet.SetRoutingHelper(list);
+        internet.Install(adhocNodes);
+        nhdpApps = nhdpHelper.Install(adhocNodes);
     }
     else
     {
@@ -379,9 +392,20 @@ RoutingExperiment::Run()
     streamsUsed = internet.AssignStreams(adhocNodes, streamIndex);
     NS_LOG_DEBUG("Streams used by internet models: " << streamsUsed);
     streamIndex += streamIncrement;
-    streamsUsed = olsr.AssignStreams(adhocNodes, streamIndex);
-    NS_LOG_DEBUG("Streams used by OLSR models: " << streamsUsed);
-    streamIndex += streamIncrement;
+    if (m_protocolName == "OLSRv2")
+    {
+        streamsUsed = olsrv2.AssignStreams(adhocNodes, streamIndex);
+        NS_LOG_DEBUG("Streams used by OLSRv2 models: " << streamsUsed);
+        streamsUsed = nhdpHelper.AssignStreams(adhocNodes, streamIndex + streamsUsed);
+        NS_LOG_DEBUG("Streams used by NHDP models: " << streamsUsed);
+        streamIndex += streamIncrement;
+    }
+    else
+    {
+        streamsUsed = olsr.AssignStreams(adhocNodes, streamIndex);
+        NS_LOG_DEBUG("Streams used by OLSR models: " << streamsUsed);
+        streamIndex += streamIncrement;
+    }
 
     NS_LOG_INFO("assigning ip address");
 

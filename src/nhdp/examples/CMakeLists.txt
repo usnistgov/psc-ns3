@@ -16,6 +16,7 @@ build_lib_example(
     ${libwifi}
     ${libnhdp}
     ${libolsr}
+    ${libolsrv2}
     ${libinternet}
     ${libapplications}
     ${libflow-monitor}
