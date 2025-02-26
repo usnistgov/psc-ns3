@@ -134,10 +134,10 @@ class RoutingExperiment
     uint64_t m_txPacketsOlsrTrace{0u};
     uint64_t m_txPacketsOlsrBytesTotal{0u};
     uint64_t m_rxPacketsOlsrTrace{0u};
-    Time m_simulationTime{Seconds(200)}; //!< Simulation time
-    int m_nodeSpeed{20};                 //!< Node speed in m/s
-    double m_scale{1};                   //!< Scale factor for waypoint coordinates
-    Time m_startTime{Seconds(50)};       //! Time to start applications
+    Time m_simulationTime{Seconds(200)};            //!< Simulation time
+    int m_nodeSpeed{20};                            //!< Node speed in m/s
+    double m_scale{1};                              //!< Scale factor for waypoint coordinates
+    Time m_startTime{Seconds(60)};  //! Time to start applications
 
     uint64_t m_totalRoutingTableChanges{0u};
     uint64_t m_periodRoutingTableChanges{0u};
@@ -481,20 +481,22 @@ RoutingExperiment::Run()
     // ---- packet-delivery-ratio_olsr-traces.csv ----
     if (m_protocolName == "OLSRv2")
     {
+    Simulator::Schedule(m_startTime, [this] {
         Config::ConnectWithoutContext("/NodeList/*/$ns3::olsrv2::RoutingProtocol/Tx",
                                       MakeCallback(&RoutingExperiment::Olsrv2Tx, this));
 
         Config::ConnectWithoutContext("/NodeList/*/$ns3::olsrv2::RoutingProtocol/Rx",
                                       MakeCallback(&RoutingExperiment::Olsrv2Rx, this));
     }
+    });
     else
     {
+    Simulator::Schedule(m_startTime, [this] {
         Config::ConnectWithoutContext("/NodeList/*/$ns3::olsr::RoutingProtocol/Tx",
                                       MakeCallback(&RoutingExperiment::OlsrTx, this));
-
         Config::ConnectWithoutContext("/NodeList/*/$ns3::olsr::RoutingProtocol/Rx",
                                       MakeCallback(&RoutingExperiment::OlsrRx, this));
-    }
+    });
 
     std::ofstream olsrTracePdrCsv{"packet-delivery-ratio_olsr-traces-" +
                                   std::to_string(m_scenarioId) + ".csv"};

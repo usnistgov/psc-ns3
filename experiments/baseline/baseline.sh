@@ -98,7 +98,8 @@ function run-scenario () {
 
 	# process function arguments
 	scenario_id=${1}
-	nodes=${2}
+	nodes=50
+	speed=${2}
 
 	echo starting scenario $scenario_id
 	logfile=log${scenario_id}.out
@@ -110,6 +111,7 @@ function run-scenario () {
 		--nodes=$nodes \
 		--RngRun=${RngRun} \
 		--scenarioId="${scenario_id}" \
+		--speed="${speed}" \
 		> $logfile  2>&1
 
 	#python3 plot-latency.py ${numTcpDownloads} ${numTcpUploads} ${numTcpDashStreams} ${numDctcpDownloads} ${numDctcpUploads} ${numDctcpDashStreams} ${numWebUsers} ${heading} ${simulationEndTime} --fileNameCm=${fileNameCm} --fileNameCmts=${fileNameCmts} --plotNameCm=${pdfNameCm} --plotNameCmts=${pdfNameCmts} --plotNameRtt=${pdfNameRtt} --imageNameRtt=${imageNameRtt} --fileNameSummary=${fileNameSummary} --scenarioId=${scenario_id} >/dev/null  &
@@ -125,11 +127,30 @@ export -f run-scenario
 # 1.       Default configuration 50 nodes
 # 2.       20 nodes
 
-#scenario arguments:  scenario_id nodes
+#scenario arguments:  scenario_id speed
 declare -a scenario=(\
-#	S# nodes
-	"1 50"
-	"2 20"
+#	S# Speed
+	"1 0"
+	"2 2"
+	"3 4"
+	"4 6"
+	"5 8"
+	"6 10"
+	"7 12"
+	"8 14"
+	"9 16"
+	"10 18"
+	"11 20"
+	"12 22"
+	"13 24"
+	"14 26"
+	"15 28"
+	"16 30"
+	"17 32"
+	"18 34"
+	"19 36"
+	"20 38"
+	"21 40"
 	)
 
 # launch simulation scenarios using GNU Parallel if it is installed, otherwise use basic job control
