@@ -74,7 +74,8 @@ then
 		fi
 	fi
 	#cp plot-latency.py ${resultsDir}/.
-	cp -v create-per-simulation-figures.py "${resultsDir}"/
+	cp create-per-simulation-figures.py "${resultsDir}"/
+	cp create-aggregate-figures.py "${resultsDir}"/
 	cp $0 ${resultsDir}/.
 	cd ${resultsDir}
 	mkdir temp
@@ -165,6 +166,7 @@ else
 fi
 
 wait
+python create-aggregate-figures.py
 
 if ! $saveDatFiles
 then
