@@ -126,6 +126,7 @@ class RoutingExperiment
     uint32_t m_nodes{50};                           //!< Number of nodes
     bool m_flowMonitor{true};                      //!< Enable FlowMonitor
     uint64_t m_txPacketsOlsrTrace{0u};
+    uint64_t m_txPacketsOlsrBytesTotal{0u};
     uint64_t m_rxPacketsOlsrTrace{0u};
     Time m_simulationTime{Seconds(200)};            //!< Simulation time
     int m_nodeSpeed{20};                            //!< Node speed in m/s
@@ -230,9 +231,10 @@ RoutingExperiment::CommandSetup(int argc, char** argv)
 }
 
 void
-RoutingExperiment::OlsrTx(const olsr::PacketHeader&, const olsr::MessageList&)
+RoutingExperiment::OlsrTx(const olsr::PacketHeader& header, const olsr::MessageList&)
 {
     m_txPacketsOlsrTrace++;
+    m_txPacketsOlsrBytesTotal += header.GetPacketLength();
 }
 
 void
@@ -453,6 +455,21 @@ RoutingExperiment::Run()
     for (auto i = 0; i < m_simulationTime.ToInteger(Time::S); i++)
     {
         Simulator::Schedule(Seconds(i), writeOlsrTraces);
+    }
+
+
+    // ---- olsr-overhead.csv ----
+    std::ofstream olsrOverheadCsv{"olsr-overhead-" + std::to_string(m_scenarioId) + ".csv"};
+    olsrOverheadCsv << "TimeSeconds,TxBytesPeriod,TxBytesTotal\n";
+    uint64_t olsrOverheadLast{};
+    for (auto i = 0; i < m_simulationTime.ToInteger(Time::S); i++)
+    {
+        Simulator::Schedule(Seconds(i), [this, &olsrOverheadCsv, &olsrOverheadLast] () {
+            olsrOverheadCsv << Simulator::Now().ToInteger(Time::S) << ','
+            << m_txPacketsOlsrBytesTotal - olsrOverheadLast << ','
+            << m_txPacketsOlsrBytesTotal << '\n';
+            olsrOverheadLast = m_txPacketsOlsrBytesTotal;
+        });
     }
 
     // ---- routing-table-changes.csv ----

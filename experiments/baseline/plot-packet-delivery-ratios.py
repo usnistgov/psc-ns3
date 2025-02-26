@@ -54,3 +54,12 @@ for routing_table_changes_csv in routing_table_changes_csvs:
     plt.close()
 
 
+olsr_overhead_csvs = glob("olsr-overhead-*.csv")
+for olsr_overhead_csv in olsr_overhead_csvs:
+    scenario_id = re.search(r'\d+', olsr_overhead_csv).group()
+
+    olsr_overhead = pd.read_csv(olsr_overhead_csv)
+    olsr_overhead.plot(x='TimeSeconds', xlabel="Seconds", y='TxBytesPeriod', ylabel='Bytes per Second', legend=False)
+    plt.savefig(f"olsr-overhead-{scenario_id}.png")
+    plt.close()
+
