@@ -71,6 +71,7 @@ NS_OBJECT_ENSURE_REGISTERED(NhdpClient);
 NhdpClient::NhdpClient()
 {
     NS_LOG_FUNCTION(this);
+    m_rng = CreateObject<UniformRandomVariable>();
 }
 
 TypeId
@@ -187,11 +188,7 @@ void
 NhdpClient::DoInitialize()
 {
     NS_LOG_FUNCTION(this);
-    if (!m_rng)
-    {
-        m_rng = CreateObject<UniformRandomVariable>();
-        m_rng->SetAttribute("Max", DoubleValue(DEFAULT_HP_MAX_JITTER.GetSeconds()));
-    }
+    m_rng->SetAttribute("Max", DoubleValue(DEFAULT_HP_MAX_JITTER.GetSeconds()));
     if (!m_recvSocket)
     {
         m_recvSocket = Socket::CreateSocket(GetNode(), UdpSocketFactory::GetTypeId());
@@ -206,6 +203,16 @@ NhdpClient::DoInitialize()
         m_recvSocket->ShutdownSend();
     }
     Application::DoInitialize();
+}
+
+int64_t
+NhdpClient::AssignStreams(int64_t stream)
+{
+    NS_LOG_FUNCTION(this << stream);
+    auto currentStream = stream;
+    m_rng->SetStream(currentStream++);
+    currentStream += Application::AssignStreams(currentStream);
+    return (currentStream - stream);
 }
 
 const std::map<Ipv4Address, NeighborTuple>&
@@ -670,7 +677,6 @@ void
 NhdpClient::ScheduleHello(Ptr<Socket> socket)
 {
     NS_LOG_FUNCTION(this << socket);
-    NS_ASSERT_MSG(m_rng, "No jitter random variable; is NhdpClient initialized?");
     /* TODO: Should be able to store a helloInterval on a per-device basis */
     Time time = m_helloInterval - Seconds(m_rng->GetValue());
     Simulator::Schedule(time, &NhdpClient::SendHello, this, socket);

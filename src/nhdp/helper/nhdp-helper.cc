@@ -67,6 +67,24 @@ NhdpHelper::InstallPriv(Ptr<Node> node) const
     return app;
 }
 
+int64_t
+NhdpHelper::AssignStreams(NodeContainer c, int64_t stream)
+{
+    auto currentStream = stream;
+    for (auto i = c.Begin(); i != c.End(); ++i)
+    {
+        auto node = (*i);
+        for (uint32_t j = 0; j < node->GetNApplications(); ++j)
+        {
+            if (auto app = node->GetApplication(j)->GetObject<NhdpClient>())
+            {
+                currentStream += app->AssignStreams(currentStream);
+            }
+        }
+    }
+    return (currentStream - stream);
+}
+
 } // namespace nhdp
 
 } // namespace ns3

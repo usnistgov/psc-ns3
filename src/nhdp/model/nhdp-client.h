@@ -130,6 +130,8 @@ class NhdpClient : public Application
     typedef void (*TwoHopChangeTracedCallback)(TwoHopStatus twoHopStatus,
                                                const TwoHopTuple& newValue);
 
+    int64_t AssignStreams(int64_t stream) override;
+
   protected:
     void DoDispose() override;
     void DoInitialize() override;
