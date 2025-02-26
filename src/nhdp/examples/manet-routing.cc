@@ -242,6 +242,8 @@ RoutingExperiment::CommandSetup(int argc, char** argv)
     << "\"scenarioId\": " << m_scenarioId << ','
     << "\"speed\": " << m_nodeSpeed << ','
     << "\"scale\": " << m_scale << ','
+    << "\"startTimeSeconds\": " << m_startTime.ToInteger(Time::S) << ','
+    << "\"simulationTimeSeconds\": " << m_simulationTime.ToInteger(Time::S) << ','
     << "\"nodes\": " << m_nodes
     << '}';
 }
