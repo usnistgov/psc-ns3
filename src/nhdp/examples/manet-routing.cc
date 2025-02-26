@@ -119,12 +119,14 @@ class RoutingExperiment
 
     void OlsrRoutingTableChange(uint32_t tableSize);
 
-    void AppTx(Ptr<const Packet> packet, const Address& src, const Address& dst);
+    void AppTx(Ptr<const Packet> packet);
+    void AppRx(Ptr<const Packet> packet);
     uint32_t port{9};                 //!< Receiving port number.
     uint32_t bytesReceived{0};        //!< Received bytes in throughput interval.
     uint32_t packetsReceived{0};      //!< Received packets in throughput interval.
     uint32_t packetsReceivedTotal{0}; //!< Total received packets in simulation.
     uint64_t m_packetsSent{}; //! Totall application packets sent
+    uint64_t m_packetsReceived{}; //! Total application packets received
 
     std::string m_csvFileName{"manet-routing.csv"}; //!< CSV filename.
     int m_nSinks{10};                               //!< Number of sink nodes.
@@ -181,6 +183,7 @@ RoutingExperiment::ReceivePacket(Ptr<Socket> socket)
         packetsReceived += 1;
         packetsReceivedTotal += 1;
         NS_LOG_INFO(PrintReceivedPacket(socket, packet, senderAddress));
+        AppRx(packet);
     }
 }
 
@@ -275,9 +278,15 @@ RoutingExperiment::OlsrRoutingTableChange(uint32_t)
 }
 
 void
-RoutingExperiment::AppTx(Ptr<const Packet>, const Address&, const Address&)
+RoutingExperiment::AppTx(Ptr<const Packet>)
 {
     m_packetsSent++;
+}
+
+void
+RoutingExperiment::AppRx(Ptr<const Packet>)
+{
+    m_packetsReceived++;
 }
 
 int
@@ -455,6 +464,12 @@ RoutingExperiment::Run()
         const auto startTime = m_startTime.ToInteger(Time::S);
         temp.Start(Seconds(var->GetValue(startTime, startTime + 1)));
         temp.Stop(m_simulationTime);
+
+        // App Tx
+        for (auto app = temp.Begin(); app != temp.End(); ++app)
+        {
+            (*app)->TraceConnectWithoutContext("Tx", MakeCallback(&RoutingExperiment::AppTx, this));
+        }
     }
 
     std::stringstream ss;
@@ -495,8 +510,8 @@ RoutingExperiment::Run()
 
         Config::ConnectWithoutContext("/NodeList/*/$ns3::olsrv2::RoutingProtocol/Rx",
                                       MakeCallback(&RoutingExperiment::Olsrv2Rx, this));
-    }
     });
+    }
     else
     {
     Simulator::Schedule(m_startTime, [this] {
@@ -505,6 +520,7 @@ RoutingExperiment::Run()
         Config::ConnectWithoutContext("/NodeList/*/$ns3::olsr::RoutingProtocol/Rx",
                                       MakeCallback(&RoutingExperiment::OlsrRx, this));
     });
+    }
 
     std::ofstream olsrTracePdrCsv{"packet-delivery-ratio_olsr-traces-" +
                                   std::to_string(m_scenarioId) + ".csv"};
@@ -622,11 +638,17 @@ RoutingExperiment::Run()
 
     // ---- app-tx-rx.csv -----
     std::ofstream appPackets{"app-tx-rx-" + std::to_string(m_scenarioId) + ".csv"};
-    appPackets << "TimeSeconds,TxPackets,RxPackets\n";
-    auto writeAppTxRx = [this, &appPackets] {
+    appPackets << "TimeSeconds,TxPacketsPeriod,TxPacketsTotal,RxPacketsPeriod,RxPacketsTotal\n";
+    uint64_t lastPacketsSent{};
+    uint64_t lastPacketsReceived{};
+    auto writeAppTxRx = [this, &appPackets, &lastPacketsSent, &lastPacketsReceived] {
         appPackets << Simulator::Now().ToInteger(Time::S) << ','
+        << m_packetsSent - lastPacketsSent << ','
         << m_packetsSent << ','
-        << packetsReceived << '\n';
+        << m_packetsReceived - lastPacketsReceived << ','
+        << m_packetsReceived << '\n';
+        lastPacketsSent = m_packetsSent;
+        lastPacketsReceived = m_packetsReceived;
     };
     for (auto i = m_startTime.ToInteger(Time::S); i < m_simulationTime.ToInteger(Time::S); i++)
     {
