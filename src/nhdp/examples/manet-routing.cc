@@ -236,6 +236,14 @@ RoutingExperiment::CommandSetup(int argc, char** argv)
     {
         NS_FATAL_ERROR("No such protocol:" << m_protocolName);
     }
+
+    std::ofstream scenarioInfo{"scenario-info-" + std::to_string(m_scenarioId) + ".json"};
+    scenarioInfo << '{'
+    << "\"scenarioId\": " << m_scenarioId << ','
+    << "\"speed\": " << m_nodeSpeed << ','
+    << "\"scale\": " << m_scale << ','
+    << "\"nodes\": " << m_nodes
+    << '}';
 }
 
 void
