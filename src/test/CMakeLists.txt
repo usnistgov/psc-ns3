@@ -65,6 +65,14 @@ if(applications
           IN_LIST
           ns3-all-enabled-modules
          )
+     AND (olsrv2
+          IN_LIST
+          ns3-all-enabled-modules
+         )
+     AND (olsr
+          IN_LIST
+          ns3-all-enabled-modules
+         )
   )
     set(nhdp_sources
         nhdp-system-test-suite.cc

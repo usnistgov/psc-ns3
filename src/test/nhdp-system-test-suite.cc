@@ -7,6 +7,7 @@
 #include "ns3/internet-stack-helper.h"
 #include "ns3/ipv4-address-helper.h"
 #include "ns3/ipv4-address.h"
+#include "ns3/ipv4-list-routing-helper.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/mobility-model.h"
 #include "ns3/net-device-container.h"
@@ -17,6 +18,12 @@
 #include "ns3/node.h"
 #include "ns3/nstime.h"
 #include "ns3/object.h"
+#include "ns3/olsr-helper.h"
+#include "ns3/olsrv2-helper.h"
+#include "ns3/on-off-helper.h"
+#include "ns3/onoff-application.h"
+#include "ns3/packet-sink-helper.h"
+#include "ns3/packet-sink.h"
 #include "ns3/position-allocator.h"
 #include "ns3/propagation-delay-model.h"
 #include "ns3/propagation-loss-model.h"
@@ -171,6 +178,7 @@ class NhdpFourNodeTestCase : public NhdpTestCase
     void DoSetup() override;
     Ptr<MatrixPropagationLossModel> m_matrixLossModel;
     NodeContainer m_nodes;
+    NetDeviceContainer m_devices;
 };
 
 NhdpFourNodeTestCase::NhdpFourNodeTestCase(std::string name)
@@ -243,13 +251,7 @@ NhdpFourNodeTestCase::DoSetup()
     wifi.SetRemoteStationManager("ns3::ConstantRateWifiManager",
                                  "DataMode",
                                  StringValue("OfdmRate54Mbps"));
-    auto devices = wifi.Install(wifiPhy, wifiMac, m_nodes);
-
-    InternetStackHelper internet;
-    internet.Install(m_nodes);
-
-    Ipv4AddressHelper ipv4;
-    auto ipInterfaces = ipv4.AssignManet(devices, Ipv4Address("7.0.0.1"));
+    m_devices = wifi.Install(wifiPhy, wifiMac, m_nodes);
 }
 
 /**
@@ -284,6 +286,12 @@ NhdpFourNodeNhdpTestCase::DoRun()
 {
     Time startTime{Seconds(1)};
     Time stopTime{Seconds(51)};
+
+    InternetStackHelper internet;
+    internet.Install(m_nodes);
+
+    Ipv4AddressHelper ipv4;
+    auto ipInterfaces = ipv4.AssignManet(m_devices, Ipv4Address("7.0.0.1"));
 
     NhdpHelper nhdpHelper;
     ApplicationContainer apps = nhdpHelper.Install(m_nodes);
@@ -336,6 +344,232 @@ NhdpFourNodeNhdpTestCase::DoRun()
 
 /**
  * @ingroup nhdp-tests
+ * Use controlled topology
+ * Using MatrixPropagationLossModel, create a four-node topology in which each node can hear
+ * two neighbors, as follows:
+ *
+ * 3 <------> 4
+ * |          |
+ * |          |
+ * 1 <------> 2
+ *
+ * Start the simulation and check that node 1 ends up with two symmetric neighbors
+ */
+class NhdpFourNodeOlsrTestCase : public NhdpFourNodeTestCase
+{
+  public:
+    NhdpFourNodeOlsrTestCase(std::string name);
+
+  protected:
+    void DoRun() override;
+};
+
+NhdpFourNodeOlsrTestCase::NhdpFourNodeOlsrTestCase(std::string name)
+    : NhdpFourNodeTestCase(name)
+{
+}
+
+void
+NhdpFourNodeOlsrTestCase::DoRun()
+{
+    Time startTime{Seconds(1)};
+    Time stopTime{Seconds(35)};
+
+    InternetStackHelper internet;
+    OlsrHelper olsr;
+    Ipv4ListRoutingHelper list;
+    list.Add(olsr, 100);
+    internet.SetRoutingHelper(list);
+    internet.Install(m_nodes);
+
+    Ipv4AddressHelper ipv4;
+    auto ipInterfaces = ipv4.AssignManet(m_devices, Ipv4Address("7.0.0.1"));
+
+    NhdpHelper nhdpHelper;
+    ApplicationContainer apps = nhdpHelper.Install(m_nodes);
+    auto nhdp1 = apps.Get(0)->GetObject<NhdpClient>();
+    nhdp1->TraceConnect("NeighborChange", "1", MakeCallback(&NhdpTestCase::NeighborChange, this));
+    nhdp1->TraceConnect("LinkChange", "1", MakeCallback(&NhdpTestCase::LinkChange, this));
+    nhdp1->TraceConnect("TwoHopChange", "1", MakeCallback(&NhdpTestCase::TwoHopChange, this));
+
+    apps.Start(startTime);
+    apps.Stop(stopTime);
+
+    // Disable one path through the network before data transfer starts
+    Simulator::Schedule(Seconds(5),
+                        &NhdpFourNodeTestCase::Disable,
+                        this,
+                        m_nodes.Get(2),
+                        m_nodes.Get(3));
+
+    // Enable the disabled path, and disable the enabled path
+    Simulator::Schedule(Seconds(14.99),
+                        &NhdpFourNodeTestCase::Enable,
+                        this,
+                        m_nodes.Get(2),
+                        m_nodes.Get(3));
+
+    Simulator::Schedule(Seconds(14.99),
+                        &NhdpFourNodeTestCase::Disable,
+                        this,
+                        m_nodes.Get(1),
+                        m_nodes.Get(3));
+
+    // Enable the disabled path, and disable the enabled path
+    Simulator::Schedule(Seconds(24.99),
+                        &NhdpFourNodeTestCase::Enable,
+                        this,
+                        m_nodes.Get(1),
+                        m_nodes.Get(3));
+
+    Simulator::Schedule(Seconds(24.99),
+                        &NhdpFourNodeTestCase::Disable,
+                        this,
+                        m_nodes.Get(2),
+                        m_nodes.Get(3));
+
+    Simulator::Schedule(Seconds(34), &NhdpFourNodeTestCase::Print, this, nhdp1);
+
+    // 1 packet every 200 ms
+    uint16_t port = 9; // Discard port (RFC 863)
+    OnOffHelper onoff("ns3::UdpSocketFactory",
+                      Address(InetSocketAddress(Ipv4Address("7.0.0.4"), port)));
+    onoff.SetConstantRate(DataRate(20480));
+    ApplicationContainer apps2 = onoff.Install(m_nodes.Get(0));
+    apps2.Start(Seconds(10));
+    apps2.Stop(stopTime);
+
+    // Create a packet sink to receive these packets
+    PacketSinkHelper sink("ns3::UdpSocketFactory",
+                          Address(InetSocketAddress(Ipv4Address::GetAny(), port)));
+    ApplicationContainer apps3 = sink.Install(m_nodes.Get(3));
+    apps3.Start(Seconds(10));
+    apps3.Stop(stopTime);
+
+    NS_LOG_INFO("Start simulation for " << (stopTime + Seconds(1)).As(Time::S) << " duration");
+    Simulator::Stop(stopTime + Seconds(1));
+    Simulator::Run();
+    Simulator::Destroy();
+
+    NS_TEST_ASSERT_MSG_EQ(true, true, "true doesn't equal true for some reason");
+    NS_TEST_ASSERT_MSG_EQ_TOL(0.01, 0.01, 0.001, "Numbers are not equal within tolerance");
+}
+
+/**
+ * @ingroup nhdp-tests
+ * Use controlled topology
+ * Using MatrixPropagationLossModel, create a four-node topology in which each node can hear
+ * two neighbors, as follows:
+ *
+ * 3 <------> 4
+ * |          |
+ * |          |
+ * 1 <------> 2
+ *
+ * Start the simulation and check that node 1 ends up with two symmetric neighbors
+ */
+class NhdpFourNodeOlsrv2TestCase : public NhdpFourNodeTestCase
+{
+  public:
+    NhdpFourNodeOlsrv2TestCase(std::string name);
+
+  protected:
+    void DoRun() override;
+};
+
+NhdpFourNodeOlsrv2TestCase::NhdpFourNodeOlsrv2TestCase(std::string name)
+    : NhdpFourNodeTestCase(name)
+{
+}
+
+void
+NhdpFourNodeOlsrv2TestCase::DoRun()
+{
+    Time startTime{Seconds(1)};
+    Time stopTime{Seconds(35)};
+
+    InternetStackHelper internet;
+    Olsrv2Helper olsr;
+    Ipv4ListRoutingHelper list;
+    list.Add(olsr, 100);
+    internet.SetRoutingHelper(list);
+    internet.Install(m_nodes);
+
+    Ipv4AddressHelper ipv4;
+    auto ipInterfaces = ipv4.AssignManet(m_devices, Ipv4Address("7.0.0.1"));
+
+    NhdpHelper nhdpHelper;
+    ApplicationContainer apps = nhdpHelper.Install(m_nodes);
+    auto nhdp1 = apps.Get(0)->GetObject<NhdpClient>();
+    nhdp1->TraceConnect("NeighborChange", "1", MakeCallback(&NhdpTestCase::NeighborChange, this));
+    nhdp1->TraceConnect("LinkChange", "1", MakeCallback(&NhdpTestCase::LinkChange, this));
+    nhdp1->TraceConnect("TwoHopChange", "1", MakeCallback(&NhdpTestCase::TwoHopChange, this));
+
+    apps.Start(startTime);
+    apps.Stop(stopTime);
+
+    // Disable one path through the network before data transfer starts
+    Simulator::Schedule(Seconds(5),
+                        &NhdpFourNodeTestCase::Disable,
+                        this,
+                        m_nodes.Get(2),
+                        m_nodes.Get(3));
+
+    // Enable the disabled path, and disable the enabled path
+    Simulator::Schedule(Seconds(14.99),
+                        &NhdpFourNodeTestCase::Enable,
+                        this,
+                        m_nodes.Get(2),
+                        m_nodes.Get(3));
+
+    Simulator::Schedule(Seconds(14.99),
+                        &NhdpFourNodeTestCase::Disable,
+                        this,
+                        m_nodes.Get(1),
+                        m_nodes.Get(3));
+
+    // Enable the disabled path, and disable the enabled path
+    Simulator::Schedule(Seconds(24.99),
+                        &NhdpFourNodeTestCase::Enable,
+                        this,
+                        m_nodes.Get(1),
+                        m_nodes.Get(3));
+
+    Simulator::Schedule(Seconds(24.99),
+                        &NhdpFourNodeTestCase::Disable,
+                        this,
+                        m_nodes.Get(2),
+                        m_nodes.Get(3));
+
+    Simulator::Schedule(Seconds(34), &NhdpFourNodeTestCase::Print, this, nhdp1);
+
+    // 1 packet every 200 ms
+    uint16_t port = 9; // Discard port (RFC 863)
+    OnOffHelper onoff("ns3::UdpSocketFactory",
+                      Address(InetSocketAddress(Ipv4Address("7.0.0.4"), port)));
+    onoff.SetConstantRate(DataRate(20480));
+    ApplicationContainer apps2 = onoff.Install(m_nodes.Get(0));
+    apps2.Start(Seconds(10));
+    apps2.Stop(stopTime);
+
+    // Create a packet sink to receive these packets
+    PacketSinkHelper sink("ns3::UdpSocketFactory",
+                          Address(InetSocketAddress(Ipv4Address::GetAny(), port)));
+    ApplicationContainer apps3 = sink.Install(m_nodes.Get(3));
+    apps3.Start(Seconds(10));
+    apps3.Stop(stopTime);
+
+    NS_LOG_INFO("Start simulation for " << (stopTime + Seconds(1)).As(Time::S) << " duration");
+    Simulator::Stop(stopTime + Seconds(1));
+    Simulator::Run();
+    Simulator::Destroy();
+
+    NS_TEST_ASSERT_MSG_EQ(true, true, "true doesn't equal true for some reason");
+    NS_TEST_ASSERT_MSG_EQ_TOL(0.01, 0.01, 0.001, "Numbers are not equal within tolerance");
+}
+
+/**
+ * @ingroup nhdp-tests
  * TestSuite for module nhdp
  */
 class NhdpTestSuite : public TestSuite
@@ -348,6 +582,10 @@ NhdpTestSuite::NhdpTestSuite()
     : TestSuite("nhdp-system", Type::SYSTEM)
 {
     AddTestCase(new NhdpFourNodeNhdpTestCase("Four node matrix test with losses"),
+                TestCase::Duration::QUICK);
+    AddTestCase(new NhdpFourNodeOlsrTestCase("Four node matrix test with OLSRv1"),
+                TestCase::Duration::QUICK);
+    AddTestCase(new NhdpFourNodeOlsrv2TestCase("Four node matrix test with OLSRv2"),
                 TestCase::Duration::QUICK);
 }
 
