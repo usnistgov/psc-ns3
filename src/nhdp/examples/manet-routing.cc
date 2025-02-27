@@ -326,8 +326,8 @@ RoutingExperiment::Run()
 
     ObjectFactory pos;
     pos.SetTypeId("ns3::RandomRectanglePositionAllocator");
-    double xMax = 300 * m_scale;
-    double yMax = 1500 * m_scale;
+    double xMax = 200 * m_scale;
+    double yMax = 200 * m_scale;
     pos.Set("X",
             StringValue("ns3::UniformRandomVariable[Min=0.0|Max=" + std::to_string(xMax) + "]"));
     pos.Set("Y",
