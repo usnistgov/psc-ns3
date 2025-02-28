@@ -12,6 +12,7 @@ build_lib(
     model/olsrv2-routing-protocol.h
     model/olsrv2-state.h
   LIBRARIES_TO_LINK ${libinternet}
+                    ${libnhdp}
   TEST_SOURCES
     test/olsrv2-regression-test-suite.cc
     test/olsrv2-bug780-test.cc

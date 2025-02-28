@@ -37,6 +37,7 @@
 #include "ns3/names.h"
 #include "ns3/nhdp-client.h"
 #include "ns3/nhdp-info-base.h"
+#include "ns3/packetbb.h"
 #include "ns3/simulator.h"
 #include "ns3/socket-factory.h"
 #include "ns3/trace-source-accessor.h"
@@ -450,12 +451,26 @@ RoutingProtocol::DoInitialize()
 
     if (canRunOlsr)
     {
-        HelloTimerExpire();
         TcTimerExpire();
         MidTimerExpire();
         HnaTimerExpire();
 
         NS_LOG_DEBUG("OLSR on node " << m_mainAddress << " started");
+    }
+    for (uint32_t i = 0; i < node->GetNApplications(); i++)
+    {
+        auto nhdpClient = node->GetApplication(i)->GetObject<nhdp::NhdpClient>();
+        if (nhdpClient)
+        {
+            m_nhdpClient = nhdpClient;
+            NS_LOG_DEBUG("Hooking callbacks for the HELLO send and recv messages");
+            nhdpClient->TraceConnectWithoutContext(
+                "HelloMessageSend",
+                MakeCallback(&RoutingProtocol::NhdpSendHelloCallback, this));
+            nhdpClient->TraceConnectWithoutContext(
+                "HelloMessageRecv",
+                MakeCallback(&RoutingProtocol::NhdpRecvHelloCallback, this));
+        }
     }
 }
 
@@ -1733,110 +1748,7 @@ void
 RoutingProtocol::SendHello()
 {
     NS_LOG_FUNCTION(this);
-
-    olsrv2::MessageHeader msg;
-    Time now = Simulator::Now();
-
-    msg.SetVTime(OLSR_NEIGHB_HOLD_TIME);
-    msg.SetOriginatorAddress(m_mainAddress);
-    msg.SetTimeToLive(1);
-    msg.SetHopCount(0);
-    msg.SetMessageSequenceNumber(GetMessageSequenceNumber());
-    olsrv2::MessageHeader::Hello& hello = msg.GetHello();
-
-    hello.SetHTime(m_helloInterval);
-    hello.willingness = m_willingness;
-
-    std::vector<olsrv2::MessageHeader::Hello::LinkMessage>& linkMessages = hello.linkMessages;
-
-    const LinkSet& links = m_state.GetLinks();
-    for (auto link_tuple = links.begin(); link_tuple != links.end(); link_tuple++)
-    {
-        if (!(GetMainAddress(link_tuple->localIfaceAddr) == m_mainAddress &&
-              link_tuple->time >= now))
-        {
-            continue;
-        }
-
-        LinkType linkType;
-        NeighborType neighborType;
-
-        // Establishes link type
-        if (link_tuple->symTime >= now)
-        {
-            linkType = LinkType::SYM_LINK;
-        }
-        else if (link_tuple->asymTime >= now)
-        {
-            linkType = LinkType::ASYM_LINK;
-        }
-        else
-        {
-            linkType = LinkType::LOST_LINK;
-        }
-        // Establishes neighbor type.
-        if (m_state.FindMprAddress(GetMainAddress(link_tuple->neighborIfaceAddr)))
-        {
-            neighborType = NeighborType::MPR_NEIGH;
-            NS_LOG_DEBUG("I consider neighbor " << GetMainAddress(link_tuple->neighborIfaceAddr)
-                                                << " to be MPR_NEIGH.");
-        }
-        else
-        {
-            bool ok = false;
-            for (auto nb_tuple = m_state.GetNeighbors().begin();
-                 nb_tuple != m_state.GetNeighbors().end();
-                 nb_tuple++)
-            {
-                if (nb_tuple->neighborMainAddr == GetMainAddress(link_tuple->neighborIfaceAddr))
-                {
-                    if (nb_tuple->status == NeighborTuple::STATUS_SYM)
-                    {
-                        NS_LOG_DEBUG("I consider neighbor "
-                                     << GetMainAddress(link_tuple->neighborIfaceAddr)
-                                     << " to be SYM_NEIGH.");
-                        neighborType = NeighborType::SYM_NEIGH;
-                    }
-                    else if (nb_tuple->status == NeighborTuple::STATUS_NOT_SYM)
-                    {
-                        neighborType = NeighborType::NOT_NEIGH;
-                        NS_LOG_DEBUG("I consider neighbor "
-                                     << GetMainAddress(link_tuple->neighborIfaceAddr)
-                                     << " to be NOT_NEIGH.");
-                    }
-                    else
-                    {
-                        NS_FATAL_ERROR("There is a neighbor tuple with an unknown status!\n");
-                    }
-                    ok = true;
-                    break;
-                }
-            }
-            if (!ok)
-            {
-                NS_LOG_WARN("I don't know the neighbor "
-                            << GetMainAddress(link_tuple->neighborIfaceAddr) << "!!!");
-                continue;
-            }
-        }
-
-        olsrv2::MessageHeader::Hello::LinkMessage linkMessage;
-        linkMessage.linkCode = (static_cast<uint8_t>(linkType) & 0x03) |
-                               ((static_cast<uint8_t>(neighborType) << 2) & 0x0f);
-        linkMessage.neighborInterfaceAddresses.push_back(link_tuple->neighborIfaceAddr);
-
-        std::vector<Ipv4Address> interfaces =
-            m_state.FindNeighborInterfaces(link_tuple->neighborIfaceAddr);
-
-        linkMessage.neighborInterfaceAddresses.insert(linkMessage.neighborInterfaceAddresses.end(),
-                                                      interfaces.begin(),
-                                                      interfaces.end());
-
-        linkMessages.push_back(linkMessage);
-    }
-    NS_LOG_DEBUG("OLSR HELLO message size: " << int(msg.GetSerializedSize()) << " (with "
-                                             << int(linkMessages.size()) << " link messages)");
-    QueueMessage(msg, JITTER);
+    NS_FATAL_ERROR("Disabled-- using NHDP");
 }
 
 void
@@ -2143,6 +2055,77 @@ RoutingProtocol::LinkSensing(const olsrv2::MessageHeader& msg,
 }
 
 void
+RoutingProtocol::LinkSensingv2(Ipv4Address senderIface)
+{
+    NS_LOG_FUNCTION(this << senderIface);
+    auto receiverIface = m_mainAddress;
+    Time now = Simulator::Now();
+    bool updated = false;
+    bool created = false;
+    NS_LOG_DEBUG("Olsr node " << m_mainAddress << ": Originator: " << senderIface << " BEGIN");
+    LinkTuple* link_tuple = m_state.FindLinkTuple(senderIface);
+    if (link_tuple == nullptr)
+    {
+        LinkTuple newLinkTuple;
+        // We have to create a new tuple
+        newLinkTuple.neighborIfaceAddr = senderIface;
+        newLinkTuple.localIfaceAddr = receiverIface;
+        newLinkTuple.symTime = now - Seconds(1);
+        newLinkTuple.time = now + OLSR_NEIGHB_HOLD_TIME;
+        link_tuple = &m_state.InsertLinkTuple(newLinkTuple);
+        created = true;
+        NS_LOG_LOGIC("Existing link tuple did not exist => creating new one");
+    }
+    else
+    {
+        NS_LOG_LOGIC("Existing link tuple already exists => will update it");
+        updated = true;
+    }
+    link_tuple->asymTime = now + OLSR_NEIGHB_HOLD_TIME;
+
+    auto linkInfoBase = m_nhdpClient->GetLinkInfoBase();
+    for (auto& [addr, linkTuple] : linkInfoBase)
+    {
+        if (addr != senderIface)
+        {
+            continue;
+        }
+        if (linkTuple.GetLinkStatus() == nhdp::LinkStatus::LOST)
+        {
+            NS_LOG_LOGIC("link is LOST => expiring it");
+            link_tuple->symTime = now - Seconds(1);
+            updated = true;
+        }
+        else if (linkTuple.GetLinkStatus() == nhdp::LinkStatus::SYMMETRIC)
+        {
+            NS_LOG_DEBUG(*link_tuple << ": link is SYM or ASYM => should become SYM now"
+                                        " (symTime being increased to "
+                                     << now + OLSR_NEIGHB_HOLD_TIME << ")");
+            link_tuple->symTime = now + OLSR_NEIGHB_HOLD_TIME;
+            link_tuple->time = link_tuple->symTime + OLSR_NEIGHB_HOLD_TIME;
+            updated = true;
+        }
+    }
+    link_tuple->time = std::max(link_tuple->time, link_tuple->asymTime);
+
+    if (updated)
+    {
+        LinkTupleUpdated(*link_tuple, m_willingness);
+    }
+
+    // Schedules link tuple deletion
+    if (created)
+    {
+        LinkTupleAdded(*link_tuple, m_willingness);
+        m_events.Track(Simulator::Schedule(DELAY(std::min(link_tuple->time, link_tuple->symTime)),
+                                           &RoutingProtocol::LinkTupleTimerExpire,
+                                           this,
+                                           link_tuple->neighborIfaceAddr));
+    }
+    NS_LOG_DEBUG("Olsr node " << m_mainAddress << ": LinkSensing END");
+}
+
+void
 RoutingProtocol::PopulateNeighborSet(const olsrv2::MessageHeader& msg,
                                      const olsrv2::MessageHeader::Hello& hello)
 {
@@ -2151,6 +2134,17 @@ RoutingProtocol::PopulateNeighborSet(const olsrv2::MessageHeader& msg,
     if (nb_tuple != nullptr)
     {
         nb_tuple->willingness = hello.willingness;
+    }
+}
+
+void
+RoutingProtocol::PopulateNeighborSetv2(Ipv4Address originatorAddress, Willingness willingness)
+{
+    NS_LOG_FUNCTION(this << originatorAddress << willingness);
+    NeighborTuple* nb_tuple = m_state.FindNeighborTuple(originatorAddress);
+    if (nb_tuple != nullptr)
+    {
+        nb_tuple->willingness = willingness;
     }
 }
 
@@ -2256,6 +2250,96 @@ RoutingProtocol::PopulateTwoHopNeighborSet(const olsrv2::MessageHeader& msg,
         }
     }
 
+    NS_LOG_DEBUG("Olsr node " << m_mainAddress << ": PopulateTwoHopNeighborSet END");
+}
+
+void
+RoutingProtocol::PopulateTwoHopNeighborSetv2(Ipv4Address originatorAddress, Time validityTime)
+{
+    NS_LOG_FUNCTION(this << originatorAddress << validityTime);
+    Time now = Simulator::Now();
+
+    NS_LOG_DEBUG("Olsr node " << m_mainAddress << ": PopulateTwoHopNeighborSet BEGIN");
+
+    std::set<Ipv4Address> activeTwoHopNeighbors;
+    for (auto& [addr, twoHopTuple] : m_nhdpClient->GetTwoHopInfoBase())
+    {
+        if (addr != originatorAddress)
+        {
+            continue;
+        }
+        Ipv4Address nb2hop_addr = twoHopTuple.m_twoHopAddr;
+        NS_LOG_DEBUG("Adding active 2-hop neighbor " << nb2hop_addr);
+        activeTwoHopNeighbors.insert(nb2hop_addr);
+
+        TwoHopNeighborTuple* nb2hop_tuple =
+            m_state.FindTwoHopNeighborTuple(originatorAddress, nb2hop_addr);
+        NS_LOG_LOGIC("Adding the 2-hop neighbor"
+                     << (nb2hop_tuple ? " (refreshing existing entry)" : ""));
+        if (nb2hop_tuple == nullptr)
+        {
+            TwoHopNeighborTuple new_nb2hop_tuple;
+            new_nb2hop_tuple.neighborMainAddr = originatorAddress;
+            new_nb2hop_tuple.twoHopNeighborAddr = nb2hop_addr;
+            new_nb2hop_tuple.expirationTime = twoHopTuple.m_expirationTime;
+            AddTwoHopNeighborTuple(new_nb2hop_tuple);
+            // Schedules nb2hop tuple deletion
+            m_events.Track(Simulator::Schedule(DELAY(new_nb2hop_tuple.expirationTime),
+                                               &RoutingProtocol::Nb2hopTupleTimerExpire,
+                                               this,
+                                               new_nb2hop_tuple.neighborMainAddr,
+                                               new_nb2hop_tuple.twoHopNeighborAddr));
+        }
+        else
+        {
+            nb2hop_tuple->expirationTime = twoHopTuple.m_expirationTime;
+        }
+    }
+    // For each 2-hop node listed in the HELLO message
+    // with Neighbor Type equal to NOT_NEIGH all 2-hop
+    // tuples where: N_neighbor_main_addr == Originator
+    // Address AND N_2hop_addr == main address of the
+    // 2-hop neighbor are deleted.
+    TwoHopNeighborSet& twoHopNeighbors = m_state.GetTwoHopNeighbors();
+    NS_LOG_DEBUG("TwoHopNeighborSet size " << twoHopNeighbors.size());
+    NS_LOG_DEBUG("ActiveNeighbors size " << activeTwoHopNeighbors.size());
+    std::vector<Ipv4Address> twoHopNeighborsToErase;
+    for (auto tuple = twoHopNeighbors.begin(); tuple != twoHopNeighbors.end(); ++tuple)
+    {
+        if (tuple->neighborMainAddr != originatorAddress)
+        {
+            NS_LOG_DEBUG("Continuing because tuple->neighborMainAddr " << tuple->neighborMainAddr
+                                                                       << " != originatorAddress "
+                                                                       << originatorAddress);
+        }
+        NS_LOG_DEBUG("Testing originator " << originatorAddress << " 2-hop nbr "
+                                           << tuple->twoHopNeighborAddr);
+        if (!activeTwoHopNeighbors.size())
+        {
+            NS_LOG_LOGIC("2-hop neighbor is NOT_NEIGH => deleting matching 2-hop neighbor state");
+            // m_state.EraseTwoHopNeighborTuples(originatorAddress, tuple->twoHopNeighborAddr);
+            twoHopNeighborsToErase.push_back(tuple->twoHopNeighborAddr);
+        }
+        else
+        {
+            auto it = activeTwoHopNeighbors.find(tuple->twoHopNeighborAddr);
+            if (it == activeTwoHopNeighbors.end())
+            {
+                NS_LOG_LOGIC(
+                    "2-hop neighbor is NOT_NEIGH => deleting matching 2-hop neighbor state");
+                // m_state.EraseTwoHopNeighborTuples(originatorAddress, tuple->twoHopNeighborAddr);
+                twoHopNeighborsToErase.push_back(tuple->twoHopNeighborAddr);
+            }
+            else
+            {
+                NS_LOG_LOGIC("Keeping 2-hop neighbor " << tuple->twoHopNeighborAddr);
+            }
+        }
+    }
+    for (auto& it : twoHopNeighborsToErase)
+    {
+        m_state.EraseTwoHopNeighborTuples(originatorAddress, it);
+    }
     NS_LOG_DEBUG("Olsr node " << m_mainAddress << ": PopulateTwoHopNeighborSet END");
 }
 
@@ -2909,6 +2993,131 @@ RoutingProtocol::FindSendEntry(const RoutingTableEntry& entry, RoutingTableEntry
         }
     }
     return true;
+}
+
+void
+RoutingProtocol::NhdpSendHelloCallback(Ptr<PbbMessage> message)
+{
+    NS_LOG_FUNCTION(this << message);
+    Ptr<PbbAddressBlock> addrBlock = Create<PbbAddressBlockIpv4>();
+    Time now = Simulator::Now();
+    const LinkSet& links = m_state.GetLinks();
+    for (auto link_tuple = links.begin(); link_tuple != links.end(); link_tuple++)
+    {
+        if (!(GetMainAddress(link_tuple->localIfaceAddr) == m_mainAddress &&
+              link_tuple->time >= Simulator::Now()))
+        {
+            continue;
+        }
+        if (m_state.FindMprAddress(GetMainAddress(link_tuple->neighborIfaceAddr)))
+        {
+            NS_LOG_DEBUG("I consider neighbor " << GetMainAddress(link_tuple->neighborIfaceAddr)
+                                                << " to be MPR_NEIGH.");
+            addrBlock->AddressPushBack(link_tuple->neighborIfaceAddr);
+        }
+    }
+    Ptr<PbbAddressTlv> addrTlv = Create<PbbAddressTlv>();
+    addrTlv->SetType(ADDR_TLV_MPR);
+    addrTlv->SetValue(&ADDR_TLV_MPR_FLOOD_ROUTE, sizeof(ADDR_TLV_MPR_FLOOD_ROUTE));
+    addrTlv->SetIndexStart(0);
+    addrBlock->TlvPushBack(addrTlv);
+
+    message->AddressBlockPushBack(addrBlock);
+}
+
+void
+RoutingProtocol::NhdpRecvHelloCallback(Ptr<PbbMessage> message, Ipv4Address originatorAddr)
+{
+    NS_LOG_FUNCTION(this << message << originatorAddr);
+
+    LinkSensingv2(originatorAddr);
+
+#ifdef NS3_LOG_ENABLE
+    {
+        const LinkSet& links = m_state.GetLinks();
+        NS_LOG_INFO(Simulator::Now().As(Time::S)
+                    << " ** BEGIN dump Link Set for OLSR Node " << m_mainAddress);
+        for (auto link = links.begin(); link != links.end(); link++)
+        {
+            NS_LOG_INFO(*link);
+        }
+        NS_LOG_INFO("** END dump Link Set for OLSR Node " << m_mainAddress);
+
+        const NeighborSet& neighbors = m_state.GetNeighbors();
+        NS_LOG_INFO(Simulator::Now().As(Time::S)
+                    << " ** BEGIN dump Neighbor Set for OLSR Node " << m_mainAddress);
+        for (auto neighbor = neighbors.begin(); neighbor != neighbors.end(); neighbor++)
+        {
+            NS_LOG_INFO(*neighbor);
+        }
+        NS_LOG_INFO("** END dump Neighbor Set for OLSR Node " << m_mainAddress);
+    }
+#endif // NS3_LOG_ENABLE
+
+    PopulateNeighborSetv2(originatorAddr, m_willingness);
+    PopulateTwoHopNeighborSetv2(originatorAddr, OLSR_NEIGHB_HOLD_TIME);
+
+#ifdef NS3_LOG_ENABLE
+    {
+        const TwoHopNeighborSet& twoHopNeighbors = m_state.GetTwoHopNeighbors();
+        NS_LOG_DEBUG(Simulator::Now().As(Time::S)
+                     << " ** BEGIN dump TwoHopNeighbor Set for OLSR Node " << m_mainAddress);
+        for (auto tuple = twoHopNeighbors.begin(); tuple != twoHopNeighbors.end(); tuple++)
+        {
+            NS_LOG_DEBUG(*tuple);
+        }
+        NS_LOG_DEBUG("** END dump TwoHopNeighbor Set for OLSR Node " << m_mainAddress);
+    }
+#endif // NS3_LOG_ENABLE
+
+    MprComputation();
+
+    // PopulateMprSelectorSet() is below
+
+    Ptr<PbbAddressBlock> mprAddressBlock;
+    for (auto it = message->AddressBlockBegin(); it != message->AddressBlockEnd(); ++it)
+    {
+        auto addressBlock = (*it);
+        auto addressTlv = addressBlock->TlvFront();
+        if (addressTlv->GetType() == ADDR_TLV_MPR)
+        {
+            mprAddressBlock = addressBlock;
+            break;
+        }
+    }
+    NS_ASSERT_MSG(mprAddressBlock, "MPR address block not found");
+    for (auto it = mprAddressBlock->AddressBegin(); it != mprAddressBlock->AddressEnd(); ++it)
+    {
+        auto addr = (*it);
+        NS_ASSERT_MSG(Ipv4Address::IsMatchingType(addr), "Only supporting IPv6 for now");
+        auto mprAddress = Ipv4Address::ConvertFrom(addr);
+        if (mprAddress == m_mainAddress)
+        {
+            NS_LOG_DEBUG(originatorAddr << " has selected me as MPR");
+            // We must create a new entry into the mpr selector set
+            MprSelectorTuple* existing_mprsel_tuple = m_state.FindMprSelectorTuple(originatorAddr);
+            if (existing_mprsel_tuple == nullptr)
+            {
+                MprSelectorTuple mprsel_tuple;
+
+                mprsel_tuple.mainAddr = originatorAddr;
+                mprsel_tuple.expirationTime = Simulator::Now() + OLSR_NEIGHB_HOLD_TIME;
+                AddMprSelectorTuple(mprsel_tuple);
+
+                // Schedules mpr selector tuple deletion
+                m_events.Track(Simulator::Schedule(DELAY(mprsel_tuple.expirationTime),
+                                                   &RoutingProtocol::MprSelTupleTimerExpire,
+                                                   this,
+                                                   mprsel_tuple.mainAddr));
+            }
+            else
+            {
+                existing_mprsel_tuple->expirationTime = Simulator::Now() + OLSR_NEIGHB_HOLD_TIME;
+            }
+        }
+    }
+    // After processing all OLSR messages, we must recompute the routing table
+    RoutingTableComputation();
 }
 
 Ptr<Ipv4Route>
