@@ -176,7 +176,7 @@ RoutingExperiment::ReceivePacket(Ptr<Socket> socket)
     {
         bytesTotal += packet->GetSize();
         packetsReceived += 1;
-        NS_LOG_UNCOND(PrintReceivedPacket(socket, packet, senderAddress));
+        NS_LOG_INFO(PrintReceivedPacket(socket, packet, senderAddress));
     }
 }
 
