@@ -114,6 +114,8 @@ class RoutingExperiment
 
     void OlsrTx(const olsr::PacketHeader& header, const olsr::MessageList& messages);
     void OlsrRx(const olsr::PacketHeader& header, const olsr::MessageList& messages);
+    void Olsrv2Tx(const olsrv2::PacketHeader& header, const olsrv2::MessageList& messages);
+    void Olsrv2Rx(const olsrv2::PacketHeader& header, const olsrv2::MessageList& messages);
 
     void OlsrRoutingTableChange(uint32_t tableSize);
 
@@ -127,14 +129,14 @@ class RoutingExperiment
     double m_txp{7.5};                              //!< Tx power.
     bool m_traceMobility{false};                    //!< Enable mobility tracing.
     uint32_t m_nodes{50};                           //!< Number of nodes
-    bool m_flowMonitor{true};                      //!< Enable FlowMonitor
+    bool m_flowMonitor{true};                       //!< Enable FlowMonitor
     uint64_t m_txPacketsOlsrTrace{0u};
     uint64_t m_txPacketsOlsrBytesTotal{0u};
     uint64_t m_rxPacketsOlsrTrace{0u};
-    Time m_simulationTime{Seconds(200)};            //!< Simulation time
-    int m_nodeSpeed{20};                            //!< Node speed in m/s
-    double m_scale{1};                              //!< Scale factor for waypoint coordinates
-    Time m_startTime{Seconds(50)};  //! Time to start applications
+    Time m_simulationTime{Seconds(200)}; //!< Simulation time
+    int m_nodeSpeed{20};                 //!< Node speed in m/s
+    double m_scale{1};                   //!< Scale factor for waypoint coordinates
+    Time m_startTime{Seconds(50)};       //! Time to start applications
 
     uint64_t m_totalRoutingTableChanges{0u};
     uint64_t m_periodRoutingTableChanges{0u};
@@ -249,12 +251,24 @@ RoutingExperiment::OlsrRx(const olsr::PacketHeader&, const olsr::MessageList&)
 }
 
 void
+RoutingExperiment::Olsrv2Tx(const olsrv2::PacketHeader& header, const olsrv2::MessageList&)
+{
+    m_txPacketsOlsrTrace++;
+    m_txPacketsOlsrBytesTotal += header.GetPacketLength();
+}
+
+void
+RoutingExperiment::Olsrv2Rx(const olsrv2::PacketHeader&, const olsrv2::MessageList&)
+{
+    m_rxPacketsOlsrTrace++;
+}
+
+void
 RoutingExperiment::OlsrRoutingTableChange(uint32_t)
 {
     m_totalRoutingTableChanges++;
     m_periodRoutingTableChanges++;
 }
-
 
 int
 main(int argc, char* argv[])
@@ -463,20 +477,33 @@ RoutingExperiment::Run()
     }
 
     // ---- packet-delivery-ratio_olsr-traces.csv ----
-    Config::ConnectWithoutContext("/NodeList/*/$ns3::olsr::RoutingProtocol/Tx",
-                                  MakeCallback(&RoutingExperiment::OlsrTx, this));
+    if (m_protocolName == "OLSRv2")
+    {
+        Config::ConnectWithoutContext("/NodeList/*/$ns3::olsrv2::RoutingProtocol/Tx",
+                                      MakeCallback(&RoutingExperiment::Olsrv2Tx, this));
 
-    Config::ConnectWithoutContext("/NodeList/*/$ns3::olsr::RoutingProtocol/Rx",
-                              MakeCallback(&RoutingExperiment::OlsrRx, this));
+        Config::ConnectWithoutContext("/NodeList/*/$ns3::olsrv2::RoutingProtocol/Rx",
+                                      MakeCallback(&RoutingExperiment::Olsrv2Rx, this));
+    }
+    else
+    {
+        Config::ConnectWithoutContext("/NodeList/*/$ns3::olsr::RoutingProtocol/Tx",
+                                      MakeCallback(&RoutingExperiment::OlsrTx, this));
 
-    std::ofstream olsrTracePdrCsv{"packet-delivery-ratio_olsr-traces-" + std::to_string(m_scenarioId) + ".csv"};
+        Config::ConnectWithoutContext("/NodeList/*/$ns3::olsr::RoutingProtocol/Rx",
+                                      MakeCallback(&RoutingExperiment::OlsrRx, this));
+    }
+
+    std::ofstream olsrTracePdrCsv{"packet-delivery-ratio_olsr-traces-" +
+                                  std::to_string(m_scenarioId) + ".csv"};
     olsrTracePdrCsv << "TimeSeconds,TotalTx,TotalRx,PacketDeliveryRatio\n";
     auto writeOlsrTraces = [&olsrTracePdrCsv, this] {
-        olsrTracePdrCsv << Simulator::Now().ToInteger(Time::S) << ','
-        << m_txPacketsOlsrTrace << ','
-        << m_rxPacketsOlsrTrace << ','
-        << (m_txPacketsOlsrTrace > 0u ? static_cast<double>(m_rxPacketsOlsrTrace)/m_txPacketsOlsrTrace : 0u)
-        << '\n';
+        olsrTracePdrCsv << Simulator::Now().ToInteger(Time::S) << ',' << m_txPacketsOlsrTrace << ','
+                        << m_rxPacketsOlsrTrace << ','
+                        << (m_txPacketsOlsrTrace > 0u
+                                ? static_cast<double>(m_rxPacketsOlsrTrace) / m_txPacketsOlsrTrace
+                                : 0u)
+                        << '\n';
     };
 
     for (auto i = 0; i < m_simulationTime.ToInteger(Time::S); i++)
@@ -484,31 +511,41 @@ RoutingExperiment::Run()
         Simulator::Schedule(Seconds(i), writeOlsrTraces);
     }
 
-
     // ---- olsr-overhead.csv ----
     std::ofstream olsrOverheadCsv{"olsr-overhead-" + std::to_string(m_scenarioId) + ".csv"};
     olsrOverheadCsv << "TimeSeconds,TxBytesPeriod,TxBytesTotal\n";
     uint64_t olsrOverheadLast{};
     for (auto i = m_startTime.ToInteger(Time::S); i < m_simulationTime.ToInteger(Time::S); i++)
     {
-        Simulator::Schedule(Seconds(i), [this, &olsrOverheadCsv, &olsrOverheadLast] () {
+        Simulator::Schedule(Seconds(i), [this, &olsrOverheadCsv, &olsrOverheadLast]() {
             olsrOverheadCsv << Simulator::Now().ToInteger(Time::S) << ','
-            << m_txPacketsOlsrBytesTotal - olsrOverheadLast << ','
-            << m_txPacketsOlsrBytesTotal << '\n';
+                            << m_txPacketsOlsrBytesTotal - olsrOverheadLast << ','
+                            << m_txPacketsOlsrBytesTotal << '\n';
             olsrOverheadLast = m_txPacketsOlsrBytesTotal;
         });
     }
 
     // ---- routing-table-changes.csv ----
-    Config::ConnectWithoutContext("/NodeList/*/$ns3::olsr::RoutingProtocol/RoutingTableChanged",
-                              MakeCallback(&RoutingExperiment::OlsrRoutingTableChange, this));
+    if (m_protocolName == "OLSRv2")
+    {
+        Config::ConnectWithoutContext(
+            "/NodeList/*/$ns3::olsrv2::RoutingProtocol/RoutingTableChanged",
+            MakeCallback(&RoutingExperiment::OlsrRoutingTableChange, this));
+    }
+    else
+    {
+        Config::ConnectWithoutContext(
+            "/NodeList/*/$ns3::olsr::RoutingProtocol/RoutingTableChanged",
+            MakeCallback(&RoutingExperiment::OlsrRoutingTableChange, this));
+    }
 
-    std::ofstream olsrRoutingChangesCsv{"routing-table-changes-" + std::to_string(m_scenarioId) + ".csv"};
+    std::ofstream olsrRoutingChangesCsv{"routing-table-changes-" + std::to_string(m_scenarioId) +
+                                        ".csv"};
     olsrRoutingChangesCsv << "TimeSeconds,PeriodRoutingTableChanges,TotalRoutingTableChanges\n";
     auto writeOlsrRoutingTableChanges = [this, &olsrRoutingChangesCsv] {
         olsrRoutingChangesCsv << Simulator::Now().ToInteger(Time::S) << ','
-        << m_periodRoutingTableChanges << ','
-        << m_totalRoutingTableChanges << '\n';
+                              << m_periodRoutingTableChanges << ',' << m_totalRoutingTableChanges
+                              << '\n';
 
         m_periodRoutingTableChanges = 0u;
     };
@@ -527,42 +564,43 @@ RoutingExperiment::Run()
         flowmonTotalsCsv.open("flowmonitor-totals-" + std::to_string(m_scenarioId) + ".csv");
         flowmonTotalsCsv << "TimeSeconds,TotalTx,TotalRx,PacketDeliveryRatio\n";
 
-        flowmonPerFlowCsv.open("flowmon-per-flow-"+ std::to_string(m_scenarioId) + ".csv");
-        flowmonPerFlowCsv << "TimeSeconds,FlowId,SourceIp,DestinationIp,Tx,Rx,PacketDeliveryRatio\n";
+        flowmonPerFlowCsv.open("flowmon-per-flow-" + std::to_string(m_scenarioId) + ".csv");
+        flowmonPerFlowCsv
+            << "TimeSeconds,FlowId,SourceIp,DestinationIp,Tx,Rx,PacketDeliveryRatio\n";
 
         flowmon = flowmonHelper.InstallAll();
-        auto writeFlowmonStats = [&flowmon, &flowmonTotalsCsv, &flowmonPerFlowCsv, &flowmonHelper] () {
-            flowmon->CheckForLostPackets();
-            const auto &flowStats = flowmon->GetFlowStats();
-            const auto classifier = DynamicCast<Ipv4FlowClassifier>(flowmonHelper.GetClassifier());
+        auto writeFlowmonStats =
+            [&flowmon, &flowmonTotalsCsv, &flowmonPerFlowCsv, &flowmonHelper]() {
+                flowmon->CheckForLostPackets();
+                const auto& flowStats = flowmon->GetFlowStats();
+                const auto classifier =
+                    DynamicCast<Ipv4FlowClassifier>(flowmonHelper.GetClassifier());
 
-            // Totals
-            uint64_t totalTx{0u};
-            uint64_t totalRx{0u};
+                // Totals
+                uint64_t totalTx{0u};
+                uint64_t totalRx{0u};
 
-            for (const auto &[flowId, stats]: flowStats)
-            {
-                const auto &flow = classifier->FindFlow(flowId);
-                const auto packetDeliveryRatio = stats.txPackets > 0 ? static_cast<double>(stats.rxPackets) / stats.txPackets : 0.0;
+                for (const auto& [flowId, stats] : flowStats)
+                {
+                    const auto& flow = classifier->FindFlow(flowId);
+                    const auto packetDeliveryRatio =
+                        stats.txPackets > 0 ? static_cast<double>(stats.rxPackets) / stats.txPackets
+                                            : 0.0;
 
-                flowmonPerFlowCsv << Simulator::Now().ToInteger(Time::S) << ','
-                << flowId << ','
-                << flow.sourceAddress << ','
-                << flow.destinationAddress << ','
-                << stats.txPackets << ','
-                << stats.rxPackets << ','
-                << packetDeliveryRatio << '\n';
+                    flowmonPerFlowCsv << Simulator::Now().ToInteger(Time::S) << ',' << flowId << ','
+                                      << flow.sourceAddress << ',' << flow.destinationAddress << ','
+                                      << stats.txPackets << ',' << stats.rxPackets << ','
+                                      << packetDeliveryRatio << '\n';
 
-                totalTx += stats.txPackets;
-                totalRx += stats.rxPackets;
-            }
+                    totalTx += stats.txPackets;
+                    totalRx += stats.rxPackets;
+                }
 
-            flowmonTotalsCsv << Simulator::Now().ToInteger(Time::S) << ','
-            << totalTx << ','
-            << totalRx << ','
-            << (totalTx > 0u ? static_cast<double>(totalRx)/totalTx : 0u)
-            << '\n';
-        };
+                flowmonTotalsCsv << Simulator::Now().ToInteger(Time::S) << ',' << totalTx << ','
+                                 << totalRx << ','
+                                 << (totalTx > 0u ? static_cast<double>(totalRx) / totalTx : 0u)
+                                 << '\n';
+            };
 
         for (auto i = 1; i < m_simulationTime.ToInteger(Time::S); i++)
         {
