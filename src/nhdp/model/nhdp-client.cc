@@ -235,7 +235,7 @@ NhdpClient::GetLinkInfoBase() const
     return m_linkInfoBase;
 }
 
-const std::map<Ipv4Address, TwoHopTuple>&
+const std::map<std::pair<Ipv4Address, Ipv4Address>, TwoHopTuple>&
 NhdpClient::GetTwoHopInfoBase() const
 {
     return m_twoHopInfoBase;
@@ -397,7 +397,8 @@ NhdpClient::HandlePbbMessage(Ptr<PbbMessage> msg)
     {
         if (it->second.m_expirationTime <= Simulator::Now())
         {
-            NS_LOG_DEBUG("Erasing expired two hop entry for " << it->first);
+            NS_LOG_DEBUG("Erasing expired two hop entry for " << it->second.m_twoHopAddr << " via "
+                                                              << it->second.m_neighborAddrList[0]);
             m_twoHopChangeTrace(TwoHopStatus::REMOVED, it->second);
             it = m_twoHopInfoBase.erase(it);
         }
@@ -588,12 +589,13 @@ NhdpClient::HandleLinkStatusAddressBlock(Ptr<PbbAddressBlock> addressBlock,
             }
             else if (value == ADDR_TLV_LINK_STATUS_SYMMETRIC)
             {
-                auto itTwoHop = m_twoHopInfoBase.find(neighborIpv4Addr);
+                auto key = std::make_pair(neighborIpv4Addr, ipv4Addr);
+                auto itTwoHop = m_twoHopInfoBase.find(key);
                 if (itTwoHop == m_twoHopInfoBase.end())
                 {
                     TwoHopTuple twoHopTuple(neighborIpv4Addr, ipv4Addr);
                     twoHopTuple.m_expirationTime = Simulator::Now() + m_hHoldTime;
-                    m_twoHopInfoBase.emplace(neighborIpv4Addr, twoHopTuple);
+                    m_twoHopInfoBase.emplace(key, twoHopTuple);
                     m_twoHopChangeTrace(TwoHopStatus::NEW, twoHopTuple);
                     NS_LOG_INFO("Creating new TwoHopTuple to " << ipv4Addr << " via "
                                                                << neighborIpv4Addr);
@@ -607,13 +609,14 @@ NhdpClient::HandleLinkStatusAddressBlock(Ptr<PbbAddressBlock> addressBlock,
             }
             if (removeIfFound)
             {
-                auto itTwoHop = m_twoHopInfoBase.find(neighborIpv4Addr);
+                auto key = std::make_pair(neighborIpv4Addr, ipv4Addr);
+                auto itTwoHop = m_twoHopInfoBase.find(key);
                 if (itTwoHop != m_twoHopInfoBase.end())
                 {
                     m_twoHopChangeTrace(TwoHopStatus::REMOVED, itTwoHop->second);
-                    m_twoHopInfoBase.erase(itTwoHop);
                     NS_LOG_INFO("Removing TwoHopTuple to " << ipv4Addr << " via "
                                                            << neighborIpv4Addr);
+                    m_twoHopInfoBase.erase(itTwoHop);
                 }
             }
         }
@@ -623,12 +626,20 @@ NhdpClient::HandleLinkStatusAddressBlock(Ptr<PbbAddressBlock> addressBlock,
     // neighbors
     for (const auto& it : lostSymmetricNeighbor)
     {
-        auto itTwoHop = m_twoHopInfoBase.find(it);
-        if (itTwoHop != m_twoHopInfoBase.end())
+        for (auto itTuple = m_twoHopInfoBase.begin(); itTuple != m_twoHopInfoBase.end();)
         {
-            m_twoHopChangeTrace(TwoHopStatus::REMOVED, itTwoHop->second);
-            m_twoHopInfoBase.erase(itTwoHop);
-            NS_LOG_INFO("Removing TwoHopTuple to " << it << " via " << neighborIpv4Addr);
+            auto key = itTuple->first;
+            if (key.first == it)
+            {
+                m_twoHopChangeTrace(TwoHopStatus::REMOVED, itTuple->second);
+                NS_LOG_INFO("Removing TwoHopTuple to " << itTuple->second.m_twoHopAddr << " via "
+                                                       << it);
+                itTuple = m_twoHopInfoBase.erase(itTuple);
+            }
+            else
+            {
+                ++itTuple;
+            }
         }
     }
 }

@@ -102,7 +102,7 @@ class NhdpClient : public Application
 
     const std::map<Ipv4Address, NeighborTuple>& GetNeighborInfoBase() const;
     const std::map<Ipv4Address, LinkTuple>& GetLinkInfoBase() const;
-    const std::map<Ipv4Address, TwoHopTuple>& GetTwoHopInfoBase() const;
+    const std::map<std::pair<Ipv4Address, Ipv4Address>, TwoHopTuple>& GetTwoHopInfoBase() const;
     /**
      * TracedCallback signature for neighbor information base change event.
      *
@@ -193,7 +193,7 @@ class NhdpClient : public Application
     /* Information bases */
     std::map<Ipv4Address, NeighborTuple> m_neighborInfoBase;
     std::map<Ipv4Address, LinkTuple> m_linkInfoBase;
-    std::map<Ipv4Address, TwoHopTuple> m_twoHopInfoBase;
+    std::map<std::pair<Ipv4Address, Ipv4Address>, TwoHopTuple> m_twoHopInfoBase;
     std::map<Ipv4Address, LostNeighborTuple> m_lostNeighborSet;
     std::vector<Ipv4Address> m_lostAddressList;
 
