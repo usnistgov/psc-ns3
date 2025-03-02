@@ -119,9 +119,10 @@ class RoutingExperiment
 
     void OlsrRoutingTableChange(uint32_t tableSize);
 
-    uint32_t port{9};            //!< Receiving port number.
-    uint32_t bytesTotal{0};      //!< Total received bytes.
-    uint32_t packetsReceived{0}; //!< Total received packets.
+    uint32_t port{9};                 //!< Receiving port number.
+    uint32_t bytesReceived{0};        //!< Received bytes in throughput interval.
+    uint32_t packetsReceived{0};      //!< Received packets in throughput interval.
+    uint32_t packetsReceivedTotal{0}; //!< Total received packets in simulation.
 
     std::string m_csvFileName{"manet-routing.csv"}; //!< CSV filename.
     int m_nSinks{10};                               //!< Number of sink nodes.
@@ -174,8 +175,9 @@ RoutingExperiment::ReceivePacket(Ptr<Socket> socket)
     Address senderAddress;
     while ((packet = socket->RecvFrom(senderAddress)))
     {
-        bytesTotal += packet->GetSize();
+        bytesReceived += packet->GetSize();
         packetsReceived += 1;
+        packetsReceivedTotal += 1;
         NS_LOG_INFO(PrintReceivedPacket(socket, packet, senderAddress));
     }
 }
@@ -183,8 +185,8 @@ RoutingExperiment::ReceivePacket(Ptr<Socket> socket)
 void
 RoutingExperiment::CheckThroughput()
 {
-    double kbs = (bytesTotal * 8.0) / 1000;
-    bytesTotal = 0;
+    double kbs = (bytesReceived * 8.0) / 1000;
+    bytesReceived = 0;
 
     std::ofstream out(m_csvFileName, std::ios::app);
 
@@ -620,5 +622,6 @@ RoutingExperiment::Run()
         flowmon->SerializeToXmlFile(tr_name + ".flowmon", false, false);
     }
 
+    std::cout << "Packets received: " << packetsReceivedTotal << std::endl;
     Simulator::Destroy();
 }
