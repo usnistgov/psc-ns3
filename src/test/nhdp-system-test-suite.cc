@@ -18,7 +18,9 @@
 #include "ns3/node.h"
 #include "ns3/nstime.h"
 #include "ns3/object.h"
+#include "ns3/olsr-header.h"
 #include "ns3/olsr-helper.h"
+#include "ns3/olsrv2-header.h"
 #include "ns3/olsrv2-helper.h"
 #include "ns3/on-off-helper.h"
 #include "ns3/onoff-application.h"
@@ -70,6 +72,11 @@ class NhdpTestCase : public TestCase
                         const NeighborTuple& neighborTuple);
     void LinkChange(std::string context, LinkStatus oldLinkStatus, const LinkTuple& linkTuple);
     void TwoHopChange(std::string context, TwoHopStatus twoHopStatus, const TwoHopTuple& linkTuple);
+    void OlsrRoutingTableChange(std::string context, uint32_t tableSize);
+    void OlsrTx(const olsr::PacketHeader& header, const olsr::MessageList& messages);
+    void OlsrRx(const olsr::PacketHeader& header, const olsr::MessageList& messages);
+    void Olsrv2Tx(const olsrv2::PacketHeader& header, const olsrv2::MessageList& messages);
+    void Olsrv2Rx(const olsrv2::PacketHeader& header, const olsrv2::MessageList& messages);
     void Print(Ptr<NhdpClient> client);
 
   protected:
@@ -77,6 +84,9 @@ class NhdpTestCase : public TestCase
     std::vector<LinkTuple> m_linkChanges;
     std::vector<TwoHopTuple> m_twoHopChanges;
     std::vector<NeighborTuple> m_symmetricNeighbors;
+    uint32_t m_txPacketsOlsrTrace;
+    uint32_t m_txPacketsOlsrBytesTotal;
+    uint32_t m_rxPacketsOlsrTrace;
 };
 
 NhdpTestCase::NhdpTestCase(std::string name)
@@ -98,10 +108,10 @@ NhdpTestCase::Print(Ptr<NhdpClient> client)
                     << " Link tuple " << addr << " status " << tuple.GetLinkStatus() << " lost "
                     << tuple.m_lost << " expiration time " << tuple.m_expirationTime.As(Time::S));
     }
-    for (const auto& [addr, tuple] : client->GetTwoHopInfoBase())
+    for (const auto& [key, tuple] : client->GetTwoHopInfoBase())
     {
         NS_LOG_INFO(client->GetNode()->GetId()
-                    << " Two hop neighbor " << tuple.m_twoHopAddr << " via " << addr
+                    << " Two hop neighbor " << tuple.m_twoHopAddr << " via " << key.first
                     << " expiration time " << tuple.m_expirationTime.As(Time::S));
     }
 }
@@ -151,6 +161,38 @@ NhdpTestCase::TwoHopChange(std::string context,
                             << twoHopTuple.m_neighborAddrList[0]);
     }
     m_twoHopChanges.emplace_back(twoHopTuple);
+}
+
+void
+NhdpTestCase::OlsrRoutingTableChange(std::string context, uint32_t tableSize)
+{
+    NS_LOG_INFO(context << " routing table change to " << tableSize);
+}
+
+void
+NhdpTestCase::OlsrTx(const olsr::PacketHeader& header, const olsr::MessageList&)
+{
+    m_txPacketsOlsrTrace++;
+    m_txPacketsOlsrBytesTotal += header.GetPacketLength();
+}
+
+void
+NhdpTestCase::OlsrRx(const olsr::PacketHeader&, const olsr::MessageList&)
+{
+    m_rxPacketsOlsrTrace++;
+}
+
+void
+NhdpTestCase::Olsrv2Tx(const olsrv2::PacketHeader& header, const olsrv2::MessageList&)
+{
+    m_txPacketsOlsrTrace++;
+    m_txPacketsOlsrBytesTotal += header.GetPacketLength();
+}
+
+void
+NhdpTestCase::Olsrv2Rx(const olsrv2::PacketHeader&, const olsrv2::MessageList&)
+{
+    m_rxPacketsOlsrTrace++;
 }
 
 /**
