@@ -298,7 +298,7 @@ RoutingExperiment::Run()
     out.close();
 
     std::string rate("2048bps");
-    std::string phyMode("DsssRate11Mbps");
+    std::string phyMode("HeMcs0");
     std::string tr_name("manet-routing");
     int nodePause = 0; // in s
 
@@ -356,7 +356,7 @@ RoutingExperiment::Run()
 
     // setting up wifi phy and channel using helpers
     WifiHelper wifi;
-    wifi.SetStandard(WIFI_STANDARD_80211b);
+    wifi.SetStandard(WIFI_STANDARD_80211ax);
 
     YansWifiPhyHelper wifiPhy;
     YansWifiChannelHelper wifiChannel;
