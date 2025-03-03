@@ -117,6 +117,10 @@ class RoutingExperiment
     void AppTx(Ptr<const Packet> packet);
     void AppRx(Ptr<const Packet> packet);
 
+    void L3LocalDeliver(const Ipv4Header& header,
+                                       Ptr<const Packet> packet,
+                                       uint32_t interface);
+
     uint32_t port{9};            //!< Receiving port number.
     uint32_t bytesTotal{0};      //!< Total received bytes.
     uint32_t packetsReceived{0}; //!< Total received packets.
@@ -140,6 +144,8 @@ class RoutingExperiment
 
     uint64_t m_totalRoutingTableChanges{0u};
     uint64_t m_periodRoutingTableChanges{0u};
+
+    unsigned long m_totalHops{};
 
     int m_scenarioId{};
 };
@@ -600,6 +606,41 @@ RoutingExperiment::Run()
     for (auto i = m_startTime.ToInteger(Time::S); i < m_simulationTime.ToInteger(Time::S); i++)
     {
         Simulator::Schedule(Seconds(i), writeAppTxRx);
+    }
+
+    // ---- hop-count.csv ----
+    std::ofstream hopCounts{"hop-count-" + std::to_string(m_scenarioId) + ".csv"};
+    hopCounts << "TimeSeconds,HopsPeriod,HopsTotal\n";
+
+    for (auto nodeIter = adhocNodes.Begin(); nodeIter != adhocNodes.End(); nodeIter++)
+    {
+        const auto &node = *nodeIter;
+
+        auto olsrRouting = node->GetObject<olsr::RoutingProtocol>();
+        const auto ipv4 = node->GetObject<Ipv4>();
+        const auto ip = ipv4->GetAddress(1, 0);
+
+        auto l3 = node->GetObject<Ipv4L3Protocol>();
+        if (l3 == nullptr)
+            std::clog << "fail\n";
+
+        l3->TraceConnectWithoutContext("LocalDeliver", MakeCallback(&RoutingExperiment::L3LocalDeliver, this));
+
+    }
+
+
+    unsigned long lastHopCount{};
+    auto writeHopCount = [this, &hopCounts, &lastHopCount] {
+        hopCounts << Simulator::Now().ToInteger(Time::S) << ','
+        << m_totalHops - lastHopCount << ','
+        << m_totalHops << '\n';
+
+        lastHopCount = m_totalHops;
+    };
+
+    for (auto i = 0; i < m_simulationTime.ToInteger(Time::S); i++)
+    {
+        Simulator::Schedule(Seconds(i), writeHopCount);
     }
 
     NS_LOG_INFO("Run Simulation.");

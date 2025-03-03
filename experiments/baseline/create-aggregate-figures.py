@@ -76,3 +76,36 @@ aggregate_packet_delivery_ratio.plot(x='Speed', xlabel='Speed (m/s)', y='PacketD
                                      legend=False)
 plt.savefig("Speed vs Packet Delivery Ratio.png")
 plt.close()
+
+
+# Average Hop Count vs Speed
+hop_count_frames = []
+for scenario_info in scenario_infos:
+    hop_count_frames.append(pd.read_csv(f"hop-count-{scenario_info['scenarioId']}.csv"))
+
+
+aggregate_hop_count = pd.DataFrame()
+index = 0
+for hop_count_frame in hop_count_frames:
+    scenario_info = scenario_infos[index]
+
+    total_time = scenario_info["simulationTimeSeconds"] - scenario_info["startTimeSeconds"]
+
+    frame_max_index = len(hop_count_frame) - 1
+    total_hops = hop_count_frame.loc[frame_max_index]['HopsTotal']
+    average_hops = total_hops/total_time
+
+    append_data = pd.DataFrame(data={
+        'Speed': [scenario_info['speed']],
+        'AverageHops': [average_hops]
+    })
+    if len(aggregate_hop_count) > 0:
+        aggregate_hop_count = pd.concat([aggregate_hop_count, append_data])
+    else:
+        aggregate_hop_count = append_data
+
+    index += 1
+
+aggregate_hop_count.plot(x="Speed", xlabel="Speed (m/s)", y="AverageHops", ylabel="Average Hops", title="Speed vs Average Hops", style="-o", legend=False)
+plt.savefig("Speed vs Average Hops.png")
+plt.close()
