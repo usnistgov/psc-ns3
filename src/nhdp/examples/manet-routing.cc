@@ -118,9 +118,6 @@ class RoutingExperiment
     void Olsrv2Rx(const olsrv2::PacketHeader& header, const olsrv2::MessageList& messages);
 
     void OlsrRoutingTableChange(uint32_t tableSize);
-    void L3LocalDeliver(const Ipv4Header& header,
-                                       Ptr<const Packet> packet,
-                                       uint32_t interface)
 
     void AppTx(Ptr<const Packet> packet);
     void AppRx(Ptr<const Packet> packet);
@@ -688,8 +685,8 @@ RoutingExperiment::Run()
         if (l3 == nullptr)
             std::clog << "fail\n";
 
-        l3->TraceConnectWithoutContext("LocalDeliver", MakeCallback(&RoutingExperiment::L3LocalDeliver, this));
-
+        // l3->TraceConnectWithoutContext("LocalDeliver", MakeCallback(&RoutingExperiment::L3LocalDeliver, this));
+        // TODO: Find a way to trace only on final delivery of OLSR packet
     }
 
 
