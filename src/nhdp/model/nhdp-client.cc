@@ -188,7 +188,11 @@ NhdpClient::GetTypeId()
             .AddTraceSource("HelloMessageRecv",
                             "Trace of PbbMessage HELLO after it has been processed by NHDP",
                             MakeTraceSourceAccessor(&NhdpClient::m_helloMessageRecvTrace),
-                            "ns3::nhdp::NhdpClient::HelloMessageRecvTracedCallback");
+                            "ns3::nhdp::NhdpClient::HelloMessageRecvTracedCallback")
+            .AddTraceSource("Tx",
+                            "Trace of Packet just before sending to UDP socket",
+                            MakeTraceSourceAccessor(&NhdpClient::m_txTrace),
+                            "ns3::Packet::TracedCallback");
     return tid;
 }
 
@@ -779,6 +783,7 @@ NhdpClient::SendHello(Ptr<Socket> socket)
 
     NS_LOG_INFO("Send HELLO from " << m_socketAddresses[socket] << " to " << LL_MANET_ROUTERS_IPV4
                                    << ":" << UDP_PORT_MANET);
+    m_txTrace(packet);
     socket->Send(packet);
     ScheduleHello(socket);
     // Rather than run a separate timer process to periodically check this, append it here

@@ -213,6 +213,7 @@ class NhdpClient : public Application
     TracedCallback<TwoHopStatus, const TwoHopTuple&> m_twoHopChangeTrace;
     TracedCallback<Ptr<PbbMessage>> m_helloMessageSendTrace;
     TracedCallback<Ptr<PbbMessage>, Ipv4Address> m_helloMessageRecvTrace;
+    TracedCallback<Ptr<const Packet>> m_txTrace;
 
     /*
     std::map< uint32_t, Ptr<Socket> > m_indexSockets;
