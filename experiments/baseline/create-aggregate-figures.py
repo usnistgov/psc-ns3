@@ -11,14 +11,18 @@ for scenario_info_file in scenario_info_files:
 
 scenario_infos.sort(key=lambda item: item['scenarioId'])
 
+
+def get_suffix(info):
+    return f"{info['protocol']}-{info['scenarioId']}"
+
 # Figure A:
 # Average overhead vs Speed
 overhead_frames = []
 for scenario_info in scenario_infos:
-    overhead_frames.append(pd.read_csv(f'olsr-overhead-{scenario_info['scenarioId']}.csv'))
+    overhead_frames.append(pd.read_csv(f'olsr-overhead-{get_suffix(scenario_info)}.csv'))
 
 index = 0
-aggregate_overhead_frame = pd.DataFrame(columns=['Speed', 'OverheadBytesAverage'])
+aggregate_overhead_frame = pd.DataFrame(columns=['Speed', 'Protocol', 'OverheadBytesAverage'])
 for overhead_frame in overhead_frames:
     scenario_info = scenario_infos[index]
 
@@ -26,7 +30,9 @@ for overhead_frame in overhead_frames:
     total_overhead = overhead_frame.loc[len(overhead_frame) - 1]['TxBytesTotal']
     average_overhead = total_overhead / total_time
 
-    line_frame = pd.DataFrame(data={'Speed': [scenario_info['speed']], 'OverheadBytesAverage': [average_overhead]})
+    line_frame = pd.DataFrame(data={'Speed': [scenario_info['speed']],
+                                    'Protocol': [scenario_info['protocol']],
+                                    'OverheadBytesAverage': [average_overhead]})
 
     # Pandas does not like appending to an empty dataframe...
     if len(aggregate_overhead_frame) == 0:
@@ -36,16 +42,23 @@ for overhead_frame in overhead_frames:
 
     index += 1
 
-aggregate_overhead_frame.plot(x='Speed', xlabel='Speed (m/s)', y='OverheadBytesAverage',
-                              ylabel='Average Overhead (bytes/s)', title='Average Overhead vs Speed', legend=False)
-plt.savefig('Average Overhead vs Speed.png')
+aggregate_overhead_frame = aggregate_overhead_frame.pivot(index='Speed', columns='Protocol', values='OverheadBytesAverage')
+
+plt.plot(aggregate_overhead_frame['OLSR'], marker='o')
+plt.plot(aggregate_overhead_frame['OLSRv2'], marker='*')
+plt.xlabel('Speed (m/s)')
+plt.ylabel('Average Overhead (bytes/s)')
+plt.title("Speed vs Average Overhead")
+plt.legend(['OLSR', 'OLSRv2'])
+
+plt.savefig('Average-Overhead-vs-Speed.png')
 plt.close()
 
 # Figure B:
 # Application Packet Delivery Ratio vs Speed
 packet_delivery_ratio_frames = []
 for scenario_info in scenario_infos:
-    packet_delivery_ratio_frames.append(pd.read_csv(f'app-tx-rx-{scenario_info['scenarioId']}.csv'))
+    packet_delivery_ratio_frames.append(pd.read_csv(f'app-tx-rx-{get_suffix(scenario_info)}.csv'))
 
 aggregate_packet_delivery_ratio = pd.DataFrame()
 index = 0
@@ -61,6 +74,7 @@ for packet_delivery_ratio_frame in packet_delivery_ratio_frames:
 
     append_data = pd.DataFrame(data={
         'Speed': [scenario_info['speed']],
+        'Protocol': [scenario_info['protocol']],
         'PacketDeliveryRatio': [total_packet_delivery_ratio]
     })
 
@@ -71,17 +85,24 @@ for packet_delivery_ratio_frame in packet_delivery_ratio_frames:
         aggregate_packet_delivery_ratio = append_data
 
     index += 1
-aggregate_packet_delivery_ratio.plot(x='Speed', xlabel='Speed (m/s)', y='PacketDeliveryRatio',
-                                     ylabel='Packet Delivery Ratio', title='Speed vs Packet Delivery Ratio', style='-o',
-                                     legend=False)
-plt.savefig('Speed vs Packet Delivery Ratio.png')
+
+aggregate_packet_delivery_ratio = aggregate_packet_delivery_ratio.pivot(index='Speed', columns='Protocol', values='PacketDeliveryRatio')
+
+plt.plot(aggregate_packet_delivery_ratio['OLSR'], marker='o')
+plt.plot(aggregate_packet_delivery_ratio['OLSRv2'], marker='*')
+plt.xlabel('Speed (m/s)')
+plt.ylabel('Packet Delivery Ratio')
+plt.title("Speed vs Packet Delivery Ratio")
+plt.legend(['OLSR', 'OLSRv2'])
+
+plt.savefig('Speed-vs-Packet-Delivery-Ratio.png')
 plt.close()
 
 
 # Average Hop Count vs Speed
 hop_count_frames = []
 for scenario_info in scenario_infos:
-    hop_count_frames.append(pd.read_csv(f'hop-count-{scenario_info['scenarioId']}.csv'))
+    hop_count_frames.append(pd.read_csv(f'hop-count-{get_suffix(scenario_info)}.csv'))
 
 
 aggregate_hop_count = pd.DataFrame()
@@ -97,6 +118,7 @@ for hop_count_frame in hop_count_frames:
 
     append_data = pd.DataFrame(data={
         'Speed': [scenario_info['speed']],
+        'Protocol': [scenario_info['protocol']],
         'AverageHops': [average_hops]
     })
     if len(aggregate_hop_count) > 0:
@@ -106,6 +128,14 @@ for hop_count_frame in hop_count_frames:
 
     index += 1
 
-aggregate_hop_count.plot(x='Speed', xlabel='Speed (m/s)', y='AverageHops', ylabel='Average Hops', title='Speed vs Average Hops', style='-o', legend=False)
-plt.savefig('Speed vs Average Hops.png')
+aggregate_hop_count = aggregate_hop_count.pivot(index='Speed', columns='Protocol', values='AverageHops')
+
+plt.plot(aggregate_hop_count['OLSR'], marker='o')
+plt.plot(aggregate_hop_count['OLSRv2'], marker='*')
+plt.xlabel('Speed (m/s)')
+plt.ylabel('Average Hops')
+plt.title("Speed vs Average Hops")
+plt.legend(['OLSR', 'OLSRv2'])
+
+plt.savefig('Speed-vs-Average-Hops.png')
 plt.close()

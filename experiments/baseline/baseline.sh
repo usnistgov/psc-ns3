@@ -14,7 +14,6 @@ pathToTopLevelDir="../.."
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:`pwd`/${pathToTopLevelDir}/build/lib
 
 export heading="Baseline"
-export protocol=OLSR
 export RngRun=1
 
 export saveDatFiles=false
@@ -100,11 +99,12 @@ function run-scenario () {
 	# process function arguments
 	scenario_id=${1}
 	nodes=50
-	speed=${2}
+	protocol=${2}
+	speed=${3}
 
 	echo starting scenario $scenario_id
-	logfile=log${scenario_id}.out
-        csvFileName=baseline-${scenario_id}.csv
+	logfile=log-${protocol}-${scenario_id}.out
+  csvFileName=baseline-${protocol}-${scenario_id}.csv
 	summaryFiles="$summaryFiles ${fileNameSummary}"
 
 	./manet-routing \
@@ -112,11 +112,12 @@ function run-scenario () {
 		--nodes=$nodes \
 		--RngRun=${RngRun} \
 		--scenarioId="${scenario_id}" \
+		--protocol="${protocol}" \
 		--speed="${speed}" \
 		> $logfile  2>&1
 
 	#python3 plot-latency.py ${numTcpDownloads} ${numTcpUploads} ${numTcpDashStreams} ${numDctcpDownloads} ${numDctcpUploads} ${numDctcpDashStreams} ${numWebUsers} ${heading} ${simulationEndTime} --fileNameCm=${fileNameCm} --fileNameCmts=${fileNameCmts} --plotNameCm=${pdfNameCm} --plotNameCmts=${pdfNameCmts} --plotNameRtt=${pdfNameRtt} --imageNameRtt=${imageNameRtt} --fileNameSummary=${fileNameSummary} --scenarioId=${scenario_id} >/dev/null  &
-	python create-per-simulation-figures.py "${scenario_id}"
+	python create-per-simulation-figures.py "${scenario_id}" "${protocol}"
 	wait
 
 	echo finished scenario $scenario_id
@@ -128,20 +129,31 @@ export -f run-scenario
 # 1.       Default configuration 50 nodes
 # 2.       20 nodes
 
-#scenario arguments:  scenario_id speed
+#scenario arguments:  scenario_id protocol speed
 declare -a scenario=(\
 #	S# Speed
-	"1 1"
-	"2 2"
-	"3 3"
-	"4 4"
-	"5 5"
-	"6 6"
-	"7 7"
-	"8 8"
-	"9 9"
-	"10 10"
-	"11 11"
+	"1 OLSR 1"
+	"2 OLSR 2"
+	"3 OLSR 3"
+	"4 OLSR 4"
+	"5 OLSR 5"
+	"6 OLSR 6"
+	"7 OLSR 7"
+	"8 OLSR 8"
+	"9 OLSR 9"
+	"10 OLSR 10"
+	"11 OLSR 11"
+  "12 OLSRv2 1"
+  "13 OLSRv2 2"
+  "14 OLSRv2 3"
+  "15 OLSRv2 4"
+  "16 OLSRv2 5"
+  "17 OLSRv2 6"
+  "18 OLSRv2 7"
+  "19 OLSRv2 8"
+  "20 OLSRv2 9"
+  "21 OLSRv2 10"
+  "22 OLSRv2 11"
 	)
 
 # launch simulation scenarios using GNU Parallel if it is installed, otherwise use basic job control

@@ -151,6 +151,8 @@ class RoutingExperiment
     unsigned long m_totalHops{};
 
     int m_scenarioId{};
+
+    std::string m_filenameSuffix;
 };
 
 RoutingExperiment::RoutingExperiment()
@@ -246,12 +248,18 @@ RoutingExperiment::CommandSetup(int argc, char** argv)
         NS_FATAL_ERROR("No such protocol:" << m_protocolName);
     }
 
-    std::ofstream scenarioInfo{"scenario-info-" + std::to_string(m_scenarioId) + ".json"};
-    scenarioInfo << '{' << "\"scenarioId\": " << m_scenarioId << ',' << "\"speed\": " << m_nodeSpeed
-                 << ',' << "\"scale\": " << m_scale << ','
-                 << "\"startTimeSeconds\": " << m_startTime.ToInteger(Time::S) << ','
-                 << "\"simulationTimeSeconds\": " << m_simulationTime.ToInteger(Time::S) << ','
-                 << "\"nodes\": " << m_nodes << '}';
+    m_filenameSuffix = m_protocolName + '-' + std::to_string(m_scenarioId);
+
+    std::ofstream scenarioInfo{"scenario-info-" + m_filenameSuffix + ".json"};
+    scenarioInfo << '{'
+    << "\"scenarioId\": " << m_scenarioId << ','
+    << "\"protocol\": " << '"' << m_protocolName << "\","
+    << "\"speed\": " << m_nodeSpeed << ','
+    << "\"scale\": " << m_scale << ','
+    << "\"startTimeSeconds\": " << m_startTime.ToInteger(Time::S) << ','
+    << "\"simulationTimeSeconds\": " << m_simulationTime.ToInteger(Time::S) << ','
+    << "\"nodes\": " << m_nodes
+    << '}';
 }
 
 void
@@ -559,7 +567,7 @@ RoutingExperiment::Run()
     }
 
     std::ofstream olsrTracePdrCsv{"packet-delivery-ratio_olsr-traces-" +
-                                  std::to_string(m_scenarioId) + ".csv"};
+                                  m_filenameSuffix + ".csv"};
     olsrTracePdrCsv << "TimeSeconds,TotalTx,TotalRx,PacketDeliveryRatio\n";
     auto writeOlsrTraces = [&olsrTracePdrCsv, this] {
         olsrTracePdrCsv << Simulator::Now().ToInteger(Time::S) << ',' << m_txPacketsOlsrTrace << ','
@@ -576,7 +584,7 @@ RoutingExperiment::Run()
     }
 
     // ---- olsr-overhead.csv ----
-    std::ofstream olsrOverheadCsv{"olsr-overhead-" + std::to_string(m_scenarioId) + ".csv"};
+    std::ofstream olsrOverheadCsv{"olsr-overhead-" + m_filenameSuffix + ".csv"};
     olsrOverheadCsv << "TimeSeconds,TxBytesPeriod,TxBytesTotal\n";
     uint64_t olsrOverheadLast{};
     for (auto i = m_startTime.ToInteger(Time::S); i < m_simulationTime.ToInteger(Time::S); i++)
@@ -603,8 +611,7 @@ RoutingExperiment::Run()
             MakeCallback(&RoutingExperiment::OlsrRoutingTableChange, this));
     }
 
-    std::ofstream olsrRoutingChangesCsv{"routing-table-changes-" + std::to_string(m_scenarioId) +
-                                        ".csv"};
+    std::ofstream olsrRoutingChangesCsv{"routing-table-changes-" + m_filenameSuffix + ".csv"};
     olsrRoutingChangesCsv << "TimeSeconds,PeriodRoutingTableChanges,TotalRoutingTableChanges\n";
     auto writeOlsrRoutingTableChanges = [this, &olsrRoutingChangesCsv] {
         olsrRoutingChangesCsv << Simulator::Now().ToInteger(Time::S) << ','
@@ -625,10 +632,10 @@ RoutingExperiment::Run()
     std::ofstream flowmonPerFlowCsv;
     if (m_flowMonitor)
     {
-        flowmonTotalsCsv.open("flowmonitor-totals-" + std::to_string(m_scenarioId) + ".csv");
+        flowmonTotalsCsv.open("flowmonitor-totals-" + m_filenameSuffix + ".csv");
         flowmonTotalsCsv << "TimeSeconds,TotalTx,TotalRx,PacketDeliveryRatio\n";
 
-        flowmonPerFlowCsv.open("flowmon-per-flow-" + std::to_string(m_scenarioId) + ".csv");
+        flowmonPerFlowCsv.open("flowmon-per-flow-" + m_filenameSuffix + ".csv");
         flowmonPerFlowCsv
             << "TimeSeconds,FlowId,SourceIp,DestinationIp,Tx,Rx,PacketDeliveryRatio\n";
 
@@ -673,7 +680,7 @@ RoutingExperiment::Run()
     }
 
     // ---- app-tx-rx.csv -----
-    std::ofstream appPackets{"app-tx-rx-" + std::to_string(m_scenarioId) + ".csv"};
+    std::ofstream appPackets{"app-tx-rx-" + m_filenameSuffix + ".csv"};
     appPackets << "TimeSeconds,TxPacketsPeriod,TxPacketsTotal,RxPacketsPeriod,RxPacketsTotal\n";
     uint64_t lastPacketsSent{};
     uint64_t lastPacketsReceived{};
@@ -690,7 +697,7 @@ RoutingExperiment::Run()
     }
 
     // ---- hop-count.csv ----
-    std::ofstream hopCounts{"hop-count-" + std::to_string(m_scenarioId) + ".csv"};
+    std::ofstream hopCounts{"hop-count-" + m_filenameSuffix + ".csv"};
     hopCounts << "TimeSeconds,HopsPeriod,HopsTotal\n";
 
     Config::ConnectWithoutContext("/NodeList/*/$ns3::Ipv4L3Protocol/Rx",
