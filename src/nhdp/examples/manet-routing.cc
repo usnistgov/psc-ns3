@@ -185,7 +185,6 @@ RoutingExperiment::ReceivePacket(Ptr<Socket> socket)
         packetsReceived += 1;
         packetsReceivedTotal += 1;
         NS_LOG_INFO(PrintReceivedPacket(socket, packet, senderAddress));
-        AppRx(packet);
         NS_LOG_UNCOND(PrintReceivedPacket(socket, packet, senderAddress));
         AppRx(packet);
     }
