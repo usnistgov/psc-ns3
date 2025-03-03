@@ -261,6 +261,9 @@ void
 RoutingExperiment::OlsrTx(const olsr::PacketHeader& header, const olsr::MessageList&)
 {
     m_txPacketsOlsrTrace++;
+
+    // `header` includes the full message size
+    // See: olsr::RoutingProtocol::SendPacket()
     m_txPacketsOlsrBytesTotal += header.GetPacketLength();
 }
 
