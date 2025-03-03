@@ -9,6 +9,7 @@
 #include "qos-frame-exchange-manager.h"
 
 #include "ap-wifi-mac.h"
+#include "snr-tag.h"
 #include "wifi-mac-queue.h"
 #include "wifi-mac-trailer.h"
 
@@ -834,8 +835,14 @@ QosFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
                                 rxSnr);
         }
 
+        SnrTag snrTag;
+        snrTag.Set(rxSnr);
+
+        auto pkt = mpdu->GetPacket()->Copy();
+        pkt->AddPacketTag(snrTag);
+        auto mpduCopy = Create<WifiMpdu>(pkt, mpdu->GetHeader());
         // Forward up the frame
-        m_rxMiddle->Receive(mpdu, m_linkId);
+        m_rxMiddle->Receive(mpduCopy, m_linkId);
 
         // the received data frame has been processed
         return;
