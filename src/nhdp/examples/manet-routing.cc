@@ -127,7 +127,6 @@ class RoutingExperiment
     uint32_t port{9};                 //!< Receiving port number.
     uint32_t bytesReceived{0};        //!< Received bytes in throughput interval.
     uint32_t packetsReceived{0};      //!< Received packets in throughput interval.
-    uint32_t packetsReceivedTotal{0}; //!< Total received packets in simulation.
     uint64_t m_packetsSent{}; //! Totall application packets sent
     uint64_t m_packetsReceived{}; //! Total application packets received
 
@@ -186,9 +185,7 @@ RoutingExperiment::ReceivePacket(Ptr<Socket> socket)
     {
         bytesReceived += packet->GetSize();
         packetsReceived += 1;
-        packetsReceivedTotal += 1;
         NS_LOG_INFO(PrintReceivedPacket(socket, packet, senderAddress));
-        NS_LOG_UNCOND(PrintReceivedPacket(socket, packet, senderAddress));
         AppRx(packet);
     }
 }
@@ -682,7 +679,7 @@ RoutingExperiment::Run()
         lastPacketsSent = m_packetsSent;
         lastPacketsReceived = m_packetsReceived;
     };
-    for (auto i = m_startTime.ToInteger(Time::S); i < m_simulationTime.ToInteger(Time::S); i++)
+    for (auto i = m_startTime.ToInteger(Time::S); i <= m_simulationTime.ToInteger(Time::S); i++)
     {
         Simulator::Schedule(Seconds(i), writeAppTxRx);
     }
@@ -713,7 +710,7 @@ RoutingExperiment::Run()
 
     CheckThroughput();
 
-    Simulator::Stop(m_simulationTime);
+    Simulator::Stop(m_simulationTime + TimeStep(1));
     Simulator::Run();
 
     if (m_flowMonitor)
@@ -721,6 +718,7 @@ RoutingExperiment::Run()
         flowmon->SerializeToXmlFile(tr_name + ".flowmon", false, false);
     }
 
-    std::cout << "Packets received: " << packetsReceivedTotal << std::endl;
+    std::cout << "Packets sent: " << m_packetsSent << " received: " << m_packetsReceived
+        << " ratio: "<< static_cast<double>(m_packetsReceived)/m_packetsSent << std::endl;
     Simulator::Destroy();
 }
