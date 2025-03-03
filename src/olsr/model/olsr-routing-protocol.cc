@@ -1003,6 +1003,7 @@ RoutingProtocol::RoutingTableComputation()
     NS_LOG_DEBUG(Simulator::Now().As(Time::S)
                  << " : Node " << m_mainAddress << ": RoutingTableComputation begin...");
 
+    auto oldTableSize = GetSize();
     // 1. All the entries from the routing table are removed.
     Clear();
 
@@ -1301,7 +1302,11 @@ RoutingProtocol::RoutingTableComputation()
     }
 
     NS_LOG_DEBUG("Node " << m_mainAddress << ": RoutingTableComputation end.");
-    m_routingTableChanged(GetSize());
+    if (oldTableSize != GetSize())
+    {
+        NS_LOG_DEBUG("Routing table changed from " << oldTableSize << " to " << GetSize());
+        m_routingTableChanged(GetSize());
+    }
 }
 
 void

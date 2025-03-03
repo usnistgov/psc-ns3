@@ -102,7 +102,7 @@ class NhdpClient : public Application
 
     const std::map<Ipv4Address, NeighborTuple>& GetNeighborInfoBase() const;
     const std::map<Ipv4Address, LinkTuple>& GetLinkInfoBase() const;
-    const std::map<Ipv4Address, TwoHopTuple>& GetTwoHopInfoBase() const;
+    const std::map<std::pair<Ipv4Address, Ipv4Address>, TwoHopTuple>& GetTwoHopInfoBase() const;
     /**
      * TracedCallback signature for neighbor information base change event.
      *
@@ -130,6 +130,24 @@ class NhdpClient : public Application
     typedef void (*TwoHopChangeTracedCallback)(TwoHopStatus twoHopStatus,
                                                const TwoHopTuple& newValue);
 
+    /**
+     * TracedCallback signature for HELLO message send trace
+     *
+     * @param [in] helloMsg The (modifiable) HELLO message
+     */
+    typedef void (*HelloMessageSendTracedCallback)(Ptr<PbbMessage> helloMsg);
+
+    /**
+     * TracedCallback signature for HELLO message receive trace
+     *
+     * @param [in] helloMsg The HELLO message
+     * @param [in] neighborAddr The neighbor address
+     */
+    typedef void (*HelloMessageRecvTracedCallback)(Ptr<PbbMessage> helloMsg,
+                                                   Ipv4Address neighborAddr);
+
+    int64_t AssignStreams(int64_t stream) override;
+
   protected:
     void DoDispose() override;
     void DoInitialize() override;
@@ -138,7 +156,7 @@ class NhdpClient : public Application
     void StartApplication() override;
     void StopApplication() override;
 
-    void HandlePbbMessage(Ptr<PbbMessage> msg);
+    Ipv4Address HandlePbbMessage(Ptr<PbbMessage> msg);
     Ipv4Address HandleLocalAddressBlock(Ptr<PbbAddressBlock> addressBlock);
     void HandleLinkStatusAddressBlock(Ptr<PbbAddressBlock> addressBlock,
                                       Ipv4Address neighborIpv4Addr);
@@ -175,7 +193,7 @@ class NhdpClient : public Application
     /* Information bases */
     std::map<Ipv4Address, NeighborTuple> m_neighborInfoBase;
     std::map<Ipv4Address, LinkTuple> m_linkInfoBase;
-    std::map<Ipv4Address, TwoHopTuple> m_twoHopInfoBase;
+    std::map<std::pair<Ipv4Address, Ipv4Address>, TwoHopTuple> m_twoHopInfoBase;
     std::map<Ipv4Address, LostNeighborTuple> m_lostNeighborSet;
     std::vector<Ipv4Address> m_lostAddressList;
 
@@ -190,9 +208,11 @@ class NhdpClient : public Application
 
     void RemoveExpiredTwoHopNeighbors();
 
-    TracedCallback<NeighborStatus, const NeighborTuple&> m_neighborChange;
-    TracedCallback<LinkStatus, const LinkTuple&> m_linkChange;
-    TracedCallback<TwoHopStatus, const TwoHopTuple&> m_twoHopChange;
+    TracedCallback<NeighborStatus, const NeighborTuple&> m_neighborChangeTrace;
+    TracedCallback<LinkStatus, const LinkTuple&> m_linkChangeTrace;
+    TracedCallback<TwoHopStatus, const TwoHopTuple&> m_twoHopChangeTrace;
+    TracedCallback<Ptr<PbbMessage>> m_helloMessageSendTrace;
+    TracedCallback<Ptr<PbbMessage>, Ipv4Address> m_helloMessageRecvTrace;
 
     /*
     std::map< uint32_t, Ptr<Socket> > m_indexSockets;

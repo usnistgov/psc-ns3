@@ -174,7 +174,7 @@ main(int argc, char* argv[])
     mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
     mobility.Install(olsrNodes);
 
-    OlsrHelper olsr;
+    Olsrv2Helper olsr;
 
     // Specify Node B's csma device as a non-OLSR device.
     olsr.ExcludeInterface(olsrNodes.Get(1), 2);

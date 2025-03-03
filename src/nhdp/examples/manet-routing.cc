@@ -59,7 +59,9 @@
 #include "ns3/internet-module.h"
 #include "ns3/mobility-module.h"
 #include "ns3/network-module.h"
+#include "ns3/nhdp-module.h"
 #include "ns3/olsr-module.h"
+#include "ns3/olsrv2-module.h"
 #include "ns3/yans-wifi-helper.h"
 
 #include <fstream>
@@ -67,6 +69,7 @@
 #include <ranges>
 
 using namespace ns3;
+using namespace nhdp;
 
 NS_LOG_COMPONENT_DEFINE("ManetRoutingExample");
 
@@ -111,20 +114,21 @@ class RoutingExperiment
 
     void OlsrTx(const olsr::PacketHeader& header, const olsr::MessageList& messages);
     void OlsrRx(const olsr::PacketHeader& header, const olsr::MessageList& messages);
+    void Olsrv2Tx(const olsrv2::PacketHeader& header, const olsrv2::MessageList& messages);
+    void Olsrv2Rx(const olsrv2::PacketHeader& header, const olsrv2::MessageList& messages);
 
     void OlsrRoutingTableChange(uint32_t tableSize);
+    void L3LocalDeliver(const Ipv4Header& header,
+                                       Ptr<const Packet> packet,
+                                       uint32_t interface)
 
     void AppTx(Ptr<const Packet> packet);
     void AppRx(Ptr<const Packet> packet);
-
-    void L3LocalDeliver(const Ipv4Header& header,
-                                       Ptr<const Packet> packet,
-                                       uint32_t interface);
-
-    uint32_t port{9};            //!< Receiving port number.
-    uint32_t bytesTotal{0};      //!< Total received bytes.
-    uint32_t packetsReceived{0}; //!< Total received packets.
-    uint64_t m_packetsSent{}; //! Total application packets sent
+    uint32_t port{9};                 //!< Receiving port number.
+    uint32_t bytesReceived{0};        //!< Received bytes in throughput interval.
+    uint32_t packetsReceived{0};      //!< Received packets in throughput interval.
+    uint32_t packetsReceivedTotal{0}; //!< Total received packets in simulation.
+    uint64_t m_packetsSent{}; //! Totall application packets sent
     uint64_t m_packetsReceived{}; //! Total application packets received
 
     std::string m_csvFileName{"manet-routing.csv"}; //!< CSV filename.
@@ -133,7 +137,7 @@ class RoutingExperiment
     double m_txp{7.5};                              //!< Tx power.
     bool m_traceMobility{false};                    //!< Enable mobility tracing.
     uint32_t m_nodes{50};                           //!< Number of nodes
-    bool m_flowMonitor{true};                      //!< Enable FlowMonitor
+    bool m_flowMonitor{true};                       //!< Enable FlowMonitor
     uint64_t m_txPacketsOlsrTrace{0u};
     uint64_t m_txPacketsOlsrBytesTotal{0u};
     uint64_t m_rxPacketsOlsrTrace{0u};
@@ -180,8 +184,11 @@ RoutingExperiment::ReceivePacket(Ptr<Socket> socket)
     Address senderAddress;
     while ((packet = socket->RecvFrom(senderAddress)))
     {
-        bytesTotal += packet->GetSize();
+        bytesReceived += packet->GetSize();
         packetsReceived += 1;
+        packetsReceivedTotal += 1;
+        NS_LOG_INFO(PrintReceivedPacket(socket, packet, senderAddress));
+        AppRx(packet);
         NS_LOG_UNCOND(PrintReceivedPacket(socket, packet, senderAddress));
         AppRx(packet);
     }
@@ -190,8 +197,8 @@ RoutingExperiment::ReceivePacket(Ptr<Socket> socket)
 void
 RoutingExperiment::CheckThroughput()
 {
-    double kbs = (bytesTotal * 8.0) / 1000;
-    bytesTotal = 0;
+    double kbs = (bytesReceived * 8.0) / 1000;
+    bytesReceived = 0;
 
     std::ofstream out(m_csvFileName, std::ios::app);
 
@@ -235,7 +242,7 @@ RoutingExperiment::CommandSetup(int argc, char** argv)
 
     NS_ABORT_MSG_IF(m_nodes < 20, "Number of nodes " << m_nodes << " must be >= 20");
 
-    std::vector<std::string> allowedProtocols{"OLSR"};
+    std::vector<std::string> allowedProtocols{"OLSR", "OLSRv2"};
 
     if (std::find(std::begin(allowedProtocols), std::end(allowedProtocols), m_protocolName) ==
         std::end(allowedProtocols))
@@ -268,6 +275,19 @@ RoutingExperiment::OlsrRx(const olsr::PacketHeader&, const olsr::MessageList&)
 }
 
 void
+RoutingExperiment::Olsrv2Tx(const olsrv2::PacketHeader& header, const olsrv2::MessageList&)
+{
+    m_txPacketsOlsrTrace++;
+    m_txPacketsOlsrBytesTotal += header.GetPacketLength();
+}
+
+void
+RoutingExperiment::Olsrv2Rx(const olsrv2::PacketHeader&, const olsrv2::MessageList&)
+{
+    m_rxPacketsOlsrTrace++;
+}
+
+void
 RoutingExperiment::OlsrRoutingTableChange(uint32_t)
 {
     m_totalRoutingTableChanges++;
@@ -285,7 +305,6 @@ RoutingExperiment::AppRx(Ptr<const Packet>)
 {
     m_packetsReceived++;
 }
-
 
 int
 main(int argc, char* argv[])
@@ -313,7 +332,7 @@ RoutingExperiment::Run()
     out.close();
 
     std::string rate("2048bps");
-    std::string phyMode("DsssRate11Mbps");
+    std::string phyMode("HeMcs0");
     std::string tr_name("manet-routing");
     int nodePause = 0; // in s
 
@@ -371,7 +390,7 @@ RoutingExperiment::Run()
 
     // setting up wifi phy and channel using helpers
     WifiHelper wifi;
-    wifi.SetStandard(WIFI_STANDARD_80211b);
+    wifi.SetStandard(WIFI_STANDARD_80211ax);
 
     YansWifiPhyHelper wifiPhy;
     YansWifiChannelHelper wifiChannel;
@@ -397,14 +416,24 @@ RoutingExperiment::Run()
     streamIndex += streamIncrement;
 
     OlsrHelper olsr;
+    Olsrv2Helper olsrv2;
     Ipv4ListRoutingHelper list;
     InternetStackHelper internet;
+    NhdpHelper nhdpHelper;
+    ApplicationContainer nhdpApps;
 
     if (m_protocolName == "OLSR")
     {
         list.Add(olsr, 100);
         internet.SetRoutingHelper(list);
         internet.Install(adhocNodes);
+    }
+    else if (m_protocolName == "OLSRv2")
+    {
+        list.Add(olsrv2, 100);
+        internet.SetRoutingHelper(list);
+        internet.Install(adhocNodes);
+        nhdpApps = nhdpHelper.Install(adhocNodes);
     }
     else
     {
@@ -413,9 +442,20 @@ RoutingExperiment::Run()
     streamsUsed = internet.AssignStreams(adhocNodes, streamIndex);
     NS_LOG_DEBUG("Streams used by internet models: " << streamsUsed);
     streamIndex += streamIncrement;
-    streamsUsed = olsr.AssignStreams(adhocNodes, streamIndex);
-    NS_LOG_DEBUG("Streams used by OLSR models: " << streamsUsed);
-    streamIndex += streamIncrement;
+    if (m_protocolName == "OLSRv2")
+    {
+        streamsUsed = olsrv2.AssignStreams(adhocNodes, streamIndex);
+        NS_LOG_DEBUG("Streams used by OLSRv2 models: " << streamsUsed);
+        streamsUsed = nhdpHelper.AssignStreams(adhocNodes, streamIndex + streamsUsed);
+        NS_LOG_DEBUG("Streams used by NHDP models: " << streamsUsed);
+        streamIndex += streamIncrement;
+    }
+    else
+    {
+        streamsUsed = olsr.AssignStreams(adhocNodes, streamIndex);
+        NS_LOG_DEBUG("Streams used by OLSR models: " << streamsUsed);
+        streamIndex += streamIncrement;
+    }
 
     NS_LOG_INFO("assigning ip address");
 
@@ -479,23 +519,36 @@ RoutingExperiment::Run()
     }
 
     // ---- packet-delivery-ratio_olsr-traces.csv ----
+    if (m_protocolName == "OLSRv2")
+    {
+    Simulator::Schedule(m_startTime, [this] {
+        Config::ConnectWithoutContext("/NodeList/*/$ns3::olsrv2::RoutingProtocol/Tx",
+                                      MakeCallback(&RoutingExperiment::Olsrv2Tx, this));
+
+        Config::ConnectWithoutContext("/NodeList/*/$ns3::olsrv2::RoutingProtocol/Rx",
+                                      MakeCallback(&RoutingExperiment::Olsrv2Rx, this));
+    });
+    }
+    else
+    {
     Simulator::Schedule(m_startTime, [this] {
         Config::ConnectWithoutContext("/NodeList/*/$ns3::olsr::RoutingProtocol/Tx",
                                       MakeCallback(&RoutingExperiment::OlsrTx, this));
-
         Config::ConnectWithoutContext("/NodeList/*/$ns3::olsr::RoutingProtocol/Rx",
                                       MakeCallback(&RoutingExperiment::OlsrRx, this));
     });
+    }
 
-
-    std::ofstream olsrTracePdrCsv{"packet-delivery-ratio_olsr-traces-" + std::to_string(m_scenarioId) + ".csv"};
+    std::ofstream olsrTracePdrCsv{"packet-delivery-ratio_olsr-traces-" +
+                                  std::to_string(m_scenarioId) + ".csv"};
     olsrTracePdrCsv << "TimeSeconds,TotalTx,TotalRx,PacketDeliveryRatio\n";
     auto writeOlsrTraces = [&olsrTracePdrCsv, this] {
-        olsrTracePdrCsv << Simulator::Now().ToInteger(Time::S) << ','
-        << m_txPacketsOlsrTrace << ','
-        << m_rxPacketsOlsrTrace << ','
-        << (m_txPacketsOlsrTrace > 0u ? static_cast<double>(m_rxPacketsOlsrTrace)/m_txPacketsOlsrTrace : 0u)
-        << '\n';
+        olsrTracePdrCsv << Simulator::Now().ToInteger(Time::S) << ',' << m_txPacketsOlsrTrace << ','
+                        << m_rxPacketsOlsrTrace << ','
+                        << (m_txPacketsOlsrTrace > 0u
+                                ? static_cast<double>(m_rxPacketsOlsrTrace) / m_txPacketsOlsrTrace
+                                : 0u)
+                        << '\n';
     };
 
     for (auto i = 0; i < m_simulationTime.ToInteger(Time::S); i++)
@@ -503,31 +556,41 @@ RoutingExperiment::Run()
         Simulator::Schedule(Seconds(i), writeOlsrTraces);
     }
 
-
     // ---- olsr-overhead.csv ----
     std::ofstream olsrOverheadCsv{"olsr-overhead-" + std::to_string(m_scenarioId) + ".csv"};
     olsrOverheadCsv << "TimeSeconds,TxBytesPeriod,TxBytesTotal\n";
     uint64_t olsrOverheadLast{};
     for (auto i = m_startTime.ToInteger(Time::S); i < m_simulationTime.ToInteger(Time::S); i++)
     {
-        Simulator::Schedule(Seconds(i), [this, &olsrOverheadCsv, &olsrOverheadLast] () {
+        Simulator::Schedule(Seconds(i), [this, &olsrOverheadCsv, &olsrOverheadLast]() {
             olsrOverheadCsv << Simulator::Now().ToInteger(Time::S) << ','
-            << m_txPacketsOlsrBytesTotal - olsrOverheadLast << ','
-            << m_txPacketsOlsrBytesTotal << '\n';
+                            << m_txPacketsOlsrBytesTotal - olsrOverheadLast << ','
+                            << m_txPacketsOlsrBytesTotal << '\n';
             olsrOverheadLast = m_txPacketsOlsrBytesTotal;
         });
     }
 
     // ---- routing-table-changes.csv ----
-    Config::ConnectWithoutContext("/NodeList/*/$ns3::olsr::RoutingProtocol/RoutingTableChanged",
-                              MakeCallback(&RoutingExperiment::OlsrRoutingTableChange, this));
+    if (m_protocolName == "OLSRv2")
+    {
+        Config::ConnectWithoutContext(
+            "/NodeList/*/$ns3::olsrv2::RoutingProtocol/RoutingTableChanged",
+            MakeCallback(&RoutingExperiment::OlsrRoutingTableChange, this));
+    }
+    else
+    {
+        Config::ConnectWithoutContext(
+            "/NodeList/*/$ns3::olsr::RoutingProtocol/RoutingTableChanged",
+            MakeCallback(&RoutingExperiment::OlsrRoutingTableChange, this));
+    }
 
-    std::ofstream olsrRoutingChangesCsv{"routing-table-changes-" + std::to_string(m_scenarioId) + ".csv"};
+    std::ofstream olsrRoutingChangesCsv{"routing-table-changes-" + std::to_string(m_scenarioId) +
+                                        ".csv"};
     olsrRoutingChangesCsv << "TimeSeconds,PeriodRoutingTableChanges,TotalRoutingTableChanges\n";
     auto writeOlsrRoutingTableChanges = [this, &olsrRoutingChangesCsv] {
         olsrRoutingChangesCsv << Simulator::Now().ToInteger(Time::S) << ','
-        << m_periodRoutingTableChanges << ','
-        << m_totalRoutingTableChanges << '\n';
+                              << m_periodRoutingTableChanges << ',' << m_totalRoutingTableChanges
+                              << '\n';
 
         m_periodRoutingTableChanges = 0u;
     };
@@ -546,42 +609,43 @@ RoutingExperiment::Run()
         flowmonTotalsCsv.open("flowmonitor-totals-" + std::to_string(m_scenarioId) + ".csv");
         flowmonTotalsCsv << "TimeSeconds,TotalTx,TotalRx,PacketDeliveryRatio\n";
 
-        flowmonPerFlowCsv.open("flowmon-per-flow-"+ std::to_string(m_scenarioId) + ".csv");
-        flowmonPerFlowCsv << "TimeSeconds,FlowId,SourceIp,DestinationIp,Tx,Rx,PacketDeliveryRatio\n";
+        flowmonPerFlowCsv.open("flowmon-per-flow-" + std::to_string(m_scenarioId) + ".csv");
+        flowmonPerFlowCsv
+            << "TimeSeconds,FlowId,SourceIp,DestinationIp,Tx,Rx,PacketDeliveryRatio\n";
 
         flowmon = flowmonHelper.InstallAll();
-        auto writeFlowmonStats = [&flowmon, &flowmonTotalsCsv, &flowmonPerFlowCsv, &flowmonHelper] () {
-            flowmon->CheckForLostPackets();
-            const auto &flowStats = flowmon->GetFlowStats();
-            const auto classifier = DynamicCast<Ipv4FlowClassifier>(flowmonHelper.GetClassifier());
+        auto writeFlowmonStats =
+            [&flowmon, &flowmonTotalsCsv, &flowmonPerFlowCsv, &flowmonHelper]() {
+                flowmon->CheckForLostPackets();
+                const auto& flowStats = flowmon->GetFlowStats();
+                const auto classifier =
+                    DynamicCast<Ipv4FlowClassifier>(flowmonHelper.GetClassifier());
 
-            // Totals
-            uint64_t totalTx{0u};
-            uint64_t totalRx{0u};
+                // Totals
+                uint64_t totalTx{0u};
+                uint64_t totalRx{0u};
 
-            for (const auto &[flowId, stats]: flowStats)
-            {
-                const auto &flow = classifier->FindFlow(flowId);
-                const auto packetDeliveryRatio = stats.txPackets > 0 ? static_cast<double>(stats.rxPackets) / stats.txPackets : 0.0;
+                for (const auto& [flowId, stats] : flowStats)
+                {
+                    const auto& flow = classifier->FindFlow(flowId);
+                    const auto packetDeliveryRatio =
+                        stats.txPackets > 0 ? static_cast<double>(stats.rxPackets) / stats.txPackets
+                                            : 0.0;
 
-                flowmonPerFlowCsv << Simulator::Now().ToInteger(Time::S) << ','
-                << flowId << ','
-                << flow.sourceAddress << ','
-                << flow.destinationAddress << ','
-                << stats.txPackets << ','
-                << stats.rxPackets << ','
-                << packetDeliveryRatio << '\n';
+                    flowmonPerFlowCsv << Simulator::Now().ToInteger(Time::S) << ',' << flowId << ','
+                                      << flow.sourceAddress << ',' << flow.destinationAddress << ','
+                                      << stats.txPackets << ',' << stats.rxPackets << ','
+                                      << packetDeliveryRatio << '\n';
 
-                totalTx += stats.txPackets;
-                totalRx += stats.rxPackets;
-            }
+                    totalTx += stats.txPackets;
+                    totalRx += stats.rxPackets;
+                }
 
-            flowmonTotalsCsv << Simulator::Now().ToInteger(Time::S) << ','
-            << totalTx << ','
-            << totalRx << ','
-            << (totalTx > 0u ? static_cast<double>(totalRx)/totalTx : 0u)
-            << '\n';
-        };
+                flowmonTotalsCsv << Simulator::Now().ToInteger(Time::S) << ',' << totalTx << ','
+                                 << totalRx << ','
+                                 << (totalTx > 0u ? static_cast<double>(totalRx) / totalTx : 0u)
+                                 << '\n';
+            };
 
         for (auto i = 1; i < m_simulationTime.ToInteger(Time::S); i++)
         {
@@ -655,5 +719,6 @@ RoutingExperiment::Run()
         flowmon->SerializeToXmlFile(tr_name + ".flowmon", false, false);
     }
 
+    std::cout << "Packets received: " << packetsReceivedTotal << std::endl;
     Simulator::Destroy();
 }

@@ -27,33 +27,33 @@ namespace ns3
  * This class is expected to be used in conjunction with
  * ns3::InternetStackHelper::SetRoutingHelper
  */
-class OlsrHelper : public Ipv4RoutingHelper
+class Olsrv2Helper : public Ipv4RoutingHelper
 {
   public:
     /**
-     * Create an OlsrHelper that makes life easier for people who want to install
+     * Create an Olsrv2Helper that makes life easier for people who want to install
      * OLSR routing to nodes.
      */
-    OlsrHelper();
+    Olsrv2Helper();
 
     /**
-     * \brief Construct an OlsrHelper from another previously initialized instance
+     * \brief Construct an Olsrv2Helper from another previously initialized instance
      * (Copy Constructor).
      *
      * \param o object to copy
      */
-    OlsrHelper(const OlsrHelper& o);
+    Olsrv2Helper(const Olsrv2Helper& o);
 
     // Delete assignment operator to avoid misuse
-    OlsrHelper& operator=(const OlsrHelper&) = delete;
+    Olsrv2Helper& operator=(const Olsrv2Helper&) = delete;
 
     /**
-     * \returns pointer to clone of this OlsrHelper
+     * \returns pointer to clone of this Olsrv2Helper
      *
      * This method is mainly for internal use by the other helpers;
      * clients are expected to free the dynamic memory allocated by this method
      */
-    OlsrHelper* Copy() const override;
+    Olsrv2Helper* Copy() const override;
 
     /**
      * \param node the node for which an exception is to be defined

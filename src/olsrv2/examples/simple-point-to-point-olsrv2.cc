@@ -74,7 +74,7 @@ main(int argc, char* argv[])
 
     // Enable OLSR
     NS_LOG_INFO("Enabling OLSR Routing.");
-    OlsrHelper olsr;
+    Olsrv2Helper olsr;
 
     Ipv4StaticRoutingHelper staticRouting;
 
