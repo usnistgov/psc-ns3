@@ -4,26 +4,26 @@ from matplotlib import pyplot as plt
 from glob import glob
 
 scenario_infos = []
-scenario_info_files = glob("scenario-info-*.json")
+scenario_info_files = glob('scenario-info-*.json')
 for scenario_info_file in scenario_info_files:
     with open(scenario_info_file) as f:
         scenario_infos.append(json.load(f))
 
-scenario_infos.sort(key=lambda item: item["scenarioId"])
+scenario_infos.sort(key=lambda item: item['scenarioId'])
 
 # Figure A:
 # Average overhead vs Speed
 overhead_frames = []
 for scenario_info in scenario_infos:
-    overhead_frames.append(pd.read_csv(f"olsr-overhead-{scenario_info["scenarioId"]}.csv"))
+    overhead_frames.append(pd.read_csv(f'olsr-overhead-{scenario_info['scenarioId']}.csv'))
 
 index = 0
 aggregate_overhead_frame = pd.DataFrame(columns=['Speed', 'OverheadBytesAverage'])
 for overhead_frame in overhead_frames:
     scenario_info = scenario_infos[index]
 
-    total_time = scenario_info["simulationTimeSeconds"] - scenario_info["startTimeSeconds"]
-    total_overhead = overhead_frame.loc[len(overhead_frame) - 1]["TxBytesTotal"]
+    total_time = scenario_info['simulationTimeSeconds'] - scenario_info['startTimeSeconds']
+    total_overhead = overhead_frame.loc[len(overhead_frame) - 1]['TxBytesTotal']
     average_overhead = total_overhead / total_time
 
     line_frame = pd.DataFrame(data={'Speed': [scenario_info['speed']], 'OverheadBytesAverage': [average_overhead]})
@@ -38,21 +38,21 @@ for overhead_frame in overhead_frames:
 
 aggregate_overhead_frame.plot(x='Speed', xlabel='Speed (m/s)', y='OverheadBytesAverage',
                               ylabel='Average Overhead (bytes/s)', title='Average Overhead vs Speed', legend=False)
-plt.savefig("Average Overhead vs Speed.png")
+plt.savefig('Average Overhead vs Speed.png')
 plt.close()
 
 # Figure B:
 # Application Packet Delivery Ratio vs Speed
 packet_delivery_ratio_frames = []
 for scenario_info in scenario_infos:
-    packet_delivery_ratio_frames.append(pd.read_csv(f"app-tx-rx-{scenario_info['scenarioId']}.csv"))
+    packet_delivery_ratio_frames.append(pd.read_csv(f'app-tx-rx-{scenario_info['scenarioId']}.csv'))
 
 aggregate_packet_delivery_ratio = pd.DataFrame()
 index = 0
 for packet_delivery_ratio_frame in packet_delivery_ratio_frames:
     scenario_info = scenario_infos[index]
 
-    total_time = scenario_info["simulationTimeSeconds"] - scenario_info["startTimeSeconds"]
+    total_time = scenario_info['simulationTimeSeconds'] - scenario_info['startTimeSeconds']
 
     frame_max_index = len(packet_delivery_ratio_frame) - 1
     totalTx = packet_delivery_ratio_frame.loc[frame_max_index]['TxPacketsTotal']
@@ -74,14 +74,14 @@ for packet_delivery_ratio_frame in packet_delivery_ratio_frames:
 aggregate_packet_delivery_ratio.plot(x='Speed', xlabel='Speed (m/s)', y='PacketDeliveryRatio',
                                      ylabel='Packet Delivery Ratio', title='Speed vs Packet Delivery Ratio', style='-o',
                                      legend=False)
-plt.savefig("Speed vs Packet Delivery Ratio.png")
+plt.savefig('Speed vs Packet Delivery Ratio.png')
 plt.close()
 
 
 # Average Hop Count vs Speed
 hop_count_frames = []
 for scenario_info in scenario_infos:
-    hop_count_frames.append(pd.read_csv(f"hop-count-{scenario_info['scenarioId']}.csv"))
+    hop_count_frames.append(pd.read_csv(f'hop-count-{scenario_info['scenarioId']}.csv'))
 
 
 aggregate_hop_count = pd.DataFrame()
@@ -89,7 +89,7 @@ index = 0
 for hop_count_frame in hop_count_frames:
     scenario_info = scenario_infos[index]
 
-    total_time = scenario_info["simulationTimeSeconds"] - scenario_info["startTimeSeconds"]
+    total_time = scenario_info['simulationTimeSeconds'] - scenario_info['startTimeSeconds']
 
     frame_max_index = len(hop_count_frame) - 1
     total_hops = hop_count_frame.loc[frame_max_index]['HopsTotal']
@@ -106,6 +106,6 @@ for hop_count_frame in hop_count_frames:
 
     index += 1
 
-aggregate_hop_count.plot(x="Speed", xlabel="Speed (m/s)", y="AverageHops", ylabel="Average Hops", title="Speed vs Average Hops", style="-o", legend=False)
-plt.savefig("Speed vs Average Hops.png")
+aggregate_hop_count.plot(x='Speed', xlabel='Speed (m/s)', y='AverageHops', ylabel='Average Hops', title='Speed vs Average Hops', style='-o', legend=False)
+plt.savefig('Speed vs Average Hops.png')
 plt.close()
