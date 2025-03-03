@@ -112,6 +112,7 @@ class RoutingExperiment
      */
     void CheckThroughput();
 
+    void NhdpTx(Ptr<const Packet> packet);
     void OlsrTx(const olsr::PacketHeader& header, const olsr::MessageList& messages);
     void OlsrRx(const olsr::PacketHeader& header, const olsr::MessageList& messages);
     void Olsrv2Tx(const olsrv2::PacketHeader& header, const olsrv2::MessageList& messages);
@@ -119,15 +120,14 @@ class RoutingExperiment
 
     void OlsrRoutingTableChange(uint32_t tableSize);
 
-
     void HopCountRx(Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface);
 
     void AppTx(Ptr<const Packet> packet);
     void AppRx(Ptr<const Packet> packet);
-    uint32_t port{9};                 //!< Receiving port number.
-    uint32_t bytesReceived{0};        //!< Received bytes in throughput interval.
-    uint32_t packetsReceived{0};      //!< Received packets in throughput interval.
-    uint64_t m_packetsSent{}; //! Totall application packets sent
+    uint32_t port{9};             //!< Receiving port number.
+    uint32_t bytesReceived{0};    //!< Received bytes in throughput interval.
+    uint32_t packetsReceived{0};  //!< Received packets in throughput interval.
+    uint64_t m_packetsSent{};     //! Totall application packets sent
     uint64_t m_packetsReceived{}; //! Total application packets received
 
     std::string m_csvFileName{"manet-routing.csv"}; //!< CSV filename.
@@ -140,10 +140,10 @@ class RoutingExperiment
     uint64_t m_txPacketsOlsrTrace{0u};
     uint64_t m_txPacketsOlsrBytesTotal{0u};
     uint64_t m_rxPacketsOlsrTrace{0u};
-    Time m_simulationTime{Seconds(200)};            //!< Simulation time
-    int m_nodeSpeed{20};                            //!< Node speed in m/s
-    double m_scale{1};                              //!< Scale factor for waypoint coordinates
-    Time m_startTime{Seconds(60)};  //! Time to start applications
+    Time m_simulationTime{Seconds(200)}; //!< Simulation time
+    int m_nodeSpeed{20};                 //!< Node speed in m/s
+    double m_scale{1};                   //!< Scale factor for waypoint coordinates
+    Time m_startTime{Seconds(60)};       //! Time to start applications
 
     uint64_t m_totalRoutingTableChanges{0u};
     uint64_t m_periodRoutingTableChanges{0u};
@@ -247,14 +247,19 @@ RoutingExperiment::CommandSetup(int argc, char** argv)
     }
 
     std::ofstream scenarioInfo{"scenario-info-" + std::to_string(m_scenarioId) + ".json"};
-    scenarioInfo << '{'
-    << "\"scenarioId\": " << m_scenarioId << ','
-    << "\"speed\": " << m_nodeSpeed << ','
-    << "\"scale\": " << m_scale << ','
-    << "\"startTimeSeconds\": " << m_startTime.ToInteger(Time::S) << ','
-    << "\"simulationTimeSeconds\": " << m_simulationTime.ToInteger(Time::S) << ','
-    << "\"nodes\": " << m_nodes
-    << '}';
+    scenarioInfo << '{' << "\"scenarioId\": " << m_scenarioId << ',' << "\"speed\": " << m_nodeSpeed
+                 << ',' << "\"scale\": " << m_scale << ','
+                 << "\"startTimeSeconds\": " << m_startTime.ToInteger(Time::S) << ','
+                 << "\"simulationTimeSeconds\": " << m_simulationTime.ToInteger(Time::S) << ','
+                 << "\"nodes\": " << m_nodes << '}';
+}
+
+void
+RoutingExperiment::NhdpTx(Ptr<const Packet> packet)
+{
+    // Count NHDP hello traffic as OLSR traffic
+    m_txPacketsOlsrTrace++;
+    m_txPacketsOlsrBytesTotal += packet->GetSize();
 }
 
 void
@@ -304,7 +309,6 @@ RoutingExperiment::HopCountRx(Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t
 
     m_totalHops += defaultTtl.Get() - ipHeader.GetTtl();
 }
-
 
 void
 RoutingExperiment::AppTx(Ptr<const Packet>)
@@ -533,22 +537,25 @@ RoutingExperiment::Run()
     // ---- packet-delivery-ratio_olsr-traces.csv ----
     if (m_protocolName == "OLSRv2")
     {
-    Simulator::Schedule(m_startTime, [this] {
-        Config::ConnectWithoutContext("/NodeList/*/$ns3::olsrv2::RoutingProtocol/Tx",
-                                      MakeCallback(&RoutingExperiment::Olsrv2Tx, this));
+        Simulator::Schedule(m_startTime, [this] {
+            Config::ConnectWithoutContext("/NodeList/*/$ns3::olsrv2::RoutingProtocol/Tx",
+                                          MakeCallback(&RoutingExperiment::Olsrv2Tx, this));
 
-        Config::ConnectWithoutContext("/NodeList/*/$ns3::olsrv2::RoutingProtocol/Rx",
-                                      MakeCallback(&RoutingExperiment::Olsrv2Rx, this));
-    });
+            Config::ConnectWithoutContext("/NodeList/*/$ns3::olsrv2::RoutingProtocol/Rx",
+                                          MakeCallback(&RoutingExperiment::Olsrv2Rx, this));
+
+            Config::ConnectWithoutContext("/NodeList/*/ApplicationList/*/$ns3::nhdp::NhdpClient/Tx",
+                                          MakeCallback(&RoutingExperiment::NhdpTx, this));
+        });
     }
     else
     {
-    Simulator::Schedule(m_startTime, [this] {
-        Config::ConnectWithoutContext("/NodeList/*/$ns3::olsr::RoutingProtocol/Tx",
-                                      MakeCallback(&RoutingExperiment::OlsrTx, this));
-        Config::ConnectWithoutContext("/NodeList/*/$ns3::olsr::RoutingProtocol/Rx",
-                                      MakeCallback(&RoutingExperiment::OlsrRx, this));
-    });
+        Simulator::Schedule(m_startTime, [this] {
+            Config::ConnectWithoutContext("/NodeList/*/$ns3::olsr::RoutingProtocol/Tx",
+                                          MakeCallback(&RoutingExperiment::OlsrTx, this));
+            Config::ConnectWithoutContext("/NodeList/*/$ns3::olsr::RoutingProtocol/Rx",
+                                          MakeCallback(&RoutingExperiment::OlsrRx, this));
+        });
     }
 
     std::ofstream olsrTracePdrCsv{"packet-delivery-ratio_olsr-traces-" +
@@ -671,11 +678,9 @@ RoutingExperiment::Run()
     uint64_t lastPacketsSent{};
     uint64_t lastPacketsReceived{};
     auto writeAppTxRx = [this, &appPackets, &lastPacketsSent, &lastPacketsReceived] {
-        appPackets << Simulator::Now().ToInteger(Time::S) << ','
-        << m_packetsSent - lastPacketsSent << ','
-        << m_packetsSent << ','
-        << m_packetsReceived - lastPacketsReceived << ','
-        << m_packetsReceived << '\n';
+        appPackets << Simulator::Now().ToInteger(Time::S) << ',' << m_packetsSent - lastPacketsSent
+                   << ',' << m_packetsSent << ',' << m_packetsReceived - lastPacketsReceived << ','
+                   << m_packetsReceived << '\n';
         lastPacketsSent = m_packetsSent;
         lastPacketsReceived = m_packetsReceived;
     };
@@ -689,14 +694,12 @@ RoutingExperiment::Run()
     hopCounts << "TimeSeconds,HopsPeriod,HopsTotal\n";
 
     Config::ConnectWithoutContext("/NodeList/*/$ns3::Ipv4L3Protocol/Rx",
-                              MakeCallback(&RoutingExperiment::HopCountRx, this));
-
+                                  MakeCallback(&RoutingExperiment::HopCountRx, this));
 
     unsigned long lastHopCount{};
     auto writeHopCount = [this, &hopCounts, &lastHopCount] {
-        hopCounts << Simulator::Now().ToInteger(Time::S) << ','
-        << m_totalHops - lastHopCount << ','
-        << m_totalHops << '\n';
+        hopCounts << Simulator::Now().ToInteger(Time::S) << ',' << m_totalHops - lastHopCount << ','
+                  << m_totalHops << '\n';
 
         lastHopCount = m_totalHops;
     };
@@ -719,6 +722,6 @@ RoutingExperiment::Run()
     }
 
     std::cout << "Packets sent: " << m_packetsSent << " received: " << m_packetsReceived
-        << " ratio: "<< static_cast<double>(m_packetsReceived)/m_packetsSent << std::endl;
+              << " ratio: " << static_cast<double>(m_packetsReceived) / m_packetsSent << std::endl;
     Simulator::Destroy();
 }
