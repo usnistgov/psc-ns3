@@ -119,6 +119,9 @@ class RoutingExperiment
 
     void OlsrRoutingTableChange(uint32_t tableSize);
 
+
+    void HopCountRx(Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface);
+
     void AppTx(Ptr<const Packet> packet);
     void AppRx(Ptr<const Packet> packet);
     uint32_t port{9};                 //!< Receiving port number.
@@ -292,6 +295,19 @@ RoutingExperiment::OlsrRoutingTableChange(uint32_t)
     m_totalRoutingTableChanges++;
     m_periodRoutingTableChanges++;
 }
+
+void
+RoutingExperiment::HopCountRx(Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface)
+{
+    Ipv4Header ipHeader;
+    packet->PeekHeader(ipHeader);
+
+    UintegerValue defaultTtl;
+    ipv4->GetAttribute("DefaultTtl", defaultTtl);
+
+    m_totalHops += defaultTtl.Get() - ipHeader.GetTtl();
+}
+
 
 void
 RoutingExperiment::AppTx(Ptr<const Packet>)
@@ -675,21 +691,8 @@ RoutingExperiment::Run()
     std::ofstream hopCounts{"hop-count-" + std::to_string(m_scenarioId) + ".csv"};
     hopCounts << "TimeSeconds,HopsPeriod,HopsTotal\n";
 
-    for (auto nodeIter = adhocNodes.Begin(); nodeIter != adhocNodes.End(); nodeIter++)
-    {
-        const auto &node = *nodeIter;
-
-        auto olsrRouting = node->GetObject<olsr::RoutingProtocol>();
-        const auto ipv4 = node->GetObject<Ipv4>();
-        const auto ip = ipv4->GetAddress(1, 0);
-
-        auto l3 = node->GetObject<Ipv4L3Protocol>();
-        if (l3 == nullptr)
-            std::clog << "fail\n";
-
-        // l3->TraceConnectWithoutContext("LocalDeliver", MakeCallback(&RoutingExperiment::L3LocalDeliver, this));
-        // TODO: Find a way to trace only on final delivery of OLSR packet
-    }
+    Config::ConnectWithoutContext("/NodeList/*/$ns3::Ipv4L3Protocol/Rx",
+                              MakeCallback(&RoutingExperiment::HopCountRx, this));
 
 
     unsigned long lastHopCount{};
