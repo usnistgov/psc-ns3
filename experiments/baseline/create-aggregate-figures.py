@@ -1,6 +1,7 @@
 import json
 import pandas as pd
 from matplotlib import pyplot as plt
+from matplotlib import ticker
 from glob import glob
 
 scenario_infos = []
@@ -87,6 +88,9 @@ for packet_delivery_ratio_frame in packet_delivery_ratio_frames:
     index += 1
 
 aggregate_packet_delivery_ratio = aggregate_packet_delivery_ratio.pivot(index='Speed', columns='Protocol', values='PacketDeliveryRatio')
+
+_, ax = plt.subplots()
+ax.yaxis.set_major_formatter(ticker.PercentFormatter(xmax=1.0))
 
 plt.plot(aggregate_packet_delivery_ratio['OLSR'], marker='o')
 plt.plot(aggregate_packet_delivery_ratio['OLSRv2'], marker='*')
