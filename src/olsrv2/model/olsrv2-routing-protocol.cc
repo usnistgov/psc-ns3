@@ -3136,9 +3136,11 @@ RoutingProtocol::NhdpSendHelloCallback(Ptr<PbbMessage> message)
 }
 
 void
-RoutingProtocol::NhdpRecvHelloCallback(Ptr<PbbMessage> message, Ipv4Address originatorAddr)
+RoutingProtocol::NhdpRecvHelloCallback(Ptr<PbbMessage> message,
+                                       Ipv4Address originatorAddr,
+                                       double quality)
 {
-    NS_LOG_FUNCTION(this << message << originatorAddr);
+    NS_LOG_FUNCTION(this << message << originatorAddr << quality);
 
     LinkSensingv2(originatorAddr);
 

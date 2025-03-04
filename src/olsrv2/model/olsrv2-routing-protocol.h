@@ -351,8 +351,9 @@ class RoutingProtocol : public Ipv4RoutingProtocol
      *
      * @param message The HELLO message
      * @param neighborAddr The neighbor address
+     * @param quality The NHDP link quality
      */
-    void NhdpRecvHelloCallback(Ptr<PbbMessage> message, Ipv4Address neighborAddr);
+    void NhdpRecvHelloCallback(Ptr<PbbMessage> message, Ipv4Address neighborAddr, double quality);
 
   public:
     // From Ipv4RoutingProtocol
