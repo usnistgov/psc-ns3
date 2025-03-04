@@ -170,7 +170,8 @@ class NhdpClient : public Application
     Ipv4Address HandlePbbMessage(Ptr<PbbMessage> msg, double quality);
     Ipv4Address HandleLocalAddressBlock(Ptr<PbbAddressBlock> addressBlock);
     void HandleLinkStatusAddressBlock(Ptr<PbbAddressBlock> addressBlock,
-                                      Ipv4Address neighborIpv4Addr);
+                                      Ipv4Address neighborIpv4Addr,
+                                      double quality);
     void ScheduleHello(Ptr<Socket> socket);
     void SendHello(Ptr<Socket> socket);
 

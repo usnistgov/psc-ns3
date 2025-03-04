@@ -366,7 +366,7 @@ NhdpClient::HandlePbbMessage(Ptr<PbbMessage> msg, double quality)
         }
         else if (addressTlv->GetType() == ADDR_TLV_LINK_STATUS)
         {
-            HandleLinkStatusAddressBlock(addressBlock, neighborIpv4Addr);
+            HandleLinkStatusAddressBlock(addressBlock, neighborIpv4Addr, quality);
         }
         else if (addressTlv->GetType() == ADDR_TLV_OTHER_NEIGHB)
         {
@@ -463,7 +463,8 @@ NhdpClient::HandleLocalAddressBlock(Ptr<PbbAddressBlock> addressBlock)
 
 void
 NhdpClient::HandleLinkStatusAddressBlock(Ptr<PbbAddressBlock> addressBlock,
-                                         Ipv4Address neighborIpv4Addr)
+                                         Ipv4Address neighborIpv4Addr,
+                                         double quality)
 {
     NS_LOG_FUNCTION(this << addressBlock << neighborIpv4Addr);
     auto numAddresses = addressBlock->AddressSize();
@@ -519,24 +520,35 @@ NhdpClient::HandleLinkStatusAddressBlock(Ptr<PbbAddressBlock> addressBlock,
                     (value == ADDR_TLV_LINK_STATUS_HEARD) ? "HEARD" : "SYMMETRIC";
                 NS_LOG_DEBUG("Neighbor " << neighborIpv4Addr << " lists my address as "
                                          << valueStr);
-                auto itNeigh = m_neighborInfoBase.find(neighborIpv4Addr);
-                if (!itNeigh->second.m_symmetric)
+                if ((!m_initialPending || quality >= m_hystAccept) || quality >= m_hystReject)
                 {
-                    // change neighbor to symmetric
-                    NS_LOG_DEBUG("Changing neighbor " << neighborIpv4Addr
-                                                      << " from HEARD to SYMMETRIC");
-                    itNeigh->second.m_symmetric = true;
-                    m_neighborChangeTrace(NeighborStatus::MODIFIED, itNeigh->second);
-                }
-                auto itLink = m_linkInfoBase.find(neighborIpv4Addr);
-                NS_ASSERT_MSG(itLink != m_linkInfoBase.end(), "Error: LinkTuple not found");
-                const auto oldStatus = itLink->second.GetLinkStatus();
-                itLink->second.m_symTime = Simulator::Now() + m_hHoldTime;
-                itLink->second.m_expirationTime = Simulator::Now() + m_hHoldTime;
-                NS_LOG_DEBUG("Changing link sym time to " << itLink->second.m_symTime.GetSeconds());
-                if (oldStatus != itLink->second.GetLinkStatus())
-                {
-                    m_linkChangeTrace(oldStatus, itLink->second);
+                    auto itNeigh = m_neighborInfoBase.find(neighborIpv4Addr);
+                    if (!itNeigh->second.m_symmetric)
+                    {
+                        // change neighbor to symmetric
+                        NS_LOG_DEBUG("Changing neighbor " << neighborIpv4Addr
+                                                          << " from HEARD to SYMMETRIC");
+                        itNeigh->second.m_symmetric = true;
+                        m_neighborChangeTrace(NeighborStatus::MODIFIED, itNeigh->second);
+                    }
+                    auto itLink = m_linkInfoBase.find(neighborIpv4Addr);
+                    NS_ASSERT_MSG(itLink != m_linkInfoBase.end(), "Error: LinkTuple not found");
+                    const auto oldStatus = itLink->second.GetLinkStatus();
+                    itLink->second.m_symTime = Simulator::Now() + m_hHoldTime;
+                    itLink->second.m_expirationTime = Simulator::Now() + m_hHoldTime;
+                    NS_LOG_DEBUG("Changing link sym time to "
+                                 << itLink->second.m_symTime.GetSeconds());
+                    if (quality < m_hystReject)
+                    {
+                        // Force a move to LOST state
+                        itLink->second.m_symTime = Simulator::Now();
+                        itLink->second.m_heardTime = Simulator::Now();
+                        itLink->second.m_expirationTime = Simulator::Now();
+                    }
+                    if (oldStatus != itLink->second.GetLinkStatus())
+                    {
+                        m_linkChangeTrace(oldStatus, itLink->second);
+                    }
                 }
             }
             else if (value == ADDR_TLV_LINK_STATUS_LOST)
@@ -546,6 +558,10 @@ NhdpClient::HandleLinkStatusAddressBlock(Ptr<PbbAddressBlock> addressBlock,
                 if (itNeigh != m_neighborInfoBase.end())
                 {
                     auto itLink = m_linkInfoBase.find(neighborIpv4Addr);
+                    if (quality < m_hystReject || (m_initialPending && quality < m_hystAccept))
+                    {
+                        itLink->second.m_pending = true;
+                    }
                     NS_ASSERT_MSG(itLink != m_linkInfoBase.end(),
                                   "Expected link tuple to be present");
                     if (itNeigh->second.m_symmetric)
@@ -571,6 +587,10 @@ NhdpClient::HandleLinkStatusAddressBlock(Ptr<PbbAddressBlock> addressBlock,
                     if (it == m_linkInfoBase.end())
                     {
                         LinkTuple linkTuple(neighborIpv4Addr, 0);
+                        if (quality < m_hystReject || (m_initialPending && quality < m_hystAccept))
+                        {
+                            linkTuple.m_pending = true;
+                        }
                         const auto oldStatus = linkTuple.GetLinkStatus();
                         linkTuple.m_heardTime = Simulator::Now() + m_hHoldTime;
                         linkTuple.m_expirationTime = Simulator::Now() + m_hHoldTime;
@@ -579,6 +599,10 @@ NhdpClient::HandleLinkStatusAddressBlock(Ptr<PbbAddressBlock> addressBlock,
                     }
                     else
                     {
+                        if (quality < m_hystReject || (m_initialPending && quality < m_hystAccept))
+                        {
+                            it->second.m_pending = true;
+                        }
                         const auto oldStatus = it->second.GetLinkStatus();
                         it->second.m_heardTime = Simulator::Now() + m_hHoldTime;
                         it->second.m_expirationTime = Simulator::Now() + m_hHoldTime;
