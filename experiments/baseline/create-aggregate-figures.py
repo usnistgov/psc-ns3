@@ -90,7 +90,7 @@ for packet_delivery_ratio_frame in packet_delivery_ratio_frames:
 aggregate_packet_delivery_ratio = aggregate_packet_delivery_ratio.pivot(index='Speed', columns='Protocol', values='PacketDeliveryRatio')
 
 _, ax = plt.subplots()
-ax.yaxis.set_major_formatter(ticker.PercentFormatter(xmax=1.0))
+ax.yaxis.set_major_formatter(ticker.PercentFormatter(xmax=1.0, decimals=1))
 
 plt.plot(aggregate_packet_delivery_ratio['OLSR'], marker='o')
 plt.plot(aggregate_packet_delivery_ratio['OLSRv2'], marker='*')
