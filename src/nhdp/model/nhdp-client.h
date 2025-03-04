@@ -98,6 +98,17 @@ class NhdpClient : public Application
      */
     // void RegisterMessageCallback (uint8_t messageType, Callback<PbbMessage> cb);
 
+    /**
+     * @brief Sets a callback for a received NHDP packet for calculating link quality
+     *
+     * @param packet Pointer to the received packet
+     * @param cb the callback to call when a packet is received
+     *
+     * The packet is passed as a non-const object so that any PacketTag object can
+     * be removed if needed.
+     */
+    void RegisterLinkQualityCallback(Callback<double, Ptr<Packet>> cb);
+
     void HandleRecv(Ptr<Socket> socket);
 
     const std::map<Ipv4Address, NeighborTuple>& GetNeighborInfoBase() const;
@@ -156,7 +167,7 @@ class NhdpClient : public Application
     void StartApplication() override;
     void StopApplication() override;
 
-    Ipv4Address HandlePbbMessage(Ptr<PbbMessage> msg);
+    Ipv4Address HandlePbbMessage(Ptr<PbbMessage> msg, double quality);
     Ipv4Address HandleLocalAddressBlock(Ptr<PbbAddressBlock> addressBlock);
     void HandleLinkStatusAddressBlock(Ptr<PbbAddressBlock> addressBlock,
                                       Ipv4Address neighborIpv4Addr);
@@ -208,11 +219,13 @@ class NhdpClient : public Application
 
     void RemoveExpiredTwoHopNeighbors();
 
+    Callback<double, Ptr<Packet>> m_linkQualityCallback;
+
     TracedCallback<NeighborStatus, const NeighborTuple&> m_neighborChangeTrace;
     TracedCallback<LinkStatus, const LinkTuple&> m_linkChangeTrace;
     TracedCallback<TwoHopStatus, const TwoHopTuple&> m_twoHopChangeTrace;
     TracedCallback<Ptr<PbbMessage>> m_helloMessageSendTrace;
-    TracedCallback<Ptr<PbbMessage>, Ipv4Address> m_helloMessageRecvTrace;
+    TracedCallback<Ptr<PbbMessage>, Ipv4Address, double> m_helloMessageRecvTrace;
     TracedCallback<Ptr<const Packet>> m_txTrace;
 
     /*

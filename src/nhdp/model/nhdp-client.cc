@@ -293,6 +293,13 @@ NhdpClient::RegisterMessageCallback(uint8_t messageType,
 */
 
 void
+NhdpClient::RegisterLinkQualityCallback(Callback<double, Ptr<Packet>> cb)
+{
+    NS_LOG_FUNCTION(this);
+    m_linkQualityCallback = cb;
+}
+
+void
 NhdpClient::HandleRecv(Ptr<Socket> socket)
 {
     NS_LOG_FUNCTION(this << socket);
@@ -301,8 +308,13 @@ NhdpClient::HandleRecv(Ptr<Socket> socket)
     Ipv4PacketInfoTag tag;
     auto found = packet->RemovePacketTag(tag);
     NS_ASSERT_MSG(found, "Did not find Ipv4PacketInfoTag");
-    NS_LOG_INFO("Receive HELLO to: " << tag.GetAddress() << " from: "
-                                     << InetSocketAddress::ConvertFrom(from).GetIpv4());
+    double quality{1};
+    if (!m_linkQualityCallback.IsNull())
+    {
+        quality = m_linkQualityCallback(packet);
+    }
+    NS_LOG_INFO("Receive HELLO with quality " << quality << " to: " << tag.GetAddress() << " from: "
+                                              << InetSocketAddress::ConvertFrom(from).GetIpv4());
     PbbPacket pbb;
     packet->RemoveHeader(pbb);
     int16_t seq(-1);
@@ -314,16 +326,16 @@ NhdpClient::HandleRecv(Ptr<Socket> socket)
                                      << " seq. no. " << seq);
     // TODO:  Clarify whether a NHDP packet can have more than one message (HELLO message)
     NS_ASSERT_MSG(pbb.MessageSize() == 1, "There should be one message in a HELLO");
-    auto neighborAddr = HandlePbbMessage(pbb.MessageFront());
+    auto neighborAddr = HandlePbbMessage(pbb.MessageFront(), quality);
 
     // Pass HELLO to other protocols that are clients of NHDP
-    m_helloMessageRecvTrace(pbb.MessageFront(), neighborAddr);
+    m_helloMessageRecvTrace(pbb.MessageFront(), neighborAddr, quality);
 }
 
 Ipv4Address
-NhdpClient::HandlePbbMessage(Ptr<PbbMessage> msg)
+NhdpClient::HandlePbbMessage(Ptr<PbbMessage> msg, double quality)
 {
-    NS_LOG_FUNCTION(this << msg);
+    NS_LOG_FUNCTION(this << msg << quality);
     NS_LOG_INFO("PbbMessage TLV size " << msg->TlvSize() << " address block size "
                                        << msg->AddressBlockSize() << " type " << +msg->GetType()
                                        << " hops " << msg->HasHopLimit() << " seq "
