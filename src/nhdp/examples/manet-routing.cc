@@ -367,9 +367,9 @@ main(int argc, char* argv[])
 
     experiment.CommandSetup(argc, argv);
     uint32_t i = 1;
-    uint32_t threshold = 30;  // At least 30 trials
-    double criticalValue = 1.96; // 95% CI
-    double pdrTargetHalfWidth = 0.005; // Assuming PDR is around 0.9, this is a 1% CI
+    uint32_t threshold = 30;              // At least 30 trials
+    double criticalValue = 1.96;          // 95% CI
+    double pdrTargetHalfWidth = 0.005;    // Assuming PDR is around 0.9, this is a 1% CI
     double overheadTargetHalfWidth = 400; // Assuming overhead is around 80000, this is a 1% CI
     for (; i < 100; i++)
     {
@@ -380,18 +380,24 @@ main(int argc, char* argv[])
         overheadStats->Update(overhead);
         double pdrHalfWidth = criticalValue * pdrStats->getStddev() / std::sqrt(i);
         double overheadHalfWidth = criticalValue * overheadStats->getStddev() / std::sqrt(i);
-        std::cout << i << " " << pdr << ":" << overhead << " mean " << pdrStats->getMean() << ":" << overheadStats->getMean() << " stddev " << pdrStats->getStddev() << ":" << overheadStats->getStddev() <<  std::endl;
+        std::cout << i << " " << pdr << ":" << overhead << " mean " << pdrStats->getMean() << ":"
+                  << overheadStats->getMean() << " stddev " << pdrStats->getStddev() << ":"
+                  << overheadStats->getStddev() << std::endl;
         bool pdrConverged{false};
         bool overheadConverged{false};
-        if (i > threshold && pdrHalfWidth <= pdrTargetHalfWidth * pdrStats->getMean() && !pdrConverged)
+        if (i > threshold && pdrHalfWidth <= pdrTargetHalfWidth * pdrStats->getMean() &&
+            !pdrConverged)
         {
             pdrConverged = true;
         }
         else
         {
-            std::cout << "PDR half " << pdrHalfWidth << " target " << pdrTargetHalfWidth * pdrStats->getMean() << std::endl;
+            std::cout << "PDR half " << pdrHalfWidth << " target "
+                      << pdrTargetHalfWidth * pdrStats->getMean() << std::endl;
         }
-        if (i  > threshold && overheadHalfWidth <= overheadTargetHalfWidth * overheadStats->getMean() && !overheadConverged)
+        if (i > threshold &&
+            overheadHalfWidth <= overheadTargetHalfWidth * overheadStats->getMean() &&
+            !overheadConverged)
         {
             overheadConverged = true;
         }
@@ -400,7 +406,8 @@ main(int argc, char* argv[])
             break;
         }
     }
-    std::cout << "Estimate: " << i << " " << pdrStats->getMean() << " " << overheadStats->getMean() << std::endl;
+    std::cout << "Estimate: " << i << " " << pdrStats->getMean() << " " << overheadStats->getMean()
+              << std::endl;
 
     return 0;
 }
@@ -796,12 +803,13 @@ RoutingExperiment::Run()
     {
         flowmon->SerializeToXmlFile(tr_name + ".flowmon", false, false);
     }
-    double pdr = static_cast<double>(m_packetsReceived) / m_packetsSent; 
+    double pdr = static_cast<double>(m_packetsReceived) / m_packetsSent;
 
     std::cout << "Packets sent: " << m_packetsSent << " received: " << m_packetsReceived
               << " ratio: " << pdr << std::endl;
     Simulator::Destroy();
 
-    double olsrDataRate = m_txPacketsOlsrBytesTotal * 8/(m_simulationTime - m_startTime).GetSeconds();
+    double olsrDataRate =
+        m_txPacketsOlsrBytesTotal * 8 / (m_simulationTime - m_startTime).GetSeconds();
     return std::make_pair(pdr, olsrDataRate);
 }
