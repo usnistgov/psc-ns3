@@ -3,25 +3,12 @@
  *
  * SPDX-License-Identifier: GPL-2.0-only and NIST-Software
  *
- * Author: Justin Rohrer <rohrej@ittc.ku.edu>
- *
- * James P.G. Sterbenz <jpgs@ittc.ku.edu>, director
- * ResiliNets Research Group  https://resilinets.org/
- * Information and Telecommunication Technology Center (ITTC)
- * and Department of Electrical Engineering and Computer Science
- * The University of Kansas Lawrence, KS USA.
- *
- * Work supported in part by NSF FIND (Future Internet Design) Program
- * under grant CNS-0626918 (Postmodern Internet Architecture),
- * NSF grant CNS-1050226 (Multilayer Network Resilience Analysis and Experimentation on GENI),
- * US Department of Defense (DoD), and ITTC at The University of Kansas.
+ * Adapted from ns-3's manet-routing-compare.cc program
  */
 
 /*
- * Adaptation of examples/routing/manet-routing-compare.cc
- *
  * This example program allows one to run ns-3 OLSR under
- * a typical random waypoint mobility model.
+ * a random waypoint mobility model configured for constant speed.
  *
  * By default, the simulation runs for 200 simulated seconds, of which
  * the first 100 are used for start-up time.  The number of nodes is 50.
@@ -62,7 +49,8 @@
 #include "ns3/nhdp-module.h"
 #include "ns3/olsr-module.h"
 #include "ns3/olsrv2-module.h"
-#include "ns3/yans-wifi-helper.h"
+#include "ns3/stats-module.h"
+#include "ns3/wifi-module.h"
 
 #include <fstream>
 #include <iostream>
@@ -71,12 +59,12 @@
 using namespace ns3;
 using namespace nhdp;
 
-NS_LOG_COMPONENT_DEFINE("ManetRoutingExample");
+NS_LOG_COMPONENT_DEFINE("ManetRouting");
 
 /**
  * Routing experiment class.
  *
- * It handles the creation and run of an experiment.
+ * It handles the creation and execution of multiple trials
  */
 class RoutingExperiment
 {
@@ -85,7 +73,7 @@ class RoutingExperiment
     /**
      * Run the experiment.
      */
-    void Run();
+    std::pair<double, double> Run();
 
     /**
      * Handles the command-line parameters.
@@ -102,6 +90,15 @@ class RoutingExperiment
      * @return the socket.
      */
     Ptr<Socket> SetupPacketReceive(Ipv4Address addr, Ptr<Node> node);
+
+    /**
+     * Return the duration it would take to travel the diagonal
+     * of the bounding box at the node speed.
+     *
+     * @return The traversal time
+     */
+    Time GetDataCollectionDuration() const;
+
     /**
      * Receive a packet.
      * @param socket The receiving socket.
@@ -111,6 +108,11 @@ class RoutingExperiment
      * Compute the throughput.
      */
     void CheckThroughput();
+
+    /**
+     * Reset packet counters
+     */
+    void ResetCounters();
 
     void NhdpTx(Ptr<const Packet> packet);
     void OlsrTx(const olsr::PacketHeader& header, const olsr::MessageList& messages);
@@ -124,11 +126,11 @@ class RoutingExperiment
 
     void AppTx(Ptr<const Packet> packet);
     void AppRx(Ptr<const Packet> packet);
-    uint32_t port{9};             //!< Receiving port number.
-    uint32_t bytesReceived{0};    //!< Received bytes in throughput interval.
-    uint32_t packetsReceived{0};  //!< Received packets in throughput interval.
-    uint64_t m_packetsSent{};     //! Totall application packets sent
-    uint64_t m_packetsReceived{}; //! Total application packets received
+    uint32_t m_port{9};                       //!< Receiving port number.
+    uint32_t m_bytesReceivedPerInterval{0};   //!< Received bytes in throughput interval.
+    uint32_t m_packetsReceivedPerInterval{0}; //!< Received packets in throughput interval.
+    uint64_t m_packetsSent{0};                //! Total application packets sent
+    uint64_t m_packetsReceived{0};            //! Total application packets received
 
     std::string m_csvFileName{"manet-routing.csv"}; //!< CSV filename.
     int m_nSinks{10};                               //!< Number of sink nodes.
@@ -140,10 +142,12 @@ class RoutingExperiment
     uint64_t m_txPacketsOlsrTrace{0u};
     uint64_t m_txPacketsOlsrBytesTotal{0u};
     uint64_t m_rxPacketsOlsrTrace{0u};
-    Time m_simulationTime{Seconds(200)}; //!< Simulation time
-    int m_nodeSpeed{20};                 //!< Node speed in m/s
-    double m_scale{1};                   //!< Scale factor for waypoint coordinates
-    Time m_startTime{Seconds(60)};       //! Time to start applications
+    Time m_simulationTime;        //!< Simulation time
+    double m_nodeSpeed{10};       //!< Node speed in m/s
+    double m_scale{1};            //!< Scale factor for waypoint coordinates
+    Time m_startTime{Seconds(6)}; //! Time to start applications
+    double m_xMax{200};           //! Baseline x dimension in meters
+    double m_yMax{200};           //! Baseline y dimension in meters
 
     uint64_t m_totalRoutingTableChanges{0u};
     uint64_t m_periodRoutingTableChanges{0u};
@@ -178,6 +182,14 @@ PrintReceivedPacket(Ptr<Socket> socket, Ptr<Packet> packet, Address senderAddres
     return oss.str();
 }
 
+Time
+RoutingExperiment::GetDataCollectionDuration() const
+{
+    const double xScaled = m_xMax * m_scale;
+    const double yScaled = m_yMax * m_scale;
+    return Seconds(sqrt((xScaled * xScaled) + (yScaled * yScaled)) / m_nodeSpeed);
+}
+
 void
 RoutingExperiment::ReceivePacket(Ptr<Socket> socket)
 {
@@ -185,9 +197,9 @@ RoutingExperiment::ReceivePacket(Ptr<Socket> socket)
     Address senderAddress;
     while ((packet = socket->RecvFrom(senderAddress)))
     {
-        bytesReceived += packet->GetSize();
-        packetsReceived += 1;
-        NS_LOG_INFO(PrintReceivedPacket(socket, packet, senderAddress));
+        m_bytesReceivedPerInterval += packet->GetSize();
+        m_packetsReceivedPerInterval += 1;
+        NS_LOG_DEBUG(PrintReceivedPacket(socket, packet, senderAddress));
         AppRx(packet);
     }
 }
@@ -195,16 +207,16 @@ RoutingExperiment::ReceivePacket(Ptr<Socket> socket)
 void
 RoutingExperiment::CheckThroughput()
 {
-    double kbs = (bytesReceived * 8.0) / 1000;
-    bytesReceived = 0;
+    double kbs = (m_bytesReceivedPerInterval * 8.0) / 1000;
 
     std::ofstream out(m_csvFileName, std::ios::app);
 
-    out << (Simulator::Now()).GetSeconds() << "," << kbs << "," << packetsReceived << ","
-        << m_nSinks << "," << m_protocolName << "," << m_txp << "" << std::endl;
+    out << (Simulator::Now()).GetSeconds() << "," << kbs << "," << m_packetsReceivedPerInterval
+        << "," << m_nSinks << "," << m_protocolName << "," << m_txp << "" << std::endl;
 
     out.close();
-    packetsReceived = 0;
+    m_bytesReceivedPerInterval = 0;
+    m_packetsReceivedPerInterval = 0;
     Simulator::Schedule(Seconds(1), &RoutingExperiment::CheckThroughput, this);
 }
 
@@ -213,7 +225,7 @@ RoutingExperiment::SetupPacketReceive(Ipv4Address addr, Ptr<Node> node)
 {
     TypeId tid = TypeId::LookupByName("ns3::UdpSocketFactory");
     Ptr<Socket> sink = Socket::CreateSocket(node, tid);
-    InetSocketAddress local = InetSocketAddress(addr, port);
+    InetSocketAddress local = InetSocketAddress(addr, m_port);
     sink->Bind(local);
     sink->SetRecvCallback(MakeCallback(&RoutingExperiment::ReceivePacket, this));
 
@@ -229,7 +241,6 @@ RoutingExperiment::CommandSetup(int argc, char** argv)
     cmd.AddValue("protocol", "Routing protocol (OLSR)", m_protocolName);
     cmd.AddValue("nodes", "Number of nodes", m_nodes);
     cmd.AddValue("flowMonitor", "enable FlowMonitor", m_flowMonitor);
-    cmd.AddValue("simulationTime", "simulation time", m_simulationTime);
     cmd.AddValue("speed", "Node speed in m/s", m_nodeSpeed);
     cmd.AddValue("scale", "Scale factor for waypoint coordinates", m_scale);
     cmd.AddValue("scenarioId", "", m_scenarioId);
@@ -239,6 +250,10 @@ RoutingExperiment::CommandSetup(int argc, char** argv)
     cmd.Parse(argc, argv);
 
     NS_ABORT_MSG_IF(m_nodes < 20, "Number of nodes " << m_nodes << " must be >= 20");
+    m_simulationTime = m_startTime + GetDataCollectionDuration();
+    NS_LOG_INFO("Simulation warm up time " << m_startTime.As(Time::S) << " data collection time "
+                                           << GetDataCollectionDuration().As(Time::S)
+                                           << " for speed " << m_nodeSpeed << " m/s");
 
     std::vector<std::string> allowedProtocols{"OLSR", "OLSRv2"};
 
@@ -251,15 +266,12 @@ RoutingExperiment::CommandSetup(int argc, char** argv)
     m_filenameSuffix = m_protocolName + '-' + std::to_string(m_scenarioId);
 
     std::ofstream scenarioInfo{"scenario-info-" + m_filenameSuffix + ".json"};
-    scenarioInfo << '{'
-    << "\"scenarioId\": " << m_scenarioId << ','
-    << "\"protocol\": " << '"' << m_protocolName << "\","
-    << "\"speed\": " << m_nodeSpeed << ','
-    << "\"scale\": " << m_scale << ','
-    << "\"startTimeSeconds\": " << m_startTime.ToInteger(Time::S) << ','
-    << "\"simulationTimeSeconds\": " << m_simulationTime.ToInteger(Time::S) << ','
-    << "\"nodes\": " << m_nodes
-    << '}';
+    scenarioInfo << '{' << "\"scenarioId\": " << m_scenarioId << ',' << "\"protocol\": " << '"'
+                 << m_protocolName << "\","
+                 << "\"speed\": " << m_nodeSpeed << ',' << "\"scale\": " << m_scale << ','
+                 << "\"startTimeSeconds\": " << m_startTime.ToInteger(Time::S) << ','
+                 << "\"simulationTimeSeconds\": " << m_simulationTime.ToInteger(Time::S) << ','
+                 << "\"nodes\": " << m_nodes << '}';
 }
 
 void
@@ -330,21 +342,73 @@ RoutingExperiment::AppRx(Ptr<const Packet>)
     m_packetsReceived++;
 }
 
+void
+RoutingExperiment::ResetCounters()
+{
+    m_totalRoutingTableChanges = 0;
+    m_periodRoutingTableChanges = 0;
+    m_totalHops = 0;
+    m_txPacketsOlsrTrace = 0;
+    m_txPacketsOlsrBytesTotal = 0;
+    m_rxPacketsOlsrTrace = 0;
+    m_bytesReceivedPerInterval = 0;
+    m_packetsReceivedPerInterval = 0;
+    m_packetsSent = 0;
+    m_packetsReceived = 0;
+}
+
 int
 main(int argc, char* argv[])
 {
+    auto pdrStats = CreateObject<MinMaxAvgTotalCalculator<double>>();
+    auto overheadStats = CreateObject<MinMaxAvgTotalCalculator<double>>();
     RoutingExperiment experiment;
+    Packet::EnablePrinting();
+
     experiment.CommandSetup(argc, argv);
-    experiment.Run();
+    uint32_t i = 1;
+    uint32_t threshold = 30;  // At least 30 trials
+    double criticalValue = 1.96; // 95% CI
+    double pdrTargetHalfWidth = 0.005; // Assuming PDR is around 0.9, this is a 1% CI
+    double overheadTargetHalfWidth = 400; // Assuming overhead is around 80000, this is a 1% CI
+    for (; i < 100; i++)
+    {
+        Config::SetGlobal("RngRun", UintegerValue(i));
+        auto [pdr, overhead] = experiment.Run();
+        NS_LOG_INFO("PDR sample " << pdr << " overhead sample " << overhead);
+        pdrStats->Update(pdr);
+        overheadStats->Update(overhead);
+        double pdrHalfWidth = criticalValue * pdrStats->getStddev() / std::sqrt(i);
+        double overheadHalfWidth = criticalValue * overheadStats->getStddev() / std::sqrt(i);
+        std::cout << i << " " << pdr << ":" << overhead << " mean " << pdrStats->getMean() << ":" << overheadStats->getMean() << " stddev " << pdrStats->getStddev() << ":" << overheadStats->getStddev() <<  std::endl;
+        bool pdrConverged{false};
+        bool overheadConverged{false};
+        if (i > threshold && pdrHalfWidth <= pdrTargetHalfWidth * pdrStats->getMean() && !pdrConverged)
+        {
+            pdrConverged = true;
+        }
+        else
+        {
+            std::cout << "PDR half " << pdrHalfWidth << " target " << pdrTargetHalfWidth * pdrStats->getMean() << std::endl;
+        }
+        if (i  > threshold && overheadHalfWidth <= overheadTargetHalfWidth * overheadStats->getMean() && !overheadConverged)
+        {
+            overheadConverged = true;
+        }
+        if (pdrConverged && overheadConverged)
+        {
+            break;
+        }
+    }
+    std::cout << "Estimate: " << i << " " << pdrStats->getMean() << " " << overheadStats->getMean() << std::endl;
 
     return 0;
 }
 
-void
+std::pair<double, double>
 RoutingExperiment::Run()
 {
-    Packet::EnablePrinting();
-
+    ResetCounters();
     // blank out the last output file and write the column headers
     std::ofstream out(m_csvFileName);
     out << "SimulationSecond,"
@@ -375,12 +439,12 @@ RoutingExperiment::Run()
 
     ObjectFactory pos;
     pos.SetTypeId("ns3::RandomRectanglePositionAllocator");
-    double xMax = 200 * m_scale;
-    double yMax = 200 * m_scale;
+    double xScaled = m_xMax * m_scale;
+    double yScaled = m_yMax * m_scale;
     pos.Set("X",
-            StringValue("ns3::UniformRandomVariable[Min=0.0|Max=" + std::to_string(xMax) + "]"));
+            StringValue("ns3::UniformRandomVariable[Min=0.0|Max=" + std::to_string(xScaled) + "]"));
     pos.Set("Y",
-            StringValue("ns3::UniformRandomVariable[Min=0.0|Max=" + std::to_string(yMax) + "]"));
+            StringValue("ns3::UniformRandomVariable[Min=0.0|Max=" + std::to_string(yScaled) + "]"));
 
     Ptr<PositionAllocator> taPositionAlloc = pos.Create()->GetObject<PositionAllocator>();
     auto streamsUsed = taPositionAlloc->AssignStreams(streamIndex);
@@ -395,7 +459,7 @@ RoutingExperiment::Run()
     else
     {
         std::stringstream ssSpeed;
-        ssSpeed << "ns3::UniformRandomVariable[Min=0.0|Max=" << m_nodeSpeed << "]";
+        ssSpeed << "ns3::ConstantRandomVariable[Constant=" << m_nodeSpeed << "]";
         std::stringstream ssPause;
         ssPause << "ns3::ConstantRandomVariable[Constant=" << nodePause << "]";
         mobilityAdhoc.SetMobilityModel("ns3::RandomWaypointMobilityModel",
@@ -496,18 +560,24 @@ RoutingExperiment::Run()
     {
         Ptr<Socket> sink = SetupPacketReceive(adhocInterfaces.GetAddress(i), adhocNodes.Get(i));
 
-        AddressValue remoteAddress(InetSocketAddress(adhocInterfaces.GetAddress(i), port));
+        AddressValue remoteAddress(InetSocketAddress(adhocInterfaces.GetAddress(i), m_port));
         onoff1.SetAttribute("Remote", remoteAddress);
 
         Ptr<UniformRandomVariable> var = CreateObject<UniformRandomVariable>();
         var->SetStream(streamIndex++);
-        ApplicationContainer temp = onoff1.Install(adhocNodes.Get(i + m_nSinks));
-        const auto startTime = m_startTime.ToInteger(Time::S);
-        temp.Start(Seconds(var->GetValue(startTime, startTime + 1)));
-        temp.Stop(m_simulationTime);
+        ApplicationContainer onOffContainer = onoff1.Install(adhocNodes.Get(i + m_nSinks));
+        // Spread application start time within 1 second of nominal start time
+        auto staggeredStartTime =
+            var->GetValue(m_startTime.GetSeconds(), m_startTime.GetSeconds() + 1);
+        onOffContainer.Start(Seconds(staggeredStartTime));
+
+        onOffContainer.Stop(m_simulationTime - MilliSeconds(500));
+        NS_LOG_INFO("Starting data traffic at "
+                    << Seconds(staggeredStartTime).As(Time::S) << " running until "
+                    << (m_simulationTime - MilliSeconds(500)).As(Time::S));
 
         // App Tx
-        for (auto app = temp.Begin(); app != temp.End(); ++app)
+        for (auto app = onOffContainer.Begin(); app != onOffContainer.End(); ++app)
         {
             (*app)->TraceConnectWithoutContext("Tx", MakeCallback(&RoutingExperiment::AppTx, this));
         }
@@ -566,8 +636,7 @@ RoutingExperiment::Run()
         });
     }
 
-    std::ofstream olsrTracePdrCsv{"packet-delivery-ratio_olsr-traces-" +
-                                  m_filenameSuffix + ".csv"};
+    std::ofstream olsrTracePdrCsv{"packet-delivery-ratio_olsr-traces-" + m_filenameSuffix + ".csv"};
     olsrTracePdrCsv << "TimeSeconds,TotalTx,TotalRx,PacketDeliveryRatio\n";
     auto writeOlsrTraces = [&olsrTracePdrCsv, this] {
         olsrTracePdrCsv << Simulator::Now().ToInteger(Time::S) << ',' << m_txPacketsOlsrTrace << ','
@@ -727,8 +796,12 @@ RoutingExperiment::Run()
     {
         flowmon->SerializeToXmlFile(tr_name + ".flowmon", false, false);
     }
+    double pdr = static_cast<double>(m_packetsReceived) / m_packetsSent; 
 
     std::cout << "Packets sent: " << m_packetsSent << " received: " << m_packetsReceived
-              << " ratio: " << static_cast<double>(m_packetsReceived) / m_packetsSent << std::endl;
+              << " ratio: " << pdr << std::endl;
     Simulator::Destroy();
+
+    double olsrDataRate = m_txPacketsOlsrBytesTotal * 8/(m_simulationTime - m_startTime).GetSeconds();
+    return std::make_pair(pdr, olsrDataRate);
 }

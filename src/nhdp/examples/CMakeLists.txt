@@ -14,6 +14,7 @@ build_lib_example(
   SOURCE_FILES manet-routing.cc
   LIBRARIES_TO_LINK
     ${libwifi}
+    ${libstats}
     ${libnhdp}
     ${libolsr}
     ${libolsrv2}
