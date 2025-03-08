@@ -246,6 +246,8 @@ RoutingExperiment::CommandSetup(int argc, char** argv)
     cmd.AddValue("scenarioId", "", m_scenarioId);
     cmd.AddValue("nodeSpeed", "", m_nodeSpeed);
     cmd.AddValue("startTime", "", m_startTime);
+    cmd.AddValue("xMax", "", m_xMax);
+    cmd.AddValue("yMax", "", m_yMax);
 
     cmd.Parse(argc, argv);
 
@@ -465,17 +467,23 @@ RoutingExperiment::Run()
     }
     else
     {
-        std::stringstream ssSpeed;
-        ssSpeed << "ns3::ConstantRandomVariable[Constant=" << m_nodeSpeed << "]";
-        std::stringstream ssPause;
-        ssPause << "ns3::ConstantRandomVariable[Constant=" << nodePause << "]";
-        mobilityAdhoc.SetMobilityModel("ns3::RandomWaypointMobilityModel",
-                                       "Speed",
-                                       StringValue(ssSpeed.str()),
-                                       "Pause",
-                                       StringValue(ssPause.str()),
-                                       "PositionAllocator",
-                                       PointerValue(taPositionAlloc));
+        mobilityAdhoc.SetMobilityModel("ns3::SteadyStateRandomWaypointMobilityModel",
+                                       "MinSpeed",
+                                       DoubleValue(m_nodeSpeed),
+                                       "MaxSpeed",
+                                       DoubleValue(m_nodeSpeed),
+                                       "MinPause",
+                                       DoubleValue(nodePause),
+                                       "MaxPause",
+                                       DoubleValue(nodePause),
+                                       "MinX",
+                                       DoubleValue(0),
+                                       "MaxX",
+                                       DoubleValue(m_xMax),
+                                       "MinY",
+                                       DoubleValue(0),
+                                       "MaxY",
+                                       DoubleValue(m_yMax));
     }
 
     mobilityAdhoc.Install(adhocNodes);
