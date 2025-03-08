@@ -10,12 +10,12 @@
  * This example program allows one to run ns-3 OLSR under
  * a random waypoint mobility model configured for constant speed.
  *
- * By default, the simulation runs for 200 simulated seconds, of which
- * the first 100 are used for start-up time.  The number of nodes is 50.
- * Nodes move according to RandomWaypointMobilityModel with a speed of
- * 20 m/s and no pause time within a 300x1500 m region.  The WiFi is
- * in ad hoc mode with a 11 Mb/s rate (802.11b) and a Friis loss model.
- * The transmit power is set to 7.5 dBm.
+ * By default, the simulation runs for a startup time and a data
+ * collection time (variable, depending on speed).  The number of nodes
+ * is 50.  Nodes move according to SteadyStateRandomWaypointMobilityModel
+ * with a speed of 10 m/s and no pause time within a 800x800 m region.
+ * The WiFi is in ad hoc mode with a MCS 0 rate (802.11ax) and a Friis
+ * loss model. The transmit power is set to 7.5 dBm.
  *
  * It is possible to change the mobility and density of the network by
  * directly modifying the speed and the number of nodes.  It is also
@@ -26,8 +26,7 @@
  * By default, there are 10 source/sink data pairs sending UDP data
  * at an application rate of 2.048 Kb/s each.    This is typically done
  * at a rate of 4 64-byte packets per second.  Application data is
- * started at a random time between 100 and 101 seconds and continues
- * to the end of the simulation.
+ * started at a random time after a warmup of 6 seconds (configurable).
  *
  * The program outputs a few items:
  * - packet receptions are notified to stdout such as:
@@ -146,8 +145,8 @@ class RoutingExperiment
     double m_nodeSpeed{10};       //!< Node speed in m/s
     double m_scale{1};            //!< Scale factor for waypoint coordinates
     Time m_startTime{Seconds(6)}; //! Time to start applications
-    double m_xMax{200};           //! Baseline x dimension in meters
-    double m_yMax{200};           //! Baseline y dimension in meters
+    double m_xMax{800};           //! Baseline x dimension in meters
+    double m_yMax{800};           //! Baseline y dimension in meters
 
     uint64_t m_totalRoutingTableChanges{0u};
     uint64_t m_periodRoutingTableChanges{0u};
@@ -496,6 +495,7 @@ RoutingExperiment::Run()
     wifi.SetStandard(WIFI_STANDARD_80211ax);
 
     YansWifiPhyHelper wifiPhy;
+    wifiPhy.DisablePreambleDetectionModel();
     YansWifiChannelHelper wifiChannel;
     wifiChannel.SetPropagationDelay("ns3::ConstantSpeedPropagationDelayModel");
     wifiChannel.AddPropagationLoss("ns3::FriisPropagationLossModel");
