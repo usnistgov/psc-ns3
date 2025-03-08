@@ -308,13 +308,22 @@ NhdpClient::HandleRecv(Ptr<Socket> socket)
     Ipv4PacketInfoTag tag;
     auto found = packet->RemovePacketTag(tag);
     NS_ASSERT_MSG(found, "Did not find Ipv4PacketInfoTag");
-    double quality{1};
+    std::optional<double> quality;
     if (!m_linkQualityCallback.IsNull())
     {
         quality = m_linkQualityCallback(packet);
+        NS_ABORT_MSG_IF(quality.value() < 0 || quality.value() > 1,
+                        "Link quality not between [0,1]");
+        NS_LOG_DEBUG("Receive HELLO with quality "
+                     << quality.value() << " to: " << tag.GetAddress()
+                     << " from: " << InetSocketAddress::ConvertFrom(from).GetIpv4());
     }
-    NS_LOG_INFO("Receive HELLO with quality " << quality << " to: " << tag.GetAddress() << " from: "
-                                              << InetSocketAddress::ConvertFrom(from).GetIpv4());
+    else
+    {
+        NS_LOG_DEBUG("Receive HELLO (link quality callback disabled) to: "
+                     << tag.GetAddress()
+                     << " from: " << InetSocketAddress::ConvertFrom(from).GetIpv4());
+    }
     PbbPacket pbb;
     packet->RemoveHeader(pbb);
     int16_t seq(-1);
@@ -333,9 +342,9 @@ NhdpClient::HandleRecv(Ptr<Socket> socket)
 }
 
 Ipv4Address
-NhdpClient::HandlePbbMessage(Ptr<PbbMessage> msg, double quality)
+NhdpClient::HandlePbbMessage(Ptr<PbbMessage> msg, std::optional<double> quality)
 {
-    NS_LOG_FUNCTION(this << msg << quality);
+    NS_LOG_FUNCTION(this << msg << quality.has_value());
     NS_LOG_INFO("PbbMessage TLV size " << msg->TlvSize() << " address block size "
                                        << msg->AddressBlockSize() << " type " << +msg->GetType()
                                        << " hops " << msg->HasHopLimit() << " seq "
@@ -464,9 +473,9 @@ NhdpClient::HandleLocalAddressBlock(Ptr<PbbAddressBlock> addressBlock)
 void
 NhdpClient::HandleLinkStatusAddressBlock(Ptr<PbbAddressBlock> addressBlock,
                                          Ipv4Address neighborIpv4Addr,
-                                         double quality)
+                                         std::optional<double> quality)
 {
-    NS_LOG_FUNCTION(this << addressBlock << neighborIpv4Addr);
+    NS_LOG_FUNCTION(this << addressBlock << neighborIpv4Addr << quality.has_value());
     auto numAddresses = addressBlock->AddressSize();
     auto numTlvs = addressBlock->TlvSize();
     NS_ASSERT_MSG(numTlvs > 0, "Error, no address block TLVs");
@@ -505,6 +514,7 @@ NhdpClient::HandleLinkStatusAddressBlock(Ptr<PbbAddressBlock> addressBlock,
     std::vector<Ipv4Address>
         lostSymmetricNeighbor; // keep track of any neighbors that lost symmetric status
     std::size_t k{0};
+    auto qualityValue = quality.has_value() ? quality.value() : 1.0;
     for (auto it = addressBlock->AddressBegin(); it != addressBlock->AddressEnd(); ++it)
     {
         auto value = linkStatusValues[k];
@@ -520,7 +530,8 @@ NhdpClient::HandleLinkStatusAddressBlock(Ptr<PbbAddressBlock> addressBlock,
                     (value == ADDR_TLV_LINK_STATUS_HEARD) ? "HEARD" : "SYMMETRIC";
                 NS_LOG_DEBUG("Neighbor " << neighborIpv4Addr << " lists my address as "
                                          << valueStr);
-                if ((!m_initialPending || quality >= m_hystAccept) || quality >= m_hystReject)
+                if ((!m_initialPending || qualityValue >= m_hystAccept) ||
+                    qualityValue >= m_hystReject)
                 {
                     auto itNeigh = m_neighborInfoBase.find(neighborIpv4Addr);
                     if (!itNeigh->second.m_symmetric)
@@ -538,7 +549,7 @@ NhdpClient::HandleLinkStatusAddressBlock(Ptr<PbbAddressBlock> addressBlock,
                     itLink->second.m_expirationTime = Simulator::Now() + m_hHoldTime;
                     NS_LOG_DEBUG("Changing link sym time to "
                                  << itLink->second.m_symTime.GetSeconds());
-                    if (quality < m_hystReject)
+                    if (qualityValue < m_hystReject)
                     {
                         // Force a move to LOST state
                         itLink->second.m_symTime = Simulator::Now();
@@ -558,7 +569,8 @@ NhdpClient::HandleLinkStatusAddressBlock(Ptr<PbbAddressBlock> addressBlock,
                 if (itNeigh != m_neighborInfoBase.end())
                 {
                     auto itLink = m_linkInfoBase.find(neighborIpv4Addr);
-                    if (quality < m_hystReject || (m_initialPending && quality < m_hystAccept))
+                    if (qualityValue < m_hystReject ||
+                        (m_initialPending && qualityValue < m_hystAccept))
                     {
                         itLink->second.m_pending = true;
                     }
@@ -587,7 +599,8 @@ NhdpClient::HandleLinkStatusAddressBlock(Ptr<PbbAddressBlock> addressBlock,
                     if (it == m_linkInfoBase.end())
                     {
                         LinkTuple linkTuple(neighborIpv4Addr, 0);
-                        if (quality < m_hystReject || (m_initialPending && quality < m_hystAccept))
+                        if (qualityValue < m_hystReject ||
+                            (m_initialPending && qualityValue < m_hystAccept))
                         {
                             linkTuple.m_pending = true;
                         }
@@ -599,7 +612,8 @@ NhdpClient::HandleLinkStatusAddressBlock(Ptr<PbbAddressBlock> addressBlock,
                     }
                     else
                     {
-                        if (quality < m_hystReject || (m_initialPending && quality < m_hystAccept))
+                        if (qualityValue < m_hystReject ||
+                            (m_initialPending && qualityValue < m_hystAccept))
                         {
                             it->second.m_pending = true;
                         }

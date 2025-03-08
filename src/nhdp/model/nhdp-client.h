@@ -24,6 +24,7 @@
 #include "ns3/traced-callback.h"
 
 #include <map>
+#include <optional>
 #include <queue>
 #include <set>
 
@@ -153,9 +154,11 @@ class NhdpClient : public Application
      *
      * @param [in] helloMsg The HELLO message
      * @param [in] neighborAddr The neighbor address
+     * @param [in] quality Link quality if available
      */
     typedef void (*HelloMessageRecvTracedCallback)(Ptr<PbbMessage> helloMsg,
-                                                   Ipv4Address neighborAddr);
+                                                   Ipv4Address neighborAddr,
+                                                   std::optional<double> quality);
 
     int64_t AssignStreams(int64_t stream) override;
 
@@ -167,11 +170,11 @@ class NhdpClient : public Application
     void StartApplication() override;
     void StopApplication() override;
 
-    Ipv4Address HandlePbbMessage(Ptr<PbbMessage> msg, double quality);
+    Ipv4Address HandlePbbMessage(Ptr<PbbMessage> msg, std::optional<double> quality);
     Ipv4Address HandleLocalAddressBlock(Ptr<PbbAddressBlock> addressBlock);
     void HandleLinkStatusAddressBlock(Ptr<PbbAddressBlock> addressBlock,
                                       Ipv4Address neighborIpv4Addr,
-                                      double quality);
+                                      std::optional<double> quality);
     void ScheduleHello(Ptr<Socket> socket);
     void SendHello(Ptr<Socket> socket);
 
@@ -226,7 +229,7 @@ class NhdpClient : public Application
     TracedCallback<LinkStatus, const LinkTuple&> m_linkChangeTrace;
     TracedCallback<TwoHopStatus, const TwoHopTuple&> m_twoHopChangeTrace;
     TracedCallback<Ptr<PbbMessage>> m_helloMessageSendTrace;
-    TracedCallback<Ptr<PbbMessage>, Ipv4Address, double> m_helloMessageRecvTrace;
+    TracedCallback<Ptr<PbbMessage>, Ipv4Address, std::optional<double>> m_helloMessageRecvTrace;
     TracedCallback<Ptr<const Packet>> m_txTrace;
 
     /*
