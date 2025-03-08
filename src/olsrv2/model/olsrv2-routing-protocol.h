@@ -30,6 +30,7 @@
 #include "ns3/traced-callback.h"
 
 #include <map>
+#include <optional>
 #include <vector>
 
 /// Testcase for MPR computation mechanism
@@ -351,9 +352,11 @@ class RoutingProtocol : public Ipv4RoutingProtocol
      *
      * @param message The HELLO message
      * @param neighborAddr The neighbor address
-     * @param quality The NHDP link quality
+     * @param quality The NHDP link quality (if available)
      */
-    void NhdpRecvHelloCallback(Ptr<PbbMessage> message, Ipv4Address neighborAddr, double quality);
+    void NhdpRecvHelloCallback(Ptr<PbbMessage> message,
+                               Ipv4Address neighborAddr,
+                               std::optional<double> quality);
 
   public:
     // From Ipv4RoutingProtocol
