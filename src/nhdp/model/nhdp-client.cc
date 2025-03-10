@@ -783,6 +783,7 @@ NhdpClient::SendHello(Ptr<Socket> socket)
 
     PbbPacket pbb;
     Ptr<PbbMessage> message = Create<PbbMessageIpv4>();
+    message->SetType(MESSAGE_TYPE_HELLO);
     pbb.MessagePushBack(message);
 
     // Add Message TLVs here (VALIDITY_TIME and INTERVAL_TIME).  Other protocols

@@ -34,6 +34,9 @@ namespace ns3
 namespace nhdp
 {
 
+/* PacketBB Message Types */
+const uint8_t MESSAGE_TYPE_HELLO = 0;
+
 /* PacketBB Address Block Types */
 const uint8_t ADDR_TLV_LOCAL_IF = 2;
 const uint8_t ADDR_TLV_LINK_STATUS = 3;
