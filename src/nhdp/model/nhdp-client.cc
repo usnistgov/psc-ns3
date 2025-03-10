@@ -508,7 +508,7 @@ NhdpClient::HandleLinkStatusAddressBlock(Ptr<PbbAddressBlock> addressBlock,
         }
     }
     NS_ASSERT_MSG(addressesRemaining == 0, "Logic error in linkStatusValues assignment");
-    NS_ASSERT_MSG(linkStatusValues.size() == numAddresses,
+    NS_ASSERT_MSG(linkStatusValues.size() == static_cast<long unsigned int>(numAddresses),
                   "Logic error in linkStatusValues assignment");
     Ptr<Ipv4> ipv4 = GetNode()->GetObject<Ipv4>();
     std::vector<Ipv4Address>
@@ -820,7 +820,7 @@ NhdpClient::SendHello(Ptr<Socket> socket)
 
     // Give access to the PbbMessage to other protocols that may wish to extend it
 
-    uint32_t addressBlockSize [[maybe_unused]] = message->AddressBlockSize();
+    auto addressBlockSize [[maybe_unused]] = message->AddressBlockSize();
     m_helloMessageSendTrace(message);
     if (message->AddressBlockSize() > addressBlockSize)
     {
