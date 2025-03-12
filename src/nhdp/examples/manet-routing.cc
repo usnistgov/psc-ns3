@@ -94,6 +94,12 @@ class RoutingExperiment
      */
     std::string GetExperimentFilenameSuffix() const;
 
+    /**
+     * Returns the node speed in m/s
+     * @return the node speed in m/s
+     */
+    double GetNodeSpeed() const;
+
   private:
     /**
      * Setup the receiving socket in a Sink Node.
@@ -181,6 +187,12 @@ class RoutingExperiment
 
 RoutingExperiment::RoutingExperiment()
 {
+}
+
+double
+RoutingExperiment::GetNodeSpeed() const
+{
+    return m_nodeSpeed;
 }
 
 static inline std::string
@@ -464,22 +476,24 @@ main(int argc, char* argv[])
         }
     }
     std::ofstream mainOutput("manet-routing-" + experiment.GetExperimentFilenameSuffix() + ".csv");
-    mainOutput << "#pdrMean,pdrOneSidedConfInt,overheadMean,overheadOneSidedConfInt\n";
+    mainOutput << "#speed,pdrMean,pdrOneSidedConfInt,overheadMean,overheadOneSidedConfInt\n";
     if (stoppingCriteriaReached)
     {
         std::cout << "Stopping criteria reached after " << i << " trials with PDR mean "
-                                                       << pdrStats->getMean() << " overhead mean "
-                                                       << overheadStats->getMean() << std::endl;
-        mainOutput << pdrStats->getMean() << "," << finalPdrHalfWidth << ","
-                   << overheadStats->getMean() << "," << finalOverheadHalfWidth << std::endl;
+                  << pdrStats->getMean() << " overhead mean " << overheadStats->getMean()
+                  << std::endl;
+        mainOutput << experiment.GetNodeSpeed() << "," << pdrStats->getMean() << ","
+                   << finalPdrHalfWidth << "," << overheadStats->getMean() << ","
+                   << finalOverheadHalfWidth << std::endl;
     }
     else
     {
         std::cout << "Did not converge; maximum trials reached after " << i
                   << " trials with PDR mean " << pdrStats->getMean() << " overhead mean "
                   << overheadStats->getMean() << std::endl;
-        mainOutput << pdrStats->getMean() << "," << finalPdrHalfWidth << ","
-                   << overheadStats->getMean() << "," << finalOverheadHalfWidth << std::endl;
+        mainOutput << experiment.GetNodeSpeed() << "," << pdrStats->getMean() << ","
+                   << finalPdrHalfWidth << "," << overheadStats->getMean() << ","
+                   << finalOverheadHalfWidth << std::endl;
     }
     mainOutput.close();
 
