@@ -158,8 +158,8 @@ class RoutingExperiment
     double m_nodeSpeed{10};       //!< Node speed in m/s
     double m_scale{1};            //!< Scale factor for waypoint coordinates
     Time m_startTime{Seconds(6)}; //! Time to start applications
-    double m_xMax{800};           //! Baseline x dimension in meters
-    double m_yMax{800};           //! Baseline y dimension in meters
+    double m_xMax{200};           //! Baseline x dimension in meters
+    double m_yMax{200};           //! Baseline y dimension in meters
 
     uint64_t m_totalRoutingTableChanges{0u};
     uint64_t m_periodRoutingTableChanges{0u};
@@ -581,7 +581,6 @@ RoutingExperiment::Run(uint64_t run)
     wifi.SetStandard(WIFI_STANDARD_80211ax);
 
     YansWifiPhyHelper wifiPhy;
-    wifiPhy.DisablePreambleDetectionModel();
     YansWifiChannelHelper wifiChannel;
     wifiChannel.SetPropagationDelay("ns3::ConstantSpeedPropagationDelayModel");
     wifiChannel.AddPropagationLoss("ns3::FriisPropagationLossModel");
