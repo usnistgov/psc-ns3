@@ -219,7 +219,15 @@ RoutingExperiment::GetDataCollectionDuration() const
 {
     const double xScaled = m_xMax * m_scale;
     const double yScaled = m_yMax * m_scale;
-    return Seconds(sqrt((xScaled * xScaled) + (yScaled * yScaled)) / m_nodeSpeed);
+    if (m_nodeSpeed)
+    {
+        return Seconds(sqrt((xScaled * xScaled) + (yScaled * yScaled)) / m_nodeSpeed);
+    }
+    else
+    {
+        // Ten seconds of data collection should be enough for a static scenario
+        return Seconds(10);
+    }
 }
 
 void
