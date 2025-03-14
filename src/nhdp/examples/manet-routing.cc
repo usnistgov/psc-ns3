@@ -100,6 +100,18 @@ class RoutingExperiment
      */
     double GetNodeSpeed() const;
 
+    /**
+     * Returns the maximum number of trials
+     * @return the maximum number of trials
+     */
+    uint32_t GetMaximumTrials() const;
+
+    /**
+     * Returns the maximum data collection duration of a single trial
+     * @return the maximum data collection duration of a single trial
+     */
+    Time GetMaximumDuration() const;
+
   private:
     /**
      * Setup the receiving socket in a Sink Node.
@@ -160,12 +172,15 @@ class RoutingExperiment
     uint64_t m_txPacketsOlsrTrace{0u};
     uint64_t m_txPacketsOlsrBytesTotal{0u};
     uint64_t m_rxPacketsOlsrTrace{0u};
-    Time m_simulationTime;        //!< Simulation time
-    double m_nodeSpeed{10};       //!< Node speed in m/s
-    double m_scale{1};            //!< Scale factor for waypoint coordinates
-    Time m_startTime{Seconds(6)}; //! Time to start applications
-    double m_xMax{200};           //! Baseline x dimension in meters
-    double m_yMax{200};           //! Baseline y dimension in meters
+    Time m_simulationTime;                //!< Simulation time
+    double m_nodeSpeed{10};               //!< Node speed in m/s
+    double m_scale{1};                    //!< Scale factor for waypoint coordinates
+    Time m_startTime{Seconds(12)};        //! Time to start applications
+    double m_xMax{800};                   //! Baseline x dimension in meters
+    double m_yMax{800};                   //! Baseline y dimension in meters
+    uint32_t m_maximumTrials{100};        //! Avoid running forever if no convergence
+    Time m_maximumDuration;               //! Avoid running forever if no convergence
+    bool m_preambleDetectionModel{false}; //! Use preamble detection model
 
     uint64_t m_totalRoutingTableChanges{0u};
     uint64_t m_periodRoutingTableChanges{0u};
@@ -195,6 +210,18 @@ RoutingExperiment::GetNodeSpeed() const
     return m_nodeSpeed;
 }
 
+uint32_t
+RoutingExperiment::GetMaximumTrials() const
+{
+    return m_maximumTrials;
+}
+
+Time
+RoutingExperiment::GetMaximumDuration() const
+{
+    return m_maximumDuration;
+}
+
 static inline std::string
 PrintReceivedPacket(Ptr<Socket> socket, Ptr<Packet> packet, Address senderAddress)
 {
@@ -217,6 +244,10 @@ PrintReceivedPacket(Ptr<Socket> socket, Ptr<Packet> packet, Address senderAddres
 Time
 RoutingExperiment::GetDataCollectionDuration() const
 {
+    if (!m_maximumDuration.IsZero())
+    {
+        return m_maximumDuration;
+    }
     const double xScaled = m_xMax * m_scale;
     const double yScaled = m_yMax * m_scale;
     if (m_nodeSpeed)
@@ -286,6 +317,9 @@ RoutingExperiment::CommandSetup(int argc, char** argv)
     cmd.AddValue("scenarioId", "", m_scenarioId);
     cmd.AddValue("nodeSpeed", "", m_nodeSpeed);
     cmd.AddValue("startTime", "", m_startTime);
+    cmd.AddValue("maximumTrials", "", m_maximumTrials);
+    cmd.AddValue("maximumDuration", "", m_maximumDuration);
+    cmd.AddValue("preambleDetectionModel", "", m_preambleDetectionModel);
     cmd.AddValue("xMax", "", m_xMax);
     cmd.AddValue("yMax", "", m_yMax);
 
@@ -421,7 +455,6 @@ main(int argc, char* argv[])
     uint64_t initialRunNumber = RngSeedManager::GetRun();
     uint64_t i = 0;                    // Keep initialized to zero
     uint32_t minTrials = 30;           // At least 30 trials
-    uint32_t maximumTrials = 100;      // Avoid running forever if no convergence
     double criticalValue = 1.96;       // 95% confidence interval
     double pdrTargetHalfWidth = 0.005; // Assuming PDR is around 0.9, this is a 1% CI width
     double overheadTargetHalfWidth =
@@ -429,7 +462,7 @@ main(int argc, char* argv[])
     bool stoppingCriteriaReached{false};
     double finalPdrHalfWidth{0};
     double finalOverheadHalfWidth{0};
-    for (; i < maximumTrials; i++)
+    for (; i < experiment.GetMaximumTrials(); i++)
     {
         Config::SetGlobal("RngRun", UintegerValue(i + initialRunNumber));
         auto [pdr, overhead] = experiment.Run(i + initialRunNumber);
@@ -477,7 +510,7 @@ main(int argc, char* argv[])
             finalPdrHalfWidth = pdrHalfWidth;
             break;
         }
-        else if ((i + 1) == maximumTrials)
+        else if ((i + 1) == experiment.GetMaximumTrials())
         {
             finalOverheadHalfWidth = overheadHalfWidth;
             finalPdrHalfWidth = pdrHalfWidth;
@@ -603,6 +636,10 @@ RoutingExperiment::Run(uint64_t run)
     wifi.SetStandard(WIFI_STANDARD_80211ax);
 
     YansWifiPhyHelper wifiPhy;
+    if (!m_preambleDetectionModel)
+    {
+        wifiPhy.DisablePreambleDetectionModel();
+    }
     YansWifiChannelHelper wifiChannel;
     wifiChannel.SetPropagationDelay("ns3::ConstantSpeedPropagationDelayModel");
     wifiChannel.AddPropagationLoss("ns3::FriisPropagationLossModel");
@@ -692,9 +729,9 @@ RoutingExperiment::Run(uint64_t run)
         onOffContainer.Start(Seconds(staggeredStartTime));
 
         onOffContainer.Stop(m_simulationTime - MilliSeconds(500));
-        NS_LOG_INFO("Starting data traffic at "
-                    << Seconds(staggeredStartTime).As(Time::S) << " running until "
-                    << (m_simulationTime - MilliSeconds(500)).As(Time::S));
+        NS_LOG_DEBUG("Starting data traffic at "
+                     << Seconds(staggeredStartTime).As(Time::S) << " running until "
+                     << (m_simulationTime - MilliSeconds(500)).As(Time::S));
 
         // App Tx
         for (auto app = onOffContainer.Begin(); app != onOffContainer.End(); ++app)
