@@ -61,7 +61,7 @@ struct LostNeighborTuple
 
 struct LinkTuple
 {
-    LinkTuple(Ipv4Address addr, double quality)
+    LinkTuple(Ipv4Address addr)
     {
         m_neighborAddrList.push_back(addr);
     }
