@@ -174,7 +174,8 @@ class NhdpClient : public Application
     void StopApplication() override;
 
     Ipv4Address HandlePbbMessage(Ptr<PbbMessage> msg, std::optional<double> quality);
-    Ipv4Address HandleLocalAddressBlock(Ptr<PbbAddressBlock> addressBlock);
+    Ipv4Address HandleLocalAddressBlock(Ptr<PbbAddressBlock> addressBlock,
+                                        std::optional<double> quality);
     void HandleLinkStatusAddressBlock(Ptr<PbbAddressBlock> addressBlock,
                                       Ipv4Address neighborIpv4Addr,
                                       std::optional<double> quality);
