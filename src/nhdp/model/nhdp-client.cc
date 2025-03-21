@@ -514,7 +514,7 @@ NhdpClient::HandleLinkStatusAddressBlock(Ptr<PbbAddressBlock> addressBlock,
 
     auto it = m_neighborInfoBase.find(neighborIpv4Addr);
     NS_ASSERT_MSG(it != m_neighborInfoBase.end(), "Neighbor not found");
-    auto neighborTuple = it->second;
+    auto& neighborTuple = it->second;
     // Process TLVs.  There are addressBlock->AddressSize() addresses, and at least one TLV
     // containing the values corresponding to those addresses.  If there is only one address
     // TLV, the outcome is simple-- all addresses in the block have the same link status type.
@@ -905,10 +905,10 @@ NhdpClient::RemoveExpiredTwoHopNeighbors()
     {
         if (it->second.m_expirationTime <= Simulator::Now())
         {
-            m_twoHopChangeTrace(TwoHopStatus::REMOVED, it->second);
-            it = m_twoHopInfoBase.erase(it);
             NS_LOG_INFO("Removing TwoHopTuple to " << it->second.m_twoHopAddr << " via "
                                                    << it->second.m_neighborAddrList[0]);
+            m_twoHopChangeTrace(TwoHopStatus::REMOVED, it->second);
+            it = m_twoHopInfoBase.erase(it);
         }
         else
         {
