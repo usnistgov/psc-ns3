@@ -226,7 +226,8 @@ NhdpTestCase::CheckLink(const LinkTuple& checkTuple)
     // Allow some tolerance in the time values
     Time tolerance{MilliSeconds(1)};
     Time checkHeardTime = checkTuple.m_heardTime;
-    Time checkHeardTimeMin = (checkHeardTime >= tolerance) ? (checkHeardTime - tolerance) : Seconds(0);
+    Time checkHeardTimeMin =
+        (checkHeardTime >= tolerance) ? (checkHeardTime - tolerance) : Seconds(0);
     Time checkHeardTimeMax = (checkHeardTime + tolerance);
     Time checkSymTime = checkTuple.m_symTime;
     Time checkSymTimeMin = (checkSymTime >= tolerance) ? (checkSymTime - tolerance) : Seconds(0);
@@ -238,12 +239,9 @@ NhdpTestCase::CheckLink(const LinkTuple& checkTuple)
     {
         if (neighborAddr == checkTuple.m_neighborAddrList[0] &&
             linkTuple.m_heardTime >= checkHeardTimeMin &&
-            linkTuple.m_heardTime <= checkHeardTimeMax &&
-            linkTuple.m_symTime >= checkSymTimeMin &&
-            linkTuple.m_symTime <= checkSymTimeMax &&
-            linkTuple.m_quality == checkTuple.m_quality &&
-            linkTuple.m_pending == checkTuple.m_pending &&
-            linkTuple.m_lost == checkTuple.m_lost &&
+            linkTuple.m_heardTime <= checkHeardTimeMax && linkTuple.m_symTime >= checkSymTimeMin &&
+            linkTuple.m_symTime <= checkSymTimeMax && linkTuple.m_quality == checkTuple.m_quality &&
+            linkTuple.m_pending == checkTuple.m_pending && linkTuple.m_lost == checkTuple.m_lost &&
             linkTuple.m_expirationTime >= checkLTimeMin &&
             linkTuple.m_expirationTime <= checkLTimeMax)
         {
@@ -333,7 +331,6 @@ NhdpTestCase::Olsrv2Rx(const olsrv2::PacketHeader&, const olsrv2::MessageList&)
 {
     m_rxPacketsOlsrTrace++;
 }
-
 
 /**
  * @ingroup nhdp-tests
@@ -483,75 +480,48 @@ NhdpTwoNodeNhdpTestCase::DoRun()
     // A 104 dB loss will result in a data PER of about 0.52 and a NHDP PER of zero
     //
     // In this test we are concerned with NHDP only.  Start NHDP with the channel disabled.
-    //   - at 5 seconds, enable the channel  
+    //   - at 5 seconds, enable the channel
     //   - at 6 and 8 seconds, check that HELLOs have been received and state is correct
-    //   - at 10 seconds, disable the channel  
+    //   - at 10 seconds, disable the channel
     //   - at 15 seconds, check that lost link status are being circulated
     //   - at 20 seconds, check that things are removed
     //
-    Simulator::Schedule(Seconds(5),
-                        &NhdpTestCase::Enable,
-                        this,
-                        m_nodes.Get(0),
-                        m_nodes.Get(1));
+    Simulator::Schedule(Seconds(5), &NhdpTestCase::Enable, this, m_nodes.Get(0), m_nodes.Get(1));
 
     // By time 6 seconds, we should have heard that there is a link and neighbor change;
     // the link state should be HEARD.  The Neighbor is not yet symmetric.
     NeighborTuple ntAt6s{Ipv4Address("7.0.0.2")};
     ntAt6s.m_symmetric = false;
-    Simulator::Schedule(Seconds(6),
-                        &NhdpTestCase::CheckNeighbor,
-                        this,
-                        ntAt6s);
+    Simulator::Schedule(Seconds(6), &NhdpTestCase::CheckNeighbor, this, ntAt6s);
     // at time 6, we should see heardTime of 111.9907s, symTime and expirationTime should be zero,
     // quality 1, m_pending false, m_lost false.  Some values are defaults and don't need setting
     LinkTuple ltAt6s{Ipv4Address("7.0.0.2")};
-    ltAt6s.m_heardTime = Seconds(11.9907);  // arrival of HELLO at 5.9907 + 6 seconds
+    ltAt6s.m_heardTime = Seconds(11.9907); // arrival of HELLO at 5.9907 + 6 seconds
     ltAt6s.m_quality = 1;
-    Simulator::Schedule(Seconds(6),
-                        &NhdpTestCase::CheckLink,
-                        this,
-                        ltAt6s);
+    Simulator::Schedule(Seconds(6), &NhdpTestCase::CheckLink, this, ltAt6s);
     // No 2-hop changes should be seen
-    Simulator::Schedule(Seconds(6),
-                        &NhdpTestCase::CheckTwoHopSize,
-                        this,
-                        0);
+    Simulator::Schedule(Seconds(6), &NhdpTestCase::CheckTwoHopSize, this, 0);
 
     // by time 8, the neighbor should be symmetric.  The heardTime and symTime should be now
     // 13.8889 seconds, and an expiration time of 19.8889 seconds (heard time + 6 sec).
     NeighborTuple ntAt8s{Ipv4Address("7.0.0.2")};
     ntAt8s.m_symmetric = true;
-    Simulator::Schedule(Seconds(8),
-                        &NhdpTestCase::CheckNeighbor,
-                        this,
-                        ntAt8s);
+    Simulator::Schedule(Seconds(8), &NhdpTestCase::CheckNeighbor, this, ntAt8s);
     LinkTuple ltAt8s{Ipv4Address("7.0.0.2")};
-    ltAt8s.m_heardTime = Seconds(13.8889);  // arrival of last HELLO at 7.8889 + 6 seconds
+    ltAt8s.m_heardTime = Seconds(13.8889); // arrival of last HELLO at 7.8889 + 6 seconds
     ltAt8s.m_symTime = Seconds(13.8889);
     ltAt8s.m_expirationTime = Seconds(19.8889); // heard time + 6 seconds
     ltAt8s.m_quality = 1;
-    Simulator::Schedule(Seconds(8),
-                        &NhdpTestCase::CheckLink,
-                        this,
-                        ltAt8s);
+    Simulator::Schedule(Seconds(8), &NhdpTestCase::CheckLink, this, ltAt8s);
 
-    Simulator::Schedule(Seconds(9),
-                        &NhdpTestCase::ClearNeighborChanges,
-                        this);
-
+    Simulator::Schedule(Seconds(9), &NhdpTestCase::ClearNeighborChanges, this);
     // There should not be neighbor changes since they were cleared at time 9
-    Simulator::Schedule(Seconds(10),
-                        &NhdpTestCase::CheckNeighborSize,
-                        this,
-                        0);
+    Simulator::Schedule(Seconds(10), &NhdpTestCase::CheckNeighborSize, this, 0);
 
-    Simulator::Schedule(Seconds(10),
-                        &NhdpTestCase::Disable,
-                        this,
-                        m_nodes.Get(0),
-                        m_nodes.Get(1));
+    Simulator::Schedule(Seconds(10), &NhdpTestCase::Disable, this, m_nodes.Get(0), m_nodes.Get(1));
 
+    // After disabling, we should see the link first being advertised as symmetric
+    // until that expires, then as lost until the expiration time expires (by 20 s)
 #if 0
     // 1 packet every 200 ms
     uint16_t port = 9; // Discard port (RFC 863)
