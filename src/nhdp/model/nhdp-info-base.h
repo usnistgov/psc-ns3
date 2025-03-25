@@ -75,6 +75,7 @@ struct LinkTuple
     bool m_pending{false};
     bool m_lost{false};
     Time m_expirationTime;
+    LinkStatus m_lastObservedStatus{LinkStatus::LOST};
 };
 
 struct TwoHopTuple
