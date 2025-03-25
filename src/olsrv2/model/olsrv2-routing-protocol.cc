@@ -3106,9 +3106,9 @@ RoutingProtocol::FindSendEntry(const RoutingTableEntry& entry, RoutingTableEntry
 }
 
 void
-RoutingProtocol::NhdpSendHelloCallback(Ptr<PbbMessage> message)
+RoutingProtocol::NhdpSendHelloCallback(Ipv4Address addr, Ptr<PbbMessage> message)
 {
-    NS_LOG_FUNCTION(this << message);
+    NS_LOG_FUNCTION(this << addr << message);
     Ptr<PbbAddressBlock> addrBlock = Create<PbbAddressBlockIpv4>();
     Time now = Simulator::Now();
     const LinkSet& links = m_state.GetLinks();

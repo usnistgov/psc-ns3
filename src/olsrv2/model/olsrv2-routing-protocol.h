@@ -343,9 +343,10 @@ class RoutingProtocol : public Ipv4RoutingProtocol
     /**
      * Handle an outgoing NHDP HELLO message before it is sent
      *
+     * @param addr IP address of sender
      * @param message The HELLO message
      */
-    void NhdpSendHelloCallback(Ptr<PbbMessage> message);
+    void NhdpSendHelloCallback(Ipv4Address addr, Ptr<PbbMessage> message);
 
     /**
      * Handle an incoming NHDP HELLO message after processing by NHDP
