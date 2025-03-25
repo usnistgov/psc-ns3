@@ -68,6 +68,13 @@ class TimeCompare
  * @defgroup nhdp NHDP
  */
 
+enum class AddressTlvLinkStatus
+{
+    LOST,
+    SYMMETRIC,
+    HEARD
+};
+
 /**
  * @ingroup nhdp
  * @brief A NHDP client
@@ -146,11 +153,34 @@ class NhdpClient : public Application
                                                const TwoHopTuple& newValue);
 
     /**
+     * TracedCallback signature for HELLO send trace
+     *
+     * @param [in] addr The sending IPv4 address
+     * @param [in] links List of links advertised
+     */
+    typedef void (*HelloSendTracedCallback)(
+        Ipv4Address addr,
+        const std::vector<std::pair<Ipv4Address, AddressTlvLinkStatus>>& links);
+
+    /**
      * TracedCallback signature for HELLO message send trace
      *
+     * @param [in] addr The sending IPv4 address
      * @param [in] helloMsg The (modifiable) HELLO message
      */
-    typedef void (*HelloMessageSendTracedCallback)(Ptr<PbbMessage> helloMsg);
+    typedef void (*HelloMessageSendTracedCallback)(Ipv4Address addr, Ptr<PbbMessage> helloMsg);
+
+    /**
+     * TracedCallback signature for HELLO recv trace
+     *
+     * @param [in] addr The IPv4 address of the originator
+     * @param [in] links List of links advertised
+     * @param [in] quality Link quality
+     */
+    typedef void (*HelloRecvTracedCallback)(
+        Ipv4Address addr,
+        const std::vector<std::pair<Ipv4Address, AddressTlvLinkStatus>>& links,
+        std::optional<double> quality);
 
     /**
      * TracedCallback signature for HELLO message receive trace
@@ -181,6 +211,8 @@ class NhdpClient : public Application
                                       std::optional<double> quality);
     void ScheduleHello(Ptr<Socket> socket);
     void SendHello(Ptr<Socket> socket);
+
+    void UpdateLinkTuples();
 
     // void CleanRemovedInterfaceAddressSet (void);
 
@@ -232,7 +264,13 @@ class NhdpClient : public Application
     TracedCallback<NeighborStatus, const NeighborTuple&> m_neighborChangeTrace;
     TracedCallback<LinkStatus, const LinkTuple&> m_linkChangeTrace;
     TracedCallback<TwoHopStatus, const TwoHopTuple&> m_twoHopChangeTrace;
-    TracedCallback<Ptr<PbbMessage>> m_helloMessageSendTrace;
+    TracedCallback<Ipv4Address, const std::vector<std::pair<Ipv4Address, AddressTlvLinkStatus>>&>
+        m_helloSendTrace;
+    TracedCallback<Ipv4Address,
+                   const std::vector<std::pair<Ipv4Address, AddressTlvLinkStatus>>&,
+                   std::optional<double>>
+        m_helloRecvTrace;
+    TracedCallback<Ipv4Address, Ptr<PbbMessage>> m_helloMessageSendTrace;
     TracedCallback<Ptr<PbbMessage>, Ipv4Address, std::optional<double>> m_helloMessageRecvTrace;
     TracedCallback<Ptr<const Packet>> m_txTrace;
 
@@ -244,6 +282,8 @@ class NhdpClient : public Application
     std::multimap< uint8_t, Callback<PbbMessage> > m_callbacks;
     */
 };
+
+std::ostream& operator<<(std::ostream& os, const AddressTlvLinkStatus& status);
 
 } // namespace nhdp
 
