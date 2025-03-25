@@ -75,6 +75,14 @@ class NhdpTestCase : public TestCase
                         const NeighborTuple& neighborTuple);
     void LinkChange(std::string context, LinkStatus oldLinkStatus, const LinkTuple& linkTuple);
     void TwoHopChange(std::string context, TwoHopStatus twoHopStatus, const TwoHopTuple& linkTuple);
+    void HelloSend(std::string context,
+                   Ipv4Address addr,
+                   const std::vector<std::pair<Ipv4Address, AddressTlvLinkStatus>>& links);
+    void HelloRecv(std::string context,
+                   Ipv4Address addr,
+                   const std::vector<std::pair<Ipv4Address, AddressTlvLinkStatus>>& links,
+                   std::optional<double> quality);
+
     void ClearNeighborChanges();
     void CheckNeighbor(const NeighborTuple& tuple);
     void CheckNeighborSize(std::size_t expectedSize);
@@ -97,10 +105,13 @@ class NhdpTestCase : public TestCase
     void Print(Ptr<NhdpClient> client);
 
   protected:
+    void DoTeardown() override;
+
     std::map<Ipv4Address, NeighborTuple> m_neighborChanges;
     std::map<Ipv4Address, LinkTuple> m_linkChanges;
     std::map<Ipv4Address, TwoHopTuple> m_twoHopChanges;
     std::map<Ipv4Address, NeighborTuple> m_symmetricNeighbors;
+    std::map<Ipv4Address, Ptr<PbbMessage>> m_hellos;
     uint32_t m_txPacketsOlsrTrace;
     uint32_t m_txPacketsOlsrBytesTotal;
     uint32_t m_rxPacketsOlsrTrace;
@@ -113,6 +124,13 @@ class NhdpTestCase : public TestCase
 NhdpTestCase::NhdpTestCase(std::string name)
     : TestCase(name)
 {
+}
+
+void
+NhdpTestCase::DoTeardown()
+{
+    NS_LOG_FUNCTION(this);
+    m_hellos.clear();
 }
 
 void
@@ -144,6 +162,42 @@ NhdpTestCase::Change(Ptr<Node> a, Ptr<Node> b, double lossDb)
                                b->GetObject<MobilityModel>(),
                                lossDb,
                                true);
+}
+
+void
+NhdpTestCase::HelloSend(std::string context,
+                        Ipv4Address addr,
+                        const std::vector<std::pair<Ipv4Address, AddressTlvLinkStatus>>& links)
+{
+    std::stringstream sstr;
+    for (auto& [addr, status] : links)
+    {
+        sstr << " " << addr << " " << status;
+    }
+    NS_LOG_INFO("Sending HELLO from " << addr << " links " << links.size() << sstr.str());
+#if 0
+    m_hellos.insert_or_assign(addr, helloMsg);
+#endif
+}
+
+void
+NhdpTestCase::HelloRecv(std::string context,
+                        Ipv4Address addr,
+                        const std::vector<std::pair<Ipv4Address, AddressTlvLinkStatus>>& links,
+                        std::optional<double> quality)
+{
+    std::stringstream sstr;
+    for (auto& [addr, status] : links)
+    {
+        sstr << " " << addr << " " << status;
+    }
+    NS_LOG_INFO("Receiving HELLO from "
+                << addr << " quality "
+                << (quality.has_value() ? std::to_string(quality.value()) : "void") << " links "
+                << links.size() << sstr.str());
+#if 0
+    m_hellos.insert_or_assign(addr, helloMsg);
+#endif
 }
 
 void
@@ -360,21 +414,24 @@ NhdpTwoNodeTestCase::LinkQualityCallback(Ptr<Packet> packet) const
 {
     SnrTag snrTag;
     auto found = packet->RemovePacketTag(snrTag);
-    double threshold = -1; // dB
-    double range = 6;      // dB
+    double thresholdHigh = 4; // dB
+    double thresholdLow = 2;  // dB
     if (!found)
     {
         NS_LOG_DEBUG("SnrTag not found");
         return 1;
     }
-    double quality = 0;
+    double quality = 0.1;
     double snrDb = RatioToDb(snrTag.Get());
-    if (snrDb > threshold)
+    if (snrDb > thresholdHigh)
     {
-        quality = std::min(1.0, (snrDb - threshold) / range);
-        quality = std::max(0.0, quality);
+        quality = 1;
     }
-    NS_LOG_DEBUG("Link quality: " << quality << " SNR_dB: " << snrDb);
+    else if (snrDb > thresholdLow)
+    {
+        quality = 0.7;
+    }
+    NS_LOG_INFO("Link quality: " << quality << " SNR_dB: " << snrDb);
     return quality;
 }
 
@@ -420,6 +477,15 @@ NhdpTwoNodeTestCase::DoSetup()
     // Leave Internet configuration for subclasses
 }
 
+/**
+ * @ingroup nhdp-tests
+ * Use controlled topology based on MatrixPropagationLossModel, create a two-node topology
+ * in which each node can possibly hear one neighbor, as follows:
+ *
+ * At time 5, enable:   1 <------> 2
+ * At time 10, disable: 1 <-- X -> 2
+ * At time 25, enable:  1 <------> 2
+ */
 class NhdpTwoNodeNhdpTestCase : public NhdpTwoNodeTestCase
 {
   public:
@@ -438,7 +504,7 @@ void
 NhdpTwoNodeNhdpTestCase::DoRun()
 {
     Time startTime{Seconds(1)};
-    Time stopTime{Seconds(21)};
+    Time stopTime{Seconds(30)};
 
     InternetStackHelper internet;
 #if 0
@@ -464,6 +530,11 @@ NhdpTwoNodeNhdpTestCase::DoRun()
 #if 0
     nhdp1->RegisterLinkQualityCallback(MakeCallback(&NhdpTwoNodeTestCase::LinkQualityCallback, this));
 #endif
+    nhdp1->TraceConnect("HelloSend", "1", MakeCallback(&NhdpTestCase::HelloSend, this));
+    nhdp2->TraceConnect("HelloSend", "2", MakeCallback(&NhdpTestCase::HelloSend, this));
+    nhdp1->TraceConnect("HelloRecv", "1", MakeCallback(&NhdpTestCase::HelloRecv, this));
+    nhdp2->TraceConnect("HelloRecv", "2", MakeCallback(&NhdpTestCase::HelloRecv, this));
+
     apps.Start(startTime);
     apps.Stop(stopTime);
 
@@ -485,6 +556,8 @@ NhdpTwoNodeNhdpTestCase::DoRun()
     //   - at 10 seconds, disable the channel
     //   - at 15 seconds, check that lost link status are being circulated
     //   - at 20 seconds, check that things are removed
+    //   - at 25 seconds, enable the channel
+    //   - at 30 seconds, check that things are restored
     //
     Simulator::Schedule(Seconds(5), &NhdpTestCase::Enable, this, m_nodes.Get(0), m_nodes.Get(1));
 
@@ -501,6 +574,10 @@ NhdpTwoNodeNhdpTestCase::DoRun()
     Simulator::Schedule(Seconds(6), &NhdpTestCase::CheckLink, this, ltAt6s);
     // No 2-hop changes should be seen
     Simulator::Schedule(Seconds(6), &NhdpTestCase::CheckTwoHopSize, this, 0);
+
+    // Print out the databases at time 6
+    Simulator::Schedule(Seconds(6), &NhdpTestCase::Print, this, nhdp1);
+    Simulator::Schedule(Seconds(6), &NhdpTestCase::Print, this, nhdp2);
 
     // by time 8, the neighbor should be symmetric.  The heardTime and symTime should be now
     // 13.8889 seconds, and an expiration time of 19.8889 seconds (heard time + 6 sec).
@@ -522,6 +599,227 @@ NhdpTwoNodeNhdpTestCase::DoRun()
 
     // After disabling, we should see the link first being advertised as symmetric
     // until that expires, then as lost until the expiration time expires (by 20 s)
+
+    // Enable again after everything has been lost
+    Simulator::Schedule(Seconds(25), &NhdpTestCase::Enable, this, m_nodes.Get(0), m_nodes.Get(1));
+
+#if 0
+    // 1 packet every 200 ms
+    uint16_t port = 9; // Discard port (RFC 863)
+    OnOffHelper onoff("ns3::UdpSocketFactory",
+                      Address(InetSocketAddress(Ipv4Address("7.0.0.2"), port)));
+    onoff.SetConstantRate(DataRate(20480));
+    ApplicationContainer apps2 = onoff.Install(m_nodes.Get(0));
+    apps2.Start(Seconds(6));
+    apps2.Stop(stopTime);
+
+    // Create a packet sink to receive these packets
+    PacketSinkHelper sink("ns3::UdpSocketFactory",
+                          Address(InetSocketAddress(Ipv4Address::GetAny(), port)));
+    ApplicationContainer apps3 = sink.Install(m_nodes.Get(1));
+    apps3.Start(Seconds(6));
+    apps3.Stop(stopTime);
+#endif
+
+    NS_LOG_INFO("Start simulation for " << (stopTime + Seconds(1)).As(Time::S) << " duration");
+#if 0
+    // Schedule losses
+    // Simulator::Schedule(Seconds(3), &NhdpUnequalPathTestCase::Disable, this, m_nodes.Get(0),
+    // m_nodes.Get(1));
+    Simulator::Schedule(Seconds(19), &NhdpTestCase::Print, this, nhdp1);
+    // Simulator::Schedule(Seconds(20), &NhdpUnequalPathTestCase::Enable, this, m_nodes.Get(0),
+    // m_nodes.Get(1));
+    Simulator::Schedule(Seconds(30), &NhdpTestCase::Print, this, nhdp1);
+    Simulator::Schedule(Seconds(31),
+                        &NhdpUnequalPathTestCase::Disable,
+                        this,
+                        m_nodes.Get(0),
+                        m_nodes.Get(1));
+    Simulator::Schedule(Seconds(31),
+                        &NhdpUnequalPathTestCase::Disable,
+                        this,
+                        m_nodes.Get(0),
+                        m_nodes.Get(2));
+    Simulator::Schedule(Seconds(40), &NhdpTestCase::Print, this, nhdp1);
+    Simulator::Schedule(Seconds(41),
+                        &NhdpUnequalPathTestCase::Disable,
+                        this,
+                        m_nodes.Get(0),
+                        m_nodes.Get(1));
+    Simulator::Schedule(Seconds(41),
+                        &NhdpUnequalPathTestCase::Disable,
+                        this,
+                        m_nodes.Get(0),
+                        m_nodes.Get(2));
+    Simulator::Schedule(Seconds(50), &NhdpUnequalPathTestCase::Print, this, nhdp1);
+
+#endif
+    NS_LOG_INFO("Start simulation for " << (stopTime + Seconds(1)).As(Time::S) << " duration");
+    Simulator::Stop(stopTime + Seconds(1));
+    Simulator::Run();
+    Simulator::Destroy();
+}
+
+/**
+ * @ingroup nhdp-tests
+ * Use controlled topology based on MatrixPropagationLossModel, create a two-node topology
+ * in which each node can possibly hear one neighbor, as follows:
+ *
+ * At time 5, enable:   1 <------> 2
+ * At time 10, disable: 1 <-- X -> 2
+ * At time 25, enable:  1 <------> 2
+ *
+ * This variant checks link quality
+ */
+class NhdpTwoNodeQualityNhdpTestCase : public NhdpTwoNodeTestCase
+{
+  public:
+    NhdpTwoNodeQualityNhdpTestCase(std::string name);
+
+  protected:
+    void DoRun() override;
+};
+
+NhdpTwoNodeQualityNhdpTestCase::NhdpTwoNodeQualityNhdpTestCase(std::string name)
+    : NhdpTwoNodeTestCase(name)
+{
+}
+
+void
+NhdpTwoNodeQualityNhdpTestCase::DoRun()
+{
+    Time startTime{Seconds(1)};
+    Time stopTime{Seconds(45)};
+
+    InternetStackHelper internet;
+#if 0
+    OlsrHelper olsr;
+    Ipv4ListRoutingHelper list;
+    list.Add(olsr, 100);
+    internet.SetRoutingHelper(list);
+#endif
+    internet.Install(m_nodes);
+
+    Ipv4AddressHelper ipv4;
+    auto ipInterfaces = ipv4.AssignManet(m_devices, Ipv4Address("7.0.0.1"));
+
+    NhdpHelper nhdpHelper;
+    ApplicationContainer apps = nhdpHelper.Install(m_nodes);
+    auto nhdp1 = apps.Get(0)->GetObject<NhdpClient>();
+    nhdp1->TraceConnect("NeighborChange", "1", MakeCallback(&NhdpTestCase::NeighborChange, this));
+    nhdp1->TraceConnect("LinkChange", "1", MakeCallback(&NhdpTestCase::LinkChange, this));
+    nhdp1->TraceConnect("TwoHopChange", "1", MakeCallback(&NhdpTestCase::TwoHopChange, this));
+    nhdp1->AssignStreams(10);
+    auto nhdp2 = apps.Get(1)->GetObject<NhdpClient>();
+    nhdp2->AssignStreams(11);
+    nhdp1->RegisterLinkQualityCallback(
+        MakeCallback(&NhdpTwoNodeTestCase::LinkQualityCallback, this));
+    nhdp1->SetAttribute("HystReject", DoubleValue(0.5));
+    nhdp1->SetAttribute("HystAccept", DoubleValue(1));
+    nhdp1->SetAttribute("InitialPending", BooleanValue(true));
+    nhdp2->RegisterLinkQualityCallback(
+        MakeCallback(&NhdpTwoNodeTestCase::LinkQualityCallback, this));
+    nhdp2->SetAttribute("HystReject", DoubleValue(0.5));
+    nhdp2->SetAttribute("HystAccept", DoubleValue(1));
+    nhdp2->SetAttribute("InitialPending", BooleanValue(true));
+
+    nhdp1->TraceConnect("HelloSend", "1", MakeCallback(&NhdpTestCase::HelloSend, this));
+    nhdp2->TraceConnect("HelloSend", "2", MakeCallback(&NhdpTestCase::HelloSend, this));
+    nhdp1->TraceConnect("HelloRecv", "1", MakeCallback(&NhdpTestCase::HelloRecv, this));
+    nhdp2->TraceConnect("HelloRecv", "2", MakeCallback(&NhdpTestCase::HelloRecv, this));
+
+    apps.Start(startTime);
+    apps.Stop(stopTime);
+
+    // Enable sets the matrix loss to zero dB.  The transmit power in dBm is 16.026.  The
+    // noise power in 20 MHz (default 11ax channel width for group addressed frames)
+    // is approximately -101 dBm.  The default Wi-Fi noise figure is 7 dB, so the expected
+    // SNR if zero loss is configured is 16.026 - (-101) - 7 = 110 dB for NHDP HELLOs.
+    //
+    // Therefore, to set the SNR around 0 dB for NHDP frames requires around 110 dB of loss.
+    // However, for data frames to reach 0 dB SNR, the loss should be set to 104 dB because
+    // the channel width is 80 MHz and data will be sent in 80 MHz.
+    //
+    // A 110 dB loss will result in a PER of about 0.1 for NHDP hello
+    // A 104 dB loss will result in a data PER of about 0.52 and a NHDP PER of zero
+    //
+    // In this test we are concerned with NHDP only.  Start NHDP with the channel disabled.
+    //   - at 5 seconds, enable the channel but to only around 0 dB, not meeting the threshold
+    //   - at 6 and 8 seconds, check that HELLOs have been received and state is correct
+    //   - at 10 seconds, disable the channel
+    //   - at 20 seconds, check that things are removed
+    //   - at 25 seconds, enable the channel to around 6 dB.  Check that symmetric links form
+    //
+    Simulator::Schedule(Seconds(5),
+                        &NhdpTestCase::Change,
+                        this,
+                        m_nodes.Get(0),
+                        m_nodes.Get(1),
+                        110);
+
+    // By time 6 seconds, we should have heard that there is a link and neighbor change;
+    // the link state should be HEARD.  The Neighbor is not yet symmetric.
+    NeighborTuple ntAt6s{Ipv4Address("7.0.0.2")};
+    ntAt6s.m_symmetric = false;
+    Simulator::Schedule(Seconds(6), &NhdpTestCase::CheckNeighbor, this, ntAt6s);
+    // at time 6, we should see heardTime of 111.9907s, symTime and expirationTime should be zero,
+    // quality 1, m_pending false, m_lost false.  Some values are defaults and don't need setting
+    LinkTuple ltAt6s{Ipv4Address("7.0.0.2")};
+    ltAt6s.m_heardTime = Seconds(11.9907); // arrival of HELLO at 5.9907 + 6 seconds
+    ltAt6s.m_quality = 1;
+    Simulator::Schedule(Seconds(6), &NhdpTestCase::CheckLink, this, ltAt6s);
+    // No 2-hop changes should be seen
+    Simulator::Schedule(Seconds(6), &NhdpTestCase::CheckTwoHopSize, this, 0);
+
+    // Print out the databases at time 6
+    Simulator::Schedule(Seconds(6), &NhdpTestCase::Print, this, nhdp1);
+    Simulator::Schedule(Seconds(6), &NhdpTestCase::Print, this, nhdp2);
+
+    // by time 8, the neighbor should be symmetric.  The heardTime and symTime should be now
+    // 13.8889 seconds, and an expiration time of 19.8889 seconds (heard time + 6 sec).
+    NeighborTuple ntAt8s{Ipv4Address("7.0.0.2")};
+    ntAt8s.m_symmetric = true;
+    Simulator::Schedule(Seconds(8), &NhdpTestCase::CheckNeighbor, this, ntAt8s);
+    LinkTuple ltAt8s{Ipv4Address("7.0.0.2")};
+    ltAt8s.m_heardTime = Seconds(13.8889); // arrival of last HELLO at 7.8889 + 6 seconds
+    ltAt8s.m_symTime = Seconds(13.8889);
+    ltAt8s.m_expirationTime = Seconds(19.8889); // heard time + 6 seconds
+    ltAt8s.m_quality = 1;
+    Simulator::Schedule(Seconds(8), &NhdpTestCase::CheckLink, this, ltAt8s);
+
+    Simulator::Schedule(Seconds(9), &NhdpTestCase::ClearNeighborChanges, this);
+    // There should not be neighbor changes since they were cleared at time 9
+    Simulator::Schedule(Seconds(10), &NhdpTestCase::CheckNeighborSize, this, 0);
+
+    Simulator::Schedule(Seconds(10), &NhdpTestCase::Disable, this, m_nodes.Get(0), m_nodes.Get(1));
+
+    // After disabling, we should see the link first being advertised as symmetric
+    // until that expires, then as lost until the expiration time expires (by 20 s)
+
+    // Enable above the threshold
+    Simulator::Schedule(Seconds(25),
+                        &NhdpTestCase::Change,
+                        this,
+                        m_nodes.Get(0),
+                        m_nodes.Get(1),
+                        104);
+
+    // Keep above the HYST_REJECT threshold
+    Simulator::Schedule(Seconds(30),
+                        &NhdpTestCase::Change,
+                        this,
+                        m_nodes.Get(0),
+                        m_nodes.Get(1),
+                        106.5);
+
+    // Drop below the threshold
+    Simulator::Schedule(Seconds(35),
+                        &NhdpTestCase::Change,
+                        this,
+                        m_nodes.Get(0),
+                        m_nodes.Get(1),
+                        110);
+
 #if 0
     // 1 packet every 200 ms
     uint16_t port = 9; // Discard port (RFC 863)
@@ -1042,11 +1340,11 @@ NhdpUnequalPathTestCase::LinkQualityCallback(Ptr<Packet> packet) const
     double snrDb = RatioToDb(snrTag.Get());
     NS_LOG_INFO("SnrTag " << snrDb);
     double quality = 0;
-    if (snrDb > 1)
+    if (snrDb > 6)
     {
         quality = 1;
     }
-    else if (snrDb > 0.5)
+    else if (snrDb > 3)
     {
         quality = 0.7;
     }
@@ -1616,7 +1914,6 @@ class NhdpWaypointTestCase : public TestCase
                         const NeighborTuple& neighborTuple);
     void LinkChange(std::string context, LinkStatus oldLinkStatus, const LinkTuple& linkTuple);
     void TwoHopChange(std::string context, TwoHopStatus twoHopStatus, const TwoHopTuple& linkTuple);
-    void HelloMessageSend(std::string context, Ptr<PbbMessage> helloMsg);
     void OlsrRoutingTableChange(std::string context, uint32_t tableSize);
     void OlsrTx(const olsr::PacketHeader& header, const olsr::MessageList& messages);
     void OlsrRx(const olsr::PacketHeader& header, const olsr::MessageList& messages);
@@ -1690,12 +1987,6 @@ NhdpWaypointTestCase::LinkChange(std::string context,
     NS_LOG_INFO(context << " Link old status " << oldLinkStatus << " new status "
                         << linkTuple.GetLinkStatus() << " " << linkTuple.m_neighborAddrList[0]);
     m_linkChanges.insert_or_assign(linkTuple.m_neighborAddrList[0], linkTuple);
-}
-
-void
-NhdpWaypointTestCase::HelloMessageSend(std::string context, Ptr<PbbMessage> helloMsg)
-{
-    NS_LOG_INFO(context << " Hello message send " << helloMsg->GetSerializedSize());
 }
 
 void
@@ -2093,10 +2384,6 @@ NhdpOlsrv2WaypointTestCase::DoRun()
                         MakeCallback(&NhdpWaypointTestCase::TwoHopChange, this));
     nhdp1->RegisterLinkQualityCallback(
         MakeCallback(&NhdpTwoNodeWaypointTestCase::LinkQualityCallback, this));
-    auto nhdp2 = apps.Get(1)->GetObject<NhdpClient>();
-    nhdp2->TraceConnect("HelloMessageSend",
-                        "2",
-                        MakeCallback(&NhdpWaypointTestCase::HelloMessageSend, this));
 
     apps.Start(startTime);
     apps.Stop(stopTime);
@@ -2140,7 +2427,13 @@ class NhdpTestSuite : public TestSuite
 NhdpTestSuite::NhdpTestSuite()
     : TestSuite("nhdp-system", Type::SYSTEM)
 {
+#if 0
     AddTestCase(new NhdpTwoNodeNhdpTestCase("Two node test checking state transitions"),
+                TestCase::Duration::QUICK);
+#endif
+
+    AddTestCase(new NhdpTwoNodeQualityNhdpTestCase(
+                    "Two node with link quality test checking state transitions"),
                 TestCase::Duration::QUICK);
 #if 0
     AddTestCase(new NhdpFourNodeNhdpTestCase("Four node matrix test with losses"),
