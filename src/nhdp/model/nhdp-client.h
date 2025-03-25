@@ -214,6 +214,9 @@ class NhdpClient : public Application
 
     void UpdateLinkTuples();
 
+    void TraceLinkChange(LinkTuple& linkTuple);
+    bool StatusChange(const LinkTuple& linkTuple);
+
     // void CleanRemovedInterfaceAddressSet (void);
 
     Ptr<PbbAddressBlock> BuildLocalAddressBlock(Ptr<Socket> socket);

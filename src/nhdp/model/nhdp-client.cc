@@ -477,18 +477,20 @@ NhdpClient::HandleLocalAddressBlock(Ptr<PbbAddressBlock> addressBlock,
         linkTuple.m_heardTime = EXPIRED;
         linkTuple.m_expirationTime = EXPIRED;
         linkTuple.m_pending = m_initialPending;
+        linkTuple.m_lost = false;
         // See Section 14.3, last sentence, on initializing link if link quality supported
         linkTuple.m_quality = quality.has_value() ? quality.value() : m_initialQuality;
+        if (m_initialPending && linkTuple.m_quality >= m_hystAccept)
+        {
+            linkTuple.m_pending = false;
+        }
         // Next, apply steps from Section 12.5, step 4, substeps 3-4.  Substeps 1, 2, 5
         // can be applied when the address blocks are checked.
         linkTuple.m_heardTime = m_hHoldTime + Simulator::Now();
-        if (linkTuple.m_pending)
-        {
-            linkTuple.m_expirationTime = linkTuple.m_heardTime;
-        }
+        linkTuple.m_expirationTime = linkTuple.m_heardTime;
+        TraceLinkChange(linkTuple);
         [[maybe_unused]] auto [itLink, success] =
             m_linkInfoBase.emplace(neighborIpv4Addr, linkTuple);
-        m_linkChangeTrace(LinkStatus::LOST, linkTuple);
     }
     else
     {
@@ -550,201 +552,202 @@ NhdpClient::HandleLinkStatusAddressBlock(Ptr<PbbAddressBlock> addressBlock,
     NS_ASSERT_MSG(linkStatusValues.size() == static_cast<long unsigned int>(numAddresses),
                   "Logic error in linkStatusValues assignment");
     Ptr<Ipv4> ipv4 = GetNode()->GetObject<Ipv4>();
-    std::vector<Ipv4Address>
-        lostSymmetricNeighbor; // keep track of any neighbors that lost symmetric status
+    std::vector<Ipv4Address> lostSymmetricNeighbor; // track neighbors that lost symmetric status
     std::size_t k{0};
     auto qualityValue = quality.has_value() ? quality.value() : 1.0;
+    // Make two passes through the address block.  The first is to update the link to this
+    // neighbor (including quality changes and neighbor status changes).  The second is to
+    // update the two-hop neighbor states based on the (possibly updated) neighbor status.
     for (auto it = addressBlock->AddressBegin(); it != addressBlock->AddressEnd(); ++it)
     {
-        auto value = linkStatusValues[k];
+        auto addressTlvLinkStatus = linkStatusValues[k];
         auto addr = (*it);
-        NS_ASSERT_MSG(value < 3, "Value " << +value << " unsupported");
+        NS_ASSERT_MSG(addressTlvLinkStatus < 3,
+                      "Value " << +addressTlvLinkStatus << " unsupported");
         NS_ASSERT_MSG(Ipv4Address::IsMatchingType(addr), "Only supporting IPv6 for now");
         auto ipv4Addr = Ipv4Address::ConvertFrom(addr);
         NS_LOG_DEBUG("Processing address " << ipv4Addr << " in address block");
-        links.emplace_back(ipv4Addr, static_cast<AddressTlvLinkStatus>(value));
-        if (ipv4Addr == m_localIpv4Address)
+        if (ipv4Addr != m_localIpv4Address)
         {
-            // RFC 6130, Sec. 12.5, step 3
-            auto itLink = m_linkInfoBase.find(neighborIpv4Addr);
-            NS_ASSERT_MSG(itLink != m_linkInfoBase.end(), "Link tuple to neighbor should exist");
-            auto& linkTuple = itLink->second;
-            // RFC 6130, Sec. 14.3.  If link quality is used, update the link quality prior
-            // to HELLO processing defined in Sec. 12.  Link quality corresponds to
-            // m_initialPending == true.
-            if (m_initialPending && quality.has_value())
+            k++;
+            continue;
+        }
+        links.emplace_back(ipv4Addr, static_cast<AddressTlvLinkStatus>(addressTlvLinkStatus));
+        // RFC 6130, Sec. 12.5, step 3
+        auto itLink = m_linkInfoBase.find(neighborIpv4Addr);
+        NS_ASSERT_MSG(itLink != m_linkInfoBase.end(), "Link tuple to neighbor should exist");
+        auto& linkTuple = itLink->second;
+        // RFC 6130, Sec. 14.3.  If link quality is enabled, update the link quality and
+        // neighbor status prior to HELLO processing defined in Sec. 12.  Link quality enabled
+        // corresponds to m_initialPending == true.
+        if (m_initialPending && quality.has_value())
+        {
+            const bool changeToAccept =
+                (linkTuple.m_pending || linkTuple.m_lost) && qualityValue >= m_hystAccept;
+            const bool changeToReject =
+                (!linkTuple.m_pending && !linkTuple.m_lost) && qualityValue < m_hystReject;
+            linkTuple.m_quality = qualityValue;
+            // RFC 6130, Sec. 14.3, step 1
+            if (changeToAccept)
             {
-                const auto oldQuality = linkTuple.m_quality;
-                const bool changeToAccept = qualityValue >= m_hystAccept &&
-                                            (oldQuality < m_hystAccept || linkTuple.m_pending);
-                const bool changeToReject = !linkTuple.m_pending && (oldQuality >= m_hystReject &&
-                                                                     qualityValue < m_hystReject);
-                linkTuple.m_quality = qualityValue;
-                // RFC 6130, Sec. 14.3, step 1
-                if (changeToAccept)
+                NS_LOG_DEBUG("LinkTuple to " << neighborIpv4Addr << " moved above HYST_ACCEPT");
+                linkTuple.m_pending = false;
+                linkTuple.m_lost = false;
+                if (addressTlvLinkStatus == ADDR_TLV_LINK_STATUS_HEARD ||
+                    addressTlvLinkStatus == ADDR_TLV_LINK_STATUS_SYMMETRIC)
                 {
-                    NS_LOG_DEBUG("LinkTuple to " << neighborIpv4Addr << " moved above HYST_ACCEPT");
-                    const auto oldStatus = linkTuple.GetLinkStatus();
-                    linkTuple.m_pending = false;
-                    linkTuple.m_lost = false;
-                    if (value == ADDR_TLV_LINK_STATUS_HEARD ||
-                        value == ADDR_TLV_LINK_STATUS_SYMMETRIC)
-                    {
-                        linkTuple.m_expirationTime =
-                            std::max(linkTuple.m_expirationTime,
-                                     m_lHoldTime + linkTuple.m_heardTime + m_lHoldTime);
-                    }
-                    if (oldStatus != linkTuple.GetLinkStatus())
-                    {
-                        m_linkChangeTrace(oldStatus, linkTuple);
-                    }
-                }
-                // RFC 6130, Sec. 14.3, step 2
-                if (changeToReject)
-                {
-                    NS_LOG_DEBUG("LinkTuple to " << neighborIpv4Addr << " moved below HYST_REJECT");
-                    const auto oldStatus = linkTuple.GetLinkStatus();
-                    linkTuple.m_lost = true;
-                    linkTuple.m_pending = true; // Implied by RFC 6130, Sec. 14.2
-                    linkTuple.m_heardTime = EXPIRED;
-                    linkTuple.m_symTime = EXPIRED;
                     linkTuple.m_expirationTime =
-                        std::min(linkTuple.m_expirationTime, Simulator::Now() + m_lHoldTime);
-                    if (oldStatus != linkTuple.GetLinkStatus())
-                    {
-                        m_linkChangeTrace(oldStatus, linkTuple);
-                    }
-                    auto itNeigh = m_lostNeighborSet.find(neighborIpv4Addr);
-                    if (itNeigh == m_lostNeighborSet.end())
-                    {
-                        NS_LOG_DEBUG("Inserting lost address " << neighborIpv4Addr
-                                                               << " into lost neighbor set");
-                        LostNeighborTuple lostNeighborTuple;
-                        lostNeighborTuple.m_neighborAddr = neighborIpv4Addr;
-                        lostNeighborTuple.m_expirationTime = Simulator::Now() + m_nHoldTime;
-                        m_lostNeighborSet.emplace(neighborIpv4Addr, lostNeighborTuple);
-                    }
+                        std::max(linkTuple.m_expirationTime, linkTuple.m_heardTime + m_lHoldTime);
                 }
+                TraceLinkChange(linkTuple);
             }
-            // RFC 6130, Sec. 12.5, Step 4
-            if (value == ADDR_TLV_LINK_STATUS_HEARD || value == ADDR_TLV_LINK_STATUS_SYMMETRIC)
+            // RFC 6130, Sec. 14.3, step 2
+            if (changeToReject)
             {
-                std::string valueStr =
-                    (value == ADDR_TLV_LINK_STATUS_HEARD) ? "HEARD" : "SYMMETRIC";
-                NS_LOG_DEBUG("HELLO from neighbor " << neighborIpv4Addr << " with quality value "
-                                                    << qualityValue << " listing me as "
-                                                    << valueStr);
-                const auto oldStatus = linkTuple.GetLinkStatus();
-                // RFC 6130 Sec. 12.5, step 4, item 1.1
-                linkTuple.m_symTime = Simulator::Now() + m_hHoldTime;
-                // RFC 6130 Sec. 12.5, step 4, item 3
-                linkTuple.m_heardTime =
-                    std::max(Simulator::Now() + m_hHoldTime, linkTuple.m_symTime);
-                // RFC 6130 Sec. 12.5, step 4, item 4
-                if (linkTuple.m_pending)
-                {
-                    linkTuple.m_expirationTime =
-                        std::max(linkTuple.m_expirationTime, linkTuple.m_heardTime);
-                    NS_LOG_DEBUG("Pending link; setting expiration time to "
-                                 << linkTuple.m_expirationTime.As(Time::S));
-                }
-                else
-                {
-                    // RFC 6130 Sec. 12.5, step 4, item 5
-                    linkTuple.m_expirationTime =
-                        std::max(linkTuple.m_expirationTime, linkTuple.m_heardTime + m_hHoldTime);
-                    NS_LOG_DEBUG("Changing link sym time to " << linkTuple.m_symTime.As(Time::S));
-                    if (oldStatus != linkTuple.GetLinkStatus())
-                    {
-                        m_linkChangeTrace(oldStatus, linkTuple);
-                    }
-                }
-                // RFC 6130, Sec 13.1, step 1
-                if (linkTuple.GetLinkStatus() == LinkStatus::SYMMETRIC &&
-                    !neighborTuple.m_symmetric)
-                {
-                    // change neighbor to symmetric
-                    NS_LOG_DEBUG("Changing neighbor " << neighborIpv4Addr
-                                                      << " from HEARD to SYMMETRIC");
-                    neighborTuple.m_symmetric = true;
-                    m_neighborChangeTrace(NeighborStatus::MODIFIED, neighborTuple);
-                }
-            }
-            else if (value == ADDR_TLV_LINK_STATUS_LOST)
-            {
-                NS_LOG_DEBUG("Received HELLO from neighbor " << neighborIpv4Addr
-                                                             << " who considers me as LOST");
-                if (neighborTuple.m_symmetric)
-                {
-                    NS_LOG_DEBUG("Setting neighbor " << linkTuple.m_neighborAddrList[0]
-                                                     << " to not symmetric");
-                    neighborTuple.m_symmetric = false;
-                    m_neighborChangeTrace(NeighborStatus::MODIFIED, neighborTuple);
-                    lostSymmetricNeighbor.push_back(neighborIpv4Addr);
-                }
-                const auto oldStatus = linkTuple.GetLinkStatus();
+                NS_LOG_DEBUG("LinkTuple to " << neighborIpv4Addr << " moved below HYST_REJECT");
+                linkTuple.m_lost = true;
+                linkTuple.m_pending = true; // Implied by RFC 6130, Sec. 14.2
+                linkTuple.m_heardTime = EXPIRED;
                 linkTuple.m_symTime = EXPIRED;
-                linkTuple.m_heardTime = Simulator::Now() + m_hHoldTime;
-                linkTuple.m_expirationTime = Simulator::Now() + m_hHoldTime;
-                if (oldStatus != linkTuple.GetLinkStatus())
+                linkTuple.m_expirationTime =
+                    std::min(linkTuple.m_expirationTime, Simulator::Now() + m_lHoldTime);
+                TraceLinkChange(linkTuple);
+                auto itNeigh = m_lostNeighborSet.find(neighborIpv4Addr);
+                if (itNeigh == m_lostNeighborSet.end())
                 {
-                    m_linkChangeTrace(oldStatus, linkTuple);
+                    NS_LOG_DEBUG("Inserting lost address " << neighborIpv4Addr
+                                                           << " into lost neighbor set");
+                    LostNeighborTuple lostNeighborTuple;
+                    lostNeighborTuple.m_neighborAddr = neighborIpv4Addr;
+                    lostNeighborTuple.m_expirationTime = Simulator::Now() + m_nHoldTime;
+                    m_lostNeighborSet.emplace(neighborIpv4Addr, lostNeighborTuple);
                 }
             }
         }
-        else
+        // RFC 6130, Sec. 12.5, Step 4
+        if (addressTlvLinkStatus == ADDR_TLV_LINK_STATUS_HEARD ||
+            addressTlvLinkStatus == ADDR_TLV_LINK_STATUS_SYMMETRIC)
         {
-            // Neighbor is reporting a link to a 2-hop neighbor
-            bool removeIfFound{false};
-            if (value == ADDR_TLV_LINK_STATUS_LOST)
+            std::string valueStr =
+                (addressTlvLinkStatus == ADDR_TLV_LINK_STATUS_HEARD) ? "HEARD" : "SYMMETRIC";
+            NS_LOG_DEBUG("HELLO from neighbor " << neighborIpv4Addr << " with quality value "
+                                                << qualityValue << " listing me as " << valueStr);
+            // RFC 6130 Sec. 12.5, step 4, item 1.1
+            linkTuple.m_symTime = Simulator::Now() + m_hHoldTime;
+            // RFC 6130 Sec. 12.5, step 4, item 3
+            linkTuple.m_heardTime = std::max(Simulator::Now() + m_hHoldTime, linkTuple.m_symTime);
+            // RFC 6130 Sec. 12.5, step 4, item 4
+            if (linkTuple.m_pending)
             {
-                NS_LOG_DEBUG("Two hop neighbor " << ipv4Addr << " reported as LOST by "
-                                                 << neighborIpv4Addr);
-                removeIfFound = true;
+                linkTuple.m_expirationTime =
+                    std::max(linkTuple.m_expirationTime, linkTuple.m_heardTime);
+                NS_LOG_DEBUG("Pending link; setting expiration time to "
+                             << linkTuple.m_expirationTime.As(Time::S));
             }
-            else if (value == ADDR_TLV_LINK_STATUS_HEARD)
+            else
             {
-                NS_LOG_DEBUG("Two hop neighbor " << ipv4Addr << " reported as HEARD by "
-                                                 << neighborIpv4Addr);
-                removeIfFound = true;
+                // RFC 6130 Sec. 12.5, step 4, item 5
+                linkTuple.m_expirationTime =
+                    std::max(linkTuple.m_expirationTime, linkTuple.m_heardTime + m_hHoldTime);
+                NS_LOG_DEBUG("Changing link sym time to " << linkTuple.m_symTime.As(Time::S));
+                TraceLinkChange(linkTuple);
             }
-            else if (neighborTuple.m_symmetric && value == ADDR_TLV_LINK_STATUS_SYMMETRIC)
+            // RFC 6130, Sec 13.1, step 1
+            if (linkTuple.GetLinkStatus() == LinkStatus::SYMMETRIC && !neighborTuple.m_symmetric)
             {
-                auto key = std::make_pair(neighborIpv4Addr, ipv4Addr);
-                auto itTwoHop = m_twoHopInfoBase.find(key);
-                if (itTwoHop == m_twoHopInfoBase.end())
-                {
-                    TwoHopTuple twoHopTuple(neighborIpv4Addr, ipv4Addr);
-                    twoHopTuple.m_expirationTime = Simulator::Now() + m_hHoldTime;
-                    m_twoHopInfoBase.emplace(key, twoHopTuple);
-                    m_twoHopChangeTrace(TwoHopStatus::NEW, twoHopTuple);
-                    NS_LOG_INFO("Creating new TwoHopTuple to " << ipv4Addr << " via "
-                                                               << neighborIpv4Addr);
-                }
-                else
-                {
-                    NS_LOG_DEBUG("Updating TwoHopTuple to " << ipv4Addr << " via "
-                                                            << neighborIpv4Addr);
-                    itTwoHop->second.m_expirationTime = Simulator::Now() + m_hHoldTime;
-                }
+                // change neighbor to symmetric
+                NS_LOG_DEBUG("Changing neighbor " << neighborIpv4Addr
+                                                  << " from HEARD to SYMMETRIC");
+                neighborTuple.m_symmetric = true;
+                m_neighborChangeTrace(NeighborStatus::MODIFIED, neighborTuple);
             }
-            if (removeIfFound)
+        }
+        else if (addressTlvLinkStatus == ADDR_TLV_LINK_STATUS_LOST)
+        {
+            NS_LOG_DEBUG("Received HELLO from neighbor " << neighborIpv4Addr
+                                                         << " who considers me as LOST");
+            if (neighborTuple.m_symmetric)
             {
-                auto key = std::make_pair(neighborIpv4Addr, ipv4Addr);
-                auto itTwoHop = m_twoHopInfoBase.find(key);
-                if (itTwoHop != m_twoHopInfoBase.end())
-                {
-                    m_twoHopChangeTrace(TwoHopStatus::REMOVED, itTwoHop->second);
-                    NS_LOG_INFO("Removing TwoHopTuple to " << ipv4Addr << " via "
+                NS_LOG_DEBUG("Setting neighbor " << linkTuple.m_neighborAddrList[0]
+                                                 << " to not symmetric");
+                neighborTuple.m_symmetric = false;
+                m_neighborChangeTrace(NeighborStatus::MODIFIED, neighborTuple);
+                lostSymmetricNeighbor.push_back(neighborIpv4Addr);
+            }
+            linkTuple.m_symTime = EXPIRED;
+            linkTuple.m_heardTime = Simulator::Now() + m_hHoldTime;
+            linkTuple.m_expirationTime = Simulator::Now() + m_hHoldTime;
+            linkTuple.m_lost = true;
+            TraceLinkChange(linkTuple);
+        }
+        break;
+    }
+    // Second pass, to update links to 2-hop neighbors
+    k = 0;
+    for (auto it = addressBlock->AddressBegin(); it != addressBlock->AddressEnd(); ++it)
+    {
+        auto addressTlvLinkStatus = linkStatusValues[k];
+        auto addr = (*it);
+        NS_ASSERT_MSG(addressTlvLinkStatus < 3,
+                      "Value " << +addressTlvLinkStatus << " unsupported");
+        NS_ASSERT_MSG(Ipv4Address::IsMatchingType(addr), "Only supporting IPv6 for now");
+        auto ipv4Addr = Ipv4Address::ConvertFrom(addr);
+        NS_LOG_DEBUG("Processing address " << ipv4Addr << " in address block");
+        if (ipv4Addr == m_localIpv4Address)
+        {
+            k++;
+            continue;
+        }
+        links.emplace_back(ipv4Addr, static_cast<AddressTlvLinkStatus>(addressTlvLinkStatus));
+        // Neighbor is reporting a link to a 2-hop neighbor
+        bool removeIfFound{false};
+        if (addressTlvLinkStatus == ADDR_TLV_LINK_STATUS_LOST)
+        {
+            NS_LOG_DEBUG("Two hop neighbor " << ipv4Addr << " reported as LOST by "
+                                             << neighborIpv4Addr);
+            removeIfFound = true;
+        }
+        else if (addressTlvLinkStatus == ADDR_TLV_LINK_STATUS_HEARD)
+        {
+            NS_LOG_DEBUG("Two hop neighbor " << ipv4Addr << " reported as HEARD by "
+                                             << neighborIpv4Addr);
+            removeIfFound = true;
+        }
+        else if (neighborTuple.m_symmetric &&
+                 addressTlvLinkStatus == ADDR_TLV_LINK_STATUS_SYMMETRIC)
+        {
+            auto key = std::make_pair(neighborIpv4Addr, ipv4Addr);
+            auto itTwoHop = m_twoHopInfoBase.find(key);
+            if (itTwoHop == m_twoHopInfoBase.end())
+            {
+                TwoHopTuple twoHopTuple(neighborIpv4Addr, ipv4Addr);
+                twoHopTuple.m_expirationTime = Simulator::Now() + m_hHoldTime;
+                m_twoHopInfoBase.emplace(key, twoHopTuple);
+                m_twoHopChangeTrace(TwoHopStatus::NEW, twoHopTuple);
+                NS_LOG_INFO("Creating new TwoHopTuple to " << ipv4Addr << " via "
                                                            << neighborIpv4Addr);
-                    m_twoHopInfoBase.erase(itTwoHop);
-                }
+            }
+            else
+            {
+                NS_LOG_DEBUG("Updating TwoHopTuple to " << ipv4Addr << " via " << neighborIpv4Addr);
+                itTwoHop->second.m_expirationTime = Simulator::Now() + m_hHoldTime;
+            }
+        }
+        if (removeIfFound)
+        {
+            auto itTwoHop = m_twoHopInfoBase.find(std::make_pair(neighborIpv4Addr, ipv4Addr));
+            if (itTwoHop != m_twoHopInfoBase.end())
+            {
+                m_twoHopChangeTrace(TwoHopStatus::REMOVED, itTwoHop->second);
+                NS_LOG_INFO("Removing TwoHopTuple to " << ipv4Addr << " via " << neighborIpv4Addr);
+                m_twoHopInfoBase.erase(itTwoHop);
             }
         }
         k++;
     }
     // If any 1-hop neighbors transitioned from symmetric to lost or heard, remove their 2-hop
     // neighbors
+    NS_ASSERT_MSG(lostSymmetricNeighbor.size() < 2, "Check on max size of lostSymmetricNeighbor");
     for (const auto& it : lostSymmetricNeighbor)
     {
         for (auto itTuple = m_twoHopInfoBase.begin(); itTuple != m_twoHopInfoBase.end();)
@@ -963,6 +966,7 @@ NhdpClient::CleanRemovedInterfaceAddressSet()
 }
 */
 
+// Check for expirations
 void
 NhdpClient::UpdateLinkTuples()
 {
@@ -1142,82 +1146,16 @@ NhdpClient::BuildLinkStatusAddressBlock(Ptr<Socket> socket)
         NS_LOG_DEBUG("LinkTuple neighbor "
                      << linkTuple.m_neighborAddrList[0] << " heardTime "
                      << linkTuple.m_heardTime.As(Time::S) << " symTime "
+                     << " expiration " << linkTuple.m_expirationTime.As(Time::S)
                      << linkTuple.m_symTime.As(Time::S) << " quality " << linkTuple.m_quality
-                     << " pending " << linkTuple.m_pending << " lost " << linkTuple.m_lost
-                     << " expiration " << linkTuple.m_expirationTime.As(Time::S));
-
-        // RFC 6130, Sec. 13, link quality.  Do not advertise a neighbor interface in any
-        // state until L_quality is acceptable.  Use of this feature is controlled by the
-        // variable m_initialPending.
-        bool linkQualityAcceptable =
-            !m_initialPending || linkTuple.m_quality >= m_hystAccept ||
-            (linkTuple.m_pending == false && linkTuple.m_quality >= m_hystReject);
-        if (linkTuple.m_symTime >= Simulator::Now() && linkQualityAcceptable)
+                     << " pending " << linkTuple.m_pending << " lost " << linkTuple.m_lost);
+        if (linkTuple.GetLinkStatus() == LinkStatus::SYMMETRIC)
         {
             symmetric.push_back(linkTuple.m_neighborAddrList[0]);
-            NS_ASSERT_MSG(!linkTuple.m_lost, "Unexpected m_lost on a symmetric link");
         }
-        else if (linkTuple.m_heardTime >= Simulator::Now() && linkQualityAcceptable)
+        else if (linkTuple.GetLinkStatus() == LinkStatus::HEARD)
         {
             heard.push_back(linkTuple.m_neighborAddrList[0]);
-            NS_ASSERT_MSG(!linkTuple.m_lost, "Unexpected m_lost on a heard link");
-            if (linkTuple.m_symTime != EXPIRED)
-            {
-                NS_LOG_INFO("Setting link to " << linkTuple.m_neighborAddrList[0] << " to lost");
-                linkTuple.m_lost = true;
-                linkTuple.m_symTime = EXPIRED;
-                m_linkChangeTrace(LinkStatus::SYMMETRIC, linkTuple);
-            }
-        }
-        else if (linkTuple.m_expirationTime >= Simulator::Now())
-        {
-            // XXX should expirations be handled first?
-            if (!linkTuple.m_lost)
-            {
-                auto oldStatus = linkTuple.GetLinkStatus();
-                if (oldStatus != LinkStatus::PENDING)
-                {
-                    // Need to deduce which state this is coming from, because if HEARD
-                    // and SYM timers are expired, GetLinkStatus() will already return LOST,
-                    // and the trace will report a transition from LOST to LOST.
-                    if (linkTuple.m_symTime >= linkTuple.m_heardTime)
-                    {
-                        oldStatus = LinkStatus::SYMMETRIC;
-                    }
-                    else if (linkTuple.m_heardTime != EXPIRED)
-                    {
-                        oldStatus = LinkStatus::HEARD;
-                    }
-                    NS_ASSERT_MSG(oldStatus != LinkStatus::LOST, "LinkTuple status already LOST");
-                }
-                NS_LOG_INFO("Setting link to " << linkTuple.m_neighborAddrList[0] << " to lost");
-                linkTuple.m_lost = true;
-                linkTuple.m_heardTime = EXPIRED;
-                linkTuple.m_symTime = EXPIRED;
-                linkTuple.m_expirationTime =
-                    std::min(linkTuple.m_expirationTime, Simulator::Now() + m_lHoldTime);
-                m_linkChangeTrace(oldStatus, linkTuple);
-            }
-            auto itNeigh = m_neighborInfoBase.find(linkTuple.m_neighborAddrList[0]);
-            if (itNeigh != m_neighborInfoBase.end())
-            {
-                if (linkTuple.m_heardTime <= Simulator::Now())
-                {
-                    NS_LOG_INFO("Erasing neighbor " << linkTuple.m_neighborAddrList[0]);
-                    m_neighborChangeTrace(NeighborStatus::REMOVED, itNeigh->second);
-                    m_neighborInfoBase.erase(itNeigh);
-                }
-                else
-                {
-                    if (itNeigh->second.m_symmetric)
-                    {
-                        NS_LOG_DEBUG("Setting neighbor " << linkTuple.m_neighborAddrList[0]
-                                                         << " to not symmetric");
-                        itNeigh->second.m_symmetric = false;
-                        m_neighborChangeTrace(NeighborStatus::MODIFIED, itNeigh->second);
-                    }
-                }
-            }
         }
     }
     if (heard.empty() && symmetric.empty() && m_lostNeighborSet.empty())
@@ -1225,21 +1163,29 @@ NhdpClient::BuildLinkStatusAddressBlock(Ptr<Socket> socket)
         m_helloSendTrace(m_socketAddresses[socket], links);
         return nullptr;
     }
+    std::set<Ipv4Address> heardAdvertised;
+    std::set<Ipv4Address> symAdvertised;
     Ptr<PbbAddressBlock> addrBlock = Create<PbbAddressBlockIpv4>();
     for (const auto& it : heard)
     {
         addrBlock->AddressPushBack(it);
         links.emplace_back(it, AddressTlvLinkStatus::HEARD);
         NS_LOG_DEBUG("Adding HEARD address " << it);
+        heardAdvertised.insert(it);
     }
     for (const auto& it : symmetric)
     {
         addrBlock->AddressPushBack(it);
         links.emplace_back(it, AddressTlvLinkStatus::SYMMETRIC);
         NS_LOG_DEBUG("Adding SYMMETRIC address " << it);
+        symAdvertised.insert(it);
     }
     for (auto& [addr, lostNeighborTuple] : m_lostNeighborSet)
     {
+        NS_ASSERT_MSG(heardAdvertised.find(addr) == heardAdvertised.end(),
+                      "Overlap between HEARD and lost neighbor");
+        NS_ASSERT_MSG(symAdvertised.find(addr) == symAdvertised.end(),
+                      "Overlap between SYMMETRIC and lost neighbor");
         addrBlock->AddressPushBack(addr);
         links.emplace_back(addr, AddressTlvLinkStatus::LOST);
         NS_LOG_DEBUG("Adding LOST address " << addr);
@@ -1281,6 +1227,22 @@ NhdpClient::BuildLinkStatusAddressBlock(Ptr<Socket> socket)
     }
     m_helloSendTrace(m_socketAddresses[socket], links);
     return addrBlock;
+}
+
+bool
+NhdpClient::StatusChange(const LinkTuple& linkTuple)
+{
+    return (linkTuple.m_lastObservedStatus != linkTuple.GetLinkStatus());
+}
+
+void
+NhdpClient::TraceLinkChange(LinkTuple& linkTuple)
+{
+    if (StatusChange(linkTuple))
+    {
+        m_linkChangeTrace(linkTuple.m_lastObservedStatus, linkTuple);
+        linkTuple.m_lastObservedStatus = linkTuple.GetLinkStatus();
+    }
 }
 
 std::ostream&
