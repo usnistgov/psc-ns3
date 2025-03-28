@@ -15,9 +15,10 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:`pwd`/${pathToTopLevelDir}/build/lib
 
 export heading="LinkQuality"
 export RngRun=1
+export use20Mhz=0
 
 export saveDatFiles=false
-numSims=8 # number of simultaneous simulations to run.
+numSims=12 # number of simultaneous simulations to run.
           # Ideally set this equal to the number of cores on your machine
 
 # If a directory name (label) is provided, create the appropriate results directory, copy all necessary scripts (including this one)
@@ -99,33 +100,33 @@ function run-scenario () {
 	# process function arguments
 	scenario_id=${1}
 	nodes=50
-	simulationTime="10000s"
 	protocol=${2}
 	speed=${3}
-	initialPending=${4}
-	hystReject=${5}
-	hystAccept=${5}
+	use20Mhz=${4}
+	initialPending=${5}
+	hystReject=${6}
+	hystAccept=${7}
+	threshold=${8}
 
 	echo starting scenario $scenario_id
 	logfile=log-${protocol}-${scenario_id}.out
-  csvFileName=baseline-${protocol}-${scenario_id}.csv
 	summaryFiles="$summaryFiles ${fileNameSummary}"
 
 	./manet-routing \
-		--csvFileName=$csvFileName \
 		--nodes=$nodes \
-		--simulationTime=$simulationTime \
 		--RngRun=${RngRun} \
 		--scenarioId="${scenario_id}" \
 		--protocol="${protocol}" \
 		--speed="${speed}" \
+		--use20Mhz="${use20Mhz}" \
 		--ns3::nhdp::NhdpClient::InitialPending="${initialPending}" \
 		--ns3::nhdp::NhdpClient::HystReject="${hystReject}" \
 		--ns3::nhdp::NhdpClient::HystAccept="${hystAccept}" \
+		--threshold="${threshold}" \
 		> $logfile  2>&1
 
 	#python3 plot-latency.py ${numTcpDownloads} ${numTcpUploads} ${numTcpDashStreams} ${numDctcpDownloads} ${numDctcpUploads} ${numDctcpDashStreams} ${numWebUsers} ${heading} ${simulationEndTime} --fileNameCm=${fileNameCm} --fileNameCmts=${fileNameCmts} --plotNameCm=${pdfNameCm} --plotNameCmts=${pdfNameCmts} --plotNameRtt=${pdfNameRtt} --imageNameRtt=${imageNameRtt} --fileNameSummary=${fileNameSummary} --scenarioId=${scenario_id} >/dev/null  &
-	python create-per-simulation-figures.py "${scenario_id}" "${protocol}"
+	#python create-per-simulation-figures.py "${scenario_id}" "${protocol}"
 	wait
 
 	echo finished scenario $scenario_id
@@ -137,31 +138,18 @@ export -f run-scenario
 # 1.       Default configuration 50 nodes
 # 2.       20 nodes
 
-#scenario arguments:  scenario_id protocol speed initialPending hystReject hystAccept
+#scenario arguments:  scenario_id protocol speed use20Mhz initialPending hystReject hystAccept threshold
 declare -a scenario=(\
 #	S# Speed
-	"1 OLSRv2 1 false 0 1"
-	"2 OLSRv2 2 false 0 1"
-	"3 OLSRv2 3 false 0 1"
-	"4 OLSRv2 4 false 0 1"
-	"5 OLSRv2 5 false 0 1"
-	"6 OLSRv2 6 false 0 1"
-	"7 OLSRv2 7 false 0 1"
-	"8 OLSRv2 8 false 0 1"
-	"9 OLSRv2 9 false 0 1"
-	"10 OLSRv2 10 false 0 1"
-	"11 OLSRv2 11 false 0 1"
-  "12 OLSRv2 1 true 0.3 0.8"
-  "13 OLSRv2 2 true 0.3 0.8"
-  "14 OLSRv2 3 true 0.3 0.8"
-  "15 OLSRv2 4 true 0.3 0.8"
-  "16 OLSRv2 5 true 0.3 0.8"
-  "17 OLSRv2 6 true 0.3 0.8"
-  "18 OLSRv2 7 true 0.3 0.8"
-  "19 OLSRv2 8 true 0.3 0.8"
-  "20 OLSRv2 9 true 0.3 0.8"
-  "21 OLSRv2 10 true 0.3 0.8"
-  "22 OLSRv2 11 true 0.3 0.8"
+	"2 NHDP 2 false true 1 1 -1"
+	"3 NHDP 3 false true 1 1 -1"
+	"4 NHDP 4 false true 1 1 -1"
+	"5 NHDP 5 false true 1 1 -1"
+	"6 NHDP 6 false true 1 1 -1"
+	"7 NHDP 7 false true 1 1 -1"
+	"8 NHDP 8 false true 1 1 -1"
+	"9 NHDP 9 false true 1 1 -1"
+	"10 NHDP 10 false true 1 1 -1"
 	)
 
 # launch simulation scenarios using GNU Parallel if it is installed, otherwise use basic job control
