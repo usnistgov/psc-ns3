@@ -66,6 +66,8 @@ using namespace nhdp;
 
 NS_LOG_COMPONENT_DEFINE("ManetRouting");
 
+double g_threshold{-1};
+
 /**
  * Routing experiment class.
  *
@@ -186,6 +188,8 @@ class RoutingExperiment
     uint64_t m_periodRoutingTableChanges{0u};
 
     unsigned long m_totalHops{};
+
+    bool m_use20Mhz{false};
 
     int m_scenarioId{};
 
@@ -322,6 +326,8 @@ RoutingExperiment::CommandSetup(int argc, char** argv)
     cmd.AddValue("preambleDetectionModel", "", m_preambleDetectionModel);
     cmd.AddValue("xMax", "", m_xMax);
     cmd.AddValue("yMax", "", m_yMax);
+    cmd.AddValue("use20Mhz", "", m_use20Mhz);
+    cmd.AddValue("threshold", "", g_threshold);
 
     cmd.Parse(argc, argv);
 
@@ -441,6 +447,25 @@ RoutingExperiment::ResetCounters()
     m_packetsReceivedPerInterval = 0;
     m_packetsSent = 0;
     m_packetsReceived = 0;
+}
+
+double
+LinkQualityCallback(Ptr<Packet> packet)
+{
+    SnrTag snrTag;
+    auto found = packet->RemovePacketTag(snrTag);
+    if (!found)
+    {
+        return 1;
+    }
+    double quality = 0;
+    double snrDb = RatioToDb(snrTag.Get());
+    if (snrDb > g_threshold)
+    {
+        quality = 1;
+    }
+    NS_LOG_DEBUG("Link quality: " << quality << " SNR_dB: " << snrDb);
+    return quality;
 }
 
 int
@@ -640,6 +665,10 @@ RoutingExperiment::Run(uint64_t run)
     {
         wifiPhy.DisablePreambleDetectionModel();
     }
+    if (m_use20Mhz)
+    {
+        wifiPhy.Set("ChannelSettings", StringValue("{36, 20, BAND_5GHZ, 0}"));
+    }
     YansWifiChannelHelper wifiChannel;
     wifiChannel.SetPropagationDelay("ns3::ConstantSpeedPropagationDelayModel");
     wifiChannel.AddPropagationLoss("ns3::FriisPropagationLossModel");
@@ -755,6 +784,18 @@ RoutingExperiment::Run(uint64_t run)
     std::stringstream ss4;
     ss4 << rate;
     std::string sRate = ss4.str();
+
+    ApplicationContainer::Iterator appIt;
+    for (appIt = nhdpApps.Begin(); appIt != nhdpApps.End(); ++appIt)
+    {
+        Ptr<NhdpClient> client = DynamicCast<NhdpClient>(*appIt);
+        BooleanValue val;
+        client->GetAttribute("InitialPending", val);
+        if (val.Get())
+        {
+            client->RegisterLinkQualityCallback(MakeCallback(&LinkQualityCallback));
+        }
+    }
 
     // NS_LOG_INFO("Configure Tracing.");
     // tr_name = tr_name + "_" + m_protocolName +"_" + nodes + "nodes_" + sNodeSpeed + "speed_" +
