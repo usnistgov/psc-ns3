@@ -491,6 +491,12 @@ NhdpClient::HandleLocalAddressBlock(Ptr<PbbAddressBlock> addressBlock,
         TraceLinkChange(linkTuple);
         [[maybe_unused]] auto [itLink, success] =
             m_linkInfoBase.emplace(neighborIpv4Addr, linkTuple);
+        // Remove from lost neighbor set, if present
+        auto it = m_lostNeighborSet.find(neighborIpv4Addr);
+        if (it != m_lostNeighborSet.end())
+        {
+            m_lostNeighborSet.erase(it);
+        }
     }
     else
     {
@@ -600,6 +606,12 @@ NhdpClient::HandleLinkStatusAddressBlock(Ptr<PbbAddressBlock> addressBlock,
                         std::max(linkTuple.m_expirationTime, linkTuple.m_heardTime + m_lHoldTime);
                 }
                 TraceLinkChange(linkTuple);
+                // Remove from lost neighbor set, if present
+                auto it = m_lostNeighborSet.find(neighborIpv4Addr);
+                if (it != m_lostNeighborSet.end())
+                {
+                    m_lostNeighborSet.erase(it);
+                }
             }
             // RFC 6130, Sec. 14.3, step 2
             if (changeToReject)
