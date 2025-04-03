@@ -154,6 +154,10 @@ class RoutingExperiment
 
     void HopCountRx(Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface);
 
+    void NeighborChange(std::string context,
+                        NeighborStatus neighborStatus,
+                        const NeighborTuple& neighborTuple);
+
     void AppTx(Ptr<const Packet> packet);
     void AppRx(Ptr<const Packet> packet);
     uint32_t m_port{9};                       //!< Receiving port number.
@@ -419,6 +423,29 @@ RoutingExperiment::OlsrRoutingTableChange(uint32_t)
 }
 
 void
+RoutingExperiment::NeighborChange(std::string context,
+                                  NeighborStatus neighborStatus,
+                                  const NeighborTuple& neighborTuple)
+{
+    if (neighborStatus == NeighborStatus::NEW)
+    {
+        NS_LOG_DEBUG(context << " New neighbor " << neighborTuple.m_neighborAddrList[0]);
+    }
+    else if (neighborStatus == NeighborStatus::MODIFIED && neighborTuple.m_symmetric)
+    {
+        NS_LOG_DEBUG(context << " Symmetric neighbor " << neighborTuple.m_neighborAddrList[0]);
+    }
+    else if (neighborStatus == NeighborStatus::MODIFIED && !neighborTuple.m_symmetric)
+    {
+        NS_LOG_DEBUG(context << " Non-symmetric neighbor " << neighborTuple.m_neighborAddrList[0]);
+    }
+    else if (neighborStatus == NeighborStatus::REMOVED)
+    {
+        NS_LOG_DEBUG(context << " Removed neighbor " << neighborTuple.m_neighborAddrList[0]);
+    }
+}
+
+void
 RoutingExperiment::HopCountRx(Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface)
 {
     Ipv4Header ipHeader;
@@ -562,7 +589,7 @@ main(int argc, char* argv[])
     }
     else
     {
-        std::cout << "Did not converge; maximum trials reached after " << (i + 1)
+        std::cout << "Did not converge; maximum trials reached after " << i
                   << " trials with PDR mean " << pdrStats->getMean() << " overhead mean "
                   << overheadStats->getMean() << std::endl;
         mainOutput << experiment.GetNodeSpeed() << "," << pdrStats->getMean() << ","
@@ -611,6 +638,11 @@ RoutingExperiment::Run(uint64_t run)
 
     // Set Non-unicastMode rate to unicast mode
     Config::SetDefault("ns3::WifiRemoteStationManager::NonUnicastMode", StringValue(phyMode));
+
+    // Create node index zero but do not use it; this allows the subsequent
+    // node IDs to align with the last octet of the IP address, for help
+    // in correlating IP addresses to nodes
+    Ptr<Node> unusedNode [[maybe_unused]] = CreateObject<Node>();
 
     NodeContainer adhocNodes;
     adhocNodes.Create(m_nodes);
@@ -803,6 +835,9 @@ RoutingExperiment::Run(uint64_t run)
         {
             client->RegisterLinkQualityCallback(MakeCallback(&LinkQualityCallback));
         }
+        client->TraceConnect("NeighborChange",
+                             std::to_string(client->GetNode()->GetId()),
+                             MakeCallback(&RoutingExperiment::NeighborChange, this));
     }
 
     // NS_LOG_INFO("Configure Tracing.");
