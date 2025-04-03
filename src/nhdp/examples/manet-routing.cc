@@ -17,16 +17,14 @@
  * The WiFi is in ad hoc mode with a MCS 0 rate (802.11ax) and a Friis
  * loss model. The transmit power is set to 7.5 dBm.
  *
- * It is possible to change the mobility and density of the network by
- * directly modifying the speed and the number of nodes.  It is also
- * possible to change the characteristics of the network by changing
- * the transmit power (as power increases, the impact of mobility
- * decreases and the effective density increases).
+ * It is possible to change the mobility and density characteristics of
+ * the network by directly modifying the speed, the number of nodes, the
+ * transmit power, and/or the bounding box for node positions.
  *
  * By default, there are 10 source/sink data pairs sending UDP data
  * at an application rate of 2.048 Kb/s each.    This is typically done
  * at a rate of 4 64-byte packets per second.  Application data is
- * started at a random time after a warmup of 6 seconds (configurable).
+ * started at a random time after a warmup of 12 seconds (configurable).
  *
  * The program outputs a few items:
  * - packet receptions are notified to stdout such as:
@@ -180,6 +178,8 @@ class RoutingExperiment
     Time m_startTime{Seconds(12)};        //! Time to start applications
     double m_xMax{800};                   //! Baseline x dimension in meters
     double m_yMax{800};                   //! Baseline y dimension in meters
+    double m_xMaxPd{200};                 //! x dimension for preamble detection model
+    double m_yMaxPd{200};                 //! y dimension for preamble detection model
     uint32_t m_maximumTrials{100};        //! Avoid running forever if no convergence
     Time m_maximumDuration;               //! Avoid running forever if no convergence
     bool m_preambleDetectionModel{false}; //! Use preamble detection model
@@ -346,6 +346,14 @@ RoutingExperiment::CommandSetup(int argc, char** argv)
     }
 
     m_experimentFilenameSuffix = m_protocolName + '-' + std::to_string(m_scenarioId);
+
+    if (m_preambleDetectionModel)
+    {
+        // overwrite the m_xMax and m_yMax with smaller values to compensate
+        // for decreased range of Wi-Fi when preamble detection model is used
+        m_xMax = m_xMaxPd;
+        m_yMax = m_yMaxPd;
+    }
 
     if (m_writeCsvFiles)
     {
@@ -545,7 +553,7 @@ main(int argc, char* argv[])
     mainOutput << "#speed,pdrMean,pdrOneSidedConfInt,overheadMean,overheadOneSidedConfInt\n";
     if (stoppingCriteriaReached)
     {
-        std::cout << "Stopping criteria reached after " << i << " trials with PDR mean "
+        std::cout << "Stopping criteria reached after " << (i + 1) << " trials with PDR mean "
                   << pdrStats->getMean() << " overhead mean " << overheadStats->getMean()
                   << std::endl;
         mainOutput << experiment.GetNodeSpeed() << "," << pdrStats->getMean() << ","
@@ -554,7 +562,7 @@ main(int argc, char* argv[])
     }
     else
     {
-        std::cout << "Did not converge; maximum trials reached after " << i
+        std::cout << "Did not converge; maximum trials reached after " << (i + 1)
                   << " trials with PDR mean " << pdrStats->getMean() << " overhead mean "
                   << overheadStats->getMean() << std::endl;
         mainOutput << experiment.GetNodeSpeed() << "," << pdrStats->getMean() << ","
