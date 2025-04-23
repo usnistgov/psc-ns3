@@ -1,4 +1,5 @@
 #/usr/bin/env python3
+# SPDX-License-Identifier: NIST-Software
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
