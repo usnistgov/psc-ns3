@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2009 Drexel University
  *
- * SPDX-License-Identifier: GPL-2.0-only
+ * SPDX-License-Identifier: GPL-2.0-only and NIST-Software
  *
  * Author: Tom Wambold <tom5760@gmail.com>
  */
