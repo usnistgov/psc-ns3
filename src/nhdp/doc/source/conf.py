@@ -67,5 +67,5 @@ html_static_path = ['_static']
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-    ("index", "nhdp-ns-3.tex", "ns-3 NHDP module", "ns-3 project", "manual"),
+    ("index", "nhdp-module.tex", "ns-3 NHDP module", "ns-3 project", "manual"),
 ]
