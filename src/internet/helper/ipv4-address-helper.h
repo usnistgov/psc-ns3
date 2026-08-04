@@ -178,6 +178,20 @@ class Ipv4AddressHelper
      */
     Ipv4InterfaceContainer Assign(const NetDeviceContainer& c);
 
+    /**
+     * @brief Assign MANET IPv4 addresses to the net devices in the container
+     *        based on an initial address.
+     *
+     * For each net device in the container, the helper assigns the current
+     * IPv4 address as a /32 address and iterates to the next address.
+     *
+     * @param c The NetDeviceContainer to which to assign IPv4 addresses
+     * @param addr The initial IPv4 addrss
+     *
+     * @returns A container holding the added Ipv4Interface objects
+     */
+    Ipv4InterfaceContainer AssignManet(const NetDeviceContainer& c, Ipv4Address addr);
+
   private:
     /**
      * \brief Returns the number of address bits (hostpart) for a given netmask

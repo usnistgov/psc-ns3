@@ -1,0 +1,56 @@
+Passed: 58, Failed: 17
+Commits that failed check 'LengthCheck'
+Checked rule: commits should have no more than 100 characters.
+  Commit with Message: '1: Borked commit due to unnecessarily long commit message. Let's keep this going for a bit more. And more. And more. And more.'
+  	Error: commit has 126 characters
+  		1: Borked commit due to unnecessarily long commit message. Let's keep this going for a bit more. And more. And more. And more.
+  		                                                                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+Commits that failed check 'MatchesFormatCheck'
+Checked rule: commit should match the format style 'nr: (fixes #1) Correct commit'.
+                                               prefix-^ optional-^ description-^
+  Commit with Message: '1,2: Borked commit'
+  	Errors:
+		prefix has missing whitespaces after commas
+  Commit with Message: 'borked: fixes 132 Commit'
+  	Errors:
+		missing optional field left parenthesis
+		missing optional field right parenthesis
+		missing space and/or hashtag after 'fixes'
+		description should start with upper case letters
+  Commit with Message: 'borked'
+  	Errors:
+		missing prefix separator ':'
+  Commit with Message: 'borked: commit'
+  	Errors:
+		description should start with upper case letters
+  Commit with Message: 'Borked: commit'
+  	Errors:
+		prefix contains upper case letters
+		description should start with upper case letters
+  Commit with Message: 'Borked: Commit'
+  	Errors:
+		prefix contains upper case letters
+Commits that failed check 'CheckPrefix'
+  Checked rules:
+   1.Commits with up to 3 changed files should use them as a prefix.
+   2.Commits with more than 3 changed files should use their closest common parent directory as a prefix.
+  Commit with Message: '7, 8, 9, 10: Borked commit'
+  	Error: prefix should be 'examples'
+  Commit with Message: '5, 6, 7, 8: Borked commit'
+  	Error: prefix should be 'lena-lte-comparison'
+  Commit with Message: '1, 2, 3, 4: Borked commit'
+  	Error: prefix should be 'nr'
+  Commit with Message: '1,2: Borked commit'
+  	Error: incorrect format style
+  Commit with Message: 'borked: fixes 132 Commit'
+  	Error: incorrect format style
+  Commit with Message: 'borked'
+  	Error: incorrect format style
+  Commit with Message: 'borked: Commit'
+  	Errors: borked is not an existing file
+  Commit with Message: 'borked: commit'
+  	Error: incorrect format style
+  Commit with Message: 'Borked: commit'
+  	Error: incorrect format style
+  Commit with Message: 'Borked: Commit'
+  	Error: incorrect format style

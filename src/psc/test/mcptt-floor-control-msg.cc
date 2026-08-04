@@ -1,0 +1,480 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+/**
+ * NIST-developed software is provided by NIST as a public service. You may
+ * use, copy and distribute copies of the software in any medium, provided that
+ * you keep intact this entire notice. You may improve, modify and create
+ * derivative works of the software or any portion of the software, and you may
+ * copy and distribute such modifications or works. Modified works should carry
+ * a notice stating that you changed the software and should note the date and
+ * nature of any such change. Please explicitly acknowledge the National
+ * Institute of Standards and Technology as the source of the software.
+ *
+ * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
+ * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
+ * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT AND DATA ACCURACY. NIST
+ * NEITHER REPRESENTS NOR WARRANTS THAT THE OPERATION OF THE SOFTWARE WILL BE
+ * UNINTERRUPTED OR ERROR-FREE, OR THAT ANY DEFECTS WILL BE CORRECTED. NIST
+ * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
+ * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
+ * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
+ *
+ * You are solely responsible for determining the appropriateness of using and
+ * distributing the software and you assume all risks associated with its use,
+ * including but not limited to the risks and costs of program errors,
+ * compliance with applicable laws, damage to or loss of data, programs or
+ * equipment, and the unavailability or interruption of operation. This
+ * software is not intended to be used in any situation where a failure could
+ * cause risk of injury or damage to property. The software developed by NIST
+ * employees is not subject to copyright protection within the United States.
+ */
+
+#include <ns3/core-module.h>
+#include <ns3/mcptt-floor-msg-field.h>
+#include <ns3/mcptt-floor-msg.h>
+#include <ns3/network-module.h>
+
+#include <sstream>
+#include <string>
+
+namespace ns3
+{
+
+NS_LOG_COMPONENT_DEFINE("McpttFloorControlMsgTest");
+
+namespace psc
+{
+namespace tests
+{
+
+class FloorMsgRequestTest : public TestCase
+{
+  public:
+    FloorMsgRequestTest();
+    void DoRun() override;
+};
+
+class FloorMsgGrantedTest : public TestCase
+{
+  public:
+    FloorMsgGrantedTest();
+    void DoRun() override;
+};
+
+class FloorMsgDenyTest : public TestCase
+{
+  public:
+    FloorMsgDenyTest();
+    void DoRun() override;
+};
+
+class FloorMsgReleaseTest : public TestCase
+{
+  public:
+    FloorMsgReleaseTest();
+    void DoRun() override;
+};
+
+class FloorMsgTakenTest : public TestCase
+{
+  public:
+    FloorMsgTakenTest();
+    void DoRun() override;
+};
+
+class FloorMsgQueuePositionRequestTest : public TestCase
+{
+  public:
+    FloorMsgQueuePositionRequestTest();
+    void DoRun() override;
+};
+
+class FloorMsgQueuePositionInfoTest : public TestCase
+{
+  public:
+    FloorMsgQueuePositionInfoTest();
+    void DoRun() override;
+};
+
+class McpttFloorControlMsgTestSuite : public TestSuite
+{
+  public:
+    McpttFloorControlMsgTestSuite();
+};
+
+/***************************************************************
+ *  Implementation of the code declared above.
+ ***************************************************************/
+
+static McpttFloorControlMsgTestSuite suite;
+
+FloorMsgRequestTest::FloorMsgRequestTest()
+    : TestCase("Floor Request")
+{
+}
+
+void
+FloorMsgRequestTest::DoRun()
+{
+    McpttFloorMsgFieldIndic indic = McpttFloorMsgFieldIndic();
+    indic.Indicate(McpttFloorMsgFieldIndic::BROADCAST_CALL);
+
+    McpttFloorMsgFieldPriority priority = McpttFloorMsgFieldPriority();
+    priority.SetPriority(1);
+
+    McpttFloorMsgFieldTrackInfo trackInfo = McpttFloorMsgFieldTrackInfo();
+    trackInfo.SetQueueCap(1);
+    trackInfo.AddRef(5);
+
+    McpttFloorMsgFieldUserId id = McpttFloorMsgFieldUserId();
+    id.SetUserId(9);
+
+    McpttFloorMsgRequest dstMsg;
+    McpttFloorMsgRequest srcMsg;
+
+    srcMsg.SetIndicator(indic);
+    srcMsg.SetPriority(priority);
+    srcMsg.UpdateTrackInfo(trackInfo);
+    srcMsg.SetUserId(id);
+
+    Ptr<Packet> p = Create<Packet>();
+    p->AddHeader(srcMsg);
+    p->RemoveHeader(dstMsg);
+
+    std::stringstream dstStr;
+    std::stringstream srcStr;
+
+    dstMsg.Print(dstStr);
+    srcMsg.Print(srcStr);
+
+    NS_LOG_LOGIC("Serialized  : " << srcStr.str());
+    NS_LOG_LOGIC("Deserialized: " << dstStr.str());
+
+    NS_TEST_ASSERT_MSG_EQ((dstStr.str() == srcStr.str()),
+                          true,
+                          "The serialized and deserialized messages do not match.");
+    NS_TEST_ASSERT_MSG_EQ((p->GetSize() == 0),
+                          true,
+                          "Bytes written/read do not match reported size.");
+}
+
+FloorMsgGrantedTest::FloorMsgGrantedTest()
+    : TestCase("Floor Granted")
+{
+}
+
+void
+FloorMsgGrantedTest::DoRun()
+{
+    McpttFloorMsgFieldDuration duration;
+    duration.SetDuration(50);
+
+    uint32_t grantedSsrc = 100;
+
+    McpttFloorMsgFieldIndic indic = McpttFloorMsgFieldIndic();
+    indic.Indicate(McpttFloorMsgFieldIndic::BROADCAST_CALL);
+
+    McpttFloorMsgFieldPriority priority = McpttFloorMsgFieldPriority();
+    priority.SetPriority(1);
+
+    McpttFloorMsgFieldTrackInfo trackInfo = McpttFloorMsgFieldTrackInfo();
+    trackInfo.SetQueueCap(1);
+
+    McpttFloorMsgFieldUserId id = McpttFloorMsgFieldUserId();
+    id.SetUserId(9);
+
+    McpttFloorMsgFieldQueuePositionInfo queuedInfoField;
+    queuedInfoField.SetPosition(0);
+    queuedInfoField.SetPriority(1);
+
+    uint32_t queuedSsrc = 3;
+
+    McpttFloorMsgFieldQueuedUserId queuedId;
+    queuedId.SetUserId(22);
+
+    McpttQueuedUserInfo queuedInfo(queuedSsrc, queuedId, queuedInfoField);
+
+    McpttFloorMsgGranted dstMsg;
+    McpttFloorMsgGranted srcMsg;
+    srcMsg.SetDuration(duration);
+    srcMsg.SetGrantedSsrc(grantedSsrc);
+    srcMsg.SetIndicator(indic);
+    srcMsg.SetPriority(priority);
+    srcMsg.UpdateTrackInfo(trackInfo);
+    srcMsg.SetUserId(id);
+    srcMsg.AddUserInfo(queuedInfo);
+
+    Ptr<Packet> p = Create<Packet>();
+    p->AddHeader(srcMsg);
+    p->RemoveHeader(dstMsg);
+
+    std::stringstream dstStr;
+    std::stringstream srcStr;
+
+    dstMsg.Print(dstStr);
+    srcMsg.Print(srcStr);
+
+    NS_LOG_LOGIC("Serialized  : " << srcStr.str());
+    NS_LOG_LOGIC("Deserialized: " << dstStr.str());
+
+    NS_TEST_ASSERT_MSG_EQ((dstStr.str() == srcStr.str()),
+                          true,
+                          "The serialized and deserialized messages do not match.");
+    NS_TEST_ASSERT_MSG_EQ((p->GetSize() == 0),
+                          true,
+                          "Bytes written/read do not match reported size.");
+}
+
+FloorMsgDenyTest::FloorMsgDenyTest()
+    : TestCase("Floor Deny")
+{
+}
+
+void
+FloorMsgDenyTest::DoRun()
+{
+    McpttFloorMsgFieldRejectCause rejCause(McpttFloorMsgFieldRejectCause::CAUSE_255);
+
+    McpttFloorMsgFieldUserId id = McpttFloorMsgFieldUserId();
+    id.SetUserId(9);
+
+    McpttFloorMsgFieldTrackInfo trackInfo = McpttFloorMsgFieldTrackInfo();
+    trackInfo.SetQueueCap(1);
+    trackInfo.AddRef(5);
+
+    McpttFloorMsgDeny dstMsg;
+    McpttFloorMsgDeny srcMsg;
+    srcMsg.SetRejCause(rejCause);
+    srcMsg.SetUserId(id);
+    srcMsg.UpdateTrackInfo(trackInfo);
+
+    Ptr<Packet> p = Create<Packet>();
+    p->AddHeader(srcMsg);
+    p->RemoveHeader(dstMsg);
+
+    std::stringstream dstStr;
+    std::stringstream srcStr;
+
+    dstMsg.Print(dstStr);
+    srcMsg.Print(srcStr);
+
+    NS_LOG_LOGIC("Serialized  : " << srcStr.str());
+    NS_LOG_LOGIC("Deserialized: " << dstStr.str());
+
+    NS_TEST_ASSERT_MSG_EQ((dstStr.str() == srcStr.str()),
+                          true,
+                          "The serialized and deserialized messages do not match.");
+    NS_TEST_ASSERT_MSG_EQ((p->GetSize() == 0),
+                          true,
+                          "Bytes written/read do not match reported size.");
+}
+
+FloorMsgReleaseTest::FloorMsgReleaseTest()
+    : TestCase("Floor Release")
+{
+}
+
+void
+FloorMsgReleaseTest::DoRun()
+{
+    McpttFloorMsgFieldUserId id = McpttFloorMsgFieldUserId();
+    id.SetUserId(9);
+
+    McpttFloorMsgFieldTrackInfo trackInfo = McpttFloorMsgFieldTrackInfo();
+    trackInfo.SetQueueCap(0);
+    trackInfo.AddRef(5);
+
+    McpttFloorMsgFieldIndic indic = McpttFloorMsgFieldIndic();
+    indic.Indicate(McpttFloorMsgFieldIndic::BROADCAST_CALL);
+
+    McpttFloorMsgRelease dstMsg;
+    McpttFloorMsgRelease srcMsg;
+    srcMsg.SetUserId(id);
+    srcMsg.UpdateTrackInfo(trackInfo);
+    srcMsg.SetIndicator(indic);
+
+    Ptr<Packet> p = Create<Packet>();
+    p->AddHeader(srcMsg);
+    p->RemoveHeader(dstMsg);
+
+    std::stringstream dstStr;
+    std::stringstream srcStr;
+
+    dstMsg.Print(dstStr);
+    srcMsg.Print(srcStr);
+
+    NS_LOG_LOGIC("Serialized  : " << srcStr.str());
+    NS_LOG_LOGIC("Deserialized: " << dstStr.str());
+
+    NS_TEST_ASSERT_MSG_EQ((dstStr.str() == srcStr.str()),
+                          true,
+                          "The serialized and deserialized messages do not match.");
+    NS_TEST_ASSERT_MSG_EQ((p->GetSize() == 0),
+                          true,
+                          "Bytes written/read do not match reported size.");
+}
+
+FloorMsgTakenTest::FloorMsgTakenTest()
+    : TestCase("Floor Taken")
+{
+}
+
+void
+FloorMsgTakenTest::DoRun()
+{
+    McpttFloorMsgFieldIndic indic = McpttFloorMsgFieldIndic();
+    indic.Indicate(McpttFloorMsgFieldIndic::BROADCAST_CALL);
+
+    McpttFloorMsgFieldGrantedPartyId partyId;
+    partyId.SetPartyId(2);
+
+    McpttFloorMsgFieldPermToReq permToReq;
+    permToReq.SetPermission(1);
+
+    McpttFloorMsgFieldSeqNum seqNum;
+    seqNum.SetSeqNum(2);
+
+    McpttFloorMsgFieldUserId id = McpttFloorMsgFieldUserId();
+    id.SetUserId(9);
+
+    McpttFloorMsgFieldTrackInfo trackInfo = McpttFloorMsgFieldTrackInfo();
+    trackInfo.SetQueueCap(0);
+    trackInfo.AddRef(5);
+
+    McpttFloorMsgTaken dstMsg;
+    McpttFloorMsgTaken srcMsg;
+    srcMsg.UpdateTrackInfo(trackInfo);
+    srcMsg.SetIndicator(indic);
+    srcMsg.SetPartyId(partyId);
+    srcMsg.SetPermission(permToReq);
+    srcMsg.SetSeqNum(seqNum);
+
+    Ptr<Packet> p = Create<Packet>();
+    p->AddHeader(srcMsg);
+    p->RemoveHeader(dstMsg);
+
+    std::stringstream dstStr;
+    std::stringstream srcStr;
+
+    dstMsg.Print(dstStr);
+    srcMsg.Print(srcStr);
+
+    NS_LOG_LOGIC("Serialized  : " << srcStr.str());
+    NS_LOG_LOGIC("Deserialized: " << dstStr.str());
+
+    NS_TEST_ASSERT_MSG_EQ((dstStr.str() == srcStr.str()),
+                          true,
+                          "The serialized and deserialized messages do not match.");
+    NS_TEST_ASSERT_MSG_EQ((p->GetSize() == 0),
+                          true,
+                          "Bytes written/read do not match reported size.");
+}
+
+FloorMsgQueuePositionRequestTest::FloorMsgQueuePositionRequestTest()
+    : TestCase("Queue Position Request")
+{
+}
+
+void
+FloorMsgQueuePositionRequestTest::DoRun()
+{
+    McpttFloorMsgFieldUserId id = McpttFloorMsgFieldUserId();
+    id.SetUserId(9);
+
+    McpttFloorMsgFieldTrackInfo trackInfo = McpttFloorMsgFieldTrackInfo();
+    trackInfo.SetQueueCap(0);
+    trackInfo.AddRef(5);
+
+    McpttFloorMsgQueuePositionRequest dstMsg;
+    McpttFloorMsgQueuePositionRequest srcMsg;
+    srcMsg.SetUserId(id);
+    srcMsg.UpdateTrackInfo(trackInfo);
+
+    Ptr<Packet> p = Create<Packet>();
+    p->AddHeader(srcMsg);
+    p->RemoveHeader(dstMsg);
+
+    std::stringstream dstStr;
+    std::stringstream srcStr;
+
+    dstMsg.Print(dstStr);
+    srcMsg.Print(srcStr);
+
+    NS_LOG_LOGIC("Serialized  : " << srcStr.str());
+    NS_LOG_LOGIC("Deserialized: " << dstStr.str());
+
+    NS_TEST_ASSERT_MSG_EQ((dstStr.str() == srcStr.str()),
+                          true,
+                          "The serialized and deserialized messages do not match.");
+    NS_TEST_ASSERT_MSG_EQ((p->GetSize() == 0),
+                          true,
+                          "Bytes written/read do not match reported size.");
+}
+
+FloorMsgQueuePositionInfoTest::FloorMsgQueuePositionInfoTest()
+    : TestCase("Queue Info")
+{
+}
+
+void
+FloorMsgQueuePositionInfoTest::DoRun()
+{
+    McpttFloorMsgFieldUserId id = McpttFloorMsgFieldUserId();
+    id.SetUserId(9);
+
+    McpttFloorMsgFieldQueuePositionInfo queuedInfoField;
+    queuedInfoField.SetPosition(0);
+    queuedInfoField.SetPriority(1);
+
+    uint32_t queuedSsrc = 3;
+
+    McpttFloorMsgFieldQueuedUserId queuedId;
+    queuedId.SetUserId(22);
+
+    McpttFloorMsgFieldTrackInfo trackInfo = McpttFloorMsgFieldTrackInfo();
+    trackInfo.AddRef(5);
+
+    McpttFloorMsgQueuePositionInfo dstMsg;
+    McpttFloorMsgQueuePositionInfo srcMsg;
+    srcMsg.SetUserId(id);
+    srcMsg.SetQueuedSsrc(queuedSsrc);
+    srcMsg.SetQueuedUserId(queuedId);
+    srcMsg.SetQueuePositionInfo(queuedInfoField);
+    srcMsg.UpdateTrackInfo(trackInfo);
+
+    Ptr<Packet> p = Create<Packet>();
+    p->AddHeader(srcMsg);
+    p->RemoveHeader(dstMsg);
+
+    std::stringstream dstStr;
+    std::stringstream srcStr;
+
+    dstMsg.Print(dstStr);
+    srcMsg.Print(srcStr);
+
+    NS_LOG_LOGIC("Serialized  : " << srcStr.str());
+    NS_LOG_LOGIC("Deserialized: " << dstStr.str());
+
+    NS_TEST_ASSERT_MSG_EQ((dstStr.str() == srcStr.str()),
+                          true,
+                          "The serialized and deserialized messages do not match.");
+    NS_TEST_ASSERT_MSG_EQ((p->GetSize() == 0),
+                          true,
+                          "Bytes written/read do not match reported size.");
+}
+
+McpttFloorControlMsgTestSuite::McpttFloorControlMsgTestSuite()
+    : TestSuite("mcptt-floor-control-messages", TestSuite::Type::UNIT)
+{
+    AddTestCase(new FloorMsgRequestTest(), TestCase::Duration::QUICK);
+    AddTestCase(new FloorMsgGrantedTest(), TestCase::Duration::QUICK);
+    AddTestCase(new FloorMsgDenyTest(), TestCase::Duration::QUICK);
+    AddTestCase(new FloorMsgReleaseTest(), TestCase::Duration::QUICK);
+    AddTestCase(new FloorMsgTakenTest(), TestCase::Duration::QUICK);
+    AddTestCase(new FloorMsgQueuePositionRequestTest(), TestCase::Duration::QUICK);
+    AddTestCase(new FloorMsgQueuePositionInfoTest(), TestCase::Duration::QUICK);
+}
+
+} // namespace tests
+} // namespace psc
+} // namespace ns3

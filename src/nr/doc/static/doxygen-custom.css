@@ -1,0 +1,41 @@
+/*Copyright (c) 2024 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC) */
+/*SPDX-License-Identifier: GPL-2.0-only*/
+:root {
+  --primary-color: #ea7944;
+  --header-foreground: #ffffff;
+}
+
+#main-nav
+{
+  background-color: #375C93;
+}
+
+#main-nav ul,
+{
+  background-color: #375C93;
+}
+
+#titlearea
+{
+  color: #000000;
+}
+
+.sm-dox ul a
+{
+  background-color: #375C93;
+  color: #ffffff !important;
+}
+
+#nav-tree .label a:hover {
+    background-color: #ea7944;
+    color: #ffffff !important;
+    border-radius: var(--border-radius-small) !important;
+}
+
+#nav-sync {
+    visibility: hidden;
+}
+
+.classindex dl {
+    column-count: 1;
+}

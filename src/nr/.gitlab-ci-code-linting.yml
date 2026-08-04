@@ -1,0 +1,138 @@
+# Copyright (c) 2023 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
+#
+# SPDX-License-Identifier: GPL-2.0-only
+
+# ns-3 CI/CD script with the code-linting stage
+#
+# Contains jobs to check the ns-3 coding style and perform lint checking.
+
+# Clang-format
+check-style-clang-format:
+  stage: code-linting
+  image: ubuntu:latest
+  before_script:
+    - apt update
+    - DEBIAN_FRONTEND=noninteractive apt install -y
+      python3
+      clang-format-15
+      git
+  script:
+    - git clone -b $NS3_RELEASE_VERSION --depth=1 $NS3_REPOSITORY_URL
+    - ln -s ${PWD} ns-3-dev/contrib/nr
+    - pushd ns-3-dev
+    - python3 utils/check-style-clang-format.py contrib/nr/model
+    - python3 utils/check-style-clang-format.py contrib/nr/helper
+    - python3 utils/check-style-clang-format.py contrib/nr/utils
+    - python3 utils/check-style-clang-format.py contrib/nr/examples
+    - python3 utils/check-style-clang-format.py contrib/nr/test
+    - python3 utils/check-style-clang-format.py --no-formatting contrib/nr/doc
+    - python3 utils/check-style-clang-format.py --no-formatting contrib/nr/tutorial
+    - popd
+    - rm -rf ns-3-dev
+  timeout: 1h
+
+# Check cmake format
+cmake-format:
+  stage: code-linting
+  image: python:latest
+  before_script:
+    - pip install pyyaml cmake cmake-format ninja
+  script:
+    - git clone -b $NS3_RELEASE_VERSION --depth=1 $NS3_REPOSITORY_URL
+    - mkdir -p ns-3-dev/contrib/nr/
+    - ln -s ${PWD} ns-3-dev/contrib/nr
+    - pushd ns-3-dev
+    - ./ns3 configure --enable-modules=core
+    - ./ns3 build cmake-format-check
+    - popd
+    - rm -rf ns-3-dev
+  timeout: 1h
+
+# Check Python format
+python-format:
+  stage: code-linting
+  image: python:latest
+  before_script:
+    - pip install black isort
+  script:
+    - black --check .
+    - isort --check .
+  timeout: 1h
+
+# Spell checking
+spell-check:
+  stage: code-linting
+  image: python:latest
+  before_script:
+    # Python <3.11 also requires the 'tomli' package
+    - pip install codespell
+  script:
+    # Get commit messages
+    - if (git remote | grep -qw upstream) ; then
+      git remote remove upstream ;
+      fi
+    - git remote add -t $CI_DEFAULT_BRANCH --no-tags -f upstream https://gitlab.com/cttc-lena/nr.git
+
+    - git log --pretty=%B HEAD...upstream/$CI_DEFAULT_BRANCH ^upstream/$CI_DEFAULT_BRANCH > git_messages.txt
+    # Check source code and commit messages
+    - codespell -f -C0 ./
+  timeout: 1h
+
+# Clang-tidy
+clang-tidy-17:
+  stage: code-linting
+  image: ubuntu:rolling
+  before_script:
+    - apt update
+    - DEBIAN_FRONTEND=noninteractive apt install -y
+      clang cmake
+      clang-tidy clang-tidy-17
+      git libsqlite3-dev libeigen3-dev
+  script:
+    - git clone -b $NS3_RELEASE_VERSION --depth=1 $NS3_REPOSITORY_URL
+    - ln -s ${PWD} ns-3-dev/contrib/nr
+    - pushd ns-3-dev
+    - ./ns3 configure -d debug --enable-examples --enable-tests --enable-asserts --disable-precompiled-headers
+    - echo "Trimming compile_commands.json to filter out non-nr code"
+    - ./contrib/nr/tools/trim_compile_commands.py ./cmake-cache/compile_commands.json
+    - echo "Running full clang-tidy for nr"
+    - run-clang-tidy-17 -p cmake-cache/ -quiet 1> ../clang-tidy-output.log 2> /dev/null
+    # Check job results
+    - (! egrep -v "file not found \[clang-diagnostic-error\]" ../clang-tidy-output.log | egrep -A3 "error:|warning:|note:")
+    - echo "No clang-tidy errors found"
+    - popd
+    - rm -rf ns-3-dev
+  dependencies: []
+  artifacts:
+    paths:
+      - clang-tidy-output.log
+    when: on_failure
+  interruptible: true
+  timeout: 3h
+
+# Check commit format and style
+check-commit-message:
+  stage: code-linting
+  image: python:latest
+  before_script:
+    - pip install GitPython
+  script:
+    # Check source code and commit messages
+    - ./tools/check-commit-message/check-commit-message.py
+  timeout: 1h
+  allow_failure: true
+
+# Check for emacs line presence
+emacs-line:
+  stage: code-linting
+  image: ubuntu:latest
+  script:
+    - if ( egrep -rn --include="*.h" --include="*.cc" --include="*.c" --include="*.py" --include="*.rst" "c-file-style:|py-indent-offset:" ) ; then
+      echo "Found Emacs lines on the above C/C++, Python and RST files" ;
+      exit 1 ;
+      else
+      echo "No Emacs lines found on C/C++, Python and RST files" ;
+      exit 0 ;
+      fi
+  timeout: 1h
+  interruptible: true

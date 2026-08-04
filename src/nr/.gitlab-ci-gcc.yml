@@ -1,0 +1,155 @@
+# Copyright (c) 2023 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
+#
+# SPDX-License-Identifier: GPL-2.0-only
+
+# NS3 CI script for GCC
+
+# Any scheduled pipeline for GCC should define a variable, named
+# "RELEASE", that has a value "weekly". Also, a variable "GCC" should be set
+# to True.
+
+# We support from 10 to the latest version. Check if everything builds fine
+# under debug, default, and optimized, on Linux.
+
+.weekly-build-gcc-base:
+  extends: .base-build
+  only:
+    variables:
+      - $RELEASE == "weekly"
+      - $UBUNTU == "True"
+  before_script:
+    - apt update
+    - apt upgrade --yes
+    - DEBIAN_FRONTEND=noninteractive apt install --no-install-recommends --yes
+      ca-certificates
+      $COMPILER cmake ninja-build ccache
+      python3 python3-dev
+      gcc git
+      gsl-bin libgsl-dev $LIBGSL
+      libboost-all-dev
+      libc6-dev
+      libgtk-3-dev
+      libfl-dev
+      libxml2 libxml2-dev
+      libsqlite3-dev sqlite3
+      libeigen3-dev
+      qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools
+      ssh
+
+# GCC 10
+weekly-build-gcc-10-debug:
+  extends: .weekly-build-gcc-base
+  image: ubuntu:20.04
+  variables:
+    MODE: debug
+    COMPILER: g++-10
+    LIBGSL: libgsl23
+
+weekly-build-gcc-10-default:
+  extends: .weekly-build-gcc-base
+  image: ubuntu:20.04
+  variables:
+    MODE: default
+    COMPILER: g++-10
+    LIBGSL: libgsl23
+
+weekly-build-gcc-10-optimized:
+  extends: .weekly-build-gcc-base
+  image: ubuntu:20.04
+  variables:
+    MODE: optimized
+    COMPILER: g++-10
+    LIBGSL: libgsl23
+
+# GCC 11
+weekly-build-gcc-11-debug:
+  extends: .weekly-build-gcc-base
+  image: ubuntu:22.04
+  variables:
+    MODE: debug
+    COMPILER: g++-11
+    LIBGSL: libgsl27
+
+weekly-build-gcc-11-default:
+  extends: .weekly-build-gcc-base
+  image: ubuntu:22.04
+  variables:
+    MODE: default
+    COMPILER: g++-11
+    LIBGSL: libgsl27
+
+weekly-build-gcc-11-optimized:
+  extends: .weekly-build-gcc-base
+  image: ubuntu:22.04
+  variables:
+    MODE: optimized
+    COMPILER: g++-11
+    LIBGSL: libgsl27
+
+# GCC 12
+weekly-build-gcc-12-debug:
+  extends: .weekly-build-gcc-base
+  image: ubuntu:22.04
+  variables:
+    MODE: debug
+    COMPILER: g++-12
+    LIBGSL: libgsl27
+
+weekly-build-gcc-12-default:
+  extends: .weekly-build-gcc-base
+  image: ubuntu:22.04
+  variables:
+    MODE: default
+    COMPILER: g++-12
+    LIBGSL: libgsl27
+
+weekly-build-gcc-12-optimized:
+  extends: .weekly-build-gcc-base
+  image: ubuntu:22.04
+  variables:
+    MODE: optimized
+    COMPILER: g++-12
+    LIBGSL: libgsl27
+
+# GCC 13
+weekly-build-gcc-13-debug:
+  extends: .weekly-build-gcc-base
+  image: ubuntu:23.04
+  variables:
+    MODE: debug
+    COMPILER: g++-13
+    LIBGSL: libgsl27
+
+weekly-build-gcc-13-default:
+  extends: .weekly-build-gcc-base
+  image: ubuntu:23.04
+  variables:
+    MODE: default
+    COMPILER: g++-13
+    LIBGSL: libgsl27
+
+weekly-build-gcc-13-optimized:
+  extends: .weekly-build-gcc-base
+  image: ubuntu:23.04
+  variables:
+    MODE: optimized
+    COMPILER: g++-13
+    LIBGSL: libgsl27
+
+weekly-build-gcc-13-optimized-sanitizers:
+  extends: .weekly-build-gcc-base
+  image: ubuntu:23.04
+  variables:
+    MODE: optimized
+    COMPILER: g++-13
+    EXTRAS: --enable-sanitizers
+  tags:
+    - CTTC
+
+weekly-build-gcc-13-optimized-noeigen:
+  extends: .weekly-build-gcc-base
+  image: ubuntu:23.04
+  variables:
+    MODE: optimized
+    COMPILER: g++-13
+    EXTRAS: --disable-eigen

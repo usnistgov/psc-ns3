@@ -188,6 +188,13 @@ operator<<(std::ostream& os, NeighborType neighborType)
     }
 }
 
+bool
+operator==(const RoutingTableEntry& lhs, const RoutingTableEntry& rhs)
+{
+    return (lhs.destAddr == rhs.destAddr && lhs.nextAddr == rhs.nextAddr &&
+            lhs.interface == rhs.interface && lhs.distance == rhs.distance);
+}
+
 /********** OLSR class **********/
 
 NS_OBJECT_ENSURE_REGISTERED(RoutingProtocol);
@@ -248,7 +255,15 @@ RoutingProtocol::GetTypeId()
             .AddTraceSource("RoutingTableChanged",
                             "The OLSR routing table has changed.",
                             MakeTraceSourceAccessor(&RoutingProtocol::m_routingTableChanged),
-                            "ns3::olsr::RoutingProtocol::TableChangeTracedCallback");
+                            "ns3::olsr::RoutingProtocol::TableChangeTracedCallback")
+            .AddTraceSource("AddRoute",
+                            "The OLSR routing table has added a route.",
+                            MakeTraceSourceAccessor(&RoutingProtocol::m_traceAddRoute),
+                            "ns3::olsr::RoutingProtocol::AddRouteTracedCallback")
+            .AddTraceSource("RemoveRoute",
+                            "The OLSR routing table has removed a route.",
+                            MakeTraceSourceAccessor(&RoutingProtocol::m_traceRemoveRoute),
+                            "ns3::olsr::RoutingProtocol::RemoveRouteTracedCallback");
     return tid;
 }
 
@@ -1014,6 +1029,7 @@ RoutingProtocol::RoutingTableComputation()
     NS_LOG_DEBUG(Simulator::Now().As(Time::S)
                  << " : Node " << m_mainAddress << ": RoutingTableComputation begin...");
 
+    auto oldTable = m_table;
     // 1. All the entries from the routing table are removed.
     Clear();
 
@@ -1312,6 +1328,28 @@ RoutingProtocol::RoutingTableComputation()
     }
 
     NS_LOG_DEBUG("Node " << m_mainAddress << ": RoutingTableComputation end.");
+    for (const auto& [key, entry] : oldTable)
+    {
+        const auto it = m_table.find(key);
+        if (it == m_table.end() || !(it->second == entry))
+        {
+            NS_LOG_INFO("Remove route to " << entry.destAddr << " next hop " << entry.nextAddr
+                                           << " interface " << entry.interface << " distance "
+                                           << entry.distance);
+            m_traceRemoveRoute(entry.destAddr, entry.nextAddr, entry.interface, entry.distance);
+        }
+    }
+    for (const auto& [key, entry] : m_table)
+    {
+        const auto it = oldTable.find(key);
+        if (it == oldTable.end() || !(it->second == entry))
+        {
+            NS_LOG_INFO("Add route to " << entry.destAddr << " next hop " << entry.nextAddr
+                                        << " interface " << entry.interface << " distance "
+                                        << entry.distance);
+            m_traceAddRoute(entry.destAddr, entry.nextAddr, entry.interface, entry.distance);
+        }
+    }
     m_routingTableChanged(GetSize());
 }
 
@@ -1681,8 +1719,8 @@ RoutingProtocol::SendPacket(Ptr<Packet> packet, const MessageList& containedMess
     for (auto i = m_sendSockets.begin(); i != m_sendSockets.end(); i++)
     {
         Ptr<Packet> pkt = packet->Copy();
-        Ipv4Address bcast = i->second.GetLocal().GetSubnetDirectedBroadcast(i->second.GetMask());
-        i->first->SendTo(pkt, 0, InetSocketAddress(bcast, OLSR_PORT_NUMBER));
+        Ipv4Address llManetRouters = Ipv4Address("224.0.0.109");
+        i->first->SendTo(pkt, 0, InetSocketAddress(llManetRouters, OLSR_PORT_NUMBER));
     }
 }
 
@@ -2870,8 +2908,7 @@ RoutingProtocol::RouteOutput(Ptr<Packet> p,
                              Ptr<NetDevice> oif,
                              Socket::SocketErrno& sockerr)
 {
-    NS_LOG_FUNCTION(this << " " << m_ipv4->GetObject<Node>()->GetId() << " "
-                         << header.GetDestination() << " " << oif);
+    NS_LOG_FUNCTION(this << m_ipv4->GetObject<Node>()->GetId() << header.GetDestination() << oif);
     Ptr<Ipv4Route> rtentry;
     RoutingTableEntry entry1;
     RoutingTableEntry entry2;

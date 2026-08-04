@@ -74,6 +74,14 @@ struct RoutingTableEntry
     }
 };
 
+/**
+ * \brief operator ==, compares RoutingTableEntry
+ * \param lhs entry to compare
+ * \param rhs other entry to compare
+ * \return true if the two entries are equal
+ */
+bool operator==(const RoutingTableEntry& lhs, const RoutingTableEntry& rhs);
+
 class RoutingProtocol;
 
 ///
@@ -834,6 +842,12 @@ class RoutingProtocol : public Ipv4RoutingProtocol
 
     /// Routing table changes callback
     TracedCallback<uint32_t> m_routingTableChanged;
+
+    /// Add route trace
+    TracedCallback<const Ipv4Address&, const Ipv4Address&, uint32_t, uint32_t> m_traceAddRoute;
+
+    /// Remove route trace
+    TracedCallback<const Ipv4Address&, const Ipv4Address&, uint32_t, uint32_t> m_traceRemoveRoute;
 
     /// Provides uniform random variables.
     Ptr<UniformRandomVariable> m_uniformRandomVariable;

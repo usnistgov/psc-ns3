@@ -48,6 +48,7 @@ from typing import Callable, Dict, List, Tuple
 # PARAMETERS
 ###########################################################
 CLANG_FORMAT_VERSIONS = [
+    20,
     17,
     16,
     15,

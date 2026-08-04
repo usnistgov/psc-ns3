@@ -1,0 +1,119 @@
+# Copyright (c) 2023 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
+#
+# SPDX-License-Identifier: GPL-2.0-only
+
+# NS3 CI script for CLANG
+
+# Any scheduled pipeline for CLANG should define a variable, named
+# "RELEASE", that has a value "weekly". Also, a variable "CLANG" should be set
+# to True.
+
+# We support CLANG 11 - 14
+# We test only 11 and 14 on Ubuntu 22.04
+# The test is done under Linux.
+
+.weekly-build-clang-ubuntu22.04:
+  image: ubuntu:22.04
+  extends: .base-build
+  only:
+    variables:
+      - $RELEASE == "weekly"
+      - $CLANG_BUILD_ENABLE == "True"
+  before_script:
+    - apt --quiet update
+    - apt --quiet upgrade --yes
+    - apt --quiet install --yes --no-install-recommends
+      ca-certificates
+      clang-$CLANG cmake ninja-build ccache build-essential
+      git
+      libboost-all-dev
+      libeigen3-dev
+      libgsl-dev $LIBGSL gsl-bin
+      libgtk-3-0 libgtk-3-dev
+      libsqlite3-dev sqlite3
+      libxml2 libxml2-dev
+      python3 python3-dev
+      ssh
+  variables:
+    COMPILER: clang++-$CLANG
+    LIBGSL: libgsl27
+
+# CLANG 11
+weekly-build-clang-11-debug:
+  extends: .weekly-build-clang-ubuntu22.04
+  variables:
+    CLANG: 11
+    MODE: debug
+
+weekly-build-clang-11-default:
+  extends: .weekly-build-clang-ubuntu22.04
+  variables:
+    CLANG: 11
+    MODE: default
+
+weekly-build-clang-11-optimized:
+  extends: .weekly-build-clang-ubuntu22.04
+  variables:
+    CLANG: 11
+    MODE: optimized
+
+# CLANG 14
+weekly-build-clang-14-debug:
+  extends: .weekly-build-clang-ubuntu22.04
+  variables:
+    CLANG: 14
+    MODE: debug
+
+weekly-build-clang-14-default:
+  extends: .weekly-build-clang-ubuntu22.04
+  variables:
+    CLANG: 14
+    MODE: default
+
+weekly-build-clang-14-optimized:
+  extends: .weekly-build-clang-ubuntu22.04
+  variables:
+    CLANG: 14
+    MODE: optimized
+
+# CLANG rolling
+.weekly-build-clang-ubuntu-rolling:
+  image: ubuntu:rolling
+  extends: .base-build
+  only:
+    variables:
+      - $RELEASE == "weekly"
+      - $CLANG_BUILD_ENABLE == "True"
+  before_script:
+    - apt --quiet update
+    - apt --quiet upgrade --yes
+    - apt --quiet install --yes --no-install-recommends
+      ca-certificates
+      clang cmake ninja-build ccache build-essential
+      git
+      libboost-all-dev
+      libeigen3-dev
+      libgsl-dev $LIBGSL gsl-bin
+      libgtk-3-0 libgtk-3-dev
+      libsqlite3-dev sqlite3
+      libxml2 libxml2-dev
+      python3 python3-dev
+      ssh
+  variables:
+    COMPILER: clang++
+    LIBGSL: libgsl28
+
+weekly-build-clang-rolling-debug:
+  extends: .weekly-build-clang-ubuntu-rolling
+  variables:
+    MODE: debug
+
+weekly-build-clang-rolling-default:
+  extends: .weekly-build-clang-ubuntu-rolling
+  variables:
+    MODE: default
+
+weekly-build-clang-rolling-optimized:
+  extends: .weekly-build-clang-ubuntu-rolling
+  variables:
+    MODE: optimized

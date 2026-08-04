@@ -306,6 +306,9 @@ def parse_args(argv):
     parser_uninstall = sub_parser.add_parser("uninstall", help="Uninstall ns-3")
     parser_uninstall.add_argument("uninstall", action="store_true", default=False)
 
+    parser_version = sub_parser.add_parser("version", help="Print out version info")
+    parser_version.add_argument("version", action="store_true", default=False)
+
     parser_run = sub_parser.add_parser(
         "run",
         help='Try "./ns3 run --help" for more runtime options',
@@ -560,6 +563,7 @@ def parse_args(argv):
         "uninstall",
         "show",
         "distclean",
+        "version",
     ]:
         if option not in args:
             setattr(args, option, False)
@@ -1725,6 +1729,38 @@ def main():
         clean_pip_packaging_artifacts(dry_run=args.dry_run)
         clean_vcpkg_artifacts(dry_run=args.dry_run)
         # We end things earlier when cleaning
+        return
+
+    # Print out version of ns-3 and any subdirectories
+    if args.version:
+        proc_env = os.environ.copy()
+        ret = subprocess.run(["git", "rev-parse"], stdout=output, env=proc_env)
+        if ret.returncode != 0:
+            exit(ret.returncode)
+        branch_output = subprocess.check_output(["git", "branch", "--show-current"], env=proc_env)
+        commit_output = subprocess.check_output(["git", "rev-parse", "--short=8", "HEAD"], env=proc_env)
+        dirty = ""
+        dirty_output = subprocess.check_output(["git", "diff", "--stat"], env=proc_env)
+        if dirty_output.decode("utf-8").strip()  != '':
+            dirty = "  dirty"
+        print('{:<19}'.format("ns-3") + '{:<18}'.format(branch_output.decode("utf-8").strip()) +commit_output.decode("utf-8").strip() + dirty)
+        os.chdir(os.sep.join([ns3_path, "contrib"]))
+        for subdir in sorted(os.listdir(os.getcwd())):
+            contrib_path = os.sep.join([ns3_path, "contrib", subdir])
+            if os.path.isdir(contrib_path):
+                os.chdir(os.sep.join([ns3_path, "contrib", subdir]))
+                git_path = os.sep.join([ns3_path, "contrib", subdir, ".git"])
+                if os.path.isdir(git_path):
+                    branch_output = subprocess.check_output(["git", "branch", "--show-current"], env=proc_env)
+                    commit_output = subprocess.check_output(["git", "rev-parse", "--short=8", "HEAD"], env=proc_env)
+                    dirty = ""
+                    dirty_output = subprocess.check_output(["git", "diff", "--stat"], env=proc_env)
+                    if dirty_output.decode("utf-8").strip() != '':
+                        dirty = " dirty"
+                    print("    " + '{:<15}'.format(subdir) + '{:<18}'.format(branch_output.decode("utf-8").strip()) + commit_output.decode("utf-8").strip() + dirty)
+                else:
+                    print("    " + subdir + " not a git directory")
+        # We end things earlier when printing version
         return
 
     # Installation and uninstallation options become cmake targets
