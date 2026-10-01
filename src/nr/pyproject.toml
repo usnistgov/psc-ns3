@@ -1,0 +1,17 @@
+# Copyright (c) 2023 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
+#
+# SPDX-License-Identifier: GPL-2.0-only
+
+[tool.black]
+line-length = 100
+include = "\\bns3$|\\.py$"
+
+[tool.isort]
+profile = "black"
+line_length = 100
+
+[tool.codespell]
+skip = ".git,.gitlab-ci-local,*.eps,*.pdf,*.css_t,AUTHORS,*build*,*.mob"
+ignore-words-list = "ue,ues,nd,te,inh,nin,opps"
+exclude-file = "./codespell-ignored-lines"
+regex = "(?<![a-z])[a-z']+|[A-Z][a-z']*|[a-z]+'[a-z]*|[a-z]+(?=[_-])|[a-z]+(?=[A-Z])|\\d+"

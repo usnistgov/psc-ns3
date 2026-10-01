@@ -1,0 +1,374 @@
+/*
+ *   Copyright (c) 2020 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
+ *
+ *   SPDX-License-Identifier: GPL-2.0-only
+ *
+ *
+ *
+ */
+
+#ifndef NR_SL_UE_CMAC_SAP_H
+#define NR_SL_UE_CMAC_SAP_H
+
+#include "nr-sl-tft.h"
+
+#include <ns3/ptr.h>
+
+#include <limits>
+#include <stdint.h>
+#include <unordered_set>
+
+namespace ns3
+{
+
+class NrSlMacSapUser;
+class NrSlCommResourcePool;
+
+/**
+ * \ingroup nr
+ *
+ * \brief Service Access Point (SAP) offered by the UE MAC to the UE RRC for NR Sidelink
+ *
+ * This is the NR Sidelink MAC SAP Provider, i.e., the part of the SAP that
+ * contains the Sidelink MAC methods called by the RRC
+ */
+class NrSlUeCmacSapProvider
+{
+  public:
+    virtual ~NrSlUeCmacSapProvider();
+
+    /**
+     * NR Sidelink Logical Channel information to be passed to CmacSapProvider::AddNrSlLc
+     *
+     */
+    struct SidelinkLogicalChannelInfo
+    {
+        uint32_t srcL2Id{std::numeric_limits<uint32_t>::max()}; //!< L2 source id
+        uint32_t dstL2Id{std::numeric_limits<uint32_t>::max()}; //!< L2 destination id
+        uint8_t lcId{std::numeric_limits<uint8_t>::max()};      //!< logical channel identifier
+        uint8_t lcGroup{std::numeric_limits<uint8_t>::max()};   //!< logical channel group
+        uint8_t pqi{std::numeric_limits<uint8_t>::max()};       //!< PC5 QoS Class Identifier
+        uint8_t priority{std::numeric_limits<uint8_t>::max()};  //!< priority
+        bool isGbr{false}; //!< true if the bearer is GBR, false if the bearer is NON-GBR
+        uint64_t mbr{0};   //!< maximum bitrate
+        uint64_t gbr{0};   //!< guaranteed bitrate
+        SidelinkInfo::CastType castType{SidelinkInfo::CastType::Invalid}; //!< cast type
+        bool harqEnabled{false}; //!< Whether HARQ is enabled
+        Time pdb;                //!< Packet Delay Budget
+        bool dynamic{false};     //!< flag for whether it is dynamic or SPS
+        Time rri;                //!< Resource Reservation Interval
+    };
+
+    /**
+     * \brief Adds a new Logical Channel (LC) used for Sidelink
+     *
+     * \param slLcInfo The sidelink LC info
+     * \param msu The corresponding NrMacSapUser
+     */
+    virtual void AddNrSlLc(const SidelinkLogicalChannelInfo& slLcInfo, NrSlMacSapUser* msu) = 0;
+
+    /**
+     * \brief Remove an existing NR Sidelink Logical Channel for a UE
+     *
+     * \param slLcId is the Sidelink Logical Channel Id
+     * \param srcL2Id is the Source L2 ID
+     * \param dstL2Id is the Destination L2 ID
+     */
+    virtual void RemoveNrSlLc(uint8_t slLcId, uint32_t srcL2Id, uint32_t dstL2Id) = 0;
+    /**
+     * \brief Reset Nr Sidelink LC map
+     *
+     */
+    virtual void ResetNrSlLcMap() = 0;
+
+    /**
+     * \brief Add NR Sidelink communication transmission pool
+     *
+     * Adds transmission pool for NR Sidelink communication
+     *
+     * \param txPool The pointer to the NrSlCommResourcePool
+     */
+    virtual void AddNrSlCommTxPool(Ptr<const NrSlCommResourcePool> txPool) = 0;
+    /**
+     * \brief Add NR Sidelink communication reception pool
+     *
+     * Adds reception pool for NR Sidelink communication
+     *
+     * \param rxPool The pointer to the NrSlCommResourcePool
+     */
+    virtual void AddNrSlCommRxPool(Ptr<const NrSlCommResourcePool> rxPool) = 0;
+    /**
+     * \brief Set Sidelink probability resource keep
+     *
+     * \param probability Indicates the probability with which the UE keeps the
+     *        current resource when the resource reselection counter reaches zero
+     *        for semi-persistent scheduling resource selection (see TS 38.321)
+     */
+    virtual void SetSlProbResourceKeep(double probability) = 0;
+    /**
+     * \brief Set the maximum transmission number (including new transmission and
+     *        retransmission) for PSSCH.
+     *
+     * \param maxTxPssch The max number of PSSCH transmissions
+     */
+    virtual void SetSlMaxTxTransNumPssch(uint8_t maxTxPssch) = 0;
+    /**
+     * \brief Set Sidelink source layer 2 id
+     *
+     * \param srcL2Id The Sidelink layer 2 id of the source
+     */
+    virtual void SetSourceL2Id(uint32_t srcL2Id) = 0;
+    /**
+     * \brief Add NR Sidelink destination layer 2 id for reception
+     *
+     * \param dstL2Id The Sidelink layer 2 id of the destination to listen to.
+     */
+    virtual void AddNrSlRxDstL2Id(uint32_t dstL2Id) = 0;
+    /**
+     * \brief Remove NR Sidelink destination layer 2 id for reception
+     *
+     * \param dstL2Id The Sidelink layer 2 id of the destination to be removed.
+     */
+    virtual void RemoveNrSlRxDstL2Id(uint32_t dstL2Id) = 0;
+    /**
+     * \brief Get the NR Sidelink destination layer 2 ids the MAC is listening to
+     *
+     * \return Set of destination layer 2 ids the MAC is listening to.
+     */
+    virtual std::unordered_set<uint32_t> GetSlRxDestinations() = 0;
+};
+
+/**
+ * \brief Stream output operator for SidelinkLogicalChannelInfo
+ * \param os output stream
+ * \param p struct whose parameter to output
+ * \return updated stream
+ */
+std::ostream& operator<<(std::ostream& os,
+                         const NrSlUeCmacSapProvider::SidelinkLogicalChannelInfo& p);
+
+/**
+ * \ingroup nr
+ *
+ * Template for the implementation of the NrSlUeCmacSapProvider as a member
+ * of an owner class of type C to which all methods are forwarded.
+ *
+ * Usually, methods are forwarded to UE MAC class, which are called by UE RRC
+ * to perform NR Sidelink.
+ *
+ */
+template <class C>
+class MemberNrSlUeCmacSapProvider : public NrSlUeCmacSapProvider
+{
+  public:
+    /**
+     * \brief Constructor
+     *
+     * \param mac the MAC class
+     */
+    MemberNrSlUeCmacSapProvider(C* mac);
+
+    // inherited from NrSlUeCmacSapProvider
+    void AddNrSlLc(const SidelinkLogicalChannelInfo& slLcInfo, NrSlMacSapUser* msu) override;
+    void RemoveNrSlLc(uint8_t slLcId, uint32_t srcL2Id, uint32_t dstL2Id) override;
+    void ResetNrSlLcMap() override;
+    void AddNrSlCommTxPool(Ptr<const NrSlCommResourcePool> txPool) override;
+    void AddNrSlCommRxPool(Ptr<const NrSlCommResourcePool> rxPool) override;
+    void SetSlProbResourceKeep(double prob) override;
+    void SetSlMaxTxTransNumPssch(uint8_t maxTxPssch) override;
+    void SetSourceL2Id(uint32_t srcL2Id) override;
+    void AddNrSlRxDstL2Id(uint32_t dstL2Id) override;
+    void RemoveNrSlRxDstL2Id(uint32_t dstL2Id) override;
+    std::unordered_set<uint32_t> GetSlRxDestinations() override;
+
+  private:
+    C* m_mac; ///< the MAC class
+};
+
+template <class C>
+MemberNrSlUeCmacSapProvider<C>::MemberNrSlUeCmacSapProvider(C* mac)
+    : m_mac(mac)
+{
+}
+
+template <class C>
+void
+MemberNrSlUeCmacSapProvider<C>::AddNrSlLc(const SidelinkLogicalChannelInfo& slLcInfo,
+                                          NrSlMacSapUser* msu)
+{
+    m_mac->DoAddNrSlLc(slLcInfo, msu);
+}
+
+template <class C>
+void
+MemberNrSlUeCmacSapProvider<C>::RemoveNrSlLc(uint8_t slLcId, uint32_t srcL2Id, uint32_t dstL2Id)
+{
+    m_mac->DoRemoveNrSlLc(slLcId, srcL2Id, dstL2Id);
+}
+
+template <class C>
+void
+MemberNrSlUeCmacSapProvider<C>::ResetNrSlLcMap()
+{
+    m_mac->DoResetNrSlLcMap();
+}
+
+template <class C>
+void
+MemberNrSlUeCmacSapProvider<C>::AddNrSlCommTxPool(Ptr<const NrSlCommResourcePool> txPool)
+{
+    m_mac->DoAddNrSlCommTxPool(txPool);
+}
+
+template <class C>
+void
+MemberNrSlUeCmacSapProvider<C>::AddNrSlCommRxPool(Ptr<const NrSlCommResourcePool> rxPool)
+{
+    m_mac->DoAddNrSlCommRxPool(rxPool);
+}
+
+template <class C>
+void
+MemberNrSlUeCmacSapProvider<C>::SetSlProbResourceKeep(double probability)
+{
+    m_mac->DoSetSlProbResourceKeep(probability);
+}
+
+template <class C>
+void
+MemberNrSlUeCmacSapProvider<C>::SetSlMaxTxTransNumPssch(uint8_t maxTxPssch)
+{
+    m_mac->DoSetSlMaxTxTransNumPssch(maxTxPssch);
+}
+
+template <class C>
+void
+MemberNrSlUeCmacSapProvider<C>::SetSourceL2Id(uint32_t srcL2Id)
+{
+    m_mac->DoSetSourceL2Id(srcL2Id);
+}
+
+template <class C>
+void
+MemberNrSlUeCmacSapProvider<C>::AddNrSlRxDstL2Id(uint32_t dstL2Id)
+{
+    m_mac->DoAddNrSlRxDstL2Id(dstL2Id);
+}
+
+template <class C>
+void
+MemberNrSlUeCmacSapProvider<C>::RemoveNrSlRxDstL2Id(uint32_t dstL2Id)
+{
+    m_mac->DoRemoveNrSlRxDstL2Id(dstL2Id);
+}
+
+template <class C>
+std::unordered_set<uint32_t>
+MemberNrSlUeCmacSapProvider<C>::GetSlRxDestinations()
+{
+    return m_mac->DoGetSlRxDestinations();
+}
+
+/**
+ * Service Access Point (SAP) offered by the UE MAC to the UE RRC
+ *
+ * This is the MAC SAP User, i.e., the part of the SAP that contains the RRC methods called by the
+ * MAC
+ */
+class NrSlUeCmacSapUser
+{
+  public:
+    virtual ~NrSlUeCmacSapUser();
+
+    /**
+     * \brief Notify the RRC that the MAC has detected a new incoming flow for Sidelink reception
+     *
+     * \param lcId The logical channel id
+     * \param srcL2Id Sidelink source L2 id
+     * \param dstL2Id Sidelink destination L2 id
+     * \param castType Cast type
+     * \param harqEnabled whether HARQ is enabled
+     */
+    virtual void NotifySidelinkReception(uint8_t lcId,
+                                         uint32_t srcL2Id,
+                                         uint32_t dstL2Id,
+                                         uint8_t castType,
+                                         bool harqEnabled) = 0;
+    /**
+     * \brief Notify the RRC that the harq process for an L2 destination has failed
+     *
+     * \param dstL2Id Sidelink destination L2 id
+     */
+    virtual void NotifySlHarqProcessMaxTxWithNoFeedback(uint32_t dstL2Id) = 0;
+
+    /**
+     * Notify the RRC that the MAC has data to send in the PSSCH
+     */
+    // virtual void NotifyMacHasSlDataToSend () = 0;
+    /**
+     * Notify the RRC that the MAC does not have data to send in the PSSCH
+     */
+    //  virtual void NotifyMacHasNoSlDataToSend () = 0;
+};
+
+/**
+ * \ingroup nr
+ *
+ * Template for the implementation of the NrSlUeCmacSapUser as a member
+ * of an owner class of type C to which all methods are forwarded.
+ *
+ * Usually, methods are forwarded to UE RRC class, which are called by UE MAC
+ * to perform NR Sidelink.
+ *
+ */
+template <class C>
+class MemberNrSlUeCmacSapUser : public NrSlUeCmacSapUser
+{
+  public:
+    /**
+     * \brief Constructor
+     *
+     * \param rrc the RRC class
+     */
+    MemberNrSlUeCmacSapUser(C* rrc);
+
+    // inherited from NrSlUeCmacSapUser
+    virtual void NotifySidelinkReception(uint8_t lcId,
+                                         uint32_t srcL2Id,
+                                         uint32_t dstL2Id,
+                                         uint8_t castType,
+                                         bool harqEnabled);
+
+    virtual void NotifySlHarqProcessMaxTxWithNoFeedback(uint32_t dstL2Id);
+
+  private:
+    C* m_rrc; ///< the MAC class
+};
+
+template <class C>
+MemberNrSlUeCmacSapUser<C>::MemberNrSlUeCmacSapUser(C* rrc)
+    : m_rrc(rrc)
+{
+}
+
+template <class C>
+void
+MemberNrSlUeCmacSapUser<C>::NotifySidelinkReception(uint8_t lcId,
+                                                    uint32_t srcL2Id,
+                                                    uint32_t dstL2Id,
+                                                    uint8_t castType,
+                                                    bool harqEnabled)
+{
+    m_rrc->DoNotifySidelinkReception(lcId, srcL2Id, dstL2Id, castType, harqEnabled);
+}
+
+template <class C>
+void
+MemberNrSlUeCmacSapUser<C>::NotifySlHarqProcessMaxTxWithNoFeedback(uint32_t dstL2Id)
+{
+    m_rrc->DoNotifySlHarqProcessMaxTxWithNoFeedback(dstL2Id);
+}
+
+} // namespace ns3
+
+#endif // NR_SL_UE_CMAC_SAP_H

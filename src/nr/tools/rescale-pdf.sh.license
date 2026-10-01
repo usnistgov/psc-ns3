@@ -1,0 +1,6 @@
+Copyright (c) 2011 Mathieu Lacage
+
+SPDX-License-Identifier: GPL-2.0-only
+
+Original: https://gitlab.com/nsnam/ns-3-dev/-/commit/ac9512df6b4600c9e8d21a13802e78a6bc1a8279
+Latest version: https://gitlab.com/nsnam/ns-3-dev/-/blob/master/utils/rescale-pdf.sh

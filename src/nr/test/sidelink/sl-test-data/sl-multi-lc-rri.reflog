@@ -1,0 +1,35 @@
+schedTypeConfig = 2; dstL2IdConfig = 1 priorityConfig = 1; rriConfig = 2
+prioToSps = 0; harqEnabled = 1; psfchPeriod = 4
+Total Tx packets = 80
+Total Rx packets = 80
+Average packet delay = 1.93326 ms
+Output trace of first grant created:
++2.05s 0 sps 0 harq:28 140 14 2 050
+    2.052250 8209 0:1 254 4 1 2 (LCID 6 size 135)
+    2.056500 8226 0:1 254 4 0 0 (LCID 6 size 135)
+    2.102250 8409 0:1 254 4 1 2 (LCID 6 size 135)
+    2.106500 8426 0:1 254 4 0 0 (LCID 6 size 135)
+    2.152250 8609 0:1 254 4 1 2 (LCID 6 size 135)
+    2.156500 8626 0:1 254 4 0 0 (LCID 6 size 135)
+    2.202250 8809 0:1 254 4 1 2 (LCID 6 size 135)
+    2.206500 8826 0:1 254 4 0 0 (LCID 6 size 135)
+    2.252250 9009 0:1 254 4 1 2 (LCID 6 size 135)
+    2.256500 9026 0:1 254 4 0 0 (LCID 6 size 135)
+    2.302250 9209 0:1 254 4 1 2 (LCID 6 size 135)
+    2.306500 9226 0:1 254 4 0 0 (LCID 6 size 135)
+    2.352250 9409 0:1 254 4 1 2 (LCID 6 size 135)
+    2.356500 9426 0:1 254 4 0 0 (LCID 6 size 135)
+    2.402250 9609 0:1 254 4 1 2 (LCID 6 size 135)
+    2.406500 9626 0:1 254 4 0 0 (LCID 6 size 135)
+    2.452250 9809 0:1 254 4 1 2 (LCID 6 size 135)
+    2.456500 9826 0:1 254 4 0 0 (LCID 6 size 135)
+    2.502250 10009 0:1 254 4 1 2 (LCID 6 size 135)
+    2.506500 10026 0:1 254 4 0 0 (LCID 6 size 135)
+    2.552250 10209 0:1 254 4 1 2 (LCID 6 size 135)
+    2.556500 10226 0:1 254 4 0 0 (LCID 6 size 135)
+    2.602250 10409 0:1 254 4 1 2 (LCID 6 size 135)
+    2.606500 10426 0:1 254 4 0 0 (LCID 6 size 135)
+    2.652250 10609 0:1 254 4 1 2 (LCID 6 size 135)
+    2.656500 10626 0:1 254 4 0 0 (LCID 6 size 135)
+    2.702250 10809 0:1 254 4 1 2 (LCID 6 size 135)
+    2.706500 10826 0:1 254 4 0 0 (LCID 6 size 135)

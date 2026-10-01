@@ -1,0 +1,10 @@
+# Copyright (c) 2024 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
+#
+# SPDX-License-Identifier: GPL-2.0-only
+
+# Apply all checks from ns-3
+InheritParentConfig: true
+# Plus our additional checks
+Checks: >
+  -modernize-use-auto,
+  -modernize-use-emplace,
