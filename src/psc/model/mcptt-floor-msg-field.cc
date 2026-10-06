@@ -1613,7 +1613,8 @@ McpttFloorMsgFieldTrackInfo::GetPtLengthWithPadding() const
 
     uint8_t ptLength = GetPtLength();
 
-    uint8_t ptLengthWithPadding = ptLength + (ptLength % 4);
+    // Pad up to the next multiple of 4 octets.
+    uint8_t ptLengthWithPadding = ptLength + ((4 - (ptLength % 4)) % 4);
 
     return ptLengthWithPadding;
 }
