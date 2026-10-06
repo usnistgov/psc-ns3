@@ -31,6 +31,7 @@
 
 #include "mcptt-call-msg-field.h"
 
+#include <ns3/abort.h>
 #include <ns3/buffer.h>
 #include <ns3/ipv4-address.h>
 #include <ns3/ipv6-address.h>
@@ -585,6 +586,8 @@ McpttCallMsgFieldSdp::Deserialize(Buffer::Iterator& buff)
 
     uint32_t bytesRead = McpttCallMsgFieldType6::Deserialize(buff);
     uint16_t length = GetLength();
+    NS_ABORT_MSG_IF(length > buff.GetRemainingSize(),
+                    "Malformed McpttCallMsgFieldSdp (length=" << length << ").");
 
     char* characters = new char[length];
     for (uint32_t idx = 0; idx < length; idx++)
@@ -1615,6 +1618,8 @@ McpttCallMsgFieldOrgName::Deserialize(Buffer::Iterator& buff)
     std::string name("");
     uint32_t bytesRead = McpttCallMsgFieldType6::Deserialize(buff);
     uint16_t length = GetLength();
+    NS_ABORT_MSG_IF(length > buff.GetRemainingSize(),
+                    "Malformed McpttCallMsgFieldOrgName (length=" << length << ").");
 
     for (uint32_t idx = 0; idx < length; idx++)
     {
