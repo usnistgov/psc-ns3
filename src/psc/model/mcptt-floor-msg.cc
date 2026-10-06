@@ -35,6 +35,7 @@
 #include "mcptt-floor-participant.h"
 #include "mcptt-msg.h"
 
+#include <ns3/abort.h>
 #include <ns3/buffer.h>
 #include <ns3/log.h>
 #include <ns3/object.h>
@@ -760,6 +761,13 @@ McpttFloorMsgGranted::ReadData(Buffer::Iterator& buff)
     bytesRead += priority.Deserialize(buff);
     bytesRead += userId.Deserialize(buff);
     bytesRead += queueSize.Deserialize(buff);
+
+    // Each queued user entry has a fixed serialized size, so the queue size
+    // cannot exceed what remains in the buffer.
+    uint32_t userInfoSize = McpttQueuedUserInfo().GetSerializedSize();
+    NS_ABORT_MSG_IF(
+        static_cast<uint32_t>(queueSize.GetQueueSize()) * userInfoSize > buff.GetRemainingSize(),
+        "Malformed McpttFloorMsgGranted (queueSize=" << queueSize.GetQueueSize() << ").");
 
     for (uint16_t index = 0; index < queueSize.GetQueueSize(); index++)
     {
