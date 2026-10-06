@@ -616,6 +616,7 @@ McpttCallMsgFieldSdp::FromStr(const std::string& strRep)
     int endIdx = 0;
     int spaces = 0;
     int spaceLim = 4;
+    int strLen = strRep.size();
     char termChar = ' ';
     std::string grpAddrStr;
     std::string grpAddrTypeStr;
@@ -628,6 +629,7 @@ McpttCallMsgFieldSdp::FromStr(const std::string& strRep)
     {
         while (spaces < spaceLim)
         {
+            NS_ABORT_MSG_IF(idx >= strLen, "Malformed SDP: " << strRep);
             if (strRep[idx] == ' ')
             {
                 spaces += 1;
@@ -638,10 +640,11 @@ McpttCallMsgFieldSdp::FromStr(const std::string& strRep)
 
         begIdx = idx;
 
-        while (strRep[idx] != termChar)
+        while (idx < strLen && strRep[idx] != termChar)
         {
             idx += 1;
         }
+        NS_ABORT_MSG_IF(idx >= strLen, "Malformed SDP: " << strRep);
 
         endIdx = idx;
 
