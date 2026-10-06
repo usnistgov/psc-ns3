@@ -1619,6 +1619,7 @@ McpttCallMsgFieldOrgName::Deserialize(Buffer::Iterator& buff)
     for (uint32_t idx = 0; idx < length; idx++)
     {
         name += (char)buff.ReadU8();
+        bytesRead += 1;
     }
 
     UpdateName(name);
