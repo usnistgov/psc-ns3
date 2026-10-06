@@ -312,6 +312,8 @@ SipElement::Receive(Ptr<Packet> p, Address from)
         {
             NS_LOG_DEBUG("Received 200 OK for call ID " << sipHeader.GetCallId());
             auto dialogIt = m_dialogs.find(did);
+            NS_ABORT_MSG_IF(dialogIt == m_dialogs.end(),
+                            "Received 200 OK for unknown dialog " << DialogIdToString(did));
             if (dialogIt->second.m_state == DIALOG_TRYING ||
                 dialogIt->second.m_state == DIALOG_PROCEEDING)
             {
