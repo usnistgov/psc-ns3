@@ -485,6 +485,12 @@ McpttCall::ReceiveFloorPkt(Ptr<Packet> pkt, Address from)
 {
     NS_LOG_FUNCTION(this << &pkt << from);
 
+    if (pkt->GetSize() < McpttFloorMsg().GetSerializedSize())
+    {
+        NS_LOG_WARN("Dropping " << pkt->GetSize() << "-byte packet; too short for a floor message");
+        return;
+    }
+
     McpttFloorMsg temp;
 
     pkt->PeekHeader(temp);
@@ -567,7 +573,8 @@ McpttCall::ReceiveFloorPkt(Ptr<Packet> pkt, Address from)
     }
     else
     {
-        NS_FATAL_ERROR("Could not resolve message subtype = " << (uint32_t)subtype << ".");
+        NS_LOG_WARN("Dropping packet with unknown floor message subtype = " << (uint32_t)subtype
+                                                                            << ".");
     }
 }
 
