@@ -20,6 +20,7 @@
 
 #include "sip-header.h"
 
+#include "ns3/abort.h"
 #include "ns3/log.h"
 #include "ns3/object.h"
 
@@ -80,7 +81,7 @@ SipProxy::SendResponse(Ptr<Packet> p,
     TransactionId tid = GetTransactionId(callId, from, to);
     DialogId did = GetDialogId(callId, from, to);
     auto it = GetDialogs().find(did);
-    NS_ASSERT_MSG(it != GetDialogs().end(), "Dialog not found");
+    NS_ABORT_MSG_IF(it == GetDialogs().end(), "Dialog not found");
     it->second.m_sendCallback = sendCallback;
     if (statusCode == 100)
     {
@@ -129,7 +130,7 @@ SipProxy::ScheduleTimerC(TransactionId id)
 {
     NS_LOG_FUNCTION(this << TransactionIdToString(id));
     auto transIt = GetTransactions().find(id);
-    NS_ASSERT_MSG(transIt != GetTransactions().end(), "Transaction not found");
+    NS_ABORT_MSG_IF(transIt == GetTransactions().end(), "Transaction not found");
     transIt->second.m_timerC.SetFunction(&SipProxy::HandleTimerC, this);
     transIt->second.m_timerC.SetArguments(id);
     transIt->second.m_timerC.Schedule(m_proxyInviteTransactionTimeout);
@@ -140,7 +141,7 @@ SipProxy::CancelTimerC(TransactionId id)
 {
     NS_LOG_FUNCTION(this << TransactionIdToString(id));
     auto transIt = GetTransactions().find(id);
-    NS_ASSERT_MSG(transIt != GetTransactions().end(), "Transaction not found");
+    NS_ABORT_MSG_IF(transIt == GetTransactions().end(), "Transaction not found");
     transIt->second.m_timerC.Cancel();
 }
 
@@ -149,9 +150,9 @@ SipProxy::HandleTimerC(TransactionId id)
 {
     NS_LOG_FUNCTION(this << TransactionIdToString(id));
     auto eventIt = GetEventCallbacks().find(std::get<0>(id));
-    NS_ASSERT_MSG(eventIt != GetEventCallbacks().end(), "CallID not found");
+    NS_ABORT_MSG_IF(eventIt == GetEventCallbacks().end(), "CallID not found");
     auto transIt = GetTransactions().find(id);
-    NS_ASSERT_MSG(transIt != GetTransactions().end(), "Transaction not found");
+    NS_ABORT_MSG_IF(transIt == GetTransactions().end(), "Transaction not found");
     NS_ASSERT_MSG(transIt->second.m_state == TRANSACTION_PROCEEDING,
                   "Transaction not in PROCEEDING");
     // Notify user and let user handle this event
