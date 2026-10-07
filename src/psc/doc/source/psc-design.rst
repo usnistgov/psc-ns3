@@ -63,6 +63,7 @@ v4.0    Apr 16, 2021 On-network MCPTT, video streaming models
 v5.0    Oct 20, 2021 Aligned to ns-3.35, large scale scenario and applications
 v6.0    May 26, 2022 Aligned to ns-3.36.1, minor update to MCPTT helper
 v7.0    Jan 4, 2024  Aligned to ns-3.40
+v7.0.1  Oct 8, 2026  Fix some code robustness and compiler portability issues
 ======= ============ =========================================================
 
 ---------------
