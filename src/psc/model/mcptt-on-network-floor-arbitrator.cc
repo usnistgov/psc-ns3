@@ -555,6 +555,12 @@ McpttOnNetworkFloorArbitrator::ReceiveFloorRequest(const McpttFloorMsgRequest& m
     NS_LOG_LOGIC("McpttOnNetworkFloorArbitrator (" << this << ") received "
                                                    << msg.GetInstanceTypeId() << ".");
 
+    if (!GetParticipantBySsrc(msg.GetSsrc()))
+    {
+        NS_LOG_WARN("Dropping floor request from unknown SSRC " << msg.GetSsrc() << ".");
+        return;
+    }
+
     m_state->ReceiveFloorRequest(Ptr<McpttOnNetworkFloorArbitrator>(this), msg);
 }
 
