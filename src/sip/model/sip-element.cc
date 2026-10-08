@@ -202,7 +202,7 @@ SipElement::SendBye(Ptr<Packet> p,
     TransactionId tid = GetTransactionId(callId, from, to);
     DialogId did = GetDialogId(callId, from, to);
     auto it = m_dialogs.find(did);
-    NS_ASSERT_MSG(it != m_dialogs.end(), "Dialog not found");
+    NS_ABORT_MSG_IF(it == m_dialogs.end(), "Dialog not found");
     it->second.m_sendCallback = sendCallback;
     SetDialogState(did, DIALOG_TERMINATED);
     if (TransactionExists(tid))
@@ -243,7 +243,7 @@ SipElement::SendResponse(Ptr<Packet> p,
     TransactionId tid = GetTransactionId(callId, from, to);
     DialogId did = GetDialogId(callId, from, to);
     auto it = m_dialogs.find(did);
-    NS_ASSERT_MSG(it != m_dialogs.end(), "Dialog not found");
+    NS_ABORT_MSG_IF(it == m_dialogs.end(), "Dialog not found");
     it->second.m_sendCallback = sendCallback;
     if (statusCode == 100)
     {
@@ -312,6 +312,8 @@ SipElement::Receive(Ptr<Packet> p, Address from)
         {
             NS_LOG_DEBUG("Received 200 OK for call ID " << sipHeader.GetCallId());
             auto dialogIt = m_dialogs.find(did);
+            NS_ABORT_MSG_IF(dialogIt == m_dialogs.end(),
+                            "Received 200 OK for unknown dialog " << DialogIdToString(did));
             if (dialogIt->second.m_state == DIALOG_TRYING ||
                 dialogIt->second.m_state == DIALOG_PROCEEDING)
             {
@@ -631,7 +633,7 @@ SipElement::ScheduleTimerA(TransactionId id, uint32_t backoff)
 {
     NS_LOG_FUNCTION(this << TransactionIdToString(id) << backoff);
     auto transIt = m_transactions.find(id);
-    NS_ASSERT_MSG(transIt != m_transactions.end(), "Transaction not found");
+    NS_ABORT_MSG_IF(transIt == m_transactions.end(), "Transaction not found");
     transIt->second.m_timerA.SetFunction(&SipElement::HandleTimerA, this);
     transIt->second.m_timerA.SetArguments(id, backoff);
     transIt->second.m_timerA.Schedule(backoff * m_t1);
@@ -642,7 +644,7 @@ SipElement::CancelTimerA(TransactionId id)
 {
     NS_LOG_FUNCTION(this << TransactionIdToString(id));
     auto transIt = m_transactions.find(id);
-    NS_ASSERT_MSG(transIt != m_transactions.end(), "Transaction not found");
+    NS_ABORT_MSG_IF(transIt == m_transactions.end(), "Transaction not found");
     transIt->second.m_timerA.Cancel();
 }
 
@@ -651,7 +653,7 @@ SipElement::ScheduleTimerB(TransactionId id)
 {
     NS_LOG_FUNCTION(this << TransactionIdToString(id));
     auto transIt = m_transactions.find(id);
-    NS_ASSERT_MSG(transIt != m_transactions.end(), "Transaction not found");
+    NS_ABORT_MSG_IF(transIt == m_transactions.end(), "Transaction not found");
     transIt->second.m_timerB.SetFunction(&SipElement::HandleTimerB, this);
     transIt->second.m_timerB.SetArguments(id);
     transIt->second.m_timerB.Schedule(64 * m_t1);
@@ -662,7 +664,7 @@ SipElement::CancelTimerB(TransactionId id)
 {
     NS_LOG_FUNCTION(this << TransactionIdToString(id));
     auto transIt = m_transactions.find(id);
-    NS_ASSERT_MSG(transIt != m_transactions.end(), "Transaction not found");
+    NS_ABORT_MSG_IF(transIt == m_transactions.end(), "Transaction not found");
     transIt->second.m_timerB.Cancel();
 }
 
@@ -671,7 +673,7 @@ SipElement::ScheduleTimerE(TransactionId id, uint32_t backoff)
 {
     NS_LOG_FUNCTION(this << TransactionIdToString(id) << backoff);
     auto transIt = m_transactions.find(id);
-    NS_ASSERT_MSG(transIt != m_transactions.end(), "Transaction not found");
+    NS_ABORT_MSG_IF(transIt == m_transactions.end(), "Transaction not found");
     transIt->second.m_timerE.SetFunction(&SipElement::HandleTimerE, this);
     transIt->second.m_timerE.SetArguments(id, backoff);
     transIt->second.m_timerE.Schedule(backoff * m_t1);
@@ -682,7 +684,7 @@ SipElement::CancelTimerE(TransactionId id)
 {
     NS_LOG_FUNCTION(this << TransactionIdToString(id));
     auto transIt = m_transactions.find(id);
-    NS_ASSERT_MSG(transIt != m_transactions.end(), "Transaction not found");
+    NS_ABORT_MSG_IF(transIt == m_transactions.end(), "Transaction not found");
     transIt->second.m_timerE.Cancel();
 }
 
@@ -691,7 +693,7 @@ SipElement::ScheduleTimerF(TransactionId id)
 {
     NS_LOG_FUNCTION(this << TransactionIdToString(id));
     auto transIt = m_transactions.find(id);
-    NS_ASSERT_MSG(transIt != m_transactions.end(), "Transaction not found");
+    NS_ABORT_MSG_IF(transIt == m_transactions.end(), "Transaction not found");
     transIt->second.m_timerF.SetFunction(&SipElement::HandleTimerF, this);
     transIt->second.m_timerF.SetArguments(id);
     transIt->second.m_timerF.Schedule(64 * m_t1);
@@ -702,7 +704,7 @@ SipElement::CancelTimerF(TransactionId id)
 {
     NS_LOG_FUNCTION(this << TransactionIdToString(id));
     auto transIt = m_transactions.find(id);
-    NS_ASSERT_MSG(transIt != m_transactions.end(), "Transaction not found");
+    NS_ABORT_MSG_IF(transIt == m_transactions.end(), "Transaction not found");
     transIt->second.m_timerF.Cancel();
 }
 
@@ -711,7 +713,7 @@ SipElement::ScheduleTimerI(TransactionId id)
 {
     NS_LOG_FUNCTION(this << TransactionIdToString(id));
     auto transIt = m_transactions.find(id);
-    NS_ASSERT_MSG(transIt != m_transactions.end(), "Transaction not found");
+    NS_ABORT_MSG_IF(transIt == m_transactions.end(), "Transaction not found");
     NS_ASSERT_MSG(transIt->second.m_state == TRANSACTION_CONFIRMED, "Transaction not in CONFIRMED");
     transIt->second.m_timerI.SetFunction(&SipElement::HandleTimerI, this);
     transIt->second.m_timerI.SetArguments(id);
@@ -730,7 +732,7 @@ SipElement::ScheduleTimerJ(TransactionId id)
 {
     NS_LOG_FUNCTION(this << TransactionIdToString(id));
     auto transIt = m_transactions.find(id);
-    NS_ASSERT_MSG(transIt != m_transactions.end(), "Transaction not found");
+    NS_ABORT_MSG_IF(transIt == m_transactions.end(), "Transaction not found");
     NS_ASSERT_MSG(transIt->second.m_state == TRANSACTION_COMPLETED, "Transaction not in COMPLETED");
     transIt->second.m_timerJ.SetFunction(&SipElement::HandleTimerJ, this);
     transIt->second.m_timerJ.SetArguments(id);
@@ -749,7 +751,7 @@ SipElement::ScheduleTimerK(TransactionId id)
 {
     NS_LOG_FUNCTION(this << TransactionIdToString(id));
     auto transIt = m_transactions.find(id);
-    NS_ASSERT_MSG(transIt != m_transactions.end(), "Transaction not found");
+    NS_ABORT_MSG_IF(transIt == m_transactions.end(), "Transaction not found");
     NS_ASSERT_MSG(transIt->second.m_state == TRANSACTION_COMPLETED, "Transaction not in COMPLETED");
     transIt->second.m_timerK.SetFunction(&SipElement::HandleTimerK, this);
     transIt->second.m_timerK.SetArguments(id);
@@ -768,9 +770,9 @@ SipElement::HandleTimerA(TransactionId id, uint32_t backoff)
 {
     NS_LOG_FUNCTION(this << TransactionIdToString(id) << backoff);
     auto eventIt = m_eventCallbacks.find(std::get<0>(id));
-    NS_ASSERT_MSG(eventIt != m_eventCallbacks.end(), "CallID not found");
+    NS_ABORT_MSG_IF(eventIt == m_eventCallbacks.end(), "CallID not found");
     auto transIt = m_transactions.find(id);
-    NS_ASSERT_MSG(transIt != m_transactions.end(), "Transaction not found");
+    NS_ABORT_MSG_IF(transIt == m_transactions.end(), "Transaction not found");
     NS_ASSERT_MSG(transIt->second.m_state == TRANSACTION_CALLING, "Transaction not in CALLING");
     eventIt->second(TIMER_A_EXPIRED, transIt->second.m_state);
     // Resend the cached packet
@@ -788,9 +790,9 @@ SipElement::HandleTimerB(TransactionId id)
     NS_LOG_FUNCTION(this << TransactionIdToString(id));
     DialogId did = GetDialogId(std::get<0>(id), std::get<1>(id), std::get<2>(id));
     auto eventIt = m_eventCallbacks.find(std::get<0>(id));
-    NS_ASSERT_MSG(eventIt != m_eventCallbacks.end(), "CallID not found");
+    NS_ABORT_MSG_IF(eventIt == m_eventCallbacks.end(), "CallID not found");
     auto transIt = m_transactions.find(id);
-    NS_ASSERT_MSG(transIt != m_transactions.end(), "Transaction not found");
+    NS_ABORT_MSG_IF(transIt == m_transactions.end(), "Transaction not found");
     NS_ASSERT_MSG(transIt->second.m_state == TRANSACTION_CALLING, "Transaction not in CALLING");
     // Cancel timer A and fail the transaction
     CancelTimerA(id);
@@ -805,9 +807,9 @@ SipElement::HandleTimerE(TransactionId id, uint32_t backoff)
 {
     NS_LOG_FUNCTION(this << TransactionIdToString(id) << backoff);
     auto eventIt = m_eventCallbacks.find(std::get<0>(id));
-    NS_ASSERT_MSG(eventIt != m_eventCallbacks.end(), "CallID not found");
+    NS_ABORT_MSG_IF(eventIt == m_eventCallbacks.end(), "CallID not found");
     auto transIt = m_transactions.find(id);
-    NS_ASSERT_MSG(transIt != m_transactions.end(), "Transaction not found");
+    NS_ABORT_MSG_IF(transIt == m_transactions.end(), "Transaction not found");
     NS_ASSERT_MSG(transIt->second.m_state == TRANSACTION_TRYING, "Transaction not in TRYING");
     eventIt->second(TIMER_E_EXPIRED, transIt->second.m_state);
     // Resend the cached packet
@@ -824,9 +826,9 @@ SipElement::HandleTimerF(TransactionId id)
 {
     NS_LOG_FUNCTION(this << TransactionIdToString(id));
     auto eventIt = m_eventCallbacks.find(std::get<0>(id));
-    NS_ASSERT_MSG(eventIt != m_eventCallbacks.end(), "CallID not found");
+    NS_ABORT_MSG_IF(eventIt == m_eventCallbacks.end(), "CallID not found");
     auto transIt = m_transactions.find(id);
-    NS_ASSERT_MSG(transIt != m_transactions.end(), "Transaction not found");
+    NS_ABORT_MSG_IF(transIt == m_transactions.end(), "Transaction not found");
     NS_ASSERT_MSG(transIt->second.m_state == TRANSACTION_TRYING, "Transaction not in TRYING");
     eventIt->second(TIMER_F_EXPIRED, transIt->second.m_state);
     // Cancel timer E and fail the transaction
@@ -839,9 +841,9 @@ SipElement::HandleTimerI(TransactionId id)
 {
     NS_LOG_FUNCTION(this << TransactionIdToString(id));
     auto eventIt = m_eventCallbacks.find(std::get<0>(id));
-    NS_ASSERT_MSG(eventIt != m_eventCallbacks.end(), "CallID not found");
+    NS_ABORT_MSG_IF(eventIt == m_eventCallbacks.end(), "CallID not found");
     auto transIt = m_transactions.find(id);
-    NS_ASSERT_MSG(transIt != m_transactions.end(), "Transaction not found");
+    NS_ABORT_MSG_IF(transIt == m_transactions.end(), "Transaction not found");
     NS_ASSERT_MSG(transIt->second.m_state == TRANSACTION_CONFIRMED, "Transaction not in CONFIRMED");
     eventIt->second(TIMER_I_EXPIRED, transIt->second.m_state);
     SetTransactionState(id, TRANSACTION_TERMINATED);
@@ -852,9 +854,9 @@ SipElement::HandleTimerJ(TransactionId id)
 {
     NS_LOG_FUNCTION(this << TransactionIdToString(id));
     auto eventIt = m_eventCallbacks.find(std::get<0>(id));
-    NS_ASSERT_MSG(eventIt != m_eventCallbacks.end(), "CallID not found");
+    NS_ABORT_MSG_IF(eventIt == m_eventCallbacks.end(), "CallID not found");
     auto transIt = m_transactions.find(id);
-    NS_ASSERT_MSG(transIt != m_transactions.end(), "Transaction not found");
+    NS_ABORT_MSG_IF(transIt == m_transactions.end(), "Transaction not found");
     NS_ASSERT_MSG(transIt->second.m_state == TRANSACTION_COMPLETED, "Transaction not in COMPLETED");
     eventIt->second(TIMER_J_EXPIRED, transIt->second.m_state);
     SetTransactionState(id, TRANSACTION_TERMINATED);
@@ -865,9 +867,9 @@ SipElement::HandleTimerK(TransactionId id)
 {
     NS_LOG_FUNCTION(this << TransactionIdToString(id));
     auto eventIt = m_eventCallbacks.find(std::get<0>(id));
-    NS_ASSERT_MSG(eventIt != m_eventCallbacks.end(), "CallID not found");
+    NS_ABORT_MSG_IF(eventIt == m_eventCallbacks.end(), "CallID not found");
     auto transIt = m_transactions.find(id);
-    NS_ASSERT_MSG(transIt != m_transactions.end(), "Transaction not found");
+    NS_ABORT_MSG_IF(transIt == m_transactions.end(), "Transaction not found");
     NS_ASSERT_MSG(transIt->second.m_state == TRANSACTION_COMPLETED, "Transaction not in COMPLETED");
     eventIt->second(TIMER_K_EXPIRED, transIt->second.m_state);
     SetTransactionState(id, TRANSACTION_TERMINATED);

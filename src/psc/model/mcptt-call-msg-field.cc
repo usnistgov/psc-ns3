@@ -31,6 +31,7 @@
 
 #include "mcptt-call-msg-field.h"
 
+#include <ns3/abort.h>
 #include <ns3/buffer.h>
 #include <ns3/ipv4-address.h>
 #include <ns3/ipv6-address.h>
@@ -585,6 +586,8 @@ McpttCallMsgFieldSdp::Deserialize(Buffer::Iterator& buff)
 
     uint32_t bytesRead = McpttCallMsgFieldType6::Deserialize(buff);
     uint16_t length = GetLength();
+    NS_ABORT_MSG_IF(length > buff.GetRemainingSize(),
+                    "Malformed McpttCallMsgFieldSdp (length=" << length << ").");
 
     char* characters = new char[length];
     for (uint32_t idx = 0; idx < length; idx++)
@@ -613,6 +616,7 @@ McpttCallMsgFieldSdp::FromStr(const std::string& strRep)
     int endIdx = 0;
     int spaces = 0;
     int spaceLim = 4;
+    int strLen = strRep.size();
     char termChar = ' ';
     std::string grpAddrStr;
     std::string grpAddrTypeStr;
@@ -625,6 +629,7 @@ McpttCallMsgFieldSdp::FromStr(const std::string& strRep)
     {
         while (spaces < spaceLim)
         {
+            NS_ABORT_MSG_IF(idx >= strLen, "Malformed SDP: " << strRep);
             if (strRep[idx] == ' ')
             {
                 spaces += 1;
@@ -635,10 +640,11 @@ McpttCallMsgFieldSdp::FromStr(const std::string& strRep)
 
         begIdx = idx;
 
-        while (strRep[idx] != termChar)
+        while (idx < strLen && strRep[idx] != termChar)
         {
             idx += 1;
         }
+        NS_ABORT_MSG_IF(idx >= strLen, "Malformed SDP: " << strRep);
 
         endIdx = idx;
 
@@ -1615,10 +1621,13 @@ McpttCallMsgFieldOrgName::Deserialize(Buffer::Iterator& buff)
     std::string name("");
     uint32_t bytesRead = McpttCallMsgFieldType6::Deserialize(buff);
     uint16_t length = GetLength();
+    NS_ABORT_MSG_IF(length > buff.GetRemainingSize(),
+                    "Malformed McpttCallMsgFieldOrgName (length=" << length << ").");
 
     for (uint32_t idx = 0; idx < length; idx++)
     {
         name += (char)buff.ReadU8();
+        bytesRead += 1;
     }
 
     UpdateName(name);

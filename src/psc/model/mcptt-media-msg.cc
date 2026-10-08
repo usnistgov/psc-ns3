@@ -36,6 +36,7 @@
 #include "mcptt-msg.h"
 #include "mcptt-rtp-header.h"
 
+#include <ns3/abort.h>
 #include <ns3/log.h>
 #include <ns3/type-id.h>
 
@@ -129,6 +130,8 @@ McpttMediaMsg::Deserialize(Buffer::Iterator start)
     m_talkSpurtStart = 10 * MicroSeconds(start.ReadNtohU32());
     bytesRead += 4;
     index += 4;
+    NS_ABORT_MSG_IF(static_cast<uint32_t>(payloadSize - index) > start.GetRemainingSize(),
+                    "Malformed McpttMediaMsg (payloadSize=" << payloadSize << ").");
     for (; index < payloadSize; index++)
     {
         start.ReadU8(); // null bytes

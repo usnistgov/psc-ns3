@@ -31,6 +31,7 @@
 
 #include "mcptt-rtp-header.h"
 
+#include <ns3/abort.h>
 #include <ns3/buffer.h>
 #include <ns3/header.h>
 #include <ns3/log.h>
@@ -173,6 +174,8 @@ McpttRtpHeader::Deserialize(Buffer::Iterator start)
     bytesRead += 4;
 
     std::vector<uint32_t> csrcs;
+    NS_ABORT_MSG_IF(static_cast<uint32_t>(csrcCount) * 4 > start.GetRemainingSize(),
+                    "Malformed McpttRtpHeader (CC=" << (uint32_t)csrcCount << ").");
     for (int idx = 0; idx < csrcCount; idx++)
     {
         bytesRead += 4;
@@ -273,6 +276,7 @@ McpttRtpHeader::RemoveCsrc(uint32_t csrc)
     }
 
     SetCsrcs(csrcs);
+    SetCsrcCount(static_cast<uint8_t>(csrcs.size()));
 
     return found;
 }
@@ -309,7 +313,7 @@ McpttRtpHeader::Serialize(Buffer::Iterator start) const
     start.WriteHtonU32(timestamp);
     start.WriteHtonU32(ssrc);
 
-    for (int idx = 0; idx < csrcCount; csrcCount++)
+    for (int idx = 0; idx < csrcCount; idx++)
     {
         start.WriteHtonU32(csrcs[idx]);
     }

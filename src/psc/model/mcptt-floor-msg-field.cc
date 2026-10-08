@@ -31,6 +31,7 @@
 
 #include "mcptt-floor-msg-field.h"
 
+#include <ns3/abort.h>
 #include <ns3/buffer.h>
 #include <ns3/log.h>
 #include <ns3/object-base.h>
@@ -1575,15 +1576,16 @@ McpttFloorMsgFieldTrackInfo::Deserialize(Buffer::Iterator& buff)
     // header. Since each reference value is 4 bytes long, the remaining number of
     // bytes must be divisible by 4 (this includes 0 which would mean no
     // references were recorded).
+    NS_ABORT_MSG_IF(totalBytes < bytesRead || (totalBytes - bytesRead) % 4 != 0,
+                    "Malformed McpttFloorMsgFieldTrackInfo (length="
+                        << (uint32_t)GetLength() << ";ptLength=" << (uint32_t)ptLength << ").");
+
     uint32_t bytesLeft = (totalBytes - bytesRead);
     uint32_t refCount = (bytesLeft / 4);
 
     NS_LOG_LOGIC("McpttFloorMsgFieldTrackInfo read ("
                  << bytesRead << "/" << totalBytes << ") bytes, which leaves " << bytesLeft
                  << " bytes left and " << refCount << " reference(s) to read.");
-
-    NS_ASSERT_MSG(bytesLeft >= 0 && bytesLeft % 4 == 0,
-                  "Something went wrong deserializing a McpttFloorMsgFieldTrackInfo.");
 
     std::vector<uint32_t> refs;
     // Now that we know how many references have been recorded, we will read each
@@ -1611,7 +1613,8 @@ McpttFloorMsgFieldTrackInfo::GetPtLengthWithPadding() const
 
     uint8_t ptLength = GetPtLength();
 
-    uint8_t ptLengthWithPadding = ptLength + (ptLength % 4);
+    // Pad up to the next multiple of 4 octets.
+    uint8_t ptLengthWithPadding = ptLength + ((4 - (ptLength % 4)) % 4);
 
     return ptLengthWithPadding;
 }

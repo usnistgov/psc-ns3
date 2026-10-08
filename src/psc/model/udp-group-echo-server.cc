@@ -254,7 +254,6 @@ UdpGroupEchoServer::HandleRead(Ptr<Socket> socket)
     Address from;
     Address echo_address;
     std::map<std::string, UdpGroupEchoClient>::iterator it;
-    std::map<std::string, UdpGroupEchoClient>::iterator tempit;
     std::string ipaddrskey;
     std::ostringstream os;
     UdpGroupEchoClient src_client;
@@ -417,11 +416,12 @@ UdpGroupEchoServer::HandleRead(Ptr<Socket> socket)
         }
         else // if (m_mode == TIMEOUT_LIMITED)
         {
-            for (it = m_clients.begin(); it != m_clients.end(); ++it)
+            for (it = m_clients.begin(); it != m_clients.end();)
             {
                 // If no echo back, neglect client source
                 if (!m_echoClient && it->first == ipaddrskey)
                 {
+                    ++it;
                     continue;
                 }
 
@@ -460,12 +460,11 @@ UdpGroupEchoServer::HandleRead(Ptr<Socket> socket)
                                     << " port "
                                     << Inet6SocketAddress::ConvertFrom(addrs_dest).GetPort());
                     }
+                    ++it;
                 }
                 else // Time has expired. Remove client.
                 {
-                    tempit = it;
-                    --it;
-                    m_clients.erase(tempit);
+                    it = m_clients.erase(it);
                 }
             }
         } // end for

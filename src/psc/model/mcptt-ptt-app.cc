@@ -768,6 +768,11 @@ McpttPttApp::ReceiveOffNetworkCallPacket(Ptr<Packet> pkt, Address from)
 {
     NS_LOG_FUNCTION(this << pkt << from);
     NS_LOG_LOGIC("PttApp received " << pkt->GetSize() << " byte(s).");
+    if (pkt->GetSize() == 0)
+    {
+        NS_LOG_WARN("Dropping empty packet; too short for a call message");
+        return;
+    }
     McpttCallMsg temp;
     pkt->PeekHeader(temp);
 
@@ -896,7 +901,7 @@ McpttPttApp::ReceiveOffNetworkCallPacket(Ptr<Packet> pkt, Address from)
     }
     else
     {
-        NS_FATAL_ERROR("Could not resolve message code = " << (uint32_t)code << ".");
+        NS_LOG_WARN("Dropping packet with unknown call message code = " << (uint32_t)code << ".");
     }
 }
 
